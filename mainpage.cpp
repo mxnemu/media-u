@@ -8,7 +8,7 @@ MainPage::MainPage(Library& library, QWidget *parent) :
     ui->setupUi(this);
 
     QString backgroundPath = library.randomWallpaperPath();
-    this->setStyleSheet(QString("background-image: url(%1)").arg(backgroundPath));
+    this->setStyleSheet(QString("background-color:black;background-image: url('%1');").arg(backgroundPath));
 }
 
 MainPage::~MainPage()

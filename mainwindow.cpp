@@ -23,7 +23,6 @@ void MainWindow::setPage(const QString& pageName)
     }
     page = pageFactory.pageForKey(pageName);
     if (page) {
-        // TODO
-        //this->pageContainer->children.add(page);
+        this->ui->verticalLayout->addWidget(page);
     }
 }
