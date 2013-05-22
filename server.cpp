@@ -38,9 +38,20 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
 
     QString filePath;
     if (localDir.exists()) {
-        filePath = localDir.filePath("index.html");
+        filePath = localDir.absoluteFilePath("index.html");
     } else {
-        filePath = this->publicDirectory.filePath(req->path());
+        QString path = req->path();
+        if (path.at(0) == '/') {
+            path = path.right(path.length()-1);
+        }
+        filePath = this->publicDirectory.absoluteFilePath(path);
+    }
+    std::cout << filePath.toStdString() << std::endl;
+
+
+    if (!filePath.startsWith(this->publicDirectory.absolutePath())) {
+        simpleWrite(resp, 403, QString("Access denied. Only files in the public directory will be send."));
+        return;
     }
 
     QFile file(filePath);
