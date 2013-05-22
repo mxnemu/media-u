@@ -20,9 +20,15 @@ LIBS += -lqhttpserver
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    server.cpp
+    server.cpp \
+    library.cpp \
+    moviescanner.cpp \
+    moviefile.cpp
 
 HEADERS  += mainwindow.h \
-    server.h
+    server.h \
+    library.h \
+    moviescanner.h \
+    moviefile.h
 
 FORMS    += mainwindow.ui

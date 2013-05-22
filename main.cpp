@@ -9,7 +9,9 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    Server s;
+    QDir publicDir = QDir::current();
+    publicDir.cd("public");
+    Server s(publicDir.path());
     int port = s.start();
 
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));

@@ -1,8 +1,9 @@
 #include "server.h"
 #include <iostream>
+#include <QFile>
+#include <string>
 
-Server::Server() : QObject(NULL)
-{
+Server::Server(QString publicDirectoryPath) : QObject(NULL), publicDirectory(publicDirectoryPath) {
 
 }
 
@@ -24,9 +25,37 @@ int Server::start() {
 
 void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
     std::cout << "Connection" << std::endl;
-    simpleWrite(resp, 200, "Hello");
+
+    if (req->path().contains(QRegExp("^\\/api\\/"))) {
+        std::cout << "Api request" << req->url().path().toUtf8().data() << std::endl;
+        simpleWrite(resp, 405, "Api request not supported. Maybe a typo");
+    } else {
+        sendFile(req, resp);
+    }
 }
 
+void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
+    QDir localDir = QDir(this->publicDirectory.path().append(req->path()));
+
+    QString filePath;
+    if (localDir.exists()) {
+        std::cout << "dir exists sending index" << std::endl;
+        filePath = localDir.filePath("index.html");
+    } else {
+        filePath = this->publicDirectory.filePath(req->path());
+    }
+
+    std::cout << "send file " << filePath.toStdString() <<" for url " << req->path().toUtf8().data() << std::endl;
+
+    QFile file(filePath);
+    if (file.exists() && file.open(QFile::ReadOnly)) {
+        QByteArray data = file.readAll();
+        std::cout << "send data " << std::string(QString(data).toUtf8()) << std::endl;
+        simpleWrite(resp, 200, QString(data));
+    } else {
+        simpleWrite(resp, 404, "File not found (Error 404)");
+    }
+}
 
 void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data) {
     resp->setHeader("Content-Length", QString("%1").arg(data.size()));

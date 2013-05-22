@@ -41,7 +41,7 @@
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Torrent-tracker</string>
+        <string>Torrents</string>
        </property>
       </widget>
      </item>
