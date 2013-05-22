@@ -23,12 +23,19 @@ SOURCES += main.cpp\
     server.cpp \
     library.cpp \
     moviescanner.cpp \
-    moviefile.cpp
+    moviefile.cpp \
+    mainpage.cpp \
+    config.cpp \
+    pagefactory.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
     library.h \
     moviescanner.h \
-    moviefile.h
+    moviefile.h \
+    mainpage.h \
+    config.h \
+    pagefactory.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    mainpage.ui

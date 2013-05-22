@@ -7,12 +7,11 @@ Server::Server(QString publicDirectoryPath) : QObject(NULL), publicDirectory(pub
 
 }
 
-int Server::start() {
+int Server::start(int serverPort) {
     this->server = new QHttpServer();
 
-    // TODO read from config json in release
-    int port = 8082;
-    while (!this->server->listen(QHostAddress(QHostAddress::Any), port)) {
+    int port = serverPort;
+    while (port >= serverPort && !this->server->listen(QHostAddress(QHostAddress::Any), port)) {
         ++port;
     }
 
@@ -39,19 +38,16 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
 
     QString filePath;
     if (localDir.exists()) {
-        std::cout << "dir exists sending index" << std::endl;
         filePath = localDir.filePath("index.html");
     } else {
         filePath = this->publicDirectory.filePath(req->path());
     }
 
-    std::cout << "send file " << filePath.toStdString() <<" for url " << req->path().toUtf8().data() << std::endl;
-
     QFile file(filePath);
     if (file.exists() && file.open(QFile::ReadOnly)) {
         QByteArray data = file.readAll();
-        std::cout << "send data " << std::string(QString(data).toUtf8()) << std::endl;
         simpleWrite(resp, 200, QString(data));
+        file.close();
     } else {
         simpleWrite(resp, 404, "File not found (Error 404)");
     }

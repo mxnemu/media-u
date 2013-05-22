@@ -14,7 +14,7 @@ class Server : public QObject
     Q_OBJECT
 public:
     Server(QString publicDirectoryPath);
-    int start(); ///< returns the listening port
+    int start(int serverPort); ///< returns the listening port
     static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data);
     void sendFile(QHttpRequest *req, QHttpResponse *resp);
 
