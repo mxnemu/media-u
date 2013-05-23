@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     QDir publicDir = QDir::current();
     publicDir.cd("public");
-    Server s(publicDir.path());
+    Server s(publicDir.path(), w);
     int port = s.start(config.serverPort());
 
 

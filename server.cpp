@@ -4,7 +4,10 @@
 #include <string>
 #include <qhttprequest.h>
 
-Server::Server(QString publicDirectoryPath) : QObject(NULL), publicDirectory(publicDirectoryPath) {
+Server::Server(QString publicDirectoryPath, MainWindow &window) :
+    QObject(NULL), publicDirectory(publicDirectoryPath),
+    window(window)
+{
 
 }
 
@@ -37,9 +40,13 @@ void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
 
 bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     QString path = req->path();
-    if (path.startsWith(QString("/api/changePage/"))) {
-        std::cout << req->queryString().toStdString() << std::endl;
-        // TODO ref to mainwindow to set page
+    if (path.startsWith(QString("/api/changePage"))) {
+        QString pageName = req->url().toString();
+        QRegExp regex("\\?(.+)$");
+        regex.indexIn(pageName);
+        window.setPage(regex.cap(1));
+        simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(regex.cap(1)));
+        return true;
     }
     return false;
 }

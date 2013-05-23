@@ -11,6 +11,11 @@ public:
     PageFactory(Library& library);
     QWidget* pageForKey(const QString& key);
 
+
+    static const QString mainPageKey;
+    static const QString tvShowsPageKey;
+    static const QString tvShowPageKey;
+
 private:
     Library& library;
 };

@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <iostream>
+
 MainWindow::MainWindow(Library &library, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -18,6 +20,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setPage(const QString& pageName)
 {
+    std::cout << "setpage " << pageName.toStdString() << std::endl;
     if (page) {
         delete page; // also removes from parent
     }

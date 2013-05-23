@@ -8,12 +8,14 @@
 #include <QFile>
 #include <QDir>
 
+#include "mainwindow.h"
+
 
 class Server : public QObject
 {
     Q_OBJECT
 public:
-    Server(QString publicDirectoryPath);
+    Server(QString publicDirectoryPath, MainWindow& window);
     int start(int serverPort); ///< returns the listening port
     bool handleApiRequest(QHttpRequest *req, QHttpResponse *resp);
     void sendFile(QHttpRequest *req, QHttpResponse *resp);
@@ -26,6 +28,7 @@ public slots:
 private:
     QHttpServer* server;
     QDir publicDirectory; ///< send files in this directory as HTTP GET responses
+    MainWindow& window;
     Q_DISABLE_COPY(Server)
 };
 
