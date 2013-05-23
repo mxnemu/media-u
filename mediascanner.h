@@ -10,7 +10,7 @@ public:
     MediaScanner(Library& library);
     virtual ~MediaScanner();
     virtual void scanFiles(const QStringList &files) = 0;
-private:
+protected:
     Library& library;
 };
 

@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     pagefactory.cpp \
     directoryscanner.cpp \
     mediascanner.cpp \
-    tvshowscanner.cpp
+    tvshowscanner.cpp \
+    tvshow.cpp \
+    season.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -39,7 +41,9 @@ HEADERS  += mainwindow.h \
     pagefactory.h \
     directoryscanner.h \
     mediascanner.h \
-    tvshowscanner.h
+    tvshowscanner.h \
+    tvshow.h \
+    season.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui
