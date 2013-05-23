@@ -5,6 +5,8 @@
 #include "config.h"
 #include "server.h"
 #include "library.h"
+#include "directoryscanner.h"
+#include "tvshowscanner.h"
 
 #include <string.h>
 
@@ -40,6 +42,11 @@ int main(int argc, char *argv[]) {
 
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
+
+    // debug scanner
+    DirectoryScanner scanner(library);
+    scanner.addScanner(new TvShowScanner(library));
+    scanner.scan("/mnt/fields1/torrents/");
     
     return a.exec();
 }

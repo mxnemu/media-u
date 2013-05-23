@@ -2,6 +2,8 @@
 #define MOVIEFILE_H
 
 #include <QObject>
+#include <QString>
+#include <QRegExp>
 
 class MovieFile : public QObject
 {
@@ -9,6 +11,7 @@ class MovieFile : public QObject
 public:
     explicit MovieFile(QObject *parent = 0);
     
+    static bool hasMovieExtension(QString filename);
 signals:
     
 public slots:
