@@ -2,6 +2,7 @@
 #include <iostream>
 #include <QFile>
 #include <string>
+#include <qhttprequest.h>
 
 Server::Server(QString publicDirectoryPath) : QObject(NULL), publicDirectory(publicDirectoryPath) {
 
@@ -26,11 +27,21 @@ void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
     std::cout << "Connection" << std::endl;
 
     if (req->path().contains(QRegExp("^\\/api\\/"))) {
-        std::cout << "Api request" << req->url().path().toUtf8().data() << std::endl;
-        simpleWrite(resp, 405, "Api request not supported. Maybe a typo");
+        if (!handleApiRequest(req, resp)) {
+            simpleWrite(resp, 405, "Api request not supported. Maybe a typo");
+        }
     } else {
         sendFile(req, resp);
     }
+}
+
+bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
+    QString path = req->path();
+    if (path.startsWith(QString("/api/changePage/"))) {
+        std::cout << req->queryString().toStdString() << std::endl;
+        // TODO ref to mainwindow to set page
+    }
+    return false;
 }
 
 void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {

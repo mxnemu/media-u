@@ -15,9 +15,11 @@ class Server : public QObject
 public:
     Server(QString publicDirectoryPath);
     int start(int serverPort); ///< returns the listening port
-    static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data);
+    bool handleApiRequest(QHttpRequest *req, QHttpResponse *resp);
     void sendFile(QHttpRequest *req, QHttpResponse *resp);
 
+
+    static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data);
 public slots:
     void handleRequest(QHttpRequest *req, QHttpResponse* resp);
 
