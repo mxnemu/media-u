@@ -16,7 +16,11 @@ Application.prototype.setScreenFromLocationHash = function()
         // TODO set page by fields and field content
     } else {
         $.getJSON("api/activePage", function(data) {
-            self.setPage(new self.pageList[data.page]);
+            if (self.pageList[data.page]) {
+                self.setPage(new self.pageList[data.page]);
+            } else {
+                self.setPage(new StartPage());
+            }
         });
     }
 }

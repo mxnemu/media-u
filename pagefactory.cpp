@@ -9,7 +9,7 @@ const QString PageFactory::mainPageKey = QString("MainPage");
 const QString PageFactory::tvShowsPageKey = QString("TvShowsPage");
 const QString PageFactory::tvShowPageKey = QString("TvShowPage");
 
-QWidget* PageFactory::pageForKey(const QString &key) {
+Page* PageFactory::pageForKey(const QString &key) {
     if (key == PageFactory::mainPageKey) {
         return new MainPage(library);
     } else if (key == PageFactory::tvShowsPageKey) {

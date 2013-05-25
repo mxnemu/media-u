@@ -48,6 +48,11 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         window.setPage(regex.cap(1));
         simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(regex.cap(1)));
         return true;
+    } else if (path.startsWith("/api/activePage")) {
+        simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()));
+        return true;
+    } else if (window.activePage()) {
+        return window.activePage()->handleApiRequest(req, resp);
     }
     return false;
 }

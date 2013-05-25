@@ -32,3 +32,11 @@ void MainWindow::setPage(const QString& pageName)
         this->page = NULL;
     }
 }
+
+QString MainWindow::activePageId() {
+    return pageId;
+}
+
+Page *MainWindow::activePage() {
+    return page;
+}
