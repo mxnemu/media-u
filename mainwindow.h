@@ -24,6 +24,7 @@ private:
     Library& library;
     PageFactory pageFactory;
     QWidget* page;
+    QString pageId;
 };
 
 #endif // MAINWINDOW_H
