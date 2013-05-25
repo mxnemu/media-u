@@ -1,30 +1,42 @@
 function Application() {
-    this.screen = null;
+    this.page = null;
+    this.setScreenFromLocationHash();
 }
 
 Application.prototype.setScreenFromLocationHash = function()
 {
-    if (!this.screen) {
-        $("#main").empty();
+    var self = this;
+    if (!this.page) {
+        $(".page").empty();
     }
     
     var fields = Utils.parseHashUrl(window.location.hash);
     
     if (fields.length === 1) {
-        this.setScreen(new BooksScreen(fields[0]));
-    } else if (fields.length === 2) {
-        this.setScreen(new TrackScreen(fields[0], fields[1]));
+        // TODO set page by fields and field content
     } else {
-        this.setScreen(new AuthorsScreen());
+        $.getJSON("api/activePage", function(data) {
+            self.setPage(new self.pageList[data.page]);
+        });
     }
 }
 
-Application.prototype.setScreen = function(screen) {
-    if (this.screen) {
-        this.screen.removeNodes();
+Application.prototype.pageList = {
+    "StartPage": StartPage
+};
+
+Application.prototype.setPage = function(page) {
+    if (this.page) {
+        this.page.removeNodes();
     }
-    this.screen = screen;
-    if (screen) {
-        screen.createNodes();
+    this.page = page;
+    if (page) {
+        page.createNodes();
     }
 }
+
+$(function() {
+    window.G = {
+        app: new Application()
+    }
+});

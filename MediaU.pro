@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     mediascanner.cpp \
     tvshowscanner.cpp \
     tvshow.cpp \
-    season.cpp
+    season.cpp \
+    systemutils.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -43,7 +44,8 @@ HEADERS  += mainwindow.h \
     mediascanner.h \
     tvshowscanner.h \
     tvshow.h \
-    season.h
+    season.h \
+    systemutils.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui
