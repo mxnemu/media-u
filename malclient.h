@@ -11,7 +11,7 @@ class MalClient : public QObject
 public:
     explicit MalClient(QObject *parent = 0);
 
-    void setCredentials(QString name, QString password);
+    void setCredentials(const QString name, const QString password);
     
 
 signals:

@@ -2,25 +2,37 @@
 #include <qhttpserver.h>
 #include <qhttpconnection.h>
 #include <QTcpSocket>
+#include <iostream>
 
 MalClient::MalClient(QObject *parent) :
     QObject(parent)
 {
 }
 
-void MalClient::setCredentials(QString name, QString password) {
-    QTcpSocket socket(this);
-    socket.connectToHost("http://myanimelist.net/api/account/verify_credentials.xml ", 80);
-    if (socket.waitForConnected()) {
-        QHttpConnection connection(&socket);
-        QHttpResponse* resp = new QHttpResponse(&connection);
-        resp->setHeader("Credentials", "TODO base64 enc of user+password");
+void MalClient::setCredentials(const QString name, const QString password) {
+    QTcpSocket* socket = new QTcpSocket(this);
+    socket->connectToHost("www.myanimelist.net", 80);
+    if (socket->waitForConnected()) {
+        QHttpConnection* connection = new QHttpConnection(socket);
+        QHttpResponse* resp = new QHttpResponse(connection);
+        resp->setHeader("Credentials", QString("%1:%2").arg(name, password));
         resp->writeHead(200);
         resp->end();
-        socket.close();
-        connect(&connection, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
+        //socket->close();
+
+        QString re(socket->readAll());
+        std::cout << re.toStdString() << std::endl;
+
+        connect(connection, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
                 this, SLOT(setCredentialsAnswer(QHttpRequest*, QHttpResponse*)));
-        delete resp;
+        //delete resp; // TODO delete with socket, since it belives to own the socket
+        // TODO delete connection; yes we are indeed just leeking it right here. This is horrible
+
+
+
+    } else {
+        QString re(socket->readAll());
+        std::cout << "failed to connect to setCredentials stuff:" << socket->errorString().toStdString() << std::endl;
     }
 }
 
