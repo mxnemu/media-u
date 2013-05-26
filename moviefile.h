@@ -36,6 +36,8 @@ private:
     QString mSeasonName;
     QString mEpisodeNumber;
     QString mHashId;
+
+    bool watched;
 };
 
 #endif // MOVIEFILE_H

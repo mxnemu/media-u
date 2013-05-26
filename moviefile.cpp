@@ -4,6 +4,7 @@ MovieFile::MovieFile(QString path, QObject *parent) :
     QObject(parent)
 {
     setPath(path);
+    watched = false;
 }
 
 QString MovieFile::path() const {
