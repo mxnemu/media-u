@@ -1,4 +1,6 @@
 #include "moviefile.h"
+#include <QFile>
+#include <iostream>
 
 MovieFile::MovieFile(QString path, QObject *parent) :
     QObject(parent)
@@ -13,8 +15,15 @@ QString MovieFile::path() const {
 
 void MovieFile::setPath(QString path) {
     mPath = path;
+    path = QFile(path).fileName();
 
-    QRegExp regexGroup("\\[(.+)\\]");
+    if (!path.contains(' ')) {
+        path.replace('_', ' ');
+        path.replace('.', ' ');
+    }
+
+    QRegExp regexGroup("\\[(.*)\\]");
+    regexGroup.setMinimal(true);
     int groupIndex = regexGroup.indexIn(path);
     mReleaseGroup = regexGroup.cap(1);
 
@@ -26,14 +35,20 @@ void MovieFile::setPath(QString path) {
     // TODO continue coding here
 
     // [Group] showname - 01v2 (techtags)[12345ABC].webm
-    if (groupIndex == 0) {
-        QRegExp regexName("");
+    if (groupIndex >= -1 && groupIndex <= 1) {
+        QRegExp regexName("(.*)(( -)|\\[|\\(|$)");
+        regexName.setMinimal(true);
+
+        int groupLength = mReleaseGroup.length() + 2;
+        groupLength = groupLength == 2 ? 0 : groupLength;
+        regexName.indexIn(path.right(path.length() - groupLength));
+        mName = regexName.cap(1).trimmed();
 
     // showname[Group] - 01v2 (techtags)[12345ABC].webm
     } else if (groupIndex > 0) {
         QRegExp regexName("^(.+)\\[");
 
-    // [Group] showname - 01v2 (techtags)[12345ABC].webm
+    // [Group] showname - 01v2 (techtags)[12345ABC].webm    
     } else {
         QRegExp regexName("^(.+)\\[");
     }
@@ -42,6 +57,10 @@ void MovieFile::setPath(QString path) {
 
 bool MovieFile::hasMovieExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv|\\.ogv|\\.mpeg|\\.mp4|\\.webm|\\.avi", Qt::CaseInsensitive));
+}
+
+QString MovieFile::releaseGroup() const {
+    return mReleaseGroup;
 }
 
 QString MovieFile::name() const {

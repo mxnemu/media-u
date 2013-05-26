@@ -51,6 +51,9 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     } else if (path.startsWith("/api/activePage")) {
         simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()));
         return true;
+    } else if (path.startsWith("/api/airingTvShows")) {
+        //simpleWrite(window.getLibrary().airingShowsJson());
+        //return true;
     } else if (window.activePage()) {
         return window.activePage()->handleApiRequest(req, resp);
     }
