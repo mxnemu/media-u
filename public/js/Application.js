@@ -30,9 +30,11 @@ Application.prototype.pageList = {
 };
 
 Application.prototype.setPage = function(page) {
-    if (this.page) {
+    if (this.page && this.page.removeNodes) {
         this.page.removeNodes();
     }
+    $(".page").empty();
+    
     this.page = page;
     if (page) {
         page.createNodes();
