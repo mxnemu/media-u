@@ -18,6 +18,11 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/libs/qhttpserver
 LIBPATH += $$_PRO_FILE_PWD_/libs/qhttpserver/lib
 LIBS += -lqhttpserver
 
+# libcurl
+INCLUDEPATH += $$_PRO_FILE_PWD_/libs/curl/include/
+LIBPATH += $$_PRO_FILE_PWD_/libs/curl/lib/.libs/
+LIBS += -lcurl
+
 
 SOURCES += main.cpp\
         mainwindow.cpp \

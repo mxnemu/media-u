@@ -2,7 +2,9 @@
 #include <qhttpserver.h>
 #include <qhttpconnection.h>
 #include <QTcpSocket>
+#include <QDebug>
 #include <iostream>
+#include <curl/curl.h>
 
 MalClient::MalClient(QObject *parent) :
     QObject(parent)
@@ -10,30 +12,17 @@ MalClient::MalClient(QObject *parent) :
 }
 
 void MalClient::setCredentials(const QString name, const QString password) {
-    QTcpSocket* socket = new QTcpSocket(this);
-    socket->connectToHost("www.myanimelist.net", 80);
-    if (socket->waitForConnected()) {
-        QHttpConnection* connection = new QHttpConnection(socket);
-        QHttpResponse* resp = new QHttpResponse(connection);
-        resp->setHeader("Credentials", QString("%1:%2").arg(name, password));
-        resp->writeHead(200);
-        resp->end();
-        //socket->close();
+    CURL* handle = curl_easy_init();
+    curl_easy_setopt(handle, CURLOPT_URL, "http://myanimelist.net/api/account/verify_credentials.xml");
+    curl_easy_setopt(handle, CURLOPT_USERNAME, name.toUtf8().data());
+    curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
+    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, MalClient::write_data);
 
-        QString re(socket->readAll());
-        std::cout << re.toStdString() << std::endl;
-
-        connect(connection, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
-                this, SLOT(setCredentialsAnswer(QHttpRequest*, QHttpResponse*)));
-        //delete resp; // TODO delete with socket, since it belives to own the socket
-        // TODO delete connection; yes we are indeed just leeking it right here. This is horrible
-
-
-
-    } else {
-        QString re(socket->readAll());
-        std::cout << "failed to connect to setCredentials stuff:" << socket->errorString().toStdString() << std::endl;
-    }
+    CurlXmlResult userData(*this);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userData);
+    CURLcode error = curl_easy_perform(handle);
+    userData.print();
+    std::cout << error << std::endl;
 }
 
 void MalClient::setCredentialsAnswer(QHttpRequest* req, QHttpResponse* resp) {
@@ -44,4 +33,10 @@ void MalClient::setCredentialsAnswer(QHttpRequest* req, QHttpResponse* resp) {
     } else {
         // WTF?
     }
+}
+
+size_t MalClient::write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp) {
+    CurlXmlResult* userData = static_cast<CurlXmlResult*>(userp);
+    userData->data.write((const char*)buffer, characterSize*bufferSize);
+    return bufferSize;
 }
