@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
     DirectoryScanner scanner(library);
     scanner.addScanner(new TvShowScanner(library));
     scanner.scan("/mnt/fields1/torrents/");
+    scanner.scan("/media/nehmulos/INTENSO/anime");
     
     return a.exec();
 }
