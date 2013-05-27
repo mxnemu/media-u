@@ -35,7 +35,7 @@ void MovieFile::setPath(QString path) {
 
     // [Group] showname - 01v2 (techtags)[12345ABC].webm
     if (groupIndex >= -1 && groupIndex <= 1) {
-        QRegExp regexName("(.*)(( -)|\\[|\\(|(OP[0-9])|(ED[0-9])|(EP[0-9])|(SP[0-9])|(Episode\s?[0-9])|$)");
+        QRegExp regexName("(.*)(( -)|\\[|\\(|(OP[0-9])|(ED[0-9])|(EP[0-9])|(SP[0-9])|(Episode\\s?[0-9])|$)");
         regexName.setMinimal(true);
 
         int groupLength = mReleaseGroup.length() + 2;
