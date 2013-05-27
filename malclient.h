@@ -20,8 +20,8 @@ public:
 signals:
     
 private slots:
-    void setCredentialsAnswer(QHttpRequest *req, QHttpResponse *resp);
 };
+
 
 class CurlXmlResult {
 public:

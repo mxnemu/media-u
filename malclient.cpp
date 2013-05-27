@@ -23,16 +23,8 @@ void MalClient::setCredentials(const QString name, const QString password) {
     CURLcode error = curl_easy_perform(handle);
     userData.print();
     std::cout << error << std::endl;
-}
 
-void MalClient::setCredentialsAnswer(QHttpRequest* req, QHttpResponse* resp) {
-    if (req->statusCode() == 200) {
-        // all is well
-    } else if (req->statusCode() == 204) {
-        // TODO request new credentials
-    } else {
-        // WTF?
-    }
+    curl_easy_cleanup(handle);
 }
 
 size_t MalClient::write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp) {
