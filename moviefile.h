@@ -5,6 +5,7 @@
 #include <QString>
 #include <QRegExp>
 #include <QStringList>
+#include <N0Slib.h>
 
 class MovieFile : public QObject
 {
@@ -15,9 +16,11 @@ public:
     QString path() const;
     void setPath(QString path);
 
+    void writeAsElement(nw::JsonWriter& jw) const;
+
     static bool hasMovieExtension(QString filename);
 
-    QString name() const;
+    QString episodeName() const;
     QString showName() const;
     QString seasonName() const;
     QString episodeNumber() const;
@@ -32,7 +35,7 @@ private:
     QString mPath;
     QString mReleaseGroup;
     QString mShowName;
-    QString mName;
+    QString mEpisodeName;
     QStringList mTechTags;
     QString mSeasonName;
     QString mEpisodeNumber;

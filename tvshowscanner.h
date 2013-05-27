@@ -7,7 +7,7 @@ class TvShowScanner : public MediaScanner
 {
 public:
     TvShowScanner(Library &library);
-    void scanFiles(const QStringList &files);
+    void scanFiles(const QStringList &files, const QDir &dir);
 };
 
 #endif // TVSHOWSCANNER_H

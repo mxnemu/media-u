@@ -1,6 +1,8 @@
 #include "moviefile.h"
-#include <QFile>
+#include <QFileInfo>
 #include <iostream>
+#include <stdlib.h>
+#include <QDebug>
 
 MovieFile::MovieFile(QString path, QObject *parent) :
     QObject(parent)
@@ -15,17 +17,23 @@ QString MovieFile::path() const {
 
 void MovieFile::setPath(QString path) {
     mPath = path;
-    path = QFile(path).fileName();
+    path = QFileInfo(path).fileName();
 
     if (!path.contains(' ')) {
         path.replace('_', ' ');
         path.replace('.', ' ');
     }
 
-    QRegExp regexGroup("\\[(.*)\\]");
-    regexGroup.setMinimal(true);
-    int groupIndex = regexGroup.indexIn(path);
-    mReleaseGroup = regexGroup.cap(1);
+    int groupIndex = -2;
+    while (groupIndex != -1) {
+        QRegExp regexGroup("^(\\[.*\\])");
+        regexGroup.setMinimal(true);
+        groupIndex = regexGroup.indexIn(path);
+        if (groupIndex != -1) {
+            mReleaseGroup.append(regexGroup.cap(1));
+            path.remove(0, regexGroup.cap(1).length());
+        }
+    }
 
     // TODO differ techtags in [] from release groups
     // hints: at the end, multiple [] like [720p][AAC]
@@ -37,13 +45,14 @@ void MovieFile::setPath(QString path) {
     if (groupIndex >= -1 && groupIndex <= 1) {
         QRegExp regexName("(.*)(( -)|\\[|\\(|(OP[0-9])|(ED[0-9])|(EP[0-9])|(SP[0-9])|(Episode\\s?[0-9])|$)");
         regexName.setMinimal(true);
+        int nameIndex = regexName.indexIn(path);
+        mShowName = regexName.cap(1).trimmed();
 
-        int groupLength = mReleaseGroup.length() + 2;
-        groupLength = groupLength == 2 ? 0 : groupLength;
-        int nameIndex = regexName.indexIn(path.right(path.length() - groupLength));
-        mName = regexName.cap(1).trimmed();
-
-        path.remove(nameIndex, regexName.cap(1).length());
+        if (nameIndex != -1 || mShowName.length() <= 0) {
+            path.remove(nameIndex, regexName.cap(1).length());
+        } else {
+            qDebug() << "could not parse name out of " << path;
+        }
 
     // showname[Group] - 01v2 (techtags)[12345ABC].webm
     } else if (groupIndex > 0) {
@@ -71,6 +80,15 @@ void MovieFile::setPath(QString path) {
 
 }
 
+void MovieFile::writeAsElement(nw::JsonWriter &jw) const
+{
+    std::string path = mPath.toStdString(),
+                epNum = mEpisodeNumber.toStdString();
+    jw.describe("path", path);
+    //jw.describe("number", epNum);
+    //jw.describe();
+}
+
 bool MovieFile::hasMovieExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv|\\.ogv|\\.mpeg|\\.mp4|\\.webm|\\.avi", Qt::CaseInsensitive));
 }
@@ -79,8 +97,8 @@ QString MovieFile::releaseGroup() const {
     return mReleaseGroup;
 }
 
-QString MovieFile::name() const {
-    return mName;
+QString MovieFile::episodeName() const {
+    return mEpisodeName;
 }
 
 QString MovieFile::showName() const {

@@ -9,7 +9,7 @@ class MediaScanner
 public:
     MediaScanner(Library& library);
     virtual ~MediaScanner();
-    virtual void scanFiles(const QStringList &files) = 0;
+    virtual void scanFiles(const QStringList &files, const QDir &dir) = 0;
 protected:
     Library& library;
 };

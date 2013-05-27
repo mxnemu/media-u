@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
 
 
     library.initMalClient(config.malConfigFilePath());
+    library.write();
 
     return a.exec();
 }

@@ -37,7 +37,7 @@ void DirectoryScanner::scan(const QString& path, QStringList& handledDirs, const
 
     const QStringList files = dir.entryList(QDir::Files);
     foreach (MediaScanner* scanner, mediaScanners) {
-        scanner->scanFiles(files);
+        scanner->scanFiles(files, dir);
     }
 }
 

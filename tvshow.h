@@ -2,7 +2,9 @@
 #define TVSHOW_H
 
 #include <QList>
+#include <QDir>
 #include <season.h>
+#include <N0Slib.h>
 
 class TvShow
 {
@@ -11,6 +13,7 @@ public:
 
     Season &season(QString name);
 
+    void write(QDir& dir) const;
 
     void importEpisode(const MovieFile& episode);
     QString name() const;

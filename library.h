@@ -20,7 +20,6 @@ public:
     TvShow& tvShow(QString name);
     void importTvShowEpisode(QString episodePath);
 
-    void setDirectory(QString directory);
     void write();
 
 signals:
