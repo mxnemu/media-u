@@ -14,11 +14,13 @@ class MalClient : public QObject
 public:
     explicit MalClient(QObject *parent = 0);
 
-    void setCredentials(const QString name, const QString password);
+    bool setCredentials(const QString name, const QString password);
     
 
     static size_t write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp);
     //CurlXmlResult curlPerform(const char *url);
+    bool hasValidCredentials() const;
+
 signals:
     
 private slots:
@@ -26,6 +28,7 @@ private slots:
 private:
     CURL *curlClient(const char* url, void *userdata);
 
+    bool mHasValidCredentials;
     QString username;
     QString password;
 };

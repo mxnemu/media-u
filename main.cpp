@@ -51,10 +51,10 @@ int main(int argc, char *argv[]) {
     scanner.scan("/mnt/fields1/torrents/");
     scanner.scan("/media/nehmulos/INTENSO/anime");
 
-
     curl_global_init(CURL_GLOBAL_SSL);
-    MalClient c;
-    //c.setCredentials(QString("notmy"), QString("realpassword"));
-    
+
+
+    library.initMalClient(config.malConfigFilePath());
+
     return a.exec();
 }

@@ -11,20 +11,20 @@ Config::Config(QString initPath)
     initialized = false;
 }
 
+bool Config::init() {
+    return this->init(QString());
+}
+
 bool Config::init(QString path) {
     QDir dir;
     if (path.isNull() || path.isEmpty()) {
-        dir = QDir::home();
-    } else {
-        dir = QDir(path);
-    }
-
-    if (!dir.cd(".mediaU")) {
-        if (!dir.mkdir(dir.absoluteFilePath(".mediaU"))) {
+        dir = this->configPath();
+        if (!dir.exists() && !dir.mkpath(dir.absoluteFilePath(".mediaU"))) {
             // TODO global error quit with dialogue message
             // home not writeable
         }
-        dir.cd(".mediaU");
+    } else {
+        dir = QDir(path);
     }
 
     QFile configFile(dir.absoluteFilePath("config.json"));
@@ -38,10 +38,9 @@ bool Config::init(QString path) {
 bool Config::parse(const QString& jsonData)
 {
     // TODO parse json
-    QDir home = QDir::home();
-    std::string nwlibraryPath = home.absoluteFilePath(".mediaU/library/").toStdString();
+    mLibraryPath = QString();
+    std::string nwlibraryPath = libraryPath().toStdString();
     mServerPort = 8082;
-    initialized = true;
 
 
 
@@ -55,6 +54,7 @@ bool Config::parse(const QString& jsonData)
 
     mLibraryPath = QString(nwlibraryPath.data());
 
+    initialized = true;
     return true;
 }
 
@@ -77,6 +77,13 @@ bool Config::createNewConfig(QString filepath)
     return true;
 }
 
+QDir Config::configPath() {
+    if (mConfigPath.isNull() || mConfigPath.isEmpty()) {
+        return QDir(QDir::home().absoluteFilePath(".mediaU"));
+    }
+    return QDir(mConfigPath);
+}
+
 QString Config::libraryPath() {
     if (initialized) {
         return this->mLibraryPath;
@@ -84,6 +91,10 @@ QString Config::libraryPath() {
 
     QDir dir = QDir::home();
     return dir.absoluteFilePath(".mediaU/library");
+}
+
+QString Config::malConfigFilePath() {
+    return configPath().absoluteFilePath("malConfig.json");
 }
 
 int Config::serverPort() {

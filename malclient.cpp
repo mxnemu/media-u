@@ -8,9 +8,10 @@
 MalClient::MalClient(QObject *parent) :
     QObject(parent)
 {
+    mHasValidCredentials = false;
 }
 
-void MalClient::setCredentials(const QString name, const QString password) {
+bool MalClient::setCredentials(const QString name, const QString password) {
     this->username = name;
     this->password = password;
 
@@ -18,9 +19,15 @@ void MalClient::setCredentials(const QString name, const QString password) {
     CURL* handle = curlClient("http://myanimelist.net/api/account/verify_credentials.xml", &userData);
     CURLcode error = curl_easy_perform(handle);
     userData.print();
-    std::cout << error << std::endl;
+
+    if (userData.data.str() == "Invalid credentials") {
+        mHasValidCredentials = false;
+    } else {
+        mHasValidCredentials = true;
+    }
 
     curl_easy_cleanup(handle);
+    return mHasValidCredentials;
 }
 
 CURL* MalClient::curlClient(const char* url, void *userdata) {
@@ -52,3 +59,8 @@ size_t MalClient::write_data(void *buffer, size_t characterSize, size_t bufferSi
     userData->data.write((const char*)buffer, characterSize*bufferSize);
     return bufferSize;
 }
+
+bool MalClient::hasValidCredentials() const {
+    return mHasValidCredentials;
+}
+
