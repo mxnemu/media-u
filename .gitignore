@@ -1,3 +1,9 @@
 *.o
 Makefile
 *~
+*.pro.user*
+ui_*.h
+ui_*.cpp
+moc_*.cpp
+moc_*.h
+MediaU

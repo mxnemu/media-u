@@ -23,6 +23,7 @@ public:
     QString episodeNumber() const;
     QStringList techTags() const;
     QString hashId() const;
+    QString releaseGroup() const;
 signals:
     
 public slots:
@@ -36,6 +37,8 @@ private:
     QString mSeasonName;
     QString mEpisodeNumber;
     QString mHashId;
+
+    bool watched;
 };
 
 #endif // MOVIEFILE_H

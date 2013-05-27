@@ -3,6 +3,7 @@
 #include <QFile>
 #include <string>
 #include <qhttprequest.h>
+#include "systemutils.h"
 
 Server::Server(QString publicDirectoryPath, MainWindow &window) :
     QObject(NULL), publicDirectory(publicDirectoryPath),
@@ -47,6 +48,14 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         window.setPage(regex.cap(1));
         simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(regex.cap(1)));
         return true;
+    } else if (path.startsWith("/api/activePage")) {
+        simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()));
+        return true;
+    } else if (path.startsWith("/api/airingTvShows")) {
+        //simpleWrite(window.getLibrary().airingShowsJson());
+        //return true;
+    } else if (window.activePage()) {
+        return window.activePage()->handleApiRequest(req, resp);
     }
     return false;
 }
@@ -75,15 +84,16 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
     QFile file(filePath);
     if (file.exists() && file.open(QFile::ReadOnly)) {
         QByteArray data = file.readAll();
-        simpleWrite(resp, 200, QString(data));
+        simpleWrite(resp, 200, QString(data), SystemUtils::fileMime(filePath));
         file.close();
     } else {
         simpleWrite(resp, 404, "File not found (Error 404)");
     }
 }
 
-void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data) {
+void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data, QString mime) {
     resp->setHeader("Content-Length", QString("%1").arg(data.size()));
+    //resp->setHeader("Content-Type", mime);
     resp->writeHead(statusCode);
     resp->write(data);
     resp->end();

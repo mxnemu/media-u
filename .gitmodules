@@ -1,0 +1,6 @@
+[submodule "rack"]
+      path = libs/qhttpserver
+      url = https://github.com/Nehmulos/qhttpserver.git
+[submodule "libs/curl"]
+	path = libs/curl
+	url = git://github.com/bagder/curl.git

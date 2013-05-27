@@ -13,9 +13,15 @@ TEMPLATE = app
 
 # qhttp
 INCLUDEPATH += $$_PRO_FILE_PWD_/libs/qhttpserver/src
+INCLUDEPATH += $$_PRO_FILE_PWD_/libs/qhttpserver/http-parser
 INCLUDEPATH += $$_PRO_FILE_PWD_/libs/qhttpserver
 LIBPATH += $$_PRO_FILE_PWD_/libs/qhttpserver/lib
 LIBS += -lqhttpserver
+
+# libcurl
+INCLUDEPATH += $$_PRO_FILE_PWD_/libs/curl/include/
+LIBPATH += $$_PRO_FILE_PWD_/libs/curl/lib/.libs/
+LIBS += -lcurl
 
 
 SOURCES += main.cpp\
@@ -30,7 +36,10 @@ SOURCES += main.cpp\
     mediascanner.cpp \
     tvshowscanner.cpp \
     tvshow.cpp \
-    season.cpp
+    season.cpp \
+    systemutils.cpp \
+    page.cpp \
+    malclient.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -43,7 +52,10 @@ HEADERS  += mainwindow.h \
     mediascanner.h \
     tvshowscanner.h \
     tvshow.h \
-    season.h
+    season.h \
+    systemutils.h \
+    page.h \
+    malclient.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui

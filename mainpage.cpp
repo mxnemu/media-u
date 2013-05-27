@@ -2,7 +2,7 @@
 #include "ui_mainpage.h"
 
 MainPage::MainPage(Library& library, QWidget *parent) :
-    QWidget(parent),
+    Page(parent),
     ui(new Ui::MainPage)
 {
     ui->setupUi(this);
@@ -14,4 +14,9 @@ MainPage::MainPage(Library& library, QWidget *parent) :
 MainPage::~MainPage()
 {
     delete ui;
+}
+
+bool MainPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
+{
+    return false;
 }

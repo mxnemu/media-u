@@ -21,7 +21,7 @@ public:
     void sendFile(QHttpRequest *req, QHttpResponse *resp);
 
 
-    static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data);
+    static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data, QString mime = QString("text/plain"));
 public slots:
     void handleRequest(QHttpRequest *req, QHttpResponse* resp);
 

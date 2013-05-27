@@ -4,12 +4,13 @@
 #include <QWidget>
 #include <QString>
 #include "library.h"
+#include "page.h"
 
 class PageFactory
 {
 public:
     PageFactory(Library& library);
-    QWidget* pageForKey(const QString& key);
+    Page* pageForKey(const QString& key);
 
 
     static const QString mainPageKey;

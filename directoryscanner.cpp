@@ -23,6 +23,10 @@ void DirectoryScanner::scan(const QString& path, QStringList& handledDirs, const
     QDir dir(path);
     QStringList dirs = dir.entryList(QDir::Dirs);
     foreach (QString d, dirs) {
+        if (d == "." || d == "..") {
+            continue;
+        }
+
         QString dirPath = dir.absoluteFilePath(d);
         std::cout << dirPath.toStdString() << std::endl;
         if (dirPath.startsWith(rootPath) && !handledDirs.contains(dirPath)) {

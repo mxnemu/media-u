@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "library.h"
 #include "pagefactory.h"
+#include "page.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,12 +19,15 @@ public:
     ~MainWindow();
 
     void setPage(const QString& pageName);
+    QString activePageId();
+    Page* activePage();
     
 private:
     Ui::MainWindow *ui;
     Library& library;
     PageFactory pageFactory;
-    QWidget* page;
+    Page* page;
+    QString pageId;
 };
 
 #endif // MAINWINDOW_H

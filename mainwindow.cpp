@@ -27,5 +27,16 @@ void MainWindow::setPage(const QString& pageName)
     page = pageFactory.pageForKey(pageName);
     if (page) {
         this->ui->verticalLayout->addWidget(page);
+        this->pageId = pageName;
+    } else {
+        this->page = NULL;
     }
+}
+
+QString MainWindow::activePageId() {
+    return pageId;
+}
+
+Page *MainWindow::activePage() {
+    return page;
 }
