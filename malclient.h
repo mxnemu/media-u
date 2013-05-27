@@ -6,6 +6,7 @@
 #include <qhttprequest.h>
 #include <sstream>
 #include <QDebug>
+#include <curl/curl.h>
 
 class MalClient : public QObject
 {
@@ -17,17 +18,25 @@ public:
     
 
     static size_t write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp);
+    //CurlXmlResult curlPerform(const char *url);
 signals:
     
 private slots:
+
+private:
+    CURL *curlClient(const char* url, void *userdata);
+
+    QString username;
+    QString password;
 };
 
 
 class CurlXmlResult {
 public:
-    CurlXmlResult(MalClient& client) : client(client) {};
+    CurlXmlResult(MalClient& client) : client(client), curlError(CURL_LAST) {};
     std::stringstream data;
     MalClient& client;
+    CURLcode curlError;
     void print() {qDebug() << data.str().data();};
 };
 
