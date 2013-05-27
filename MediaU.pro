@@ -23,6 +23,12 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/libs/curl/include/
 LIBPATH += $$_PRO_FILE_PWD_/libs/curl/lib/.libs/
 LIBS += -lcurl
 
+# noslib
+INCLUDEPATH += $$_PRO_FILE_PWD_/libs/noslib/src/
+INCLUDEPATH += $$_PRO_FILE_PWD_/libs/noslib/
+LIBPATH += $$_PRO_FILE_PWD_/libs/noslib/
+LIBS += -lN0Slib
+
 
 SOURCES += main.cpp\
         mainwindow.cpp \

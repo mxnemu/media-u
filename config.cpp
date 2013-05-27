@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QDir>
 #include <iostream>
+#include <N0Slib.h>
 
 Config::Config(QString initPath)
 {
@@ -34,13 +35,26 @@ bool Config::init(QString path) {
     }
 }
 
-bool Config::parse(const QByteArray& jsonData)
+bool Config::parse(const QString& jsonData)
 {
     // TODO parse json
     QDir home = QDir::home();
-    mLibraryPath = home.absoluteFilePath(".mediaU/library/");
+    std::string nwlibraryPath = home.absoluteFilePath(".mediaU/library/").toStdString();
     mServerPort = 8082;
     initialized = true;
+
+
+
+    istringstream input(jsonData.toStdString());
+    nw::JsonReader jr(input);
+    jr.describe("port", mServerPort);
+    jr.push("library");
+    jr.describe("path", nwlibraryPath);
+    jr.pop();
+    jr.close();
+
+    mLibraryPath = QString(nwlibraryPath.data());
+
     return true;
 }
 

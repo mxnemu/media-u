@@ -9,7 +9,7 @@ public:
     Config(QString initPath);
 
     bool init(QString path);
-    bool parse(const QByteArray &jsonData);
+    bool parse(const QString &jsonData);
     bool createNewConfig(QString filepath);
 
     QString libraryPath();

@@ -4,3 +4,6 @@
 [submodule "libs/curl"]
 	path = libs/curl
 	url = git://github.com/bagder/curl.git
+[submodule "libs/noslib"]
+	path = libs/noslib
+	url = https://github.com/Nehmulos/N0Strain-Serialization-Library.git
