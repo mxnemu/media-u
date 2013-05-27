@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
     curl_global_init(CURL_GLOBAL_SSL);
     MalClient c;
-    c.setCredentials(QString("notmy"), QString("realpassword"));
+    //c.setCredentials(QString("notmy"), QString("realpassword"));
     
     return a.exec();
 }

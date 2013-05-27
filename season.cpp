@@ -1,5 +1,5 @@
 #include "season.h"
-#include <iostream>
+#include <QDebug>
 
 Season::Season(QString name) {
     mName = name;
@@ -16,7 +16,11 @@ Season::~Season()
 
 void Season::addEpisode(const MovieFile& file) {
     episodes.append(new MovieFile(file.path()));
-    std::cout << episodes.back()->releaseGroup().toStdString() << episodes.back()->name().toStdString() << std::endl;
+    qDebug() << episodes.back()->releaseGroup()
+             << episodes.back()->episodeNumber()
+             << episodes.back()->name()
+             << episodes.back()->seasonName()
+             << episodes.back()->path();
 }
 
 QString Season::name() const {

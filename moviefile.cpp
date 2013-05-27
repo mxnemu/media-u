@@ -31,18 +31,19 @@ void MovieFile::setPath(QString path) {
     // hints: at the end, multiple [] like [720p][AAC]
     // comma separated [720p, AAC]
     // space separated [720p AAC]
-
     // TODO continue coding here
 
     // [Group] showname - 01v2 (techtags)[12345ABC].webm
     if (groupIndex >= -1 && groupIndex <= 1) {
-        QRegExp regexName("(.*)(( -)|\\[|\\(|$)");
+        QRegExp regexName("(.*)(( -)|\\[|\\(|(OP[0-9])|(ED[0-9])|(EP[0-9])|(SP[0-9])|(Episode\s?[0-9])|$)");
         regexName.setMinimal(true);
 
         int groupLength = mReleaseGroup.length() + 2;
         groupLength = groupLength == 2 ? 0 : groupLength;
-        regexName.indexIn(path.right(path.length() - groupLength));
+        int nameIndex = regexName.indexIn(path.right(path.length() - groupLength));
         mName = regexName.cap(1).trimmed();
+
+        path.remove(nameIndex, regexName.cap(1).length());
 
     // showname[Group] - 01v2 (techtags)[12345ABC].webm
     } else if (groupIndex > 0) {
@@ -51,6 +52,21 @@ void MovieFile::setPath(QString path) {
     // [Group] showname - 01v2 (techtags)[12345ABC].webm    
     } else {
         QRegExp regexName("^(.+)\\[");
+    }
+
+    QRegExp regexEpisode("(\\s[0-9]+(v[0-9]+)?\\s|ED[0-9]+|OP[0-9]+[a-z]?|SP[0-9]+|EP[0-9]+|Episode\\s?[0-9]+)", Qt::CaseInsensitive);
+    //regexEpisode.setMinimal(true);
+    int episodeIndex = regexEpisode.indexIn(path);
+    mEpisodeNumber = regexEpisode.cap(1).trimmed();
+
+    path.remove(episodeIndex, regexEpisode.cap(1).length());
+
+    QRegExp regexSeason("((SE?)[0-9]+|(Season\\s?)[0-9]+)", Qt::CaseInsensitive);
+    regexSeason.setMinimal(true);
+    int seasonIndex = regexSeason.indexIn(path);
+    if (seasonIndex != -1) {
+        mSeasonName = regexSeason.cap(1);
+        path.remove(seasonIndex, regexSeason.cap(1).length());
     }
 
 }
