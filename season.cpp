@@ -25,11 +25,7 @@ void Season::writeAsElement(nw::JsonWriter &jw) const {
 
 void Season::addEpisode(const MovieFile& file) {
     episodes.append(new MovieFile(file.path()));
-    qDebug() << episodes.back()->releaseGroup()
-             << episodes.back()->episodeNumber()
-             << episodes.back()->showName()
-             << episodes.back()->seasonName()
-             << episodes.back()->path();
+    qDebug() << episodes.back()->episodeNumber() << episodes.back()->showName();
 }
 
 QString Season::name() const {
