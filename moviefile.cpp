@@ -35,11 +35,18 @@ void MovieFile::setPath(QString path) {
         }
     }
 
+    QRegExp regexHashId("(\\[[A-F0-9]{8}\\])");
+    int hashIdIndex = regexHashId.indexIn(path);
+    if (hashIdIndex != -1) {
+        mHashId = regexHashId.cap(1);
+        path.remove(hashIdIndex, regexHashId.cap(1).length());
+    }
+
+
     // TODO differ techtags in [] from release groups
     // hints: at the end, multiple [] like [720p][AAC]
     // comma separated [720p, AAC]
     // space separated [720p AAC]
-    // TODO continue coding here
 
     // [Group] showname - 01v2 (techtags)[12345ABC].webm
     if (groupIndex >= -1 && groupIndex <= 1) {
@@ -63,7 +70,19 @@ void MovieFile::setPath(QString path) {
         QRegExp regexName("^(.+)\\[");
     }
 
-    QRegExp regexEpisode("(\\s[0-9]+(v[0-9]+)?\\s|ED[0-9]+|OP[0-9]+[a-z]?|SP[0-9]+|EP[0-9]+|Episode\\s?[0-9]+)", Qt::CaseInsensitive);
+    QRegExp regexEpisode("("
+        "\\s[0-9]+((v|\\.)[0-9]+)?\\s|"
+        "ED[0-9]+|"
+        "OP[0-9]+[a-z]?|"
+        "SP[0-9]+|"
+        "EP[0-9]+|"
+        "NC.?OP([0-9]+)?|"
+        "NC.?ED([0-9]+)?|"
+        "EX([0-9]+)?|"
+        "Episode\\s?[0-9]+|"
+        "Opening(\\s?[0-9]+)?|"
+        "Ending(\\s?[0-9]+)?"
+        ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);
     mEpisodeNumber = regexEpisode.cap(1).trimmed();
@@ -78,6 +97,15 @@ void MovieFile::setPath(QString path) {
         path.remove(seasonIndex, regexSeason.cap(1).length());
     }
 
+    // TODO check for shows with a [0-9]+ ending and just 1 episode to avoid some false positives
+    if (mEpisodeNumber.isEmpty() || mEpisodeNumber.isNull()) {
+        QRegExp regexNumberAfterShowName("(\\s[0-9]+\\s?)$");
+        int epIndex = regexNumberAfterShowName.indexIn(mShowName);
+        if (epIndex != -1) {
+            mEpisodeNumber = regexNumberAfterShowName.cap(1).trimmed();
+            mShowName.remove(epIndex, regexNumberAfterShowName.cap(1).length());
+        }
+    }
 }
 
 void MovieFile::writeAsElement(nw::JsonWriter &jw) const
