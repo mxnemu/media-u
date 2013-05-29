@@ -39,8 +39,10 @@ void MalClient::fetchShowBlocking(TvShow& show) {
         return;
     }
 
+    QString url = "http://myanimelist.net/api/anime/search.xml?q=";
+    url.append(QUrl::toPercentEncoding(name));
+
     CurlResult userData(this);
-    const QString url = QString("http://myanimelist.net/api/anime/search.xml?q=").append(name);
     CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
     CURLcode error = curl_easy_perform(handle);
     if (error) {
