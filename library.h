@@ -22,6 +22,7 @@ public:
 
     void write();
 
+    void fetchMetaData();
 signals:
     
 public slots:

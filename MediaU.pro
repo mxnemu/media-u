@@ -45,7 +45,10 @@ SOURCES += main.cpp\
     season.cpp \
     systemutils.cpp \
     page.cpp \
-    malclient.cpp
+    malclient.cpp \
+    nwutils.cpp \
+    filedownloadthread.cpp \
+    curlresult.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -61,7 +64,10 @@ HEADERS  += mainwindow.h \
     season.h \
     systemutils.h \
     page.h \
-    malclient.h
+    malclient.h \
+    nwutils.h \
+    filedownloadthread.h \
+    curlresult.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui

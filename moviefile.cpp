@@ -90,7 +90,7 @@ void MovieFile::writeAsElement(nw::JsonWriter &jw) const
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
-    return filename.contains(QRegExp("\\.mkv|\\.ogv|\\.mpeg|\\.mp4|\\.webm|\\.avi", Qt::CaseInsensitive));
+    return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$", Qt::CaseInsensitive));
 }
 
 QString MovieFile::releaseGroup() const {

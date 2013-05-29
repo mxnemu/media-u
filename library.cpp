@@ -12,18 +12,7 @@ Library::Library(QString path, QObject *parent) :
 }
 
 void Library::initMalClient(QString malConfigFilepath) {
-    if (QFile(malConfigFilepath).exists()) {
-        std::string user, password;
-
-        nw::JsonReader jr(malConfigFilepath.toStdString());
-        jr.describe("user", user);
-        jr.describe("password", password);
-        jr.close();
-
-        if (user.length() > 0 && password.length() > 0) {
-            qDebug() << "mal connection is " << malClient.setCredentials(QString(user.data()), QString(password.data()));
-        }
-    }
+    malClient.init(malConfigFilepath);
 }
 
 QString Library::randomWallpaperPath() const {
@@ -47,12 +36,20 @@ void Library::importTvShowEpisode(QString episodePath) {
     show.importEpisode(episode);
 }
 
+void Library::fetchMetaData() {
+    if (!malClient.hasValidCredentials()) {
+        return;
+    }
+
+    malClient.fetchShows(tvShows);
+}
+
 void Library::write() {
     if (directory.exists()) {
         nw::JsonWriter jw(directory.absoluteFilePath("library.json").toStdString());
         jw.describeValueArray("tvShows", tvShows.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
-            const TvShow& show = tvShows.at(i);
+            TvShow& show = tvShows[i];
             std::string name = show.name().toStdString();
             jw.describeValue(name);
 
