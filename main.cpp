@@ -15,6 +15,7 @@
 int main(int argc, char *argv[]) {
 
     QApplication a(argc, argv);
+    curl_global_init(CURL_GLOBAL_SSL);
 
     QString configPath;
 
@@ -41,7 +42,6 @@ int main(int argc, char *argv[]) {
     Server s(publicDir.path(), w);
     int port = s.start(config.serverPort());
 
-
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
 
@@ -52,14 +52,10 @@ int main(int argc, char *argv[]) {
     scanner.addScanner(new TvShowScanner(library));
     scanner.scan("/mnt/fields1/torrents/");
     scanner.scan("/media/nehmulos/INTENSO/anime");
-
-    curl_global_init(CURL_GLOBAL_SSL);
-
-
     library.write();
+
     library.initMalClient(config.malConfigFilePath());
     library.fetchMetaData();
-
 
     return a.exec();
 }
