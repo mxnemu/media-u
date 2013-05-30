@@ -1,3 +1,12 @@
 [HEAVY DEVELOPMENT NOT STABLE AND UNFINISHED]
 A Qt media library management program (for TV screens)
 that is ment to be remote controlled via a web interface from a portable device.
+
+# How to Build & run
+- download the git submodules in libs/
+- build each submodule manually (see their respective readmes)
+- cd back to projectroot
+- qmake && make
+- add the LIBPATH entries listed in the .pro file to LD_LIBRARY_PATH
+  alternative: install the libraries to your system's LD_LIBRARY_PATH
+- run the compiled binary with projectroot as workingpath
