@@ -179,8 +179,8 @@ void MalEntry::parse(nw::XmlReader &xr) {
     NwUtils::describe(xr, "episodes", episodes);
     NwUtils::describe(xr, "type", type);
     NwUtils::describe(xr, "status", status);
-    NwUtils::describe(xr, "startDate", startDate);
-    NwUtils::describe(xr, "endDate", endDate);
+    NwUtils::describe(xr, "start_date", startDate);
+    NwUtils::describe(xr, "end_date", endDate);
     NwUtils::describe(xr, "synopsis", synopsis);
     NwUtils::describe(xr, "image", image);
 
