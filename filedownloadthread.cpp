@@ -1,6 +1,5 @@
 #include "filedownloadthread.h"
 #include <curl/curl.h>
-#include <QFile>
 #include <QDebug>
 
 FileDownloadThread::FileDownloadThread(QString url, QString downloadPath) :
@@ -10,36 +9,36 @@ FileDownloadThread::FileDownloadThread(QString url, QString downloadPath) :
 }
 
 void FileDownloadThread::run() {
-    CurlResult result(this);
-    CURL* handle = curlClient(url.toLocal8Bit().data(), result);
-    int error = curl_easy_perform(handle);
-    if (error) {
-        qDebug() << "could not fetch file " << url;
-        deleteLater();
-        return;
-    } else {
-        QFile file(downloadPath);
-        if (file.open(QFile::WriteOnly)) {
-            // TODO use curl write_func to write chunks insead of a whole file
-            // this can alloc a lot of of memory when downloading bigger files;
-            std::string str = result.data.str();
-            file.write(str.data());
-            file.close();
+    QFile file(downloadPath);
+    if (file.open(QFile::WriteOnly)) {
+        CURL* handle = curlClient(url.toLocal8Bit().data(), file);
+        int error = curl_easy_perform(handle);
+        if (error) {
+            qDebug() << "could not fetch file " << url;
         } else {
-            qDebug() << "could not write download to " << downloadPath;
-            deleteLater();
-            return;
+            qDebug() << "finished file-download of " << downloadPath;
         }
+        file.close();
+    } else {
+        qDebug() << "could not write download to " << downloadPath;
     }
-    qDebug() << "finished file-download of " << downloadPath;
     deleteLater();
 }
 
-CURL* FileDownloadThread::curlClient(const char* url, CurlResult& result) {
+CURL* FileDownloadThread::curlClient(const char* url, QFile& file) {
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, url);
-    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
-    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &result);
+    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, FileDownloadThread::write_data);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &file);
     //emit preparedCurl(handle); // TODO fix this to compile
     return handle;
+}
+
+int FileDownloadThread::write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp)
+{
+       QFile* file = static_cast<QFile*>(userp);
+       if (file) {
+           return file->write((const char*)buffer, characterSize*bufferSize);
+       }
+       return 0;
 }

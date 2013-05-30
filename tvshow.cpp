@@ -76,6 +76,10 @@ void TvShow::importEpisode(const MovieFile &episode) {
 void TvShow::downloadImage(const QString url) {
     if (!url.isEmpty() && !url.isNull()) {
         FileDownloadThread* t = new FileDownloadThread(url, directory.absoluteFilePath("cover"));
+        //connect(t, SIGNAL(finished()),
+        //        this, SLOT(posterDownloadFinished()));
+
+        t->start(QThread::LowPriority);
     }
 }
 
