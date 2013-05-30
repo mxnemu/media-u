@@ -1,0 +1,10 @@
+Roadmap:
+-write a qt gui
+-write a remote control gui
+-start mplayer task and terminate it via the remote api
+-download poster images from mal
+-download wallpaper images form some other place
+-compile it on a raspberry pi (only tested on 64bit desktop so far)
+
+Bugs:
+-some strings form MAL are not properly decoded with QUrl::formPercentEncoding
