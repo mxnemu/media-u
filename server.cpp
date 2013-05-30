@@ -22,7 +22,6 @@ int Server::start(int serverPort) {
 
     connect(this->server, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
             this, SLOT(handleRequest(QHttpRequest*, QHttpResponse*)));
-     std::cout << "oh hai" << std::endl;
 
      return port;
 }
