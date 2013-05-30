@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     malclient.cpp \
     nwutils.cpp \
     filedownloadthread.cpp \
-    curlresult.cpp
+    curlresult.cpp \
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -67,7 +68,8 @@ HEADERS  += mainwindow.h \
     malclient.h \
     nwutils.h \
     filedownloadthread.h \
-    curlresult.h
+    curlresult.h \
+    utils.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui

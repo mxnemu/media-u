@@ -11,9 +11,11 @@ public:
     Season(QString name);
     virtual ~Season();
 
-    void writeAsElement(nw::JsonWriter& jw) const;
+    void writeAsElement(nw::JsonWriter& jw);
+    void readAsElement(nw::JsonReader &jr);
 
     void addEpisode(const MovieFile& file);
+    void addEpisode(QString file);
     QString name() const;
 
 private:

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <QFile>
 #include "nwutils.h"
+#include "utils.h"
 
 MalClient::MalClient(QObject *parent) :
     QObject(parent)
@@ -28,9 +29,21 @@ void MalClient::init(QString configFilePath) {
     }
 }
 
-void MalClient::fetchShows(QList<TvShow>showList) {
+void MalClient::fetchShows(QList<TvShow> &showList) {
     MalClientThread* activeThread = new MalClientThread(*this, showList);
     activeThread->start(QThread::LowPriority);
+    qDebug() << "started mal fetchThread";
+
+    connect(activeThread, SIGNAL(finished()),
+            this, SLOT(fetchThreadFinished()));
+}
+
+void MalClient::fetchThreadFinished() {
+    QThread* thread = static_cast<QThread*>(sender());
+    if (thread) {
+        delete thread;
+    }
+    emit fetchingFinished();
 }
 
 void MalClient::fetchShowBlocking(TvShow& show) {
@@ -40,19 +53,21 @@ void MalClient::fetchShowBlocking(TvShow& show) {
     }
 
     QString url = "http://myanimelist.net/api/anime/search.xml?q=";
-    url.append(QUrl::toPercentEncoding(name));
+    //url.append(QUrl::toPercentEncoding(name));
+    url.append(name);
 
     CurlResult userData(this);
     CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
     CURLcode error = curl_easy_perform(handle);
-    if (error) {
-        qDebug() << "received error with this message:\n";
+    if (error || userData.data.str().size() < 2) {
+        qDebug() << "received error" << error << "for query '" << url << "'' with this message:\n";
         userData.print();
     } else {
-        MalEntry entry(userData);
-        entry.updateShowFromEntry(show);
+        MalSearchResult result(userData, name);
+        result.updateShowFromBestEntry(show);
     }
 }
+
 
 
 bool MalClient::setCredentials(const QString name, const QString password) {
@@ -106,7 +121,14 @@ bool MalClient::hasValidCredentials() const {
 }
 
 
-MalClientThread::MalClientThread(MalClient &client, QList<TvShow> shows) :
+
+///////////////////////////////////////////////////////////////////
+//
+// MAL Thread
+//
+//////////////////////////////////////////////////////////////////
+
+MalClientThread::MalClientThread(MalClient &client, QList<TvShow> &shows) :
     malClient(client),
     tvShows(shows)
 {
@@ -116,44 +138,120 @@ MalClientThread::MalClientThread(MalClient &client, QList<TvShow> shows) :
 void MalClientThread::run() {
     for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = it.i->t();
-        malClient.fetchShowBlocking(show);
+        if (show.getRemoteId().isNull() || show.getRemoteId().isEmpty()) {
+            malClient.fetchShowBlocking(show);
+        }
     }
 }
 
+///////////////////////////////////////////////////////////////////
+//
+// MAL ENTRY
+//
+//////////////////////////////////////////////////////////////////
 
-MalEntry::MalEntry(CurlResult &result)
-{
+void MalEntry::calculateQuerySimiliarity(const QString query) {
+    int titleResult = Utils::querySimiliarity(query, title);
+    int englishTitleResult = Utils::querySimiliarity(query, englishTitle);
+
+    int bestResult = titleResult > englishTitleResult ? titleResult : englishTitleResult;
+
+    for (int i=0; i < synonyms.length(); ++i) {
+        const QString& synonym = synonyms.at(i);
+        int result = Utils::querySimiliarity(query, synonym);
+        if (result > bestResult) {
+            bestResult = result;
+        }
+    }
+    querySimiliarityScore = bestResult;
 }
 
-void MalEntry::parse(CurlResult &result) {
-    nw::XmlReader xr(result.data);
-    xr.push("anime");
-    xr.describeArray("", "entry", 0);
-    for (int i=0; xr.enterNextElement(i); ++i) {
-        NwUtils::describe(xr, "id", id);
-        NwUtils::describe(xr, "title", title);
-        NwUtils::describe(xr, "englishTitle", englishTitle);
-        NwUtils::describe(xr, "synonyms", synonyms);
-        NwUtils::describe(xr, "episodes", episodes);
-        NwUtils::describe(xr, "type", type);
-        NwUtils::describe(xr, "status", status);
-        NwUtils::describe(xr, "startDate", startDate);
-        NwUtils::describe(xr, "endDate", endDate);
-        NwUtils::describe(xr, "synopsis", synopsis);
-        NwUtils::describe(xr, "image", image);
-    }
+MalEntry::MalEntry(nw::XmlReader& reader) {
+    parse(reader);
+    querySimiliarityScore = 0;
+}
+
+void MalEntry::parse(nw::XmlReader &xr) {
+    NwUtils::describe(xr, "id", id);
+    NwUtils::describe(xr, "title", title);
+    NwUtils::describe(xr, "englishTitle", englishTitle);
+    this->parseSynonyms(xr);
+    NwUtils::describe(xr, "episodes", episodes);
+    NwUtils::describe(xr, "type", type);
+    NwUtils::describe(xr, "status", status);
+    NwUtils::describe(xr, "startDate", startDate);
+    NwUtils::describe(xr, "endDate", endDate);
+    NwUtils::describe(xr, "synopsis", synopsis);
+    NwUtils::describe(xr, "image", image);
+
+    title = QUrl::fromPercentEncoding(title.toLatin1());
+    image = QUrl::fromPercentEncoding(image.toLatin1());
+    synopsis = QUrl::fromPercentEncoding(synopsis.toLatin1());
+}
+
+
+
+void MalEntry::parseSynonyms(nw::XmlReader &reader) {
+    QString synonyms;
+    NwUtils::describe(reader, "synonyms", synonyms);
+    synonyms = QUrl::fromPercentEncoding(synonyms.toLatin1());
+    this->synonyms = synonyms.split(QRegExp("; "));
 }
 
 QString MalEntry::dateFormat = "yyyy-MM-dd";
 
-void MalEntry::updateShowFromEntry(TvShow &show) {
+void MalEntry::updateShowFromEntry(TvShow &show) const {
     //show.setName();
 //    show.setLongTitle(title);
+    show.setTotalEpisodes(episodes);
     show.setShowType(type);
     show.setAiringStatus(status);
     show.setStartDate(QDate::fromString(startDate, MalEntry::dateFormat));
     show.setEndDate(QDate::fromString(endDate, MalEntry::dateFormat));
     show.setSynopsis(synopsis);
+    show.setRemoteId(id);
+
     show.downloadImage(image);
 }
 
+///////////////////////////////////////////////////////////////////
+//
+// MAL Search result
+//
+//////////////////////////////////////////////////////////////////
+
+MalSearchResult::MalSearchResult(CurlResult &result, QString query) :
+    query(query)
+{
+    parse(result);
+}
+
+void MalSearchResult::parse(CurlResult &result) {
+    std::cout.flush();
+    nw::XmlReader xr(result.data);
+    xr.push("anime");
+    xr.describeArray("", "entry", 0);
+    for (int i=0; xr.enterNextElement(i); ++i) {
+        entries.append(MalEntry(xr));
+        entries.back().calculateQuerySimiliarity(query);
+    }
+    xr.close();
+}
+
+void MalSearchResult::updateShowFromBestEntry(TvShow &show) const {
+    int bestResult = -1;
+    int bestIndex = -1;
+    for (int i=0; i < entries.length(); ++i) {
+        const MalEntry& entry = entries.at(i);
+
+        if (entry.querySimiliarityScore > bestResult) {
+            bestResult = entry.querySimiliarityScore;
+            bestIndex = i;
+        }
+    }
+
+    if (bestIndex >= 0 && bestIndex < entries.length()) {
+        entries.at(bestIndex).updateShowFromEntry(show);
+        qDebug() << "updated " << show.getShowType() << show.name();
+    }
+}

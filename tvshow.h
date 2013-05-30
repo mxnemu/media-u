@@ -14,6 +14,7 @@ public:
 
     Season &season(QString name);
 
+    void read(QDir &dir);
     void write(QDir& dir);
 
     void importEpisode(const MovieFile& episode);
@@ -27,6 +28,7 @@ public:
     int getTotalEpisodes() const;
     QString getSynopsis() const;
     QString getShowType() const;
+    QString getRemoteId() const;
 
     void setSynonyms(const QStringList &value);
     void setAiringStatus(const QString &value);
@@ -35,11 +37,14 @@ public:
     void setTotalEpisodes(int value);
     void setShowType(const QString &value);
     void setSynopsis(const QString &value);
+    void setRemoteId(const QString &value);
 
 private:
+    QDir directory;
     QString mName;
     QList<Season> seasons;
 
+    QString remoteId;
     QStringList synonyms;
     QString showType;
     QString airingStatus;

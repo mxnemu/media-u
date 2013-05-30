@@ -45,6 +45,8 @@ int main(int argc, char *argv[]) {
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
 
+    library.readAll();
+
     // debug scanner
     DirectoryScanner scanner(library);
     scanner.addScanner(new TvShowScanner(library));
@@ -54,8 +56,10 @@ int main(int argc, char *argv[]) {
     curl_global_init(CURL_GLOBAL_SSL);
 
 
-    library.initMalClient(config.malConfigFilePath());
     library.write();
+    library.initMalClient(config.malConfigFilePath());
+    library.fetchMetaData();
+
 
     return a.exec();
 }

@@ -20,12 +20,17 @@ public:
     TvShow& tvShow(QString name);
     void importTvShowEpisode(QString episodePath);
 
+    // Let's hope nobody who knows haskell ever sees this
     void write();
+    void readAll();
 
     void fetchMetaData();
 signals:
     
 public slots:
+
+private slots:
+    void fetchingFinished();
 
 private:
     QDir directory;

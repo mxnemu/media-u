@@ -1,5 +1,5 @@
 #include "library.h"
-#include <N0Slib.h>
+#include "nwutils.h"
 #include <QDebug>
 
 Library::Library(QString path, QObject *parent) :
@@ -42,6 +42,34 @@ void Library::fetchMetaData() {
     }
 
     malClient.fetchShows(tvShows);
+    connect(&malClient, SIGNAL(fetchingFinished()),
+            this, SLOT(fetchingFinished()));
+}
+
+void Library::fetchingFinished() {
+    qDebug() << "finished mal fetching, writing things now";
+    this->write();
+    qDebug() << "writing done!";
+}
+
+void Library::readAll() {
+    if (directory.exists()) {
+        nw::JsonReader jr(directory.absoluteFilePath("library.json").toStdString());
+        jr.describeValueArray("tvShows", tvShows.length());
+        for (int i=0; jr.enterNextElement(i); ++i) {
+            std::string name;
+            jr.describeValue(name);
+            TvShow& show = tvShow(QString(name.data()));
+
+            QDir showDir(directory.absoluteFilePath(show.name()));
+            if (!showDir.exists()) {
+                qDebug() << "show does not have a directory: " << show.name();
+                break;
+            }
+            show.read(showDir);
+        }
+        jr.close();
+    }
 }
 
 void Library::write() {
@@ -55,7 +83,7 @@ void Library::write() {
 
             QDir showDir(directory.absoluteFilePath(show.name()));
             if (!showDir.exists() && !directory.mkdir(show.name())) {
-                // TODOB
+                // TODO
                 qDebug() << "TODO thow error can not write library";
                 break;
             }

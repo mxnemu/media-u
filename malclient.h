@@ -9,7 +9,8 @@
 #include <curl/curl.h>
 #include <QThread>
 #include <tvshow.h>
-#include <filedownloadthread.h>
+#include "filedownloadthread.h"
+#include "nwutils.h"
 
 class MalClient : public QObject
 {
@@ -22,11 +23,13 @@ public:
     //CurlXmlResult curlPerform(const char *url);
     bool hasValidCredentials() const;
 
-    void fetchShows(QList<TvShow> showList);
+    void fetchShows(QList<TvShow>& showList);
     void fetchShowBlocking(TvShow &show);
 signals:
+    void fetchingFinished();
     
 private slots:
+    void fetchThreadFinished();
 
 private:
     CURL *curlClient(const char* url, CurlResult &userdata);
@@ -39,24 +42,30 @@ private:
 
 class MalClientThread : public QThread {
 public:
-    MalClientThread(MalClient& client, QList<TvShow> shows);
+    MalClientThread(MalClient& client, QList<TvShow>& shows);
 
     void run();
 private:
     MalClient& malClient;
-    QList<TvShow> tvShows;
+    QList<TvShow>& tvShows;
 };
 
 class MalEntry {
 public:
-    MalEntry(CurlResult& result);
-    void parse(CurlResult& result);
-    void updateShowFromEntry(TvShow& show);
+    friend class MalSearchResult;
+
+    int querySimiliarityScore; // TODO not here
+    void calculateQuerySimiliarity(const QString query);
+private:
+    MalEntry(nw::XmlReader& reader);
+    void parse(nw::XmlReader& xr);
+    void updateShowFromEntry(TvShow& show) const;
+    void parseSynonyms(nw::XmlReader &reader);
 
     QString id;
     QString title;
     QString englishTitle;
-    QString synonyms;
+    QStringList synonyms;
     int episodes;
     QString type;
     QString status;
@@ -66,6 +75,16 @@ public:
     QString image;
 
     static QString dateFormat;
+};
+
+class MalSearchResult {
+public:
+    MalSearchResult(CurlResult& result, QString query);
+    void parse(CurlResult& result);
+    void updateShowFromBestEntry(TvShow& show) const;
+private:
+    QList<MalEntry> entries;
+    QString query;
 };
 
 

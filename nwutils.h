@@ -1,5 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef NW_UTILS_H
+#define NW_UTILS_H
 
 #include <N0Slib.h>
 #include <QDate>
@@ -41,4 +41,4 @@ public:
     static const QString dateFormat;
 };
 
-#endif // UTILS_H
+#endif // NW_UTILS_H

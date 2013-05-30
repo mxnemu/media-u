@@ -4,6 +4,7 @@
 
 TvShow::TvShow(QString name) {
     this->mName = name;
+    totalEpisodes = 0;
 }
 
 Season& TvShow::season(QString name) {
@@ -16,11 +17,39 @@ Season& TvShow::season(QString name) {
     return this->seasons.back();
 }
 
+void TvShow::read(QDir &dir) {
+    this->directory = QDir(dir);
+
+    nw::JsonReader jr(dir.absoluteFilePath("tvShow.json").toStdString());
+    jr.describeArray("seasons", "season", seasons.length());
+    for (int i=0; jr.enterNextElement(i); ++i) {
+        Season& s = season(QString());
+        s.readAsElement(jr);
+    }
+
+    // TODO remove copy pasta code
+    jr.describeValueArray("synonymes", synonyms.length());
+    for (int i=0; jr.enterNextElement(i); ++i) {
+        std::string s = synonyms.at(i).toStdString();
+        jr.describeValue(s);
+    }
+
+    NwUtils::describe(jr, "remoteId", remoteId);
+    jr.describe("totalEpisodes", totalEpisodes);
+    NwUtils::describe(jr, std::string("airingStatus"), airingStatus);
+    NwUtils::describe(jr, "startDate", startDate);
+    NwUtils::describe(jr, "endDate", endDate);
+    NwUtils::describe(jr, "synopsis", synopsis);
+    jr.close();
+}
+
 void TvShow::write(QDir &dir) {
+    this->directory = QDir(dir);
+
     nw::JsonWriter jw(dir.absoluteFilePath("tvShow.json").toStdString());
     jw.describeArray("seasons", "season", seasons.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
-        const Season& season = seasons.at(i);
+        Season& season = seasons[i];
         season.writeAsElement(jw);
     }
 
@@ -30,11 +59,12 @@ void TvShow::write(QDir &dir) {
         jw.describeValue(s);
     }
 
-    NwUtils::describe(jw, std::string("airingStatus"), airingStatus);
-    NwUtils::describe(jw, "airingStatus", startDate);
-    NwUtils::describe(jw, "airingStatus", endDate);
+    NwUtils::describe(jw, "remoteId", remoteId);
     jw.describe("totalEpisodes", totalEpisodes);
-
+    NwUtils::describe(jw, std::string("airingStatus"), airingStatus);
+    NwUtils::describe(jw, "startDate", startDate);
+    NwUtils::describe(jw, "endDate", endDate);
+    NwUtils::describe(jw, "synopsis", synopsis);
     jw.close();
 }
 
@@ -45,8 +75,7 @@ void TvShow::importEpisode(const MovieFile &episode) {
 
 void TvShow::downloadImage(const QString url) {
     if (!url.isEmpty() && !url.isNull()) {
-        //FileDownloadThread* t = new FileDownloadThread(url, );
-        // TODO implement
+        FileDownloadThread* t = new FileDownloadThread(url, directory.absoluteFilePath("cover"));
     }
 }
 
@@ -122,4 +151,14 @@ QString TvShow::getShowType() const
 void TvShow::setShowType(const QString &value)
 {
     showType = value;
+}
+
+QString TvShow::getRemoteId() const
+{
+    return remoteId;
+}
+
+void TvShow::setRemoteId(const QString &value)
+{
+    remoteId = value;
 }
