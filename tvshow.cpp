@@ -36,7 +36,7 @@ void TvShow::read(QDir &dir) {
 
     NwUtils::describe(jr, "remoteId", remoteId);
     jr.describe("totalEpisodes", totalEpisodes);
-    NwUtils::describe(jr, std::string("airingStatus"), airingStatus);
+    NwUtils::describe(jr, "airingStatus", airingStatus);
     NwUtils::describe(jr, "startDate", startDate);
     NwUtils::describe(jr, "endDate", endDate);
     NwUtils::describe(jr, "synopsis", synopsis);
