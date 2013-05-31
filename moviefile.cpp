@@ -17,12 +17,22 @@ QString MovieFile::path() const {
 
 void MovieFile::setPath(QString path) {
     mPath = path;
-    path = QFileInfo(path).fileName();
+    path = QFileInfo(path).completeBaseName();
 
-    if (!path.contains(' ')) {
+    int spaces = path.count(' ');
+    if (path.count('_') > spaces) {
         path.replace('_', ' ');
+    }
+    if (path.count('.') > spaces) {
         path.replace('.', ' ');
     }
+
+    /*
+    // TODO match only from latest dot. Now-workaround: match after . replace
+    QRegExp extensionRegex("(\\..+$)");
+    int extensionIndex = extensionRegex.indexIn(path);
+    path.remove(extensionIndex, extensionRegex.cap(1).length());
+    */
 
     int groupIndex = -2;
     while (groupIndex != -1) {
@@ -71,7 +81,11 @@ void MovieFile::setPath(QString path) {
     }
 
     QRegExp regexEpisode("("
-        "\\s[0-9]+((v|\\.)[0-9]+)?\\s|"
+        "\\s[0-9]+((v|\\.)[0-9]+)?(\\s|$)|"
+        "\\s[0-9]+(\\[v[0-9]+\\])(\\s|$)|"
+        "[0-9]+x[0-9]+|"
+        "\\sED(\\s|$)|"
+        "\\sOP(\\s|$)|"
         "ED[0-9]+|"
         "OP[0-9]+[a-z]?|"
         "SP[0-9]+|"
@@ -99,11 +113,14 @@ void MovieFile::setPath(QString path) {
 
     // TODO check for shows with a [0-9]+ ending and just 1 episode to avoid some false positives
     if (mEpisodeNumber.isEmpty() || mEpisodeNumber.isNull()) {
-        QRegExp regexNumberAfterShowName("(\\s[0-9]+\\s?)$");
-        int epIndex = regexNumberAfterShowName.indexIn(mShowName);
+        //QRegExp regexNumberAfterShowName("(\\s[0-9]+\\s?)$");
+        //int epIndex = regexNumberAfterShowName.indexIn(mShowName);
+        int epIndex = regexEpisode.indexIn(mShowName);
+        // TODO check all caps for the longest
         if (epIndex != -1) {
-            mEpisodeNumber = regexNumberAfterShowName.cap(1).trimmed();
-            mShowName.remove(epIndex, regexNumberAfterShowName.cap(1).length());
+            mEpisodeNumber = regexEpisode.cap(1).trimmed();
+            mShowName.remove(epIndex, regexEpisode.cap(1).length());
+            mShowName.replace("  ", " ");
         }
     }
 }
