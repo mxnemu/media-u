@@ -20,7 +20,9 @@ public:
     TvShow& tvShow(QString name);
     void importTvShowEpisode(QString episodePath);
 
-    // Let's hope nobody who knows haskell ever sees this
+
+    QList<const TvShow *> airingShows() const;
+
     void write();
     void readAll();
 

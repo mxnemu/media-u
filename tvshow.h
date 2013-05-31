@@ -20,6 +20,8 @@ public:
     void importEpisode(const MovieFile& episode);
     void downloadImage(const QString url);
 
+    bool isAiring() const;
+
     QString name() const;
     QStringList getSynonyms() const;
     QString getAiringStatus() const;

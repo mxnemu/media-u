@@ -83,6 +83,10 @@ void TvShow::downloadImage(const QString url) {
     }
 }
 
+bool TvShow::isAiring() const {
+    return !airingStatus.isEmpty() && airingStatus.startsWith("Currently");
+}
+
 QString TvShow::name() const {
     return mName;
 }

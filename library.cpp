@@ -36,6 +36,17 @@ void Library::importTvShowEpisode(QString episodePath) {
     show.importEpisode(episode);
 }
 
+QList<const TvShow *> Library::airingShows() const {
+    QList<const TvShow*> filteredList;
+    for (int i=0; i < tvShows.length(); ++i) {
+        const TvShow& show = tvShows.at(i);
+        if (show.isAiring()) {
+            filteredList.append(&show);
+        }
+    }
+    return filteredList;
+}
+
 void Library::fetchMetaData() {
     if (!malClient.hasValidCredentials()) {
         return;

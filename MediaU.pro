@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     nwutils.cpp \
     filedownloadthread.cpp \
     curlresult.cpp \
-    utils.cpp
+    utils.cpp \
+    tvshowlistwidget.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -69,7 +70,9 @@ HEADERS  += mainwindow.h \
     nwutils.h \
     filedownloadthread.h \
     curlresult.h \
-    utils.h
+    utils.h \
+    tvshowlistwidget.h
 
 FORMS    += mainwindow.ui \
-    mainpage.ui
+    mainpage.ui \
+    tvshowlistwidget.ui
