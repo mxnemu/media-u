@@ -120,7 +120,7 @@ void MovieFile::setPath(QString path) {
         if (epIndex != -1) {
             mEpisodeNumber = regexEpisode.cap(1).trimmed();
             mShowName.remove(epIndex, regexEpisode.cap(1).length());
-            mShowName.replace("  ", " ");
+            mShowName.replace("  ", " "); // TODO split string and put things after the epNum into epName
         }
     }
 }
