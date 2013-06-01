@@ -20,7 +20,7 @@ QString SystemUtils::fileMime(const QString filepath) {
         return QString();
     }
     while (fgets(mimeBuffer, sizeof(mimeBuffer)-1, fp) != NULL) {
-        printf("mime: %s\n", mimeBuffer);
+        //printf("mime: %s\n", mimeBuffer);
         return mimeBuffer;
     }
     return mimeBuffer;
