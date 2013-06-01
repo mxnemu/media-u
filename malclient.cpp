@@ -78,14 +78,14 @@ bool MalClient::setCredentials(const QString name, const QString password) {
     CURL* handle = curlClient("http://myanimelist.net/api/account/verify_credentials.xml", userData);
     CURLcode error = curl_easy_perform(handle);
     if (error) {
-        qDebug() << "received error with this message:\n";
+        qDebug() << "received error " << error << " with this message:\n";
         userData.print();
-    }
-
-    if (userData.data.str() == "Invalid credentials") {
-        mHasValidCredentials = false;
     } else {
-        mHasValidCredentials = true;
+        if (userData.data.str() == "Invalid credentials") {
+            mHasValidCredentials = false;
+        } else {
+            mHasValidCredentials = true;
+        }
     }
 
     curl_easy_cleanup(handle);
