@@ -41,6 +41,10 @@ Application.prototype.setPage = function(page) {
     }
 }
 
+Application.prototype.setBackground = function(img) {
+    $(".page").css("background-image:" + img);
+}
+
 $(function() {
     window.G = {
         app: new Application()

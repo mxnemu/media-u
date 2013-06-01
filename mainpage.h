@@ -20,6 +20,8 @@ public:
     
 private:
     Ui::MainPage *ui;
+    Library& library;
+    QList<const TvShow*> airingShows;
 };
 
 #endif // MAINPAGE_H
