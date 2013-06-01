@@ -34,6 +34,8 @@ int main(int argc, char *argv[]) {
     Config config(configPath);
 
     Library library(config.libraryPath());
+    library.readAll();
+
     MainWindow w(library);
     w.show();
 
@@ -45,14 +47,12 @@ int main(int argc, char *argv[]) {
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
 
-    library.readAll();
-
     // debug scanner
     DirectoryScanner scanner(library);
     scanner.addScanner(new TvShowScanner(library));
     scanner.scan("/mnt/fields1/torrents/");
     scanner.scan("/media/nehmulos/INTENSO/anime");
-    library.write();
+   //library.write();
 
     library.initMalClient(config.malConfigFilePath());
     library.fetchMetaData();
