@@ -1,5 +1,7 @@
 #include "filedownloadthread.h"
 #include <curl/curl.h>
+#include <QFileInfo>
+#include <QDir>
 #include <QDebug>
 
 FileDownloadThread::FileDownloadThread(QString url, QString downloadPath) :
@@ -9,6 +11,15 @@ FileDownloadThread::FileDownloadThread(QString url, QString downloadPath) :
 }
 
 void FileDownloadThread::run() {
+    QDir dir = QFileInfo(downloadPath).absoluteDir();
+    if (!dir.exists()) {
+        if (!QDir::root().mkpath(dir.absolutePath())) {
+            qDebug() << "could not create director for fileDownload" << dir.absolutePath();
+            deleteLater();
+            return;
+        }
+    }
+
     QFile file(downloadPath);
     if (file.open(QFile::WriteOnly)) {
         CURL* handle = curlClient(url.toLocal8Bit().data(), file);
