@@ -27,8 +27,6 @@ int Server::start(int serverPort) {
 }
 
 void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
-    std::cout << "Connection" << std::endl;
-
     if (req->path().contains(QRegExp("^\\/api\\/"))) {
         if (!handleApiRequest(req, resp)) {
             simpleWrite(resp, 405, "Api request not supported. Maybe a typo");
@@ -53,7 +51,7 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     } else if (path.startsWith("/api/airingTvShows")) {
         //simpleWrite(window.getLibrary().airingShowsJson());
         //return true;
-    } else if (window.activePage()) {
+    } else if (path.startsWith("/api/page/") && window.activePage()) {
         return window.activePage()->handleApiRequest(req, resp);
     }
     return false;
@@ -72,7 +70,6 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
         }
         filePath = this->publicDirectory.absoluteFilePath(path);
     }
-    std::cout << filePath.toStdString() << std::endl;
 
 
     if (!filePath.startsWith(this->publicDirectory.absolutePath())) {
