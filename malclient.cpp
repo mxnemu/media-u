@@ -24,7 +24,8 @@ void MalClient::init(QString configFilePath) {
         jr.close();
 
         if (user.length() > 0 && password.length() > 0) {
-            qDebug() << "mal connection is " << this->setCredentials(QString(user.data()), QString(password.data()));
+            //qDebug() << "mal connection is " << this->setCredentials(QString(user.data()), QString(password.data()));
+            this->setCredentials(QString(user.data()), QString(password.data()));
         }
     }
 }
@@ -70,9 +71,15 @@ void MalClient::fetchShowBlocking(TvShow& show) {
 
 
 
-bool MalClient::setCredentials(const QString name, const QString password) {
+void MalClient::setCredentials(const QString name, const QString password) {
     this->username = name;
     this->password = password;
+}
+
+bool MalClient::verifyCredentials() {
+    if (username.length() <= 0 || password.length() <= 0) {
+        return false;
+    }
 
     CurlResult userData(this);
     CURL* handle = curlClient("http://myanimelist.net/api/account/verify_credentials.xml", userData);
@@ -88,6 +95,7 @@ bool MalClient::setCredentials(const QString name, const QString password) {
         }
     }
 
+    qDebug() << "mal connection is " << mHasValidCredentials;
     curl_easy_cleanup(handle);
     return mHasValidCredentials;
 }
@@ -136,6 +144,11 @@ MalClientThread::MalClientThread(MalClient &client, QList<TvShow> &shows) :
 }
 
 void MalClientThread::run() {
+    if (!malClient.hasValidCredentials() && !malClient.verifyCredentials()) {
+        qDebug() << "can't fetch data, no valid login credentials";
+        return;
+    }
+
     for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = it.i->t();
         if (show.getRemoteId().isNull() || show.getRemoteId().isEmpty()) {

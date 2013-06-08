@@ -120,7 +120,14 @@ void MovieFile::setPath(QString path) {
         if (epIndex != -1) {
             mEpisodeNumber = regexEpisode.cap(1).trimmed();
             mShowName.remove(epIndex, regexEpisode.cap(1).length());
-            mShowName.replace("  ", " "); // TODO split string and put things after the epNum into epName
+
+            QRegExp regexEpName("[^\\s]+");
+            int epNameIndex = regexEpName.indexIn(mShowName, epIndex);
+            if (epNameIndex != -1) {
+                mEpisodeName = regexEpName.cap(1).trimmed();
+                mShowName.remove(epIndex, regexEpName.cap(1).length());
+            }
+            mShowName = mShowName.trimmed();
         }
     }
 }

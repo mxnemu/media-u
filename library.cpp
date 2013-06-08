@@ -43,10 +43,6 @@ void Library::importTvShowEpisode(QString episodePath) {
 }
 
 void Library::fetchMetaData() {
-    if (!malClient.hasValidCredentials()) {
-        return;
-    }
-
     malClient.fetchShows(tvShows);
     connect(&malClient, SIGNAL(fetchingFinished()),
             this, SLOT(fetchingFinished()));
