@@ -18,7 +18,6 @@ Season& TvShow::season(QString name) {
 }
 
 void TvShow::read(QDir &dir) {
-    this->directory = QDir(dir);
 
     nw::JsonReader jr(dir.absoluteFilePath("tvShow.json").toStdString());
     jr.describeArray("seasons", "season", seasons.length());
@@ -44,7 +43,6 @@ void TvShow::read(QDir &dir) {
 }
 
 void TvShow::write(QDir &dir) {
-    this->directory = QDir(dir);
 
     nw::JsonWriter jw(dir.absoluteFilePath("tvShow.json").toStdString());
     jw.describeArray("seasons", "season", seasons.length());
@@ -73,9 +71,9 @@ void TvShow::importEpisode(const MovieFile &episode) {
     season.addEpisode(episode);
 }
 
-void TvShow::downloadImage(const QString url) {
+void TvShow::downloadImage(const QString url, QDir libraryDirectory) {
     if (!url.isEmpty() && !url.isNull()) {
-        FileDownloadThread* t = new FileDownloadThread(url, directory.absoluteFilePath("cover"));
+        FileDownloadThread* t = new FileDownloadThread(url, directory(libraryDirectory).absoluteFilePath("cover"));
         //connect(t, SIGNAL(finished()),
         //        this, SLOT(posterDownloadFinished()));
 
@@ -85,6 +83,14 @@ void TvShow::downloadImage(const QString url) {
 
 bool TvShow::isAiring() const {
     return !airingStatus.isEmpty() && airingStatus.startsWith("Currently");
+}
+
+QDir TvShow::directory(QDir libraryDirectory) const {
+    return QDir(libraryDirectory.absoluteFilePath(this->name()));
+}
+
+QString TvShow::coverPath(QDir libaryPath) const {
+    return this->directory(libaryPath).absoluteFilePath("cover");
 }
 
 QString TvShow::name() const {

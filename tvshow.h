@@ -18,9 +18,10 @@ public:
     void write(QDir& dir);
 
     void importEpisode(const MovieFile& episode);
-    void downloadImage(const QString url);
+    void downloadImage(const QString url, QDir libraryDirectory);
 
     bool isAiring() const;
+    QString coverPath(QDir libaryPath) const;
 
     QString name() const;
     QStringList getSynonyms() const;
@@ -41,8 +42,9 @@ public:
     void setSynopsis(const QString &value);
     void setRemoteId(const QString &value);
 
+    QDir directory(QDir libraryDirectory) const;
 private:
-    QDir directory;
+
     QString mName;
     QList<Season> seasons;
 

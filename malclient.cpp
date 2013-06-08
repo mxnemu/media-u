@@ -30,8 +30,8 @@ void MalClient::init(QString configFilePath) {
     }
 }
 
-void MalClient::fetchShows(QList<TvShow> &showList) {
-    MalClientThread* activeThread = new MalClientThread(*this, showList);
+void MalClient::fetchShows(QList<TvShow> &showList, QDir libraryDir) {
+    MalClientThread* activeThread = new MalClientThread(*this, showList, libraryDir);
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
 
@@ -47,7 +47,7 @@ void MalClient::fetchThreadFinished() {
     emit fetchingFinished();
 }
 
-void MalClient::fetchShowBlocking(TvShow& show) {
+void MalClient::fetchShowBlocking(TvShow& show, QDir libraryDir) {
     QString name = show.name();
     if (name.isEmpty() || name.isNull()) {
         return;
@@ -65,7 +65,7 @@ void MalClient::fetchShowBlocking(TvShow& show) {
         userData.print();
     } else {
         MalSearchResult result(userData, name);
-        result.updateShowFromBestEntry(show);
+        result.updateShowFromBestEntry(show, libraryDir);
     }
 }
 
@@ -136,9 +136,10 @@ bool MalClient::hasValidCredentials() const {
 //
 //////////////////////////////////////////////////////////////////
 
-MalClientThread::MalClientThread(MalClient &client, QList<TvShow> &shows) :
+MalClientThread::MalClientThread(MalClient &client, QList<TvShow> &shows, QDir libraryDir) :
     malClient(client),
-    tvShows(shows)
+    tvShows(shows),
+    libraryDir(libraryDir)
 {
 
 }
@@ -152,7 +153,7 @@ void MalClientThread::run() {
     for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = it.i->t();
         if (show.getRemoteId().isNull() || show.getRemoteId().isEmpty()) {
-            malClient.fetchShowBlocking(show);
+            malClient.fetchShowBlocking(show, libraryDir);
         }
     }
 }
@@ -213,7 +214,7 @@ void MalEntry::parseSynonyms(nw::XmlReader &reader) {
 
 QString MalEntry::dateFormat = "yyyy-MM-dd";
 
-void MalEntry::updateShowFromEntry(TvShow &show) const {
+void MalEntry::updateShowFromEntry(TvShow &show, QDir libraryDir) const {
     //show.setName();
 //    show.setLongTitle(title);
     show.setTotalEpisodes(episodes);
@@ -224,7 +225,7 @@ void MalEntry::updateShowFromEntry(TvShow &show) const {
     show.setSynopsis(synopsis);
     show.setRemoteId(id);
 
-    show.downloadImage(image);
+    show.downloadImage(image, libraryDir);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -251,7 +252,7 @@ void MalSearchResult::parse(CurlResult &result) {
     xr.close();
 }
 
-void MalSearchResult::updateShowFromBestEntry(TvShow &show) const {
+void MalSearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const {
     int bestResult = -1;
     int bestIndex = -1;
     for (int i=0; i < entries.length(); ++i) {
@@ -264,7 +265,7 @@ void MalSearchResult::updateShowFromBestEntry(TvShow &show) const {
     }
 
     if (bestIndex >= 0 && bestIndex < entries.length()) {
-        entries.at(bestIndex).updateShowFromEntry(show);
+        entries.at(bestIndex).updateShowFromEntry(show, libraryDir);
         qDebug() << "updated " << show.getShowType() << show.name();
     }
 }

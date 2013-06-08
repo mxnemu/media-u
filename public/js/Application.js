@@ -17,7 +17,8 @@ Application.prototype.setScreenFromLocationHash = function()
     } else {
         $.getJSON("api/activePage", function(data) {
             if (self.pageList[data.page]) {
-                self.setPage(new self.pageList[data.page]);
+                //self.setPage(new self.pageList[data.page]);
+                self.setPage(new StartPage());
             } else {
                 self.setPage(new StartPage());
             }

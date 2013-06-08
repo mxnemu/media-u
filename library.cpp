@@ -52,7 +52,7 @@ void Library::importTvShowEpisode(QString episodePath) {
 }
 
 void Library::fetchMetaData() {
-    malClient.fetchShows(tvShows);
+    malClient.fetchShows(tvShows, directory);
     connect(&malClient, SIGNAL(fetchingFinished()),
             this, SLOT(fetchingFinished()));
 }
@@ -103,3 +103,9 @@ void Library::write() {
         jw.close();
     }
 }
+
+QDir Library::getDirectory() const
+{
+    return directory;
+}
+

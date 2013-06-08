@@ -27,6 +27,8 @@ public:
     void readAll();
 
     void fetchMetaData();
+    QDir getDirectory() const;
+
 signals:
     
 public slots:

@@ -24,8 +24,8 @@ public:
     //CurlXmlResult curlPerform(const char *url);
     bool hasValidCredentials() const;
 
-    void fetchShows(QList<TvShow>& showList);
-    void fetchShowBlocking(TvShow &show);
+    void fetchShows(QList<TvShow>& showList, QDir libraryDir);
+    void fetchShowBlocking(TvShow &show, QDir libraryDir);
 signals:
     void fetchingFinished();
     
@@ -43,12 +43,13 @@ private:
 
 class MalClientThread : public QThread {
 public:
-    MalClientThread(MalClient& client, QList<TvShow>& shows);
+    MalClientThread(MalClient& client, QList<TvShow>& shows, QDir libraryDir);
 
     void run();
 private:
     MalClient& malClient;
     QList<TvShow>& tvShows;
+    QDir libraryDir;
 };
 
 class MalEntry {
@@ -60,7 +61,7 @@ public:
 private:
     MalEntry(nw::XmlReader& reader);
     void parse(nw::XmlReader& xr);
-    void updateShowFromEntry(TvShow& show) const;
+    void updateShowFromEntry(TvShow& show, QDir libraryDir) const;
     void parseSynonyms(nw::XmlReader &reader);
 
     QString id;
@@ -82,7 +83,7 @@ class MalSearchResult {
 public:
     MalSearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);
-    void updateShowFromBestEntry(TvShow& show) const;
+    void updateShowFromBestEntry(TvShow& show, QDir libraryDir) const;
 private:
     QList<MalEntry> entries;
     QString query;
