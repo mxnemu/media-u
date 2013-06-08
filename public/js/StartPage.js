@@ -1,5 +1,4 @@
 function StartPage() {
-    
 }
 
 StartPage.prototype.fetchInfos = function(callback) {
@@ -14,6 +13,8 @@ StartPage.prototype.fetchInfos = function(callback) {
     $.getJSON("api/page/lists", function(data) {
         this.lists = data;
         onFetched();
+    }).error(function(err, reason, dat, m) {
+        console.error(err, reason, dat, m);
     });
     $.getJSON("api/page/background", function(data) {
         console.log("got a bg pic:" + data.image);
