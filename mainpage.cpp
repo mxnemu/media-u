@@ -15,7 +15,8 @@ MainPage::MainPage(Library& library, QWidget *parent) :
 
     // TODO update ui
     //this->ui->currentlyAiringShows = new TvShowListWidget();
-    this->airingShows = library.filter().all();
+    this->airingShows = library.filter().airing();
+    this->allShows = library.filter().all();
     dynamic_cast<TvShowListWidget*>(this->ui->currentlyAiringShows)->set(airingShows, QString("Airing Shows"));
 }
 
@@ -29,12 +30,20 @@ bool MainPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
     if (req->path().startsWith("/api/page/lists")) {
         std::stringstream ss;
         nw::JsonWriter jw(ss);
-        jw.describeArray("lists", "", airingShows.length());
+        jw.push("lists");
+        jw.describeArray("airing", "show", airingShows.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
             TvShow* show = airingShows.at(i);
             std::string name = show->name().toStdString();
             jw.describe("name", name);
         }
+        jw.describeArray("all", "show", allShows.length());
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            TvShow* show = allShows.at(i);
+            std::string name = show->name().toStdString();
+            jw.describe("name", name);
+        }
+        jw.pop();
         jw.close();
         Server::simpleWrite(resp, 200, ss.str().data());
         qDebug() << "resp on lists" << ss.str().data();

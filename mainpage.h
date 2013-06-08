@@ -22,6 +22,7 @@ private:
     Ui::MainPage *ui;
     Library& library;
     QList<TvShow*> airingShows;
+    QList<TvShow*> allShows;
 };
 
 #endif // MAINPAGE_H
