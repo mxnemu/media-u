@@ -21,7 +21,7 @@ QString Library::randomWallpaperPath() const {
     return QString("/home/nehmulos/Downloads/test-wall.jpg");
 }
 
-TvShow& Library::tvShow(QString name) {
+TvShow& Library::tvShow(const QString name) {
     for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         if (it->name() == name) {
             return it.i->t();
@@ -29,6 +29,15 @@ TvShow& Library::tvShow(QString name) {
     }
     this->tvShows.push_back(TvShow(name));
     return this->tvShows.back();
+}
+
+TvShow* Library::existingTvShow(const QString name) {
+    for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
+        if (it->name() == name) {
+            return &it.i->t();
+        }
+    }
+    return NULL;
 }
 
 LibraryFilter &Library::filter()

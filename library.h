@@ -18,7 +18,8 @@ public:
 
     QString randomWallpaperPath() const;
 
-    TvShow& tvShow(QString name);
+    TvShow& tvShow(const QString name);
+    TvShow* existingTvShow(const QString name);
     LibraryFilter& filter();
     void importTvShowEpisode(QString episodePath);
 

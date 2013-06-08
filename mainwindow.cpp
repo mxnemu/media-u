@@ -18,7 +18,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setPage(const QString& pageName)
+void MainWindow::setPage(const QString& pageName, const QString& initString)
 {
     std::cout << "setpage " << pageName.toStdString() << std::endl;
     if (page) {
@@ -26,11 +26,17 @@ void MainWindow::setPage(const QString& pageName)
     }
     page = pageFactory.pageForKey(pageName);
     if (page) {
+        page->initFromQuery(initString);
         this->ui->verticalLayout->addWidget(page);
         this->pageId = pageName;
     } else {
         this->page = NULL;
     }
+}
+
+void MainWindow::setPage(const QString &pageName)
+{
+    setPage(pageName, QString());
 }
 
 QString MainWindow::activePageId() {

@@ -18,6 +18,7 @@ public:
     explicit MainWindow(Library& library, QWidget *parent = 0);
     ~MainWindow();
 
+    void setPage(const QString& pageName, const QString &initString);
     void setPage(const QString& pageName);
     QString activePageId();
     Page* activePage();

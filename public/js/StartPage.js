@@ -1,4 +1,5 @@
 function StartPage() {
+    this.updateFocus = true;
 }
 
 StartPage.prototype.fetchInfos = function(callback) {
@@ -34,12 +35,12 @@ StartPage.prototype.createNodes = function() {
 }
 
 StartPage.prototype.createLists = function(page) {
+    var self = this;
     for (var listName in this.lists) {
         var list = this.lists[listName];
         if (list.length <= 0) {
             continue;
         }
-        
         var listNode = $("<div class='showList list'></div>");
         var listHead = $("<div class='headline'></div>");
         var items = $("<ul></ul>");
@@ -50,6 +51,19 @@ StartPage.prototype.createLists = function(page) {
             var show = this;
             var item = $("<li></li>");
             item.text(this.name);
+            item.mousemove(function() {
+                if (self.updateFocus && !$(this).hasClass("focused")) {
+                    $("li").removeClass("focused");
+                    $(this).addClass("focused");
+                    $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
+                        console.log("setPage");
+                    });
+                }
+            });
+            item.click(function() {
+                self.updateFocus = false;
+                console.log("should change to showPage TODO impl");
+            });
             listNode.append(item);
         });
         page.append(listNode);

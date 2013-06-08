@@ -12,6 +12,7 @@ public:
     explicit Page(QWidget *parent = 0);
 
     virtual bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp) = 0;
+    virtual void initFromQuery(const QString& initString);
     
 signals:
     

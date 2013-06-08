@@ -38,12 +38,14 @@ void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
 
 bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     QString path = req->path();
-    if (path.startsWith(QString("/api/changePage"))) {
-        QString pageName = req->url().toString();
-        QRegExp regex("\\?(.+)$");
-        regex.indexIn(pageName);
-        window.setPage(regex.cap(1));
-        simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(regex.cap(1)));
+    if (path.startsWith(QString("/api/setPage/"))) {
+        //QRegExp regex("\\?(.+)$");
+        QString pageName = QFileInfo(req->path()).fileName();
+
+        qDebug() << "set page " << pageName << " with q"  << req->url().query();
+
+        window.setPage(pageName, req->url().query());
+        simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(pageName));
         return true;
     } else if (path.startsWith("/api/activePage")) {
         simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()));

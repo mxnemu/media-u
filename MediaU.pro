@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     curlresult.cpp \
     utils.cpp \
     tvshowlistwidget.cpp \
-    libraryfilter.cpp
+    libraryfilter.cpp \
+    tvshowpage.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -73,8 +74,10 @@ HEADERS  += mainwindow.h \
     curlresult.h \
     utils.h \
     tvshowlistwidget.h \
-    libraryfilter.h
+    libraryfilter.h \
+    tvshowpage.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \
-    tvshowlistwidget.ui
+    tvshowlistwidget.ui \
+    tvshowpage.ui

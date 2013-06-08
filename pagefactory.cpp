@@ -1,5 +1,6 @@
 #include "pagefactory.h"
 #include "mainpage.h"
+#include "tvshowpage.h"
 
 PageFactory::PageFactory(Library &library) : library(library)
 {
@@ -15,7 +16,7 @@ Page* PageFactory::pageForKey(const QString &key) {
     } else if (key == PageFactory::tvShowsPageKey) {
 
     } else if (key == PageFactory::tvShowPageKey) {
-
+        return new TvShowPage(library);
     }
     return new MainPage(library);
 }
