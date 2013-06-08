@@ -26,4 +26,6 @@ void TvShowListWidget::set(QList<TvShow*> showList, QString title) {
     if (!title.isNull()) {
         this->ui->titleLabel->setText(title);
     }
+    this->ui->treeWidget->sortByColumn(0, Qt::AscendingOrder);
+    this->ui->treeWidget->resizeColumnToContents(0);
 }
