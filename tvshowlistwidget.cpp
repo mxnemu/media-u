@@ -13,7 +13,7 @@ TvShowListWidget::~TvShowListWidget()
     delete ui;
 }
 
-void TvShowListWidget::set(QList<const TvShow*> showList, QString title) {
+void TvShowListWidget::set(QList<TvShow*> showList, QString title) {
     this->ui->treeWidget->clear();
     for (int i=0; i < showList.length(); ++i) {
         const TvShow* show = showList.at(i);

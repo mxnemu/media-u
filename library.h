@@ -7,6 +7,7 @@
 #include "tvshow.h"
 #include "moviefile.h"
 #include "malclient.h"
+#include "libraryfilter.h"
 
 class Library : public QObject
 {
@@ -18,10 +19,8 @@ public:
     QString randomWallpaperPath() const;
 
     TvShow& tvShow(QString name);
+    LibraryFilter& filter();
     void importTvShowEpisode(QString episodePath);
-
-
-    QList<const TvShow *> airingShows() const;
 
     void write();
     void readAll();
@@ -39,6 +38,7 @@ private:
     QList<TvShow> tvShows;
     QList<MovieFile> movies;
     MalClient malClient;
+    LibraryFilter mFilter;
 };
 
 #endif // LIBRARY_H

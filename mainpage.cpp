@@ -15,7 +15,7 @@ MainPage::MainPage(Library& library, QWidget *parent) :
 
     // TODO update ui
     //this->ui->currentlyAiringShows = new TvShowListWidget();
-    this->airingShows = library.airingShows();
+    this->airingShows = library.filter().all();
     dynamic_cast<TvShowListWidget*>(this->ui->currentlyAiringShows)->set(airingShows, QString("Airing Shows"));
 }
 

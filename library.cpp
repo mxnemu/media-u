@@ -4,7 +4,8 @@
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
-    directory(path)
+    directory(path),
+    mFilter(tvShows)
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
@@ -30,21 +31,15 @@ TvShow& Library::tvShow(QString name) {
     return this->tvShows.back();
 }
 
+LibraryFilter &Library::filter()
+{
+    return mFilter;
+}
+
 void Library::importTvShowEpisode(QString episodePath) {
     MovieFile episode(episodePath);
     TvShow& show = this->tvShow(episode.showName());
     show.importEpisode(episode);
-}
-
-QList<const TvShow *> Library::airingShows() const {
-    QList<const TvShow*> filteredList;
-    for (int i=0; i < tvShows.length(); ++i) {
-        const TvShow& show = tvShows.at(i);
-        if (show.isAiring()) {
-            filteredList.append(&show);
-        }
-    }
-    return filteredList;
 }
 
 void Library::fetchMetaData() {
