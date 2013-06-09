@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     library.fetchMetaData();
 
     // time to die
-    library.downloadWallpapers();
+    //library.downloadWallpapers();
 
     return a.exec();
 }
