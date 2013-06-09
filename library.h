@@ -7,6 +7,7 @@
 #include "tvshow.h"
 #include "moviefile.h"
 #include "malclient.h"
+#include "moebooruclient.h"
 #include "libraryfilter.h"
 
 class Library : public QObject
@@ -29,6 +30,7 @@ public:
     void fetchMetaData();
     QDir getDirectory() const;
 
+    void downloadWallpapers();
 signals:
     
 public slots:
@@ -42,6 +44,8 @@ private:
     QList<MovieFile> movies;
     MalClient malClient;
     LibraryFilter mFilter;
+    Moebooru::Client konachanClient;
+    Moebooru::Client yandereClient;
 };
 
 #endif // LIBRARY_H

@@ -1,6 +1,8 @@
 #include "tvshow.h"
 #include "nwutils.h"
 #include "filedownloadthread.h"
+#include "directoryscanner.h"
+#include "filefilterscanner.h"
 
 TvShow::TvShow(QString name) {
     this->mName = name;
@@ -87,6 +89,32 @@ bool TvShow::isAiring() const {
 
 QDir TvShow::directory(QDir libraryDirectory) const {
     return QDir(libraryDirectory.absoluteFilePath(this->name()));
+}
+
+QDir TvShow::wallpaperDirectory(QDir libraryDirectory) const {
+    return directory(libraryDirectory).absoluteFilePath("wallpapers");
+}
+
+int TvShow::numberOfWallpapers(QDir libraryDirectory) const {
+    return wallpapers(libraryDirectory).length();
+}
+
+QString TvShow::randomWallpaper(QDir libraryDirectory) const
+{
+    QStringList walls = wallpapers(libraryDirectory);
+    int randomIndex = rand() % walls.length();
+    if (randomIndex < walls.length()) {
+        return walls.at(randomIndex);
+    }
+    return QString();
+}
+
+QStringList TvShow::wallpapers(QDir libraryDirectory) const {
+    DirectoryScanner ds;
+    FileFilterScanner* ffs = new FileFilterScanner(QRegExp(".*"));
+    ds.addScanner(ffs); // will delete
+    ds.scan(wallpaperDirectory(libraryDirectory).absolutePath());
+    return ffs->getMatchedFiles();
 }
 
 QString TvShow::coverPath(QDir libaryPath) const {

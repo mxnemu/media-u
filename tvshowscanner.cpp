@@ -2,7 +2,7 @@
 #include "moviefile.h"
 #include <iostream>
 
-TvShowScanner::TvShowScanner(Library& library) : MediaScanner(library)
+TvShowScanner::TvShowScanner(Library& library) : MediaScanner(), library(library)
 {
 }
 

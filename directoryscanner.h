@@ -8,7 +8,7 @@
 class DirectoryScanner
 {
 public:
-    DirectoryScanner(Library &library);
+    DirectoryScanner();
     virtual ~DirectoryScanner();
     void addScanner(MediaScanner* scanner);
 
@@ -16,7 +16,7 @@ public:
     void scan(const QString& path, QStringList& handledDirs, const QString& rootPath);
     void scanFiles(const QStringList &files);
 private:
-    Library& library;
+
     QList<MediaScanner*> mediaScanners;
 };
 

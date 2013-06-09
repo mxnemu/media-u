@@ -52,7 +52,9 @@ SOURCES += main.cpp\
     utils.cpp \
     tvshowlistwidget.cpp \
     libraryfilter.cpp \
-    tvshowpage.cpp
+    tvshowpage.cpp \
+    moebooruclient.cpp \
+    filefilterscanner.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -75,7 +77,9 @@ HEADERS  += mainwindow.h \
     utils.h \
     tvshowlistwidget.h \
     libraryfilter.h \
-    tvshowpage.h
+    tvshowpage.h \
+    moebooruclient.h \
+    filefilterscanner.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \

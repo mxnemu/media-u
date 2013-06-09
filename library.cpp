@@ -5,7 +5,9 @@
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
-    mFilter(tvShows)
+    mFilter(tvShows),
+    konachanClient("http://konachan.com"),
+    yandereClient("https://yande.re")
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
@@ -55,6 +57,12 @@ void Library::fetchMetaData() {
     malClient.fetchShows(tvShows, directory);
     connect(&malClient, SIGNAL(fetchingFinished()),
             this, SLOT(fetchingFinished()));
+}
+
+void Library::downloadWallpapers() {
+    Moebooru::FetchThread* ft = new Moebooru::FetchThread(konachanClient, filter().all(), directory);
+    ft->start(QThread::LowPriority);
+    connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
 }
 
 void Library::fetchingFinished() {

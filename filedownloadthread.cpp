@@ -3,15 +3,25 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDebug>
+#include <QUrl>
 
-FileDownloadThread::FileDownloadThread(QString url, QString downloadPath) :
+FileDownloadThread::FileDownloadThread(QString url, QString downloadPath, bool overwriteExisting, bool keepRemoteName) :
     url(url),
-    downloadPath(downloadPath)
+    downloadPath(downloadPath),
+    overwriteExisting(overwriteExisting),
+    keepRemoteName(keepRemoteName)
 {
 }
 
 void FileDownloadThread::run() {
-    QDir dir = QFileInfo(downloadPath).absoluteDir();
+    // create dir
+    QDir dir;
+    if (keepRemoteName) {
+        dir = QDir(downloadPath);
+    } else {
+        dir = QFileInfo(downloadPath).absoluteDir();
+    }
+
     if (!dir.exists()) {
         if (!QDir::root().mkpath(dir.absolutePath())) {
             qDebug() << "could not create director for fileDownload" << dir.absolutePath();
@@ -20,18 +30,30 @@ void FileDownloadThread::run() {
         }
     }
 
-    QFile file(downloadPath);
+    QString filepath;
+    if (keepRemoteName) {
+        filepath = dir.absoluteFilePath(QFileInfo(QUrl(url).path()).fileName());
+    } else {
+        filepath = downloadPath;
+    }
+    QFile file(filepath);
+    if (file.exists() && !overwriteExisting) {
+        qDebug() << "won't download file. It already exists locally: " << filepath;
+        deleteLater();
+        return;
+    }
+
     if (file.open(QFile::WriteOnly)) {
         CURL* handle = curlClient(url.toLocal8Bit().data(), file);
         int error = curl_easy_perform(handle);
         if (error) {
             qDebug() << "could not fetch file " << url;
         } else {
-            qDebug() << "finished file-download of " << downloadPath;
+            qDebug() << "finished file-download of " << filepath;
         }
         file.close();
     } else {
-        qDebug() << "could not write download to " << downloadPath;
+        qDebug() << "could not write download to " << filepath;
     }
     deleteLater();
 }

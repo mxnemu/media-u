@@ -8,7 +8,7 @@
 
 class FileDownloadThread : public QThread {
 public:
-    FileDownloadThread(QString url, QString downloadPath);
+    FileDownloadThread(QString url, QString downloadPath, bool overwriteExisting = true, bool keepOrignalName = false);
     void run();
 
     static int write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp);
@@ -20,6 +20,8 @@ private:
 
     QString url;
     QString downloadPath;
+    bool overwriteExisting;
+    bool keepRemoteName;
 };
 
 #endif // FILEDOWNLOADTHREAD_H

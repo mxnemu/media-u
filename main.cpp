@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     w.setPage("MainPage");
 
     // debug scanner
-    DirectoryScanner scanner(library);
+    DirectoryScanner scanner;
     scanner.addScanner(new TvShowScanner(library));
     scanner.scan("/mnt/fields1/torrents/");
     scanner.scan("/media/nehmulos/INTENSO/anime");
@@ -56,6 +56,9 @@ int main(int argc, char *argv[]) {
 
     library.initMalClient(config.malConfigFilePath());
     library.fetchMetaData();
+
+    // time to die
+    library.downloadWallpapers();
 
     return a.exec();
 }

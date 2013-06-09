@@ -7,11 +7,9 @@
 class MediaScanner
 {
 public:
-    MediaScanner(Library& library);
+    MediaScanner();
     virtual ~MediaScanner();
     virtual void scanFiles(const QStringList &files, const QDir &dir) = 0;
-protected:
-    Library& library;
 };
 
 #endif // MEDIASCANNER_H

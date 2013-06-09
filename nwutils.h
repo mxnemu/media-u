@@ -4,6 +4,7 @@
 #include <N0Slib.h>
 #include <QDate>
 #include <QString>
+#include <QStringList>
 
 class NwUtils
 {
@@ -31,6 +32,24 @@ public:
             std::string str;
             d.describe(key, str);
             value = QString(str.data());
+        }
+    }
+
+    template<class T> static void describe(T& d, const nw::String key, QStringList& value, char separator = ' ') {
+        if (d.isInWriteMode()) {
+            std::stringstream ss;
+            for (int i=0; i < value.length(); ++i) {
+                if (i != 0) {
+                    ss << separator;
+                }
+                ss << value.at(i).toStdString();
+            }
+            std::string str = ss.str();
+            d.describe(key, str);
+        } else {
+            std::string str;
+            d.describe(key, str);
+            value = QString(str.data()).split(separator);
         }
     }
 

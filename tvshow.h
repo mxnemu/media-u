@@ -43,6 +43,10 @@ public:
     void setRemoteId(const QString &value);
 
     QDir directory(QDir libraryDirectory) const;
+    QDir wallpaperDirectory(QDir libraryDirectory) const;
+    int numberOfWallpapers(QDir libraryDirectory) const;
+    QString randomWallpaper(QDir libraryDirectory) const;
+    QStringList wallpapers(QDir libraryDirectory) const;
     int episodesDownloaded() const;
 private:
 

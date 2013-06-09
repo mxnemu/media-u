@@ -2,7 +2,7 @@
 #include <QDir>
 #include <iostream>
 
-DirectoryScanner::DirectoryScanner(Library& library) : library(library) {
+DirectoryScanner::DirectoryScanner() {
 
 }
 
