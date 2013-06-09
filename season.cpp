@@ -54,3 +54,8 @@ void Season::addEpisode(QString file) {
 QString Season::name() const {
     return mName;
 }
+
+int Season::numberOfEpisodes() const
+{
+    return episodes.length();
+}

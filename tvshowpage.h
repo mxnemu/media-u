@@ -21,9 +21,11 @@ public:
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     
+    void setTvShow(TvShow *show);
 private:
     Ui::TvShowPage *ui;
     Library& library;
+    TvShow* tvShow;
 };
 
 #endif // TVSHOWPAGE_H

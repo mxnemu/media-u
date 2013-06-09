@@ -43,6 +43,7 @@ public:
     void setRemoteId(const QString &value);
 
     QDir directory(QDir libraryDirectory) const;
+    int episodesDownloaded() const;
 private:
 
     QString mName;

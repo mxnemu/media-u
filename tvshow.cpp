@@ -97,6 +97,14 @@ QString TvShow::name() const {
     return mName;
 }
 
+int TvShow::episodesDownloaded() const {
+    int sum = 0;
+    for (QList<Season>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        sum += it->numberOfEpisodes();
+    }
+    return sum;
+}
+
 int TvShow::getTotalEpisodes() const
 {
     return totalEpisodes;
