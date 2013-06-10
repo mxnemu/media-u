@@ -1,10 +1,11 @@
 Roadmap:
--write a qt gui
--write a remote control gui
--start mplayer task and terminate it via the remote api
--download wallpaper images form some other place
+-write a episode listing for remote
+-start mplayer task with args "-ass -embeddedfonts -fs"
+-pause, fwd, quit, via remote
+-remember play status for files in library
+-fix wallpaper download (thread delete&flow probably messed up)
 -compile it on a raspberry pi (only tested on 64bit desktop so far)
 
 Bugs:
--Too many false-positive results from MAL search
+-Some remaining false-positive results from MAL search, get better query compare
 -some strings form MAL are not properly decoded with QUrl::fromPercentEncoding
