@@ -15,7 +15,7 @@ public:
     Season &season(QString name);
 
     void read(QDir &dir);
-    void write(QDir& dir);
+    void write(nw::JsonWriter &jw);
 
     void importEpisode(const MovieFile& episode);
     void downloadImage(const QString url, QDir libraryDirectory);

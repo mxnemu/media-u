@@ -1,5 +1,6 @@
 #include "tvshowpage.h"
 #include "ui_tvshowpage.h"
+#include "server.h"
 
 TvShowPage::TvShowPage(Library& library, QWidget *parent) :
     Page(parent),
@@ -38,5 +39,13 @@ void TvShowPage::setTvShow(TvShow* show) {
 
 bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 {
+    if (req->path() == "/api/page/showDetails") {
+        std::stringstream ss;
+        nw::JsonWriter jw(ss);
+        tvShow->write(jw);
+        jw.close();
+        Server::simpleWrite(resp, 200, ss.str().data());
+        return true;
+    }
     return false;
 }

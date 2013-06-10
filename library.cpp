@@ -106,7 +106,9 @@ void Library::write() {
                 qDebug() << "TODO thow error can not write library";
                 break;
             }
-            show.write(showDir);
+            nw::JsonWriter showJw(showDir.absoluteFilePath("tvShow.json").toStdString());
+            show.write(showJw);
+            showJw.close();
         }
         jw.close();
     }

@@ -44,9 +44,7 @@ void TvShow::read(QDir &dir) {
     jr.close();
 }
 
-void TvShow::write(QDir &dir) {
-
-    nw::JsonWriter jw(dir.absoluteFilePath("tvShow.json").toStdString());
+void TvShow::write(nw::JsonWriter& jw) {
     jw.describeArray("seasons", "season", seasons.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
         Season& season = seasons[i];
@@ -65,7 +63,6 @@ void TvShow::write(QDir &dir) {
     NwUtils::describe(jw, "startDate", startDate);
     NwUtils::describe(jw, "endDate", endDate);
     NwUtils::describe(jw, "synopsis", synopsis);
-    jw.close();
 }
 
 void TvShow::importEpisode(const MovieFile &episode) {
