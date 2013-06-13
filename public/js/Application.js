@@ -34,7 +34,8 @@ Application.prototype.setScreenFromLocationHash = function()
 
 Application.prototype.pageList = {
     "StartPage": StartPage,
-    "TvShowPage": TvShowPage
+    "TvShowPage": TvShowPage,
+    "PlayerPage": PlayerPage
 };
 
 Application.prototype.setPage = function(page) {

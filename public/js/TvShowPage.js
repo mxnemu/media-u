@@ -64,6 +64,7 @@ TvShowPage.prototype.play = function(episode) {
     }    
     $.getJSON("api/playEpisode?" + JSON.stringify(json), function() {
         console.log("TODO set page to mplayer remote controller");
+        window.location.hash = "#!/PlayerPage";
     });
 
 }

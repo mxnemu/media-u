@@ -69,6 +69,8 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
 
         simpleWrite(resp, 200, QString("{\"status\":\"ok\"}"));
         return true;
+    } else if (path.startsWith("/api/player/")) {
+        return player->handleApiRequest(req, resp);
     } else if (path.startsWith("/api/library/")) {
         return library.handleApiRequest(req, resp);
     } else if (path.startsWith("/api/page/") && window.activePage()) {

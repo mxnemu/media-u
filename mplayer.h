@@ -14,8 +14,11 @@ public:
 
     virtual void stop();
 
-    virtual float incrementSound();
-    virtual float decrementSound();
+    virtual void backwards();
+    virtual void forwards();
+
+    virtual float incrementVolume();
+    virtual float decrementVolume();
 };
 
 #endif // MPLAYER_H
