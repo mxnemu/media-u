@@ -5,7 +5,16 @@ function TvShowPage() {
 TvShowPage.prototype.createNodes = function() {
     var self = this;
     var page = $(".page");
+    
     var playButton = $("<input class='playButton' type='button'/>");
+    playButton.attr("value", "play");
+    playButton.attr("disabled", "disabled");
+    
+    playButton.click(function() {
+        var file = $(".season:first li:first").attr("data-fileName");
+        self.play(file);
+        console.log("TODO check for first unplayed file and play it");
+    })
     
     var seasonsEl = $(document.createElement("div"));
     seasonsEl.addClass("seasons");
@@ -13,14 +22,12 @@ TvShowPage.prototype.createNodes = function() {
     $.getJSON("api/page/showDetails", function(data) {
         console.log(data);
         self.tvShow = data;
+        playButton.removeAttr("disabled");
         $.each(data.seasons, function() {
             self.createSeasonList(this, seasonsEl);
         })
     });
-    
-    playButton.click(function() {
-        self.play();
-    })
+
     page.append(playButton);
     page.append(seasonsEl);
 }
