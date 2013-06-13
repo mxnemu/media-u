@@ -45,9 +45,9 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         //QRegExp regex("\\?(.+)$");
         QString pageName = QFileInfo(req->path()).fileName();
 
-        qDebug() << "set page " << pageName << " with q"  << req->url().query();
+        qDebug() << "set page " << pageName << " with q"  << req->url().query(QUrl::FullyDecoded);
 
-        window.setPage(pageName, req->url().query());
+        window.setPage(pageName, req->url().query(QUrl::FullyDecoded));
         simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(pageName));
         return true;
     } else if (path.startsWith("/api/activePage")) {
@@ -57,7 +57,7 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         //simpleWrite(window.getLibrary().airingShowsJson());
         //return true;
     } else if (path.startsWith("/api/playEpisode")) {
-        stringstream ss; ss << req->url().query().toStdString();
+        stringstream ss; ss << req->url().query(QUrl::FullyDecoded).toStdString();
         QString episode;
         nw::JsonReader jr(ss);
         NwUtils::describe(jr, "filename", episode);
