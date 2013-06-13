@@ -8,6 +8,7 @@
 #include "directoryscanner.h"
 #include "tvshowscanner.h"
 #include "malclient.h"
+#include "mplayer.h"
 
 #include <string.h>
 #include <curl/curl.h>
@@ -39,9 +40,11 @@ int main(int argc, char *argv[]) {
     MainWindow w(library);
     w.show();
 
+    VideoPlayer* player = new Mplayer(); // TODO get player from config
+
     QDir publicDir = QDir::current();
     publicDir.cd("public");
-    Server s(publicDir.path(), w);
+    Server s(publicDir.path(), w, player);
     int port = s.start(config.serverPort());
 
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));

@@ -13,15 +13,21 @@ Application.prototype.setScreenFromLocationHash = function()
     var fields = Utils.parseHashUrl(window.location.hash);
     
     if (fields.length === 1) {
-        // TODO set page by fields and field content
+        if (self.pageList[fields[0]]) {
+            self.setPage(new self.pageList[fields[0]]);
+        }
     } else {
         $.getJSON("api/activePage", function(data) {
             if (self.pageList[data.page]) {
                 //self.setPage(new self.pageList[data.page]);
                 self.setPage(new StartPage());
+            } else if (data.page == "TvShowPage") {
+                self.setPage(new StartPage());
             } else {
                 self.setPage(new StartPage());
             }
+        }).error(function() {
+            console.error("did not receive active page id");
         });
     }
 }
@@ -51,4 +57,9 @@ $(function() {
     window.G = {
         app: new Application()
     }
+    
+    $(window).bind("hashchange", function()
+    {
+        G.app.setScreenFromLocationHash();
+    });
 });

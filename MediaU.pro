@@ -54,7 +54,9 @@ SOURCES += main.cpp\
     libraryfilter.cpp \
     tvshowpage.cpp \
     moebooruclient.cpp \
-    filefilterscanner.cpp
+    filefilterscanner.cpp \
+    videoplayer.cpp \
+    mplayer.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -79,7 +81,9 @@ HEADERS  += mainwindow.h \
     libraryfilter.h \
     tvshowpage.h \
     moebooruclient.h \
-    filefilterscanner.h
+    filefilterscanner.h \
+    videoplayer.h \
+    mplayer.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \

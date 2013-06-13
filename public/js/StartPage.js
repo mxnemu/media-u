@@ -62,7 +62,7 @@ StartPage.prototype.createLists = function(page) {
             });
             item.click(function() {
                 self.updateFocus = false;
-                console.log("should change to showPage TODO impl");
+                G.app.setPage(new TvShowPage());
             });
             listNode.append(item);
         });

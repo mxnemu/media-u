@@ -4,10 +4,12 @@
 #include <string>
 #include <qhttprequest.h>
 #include "systemutils.h"
+#include "nwutils.h"
 
-Server::Server(QString publicDirectoryPath, MainWindow &window) :
+Server::Server(QString publicDirectoryPath, MainWindow &window, VideoPlayer* player) :
     QObject(NULL), publicDirectory(publicDirectoryPath),
-    window(window)
+    window(window),
+    player(player)
 {
 
 }
@@ -53,6 +55,19 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     } else if (path.startsWith("/api/airingTvShows")) {
         //simpleWrite(window.getLibrary().airingShowsJson());
         //return true;
+    } else if (path.startsWith("/api/playEpisode")) {
+        stringstream ss; ss << req->url().query().toStdString();
+        QString episode;
+        nw::JsonReader jr(ss);
+        NwUtils::describe(jr, "filename", episode);
+        jr.close();
+        player->playFile(episode);
+        qDebug() << "play " << episode;
+
+        // TODO handle this api request somewhere else and check if the episode is actually in the show
+
+        simpleWrite(resp, 200, QString("{\"status\":\"ok\"}"));
+        return true;
     } else if (path.startsWith("/api/page/") && window.activePage()) {
         return window.activePage()->handleApiRequest(req, resp);
     }
