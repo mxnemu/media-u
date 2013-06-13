@@ -46,6 +46,11 @@ StartPage.prototype.createLists = function(page) {
         var items = $("<ul></ul>");
         listHead.text(listName);
         listNode.append(listHead);
+        
+        list.sort(function(a, b) {
+            return a.name < b.name ? -1 : 1;
+        });
+        
         // show
         $.each(list, function() {
             var show = this;
