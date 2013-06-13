@@ -1,6 +1,7 @@
 #include "library.h"
 #include "nwutils.h"
 #include <QDebug>
+#include "server.h"
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
@@ -16,6 +17,19 @@ Library::Library(QString path, QObject *parent) :
 
 void Library::initMalClient(QString malConfigFilepath) {
     malClient.init(malConfigFilepath);
+}
+
+bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
+{
+    if (req->path().startsWith("/api/library/filter")) {
+        return filter().handleApiRequest(req, resp);
+    } else if(req->path().startsWith("/api/library/randomWallpaper")) {
+        // TODO change abs img path to server url
+        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(randomWallpaperPath()));
+    } else {
+        return false;
+    }
+    return true;
 }
 
 QString Library::randomWallpaperPath() const {

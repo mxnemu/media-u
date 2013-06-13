@@ -11,13 +11,13 @@ StartPage.prototype.fetchInfos = function(callback) {
             callback();
         }
     };
-    $.getJSON("api/page/lists", function(data) {
+    $.getJSON("api/library/filter/lists", function(data) {
         self.lists = data.lists;
         onFetched();
     }).error(function(err, reason, dat, m) {
         console.error(err, reason, dat, m);
     });
-    $.getJSON("api/page/background", function(data) {
+    $.getJSON("api/library/randomWallpaper", function(data) {
         console.log("got a bg pic:" + data.image);
         self.background = data.image;
         onFetched();

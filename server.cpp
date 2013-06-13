@@ -6,9 +6,10 @@
 #include "systemutils.h"
 #include "nwutils.h"
 
-Server::Server(QString publicDirectoryPath, MainWindow &window, VideoPlayer* player) :
+Server::Server(QString publicDirectoryPath, MainWindow &window, Library &library, VideoPlayer* player) :
     QObject(NULL), publicDirectory(publicDirectoryPath),
     window(window),
+    library(library),
     player(player)
 {
 
@@ -68,6 +69,8 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
 
         simpleWrite(resp, 200, QString("{\"status\":\"ok\"}"));
         return true;
+    } else if (path.startsWith("/api/library/")) {
+        return library.handleApiRequest(req, resp);
     } else if (path.startsWith("/api/page/") && window.activePage()) {
         return window.activePage()->handleApiRequest(req, resp);
     }

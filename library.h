@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QFile>
 #include <QDir>
+#include <qhttpconnection.h>
 #include "tvshow.h"
 #include "moviefile.h"
 #include "malclient.h"
@@ -17,6 +18,7 @@ public:
     explicit Library(QString path, QObject *parent = 0);
     void initMalClient(QString malConfigFilepath);
 
+    bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     QString randomWallpaperPath() const;
 
     TvShow& tvShow(const QString name);

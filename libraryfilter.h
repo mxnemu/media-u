@@ -3,6 +3,7 @@
 
 #include <QList>
 #include "tvshow.h"
+#include <qhttpconnection.h>
 
 class LibraryFilter
 {
@@ -11,6 +12,8 @@ public:
 
     QList<TvShow*> all();
     QList<TvShow*> airing();
+
+    bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
 
 private:
     QList<TvShow*> filter(bool (*filterFunc)(const TvShow &));

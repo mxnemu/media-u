@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     QDir publicDir = QDir::current();
     publicDir.cd("public");
-    Server s(publicDir.path(), w, player);
+    Server s(publicDir.path(), w, library, player);
     int port = s.start(config.serverPort());
 
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));

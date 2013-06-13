@@ -27,31 +27,5 @@ MainPage::~MainPage()
 
 bool MainPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 {
-    if (req->path().startsWith("/api/page/lists")) {
-        std::stringstream ss;
-        nw::JsonWriter jw(ss);
-        jw.push("lists");
-        jw.describeArray("airing", "show", airingShows.length());
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            TvShow* show = airingShows.at(i);
-            std::string name = show->name().toStdString();
-            jw.describe("name", name);
-        }
-        jw.describeArray("all", "show", allShows.length());
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            TvShow* show = allShows.at(i);
-            std::string name = show->name().toStdString();
-            jw.describe("name", name);
-        }
-        jw.pop();
-        jw.close();
-        Server::simpleWrite(resp, 200, ss.str().data());
-        qDebug() << "resp on lists" << ss.str().data();
-        return true;
-    } else if (req->path().startsWith("/api/page/background")) {
-        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(library.randomWallpaperPath()));
-        qDebug() << "resp on bgs";
-        return true;
-    }
     return false;
 }
