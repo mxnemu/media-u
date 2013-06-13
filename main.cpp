@@ -23,14 +23,14 @@ int main(int argc, char *argv[]) {
 
     for (int i=0; i < argc; ++i) {
 
-        if (strcmp(argv[i], "--configdir")) {
+        if (strcmp(argv[i], "--configdir") == 0) {
             configPath = (QString(argv[i]));
 
             QDir dir(configPath);
             if (!dir.exists() && !dir.mkdir(QString(argv[i]))) {
                 configPath = QString();
             }
-        } else if (strcmp(argv[i], "--fullscreen")) {
+        } else if (strcmp(argv[i], "--fullscreen") == 0) {
             fullscreen = true;
         }
     }
