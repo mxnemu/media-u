@@ -6,6 +6,12 @@ TvShowPage.prototype.createNodes = function() {
     var self = this;
     var page = $(".page");
     
+    var backButton = $("<input class='backButton' type='button'/>");
+    backButton.attr("value", "back");
+    backButton.click(function() {
+        window.location.hash = "#!/";
+    });
+    
     var playButton = $("<input class='playButton' type='button'/>");
     playButton.attr("value", "play");
     playButton.attr("disabled", "disabled");
@@ -28,6 +34,7 @@ TvShowPage.prototype.createNodes = function() {
         })
     });
 
+    page.append(backButton);
     page.append(playButton);
     page.append(seasonsEl);
 }
