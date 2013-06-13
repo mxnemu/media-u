@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     curl_global_init(CURL_GLOBAL_SSL);
 
     QString configPath;
+    bool fullscreen = false;
 
     for (int i=0; i < argc; ++i) {
 
@@ -29,6 +30,8 @@ int main(int argc, char *argv[]) {
             if (!dir.exists() && !dir.mkdir(QString(argv[i]))) {
                 configPath = QString();
             }
+        } else if (strcmp(argv[i], "--fullscreen")) {
+            fullscreen = true;
         }
     }
 
@@ -38,7 +41,11 @@ int main(int argc, char *argv[]) {
     library.readAll();
 
     MainWindow w(library);
-    w.show();
+    if (fullscreen) {
+        w.showFullScreen();
+    } else {
+        w.show();
+    }
 
     VideoPlayer* player = new Mplayer(); // TODO get player from config
 
@@ -62,6 +69,5 @@ int main(int argc, char *argv[]) {
 
     // time to die
     //library.downloadWallpapers();
-
     return a.exec();
 }
