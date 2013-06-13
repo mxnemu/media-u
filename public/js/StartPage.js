@@ -56,13 +56,14 @@ StartPage.prototype.createLists = function(page) {
                     $("li").removeClass("focused");
                     $(this).addClass("focused");
                     $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
-                        console.log("setPage");
+                        // remote set done
                     });
                 }
             });
             item.click(function() {
                 self.updateFocus = false;
-                G.app.setPage(new TvShowPage());
+                window.location.hash = "#!/TvShowPage"
+                //G.app.setPage(new TvShowPage());
             });
             listNode.append(item);
         });
