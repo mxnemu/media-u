@@ -58,7 +58,7 @@ void SearchResult::downloadBestResults(QDir directory, Rating ratingFilter) {
         const Entry& entry = entries.at(i);
         Rating rating = entry.ratingFromString();
         if ((ratingFilter & rating) == rating) {
-            QString filename = QString("todo-domain_%2").arg(entry.id);
+            QString filename = QString("todo-domain_%1").arg(entry.id);
             FileDownloadThread* fileThread = new FileDownloadThread(entry.fileUrl, directory.absoluteFilePath(filename), false);
             //QObject::connect(fileThread, SIGNAL(finished()), fileThread, SLOT(deleteLater()));
             fileThread->start();
