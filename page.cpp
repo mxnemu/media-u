@@ -5,7 +5,7 @@ Page::Page(QWidget *parent) :
 {
 }
 
-void Page::initFromQuery(const QString &initString)
+void Page::initFromQuery(const QString &)
 {
 
 }

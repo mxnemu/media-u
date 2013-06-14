@@ -25,7 +25,7 @@ MainPage::~MainPage()
     delete ui;
 }
 
-bool MainPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
+bool MainPage::handleApiRequest(QHttpRequest *, QHttpResponse *)
 {
     return false;
 }
