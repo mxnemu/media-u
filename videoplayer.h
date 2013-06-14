@@ -3,11 +3,13 @@
 
 #include <QProcess>
 #include <qhttpconnection.h>
+#include <QObject>
 
-class VideoPlayer
+class VideoPlayer //: public QObject
 {
+   //Q_OBJECT // TODO build breaks here when trying to inherit qobject
 public:
-    VideoPlayer();
+    explicit VideoPlayer(QObject *parent = NULL);
     virtual void playFile(QString filepath) = 0;
 
     void togglePause();

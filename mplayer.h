@@ -7,6 +7,7 @@ class Mplayer : public VideoPlayer
 {
 public:
     Mplayer();
+    virtual ~Mplayer();
     virtual void playFile(QString filepath);
 
     virtual void pause();
@@ -19,6 +20,9 @@ public:
 
     virtual float incrementVolume();
     virtual float decrementVolume();
+
+private slots:
+    void onProcessFinished(int exitCode);
 };
 
 #endif // MPLAYER_H

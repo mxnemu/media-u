@@ -4,6 +4,10 @@
 Mplayer::Mplayer() :
     VideoPlayer()
 {
+ // TODO connect finish slot
+}
+
+Mplayer::~Mplayer() {
 }
 
 void Mplayer::playFile(QString filepath) {
@@ -29,18 +33,21 @@ void Mplayer::unPause() {
 }
 
 void Mplayer::stop() {
-    process.kill();
+    //process.kill();
+    process.write("q");
     paused = true;
 }
 
 // TODO doesn't work find a workaround for mplayer communication
 void Mplayer::backwards() {
-    static const QByteArray leftArrowKeyCode(1, Qt::Key_Left);
+    const Qt::Key key = Qt::Key_Left;
+    const QByteArray leftArrowKeyCode((const char*)&key, sizeof(key));
     process.write(leftArrowKeyCode); // left arrow key
 }
 
 void Mplayer::forwards() {
-    static const QByteArray rightArrowKeyCode(1, Qt::Key_Right);
+    const Qt::Key key = Qt::Key_Left;
+    const QByteArray rightArrowKeyCode((const char*)&key, sizeof(key));
     process.write(rightArrowKeyCode); // right arrow key
 }
 
@@ -52,4 +59,11 @@ float Mplayer::incrementVolume() {
 float Mplayer::decrementVolume() {
     process.write("/");
     return -1;
+}
+
+void Mplayer::onProcessFinished(int exitCode) {
+    if (exitCode == 0) {
+
+    }
+    paused = true;
 }

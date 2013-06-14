@@ -1,13 +1,13 @@
 #include "videoplayer.h"
 #include <server.h>
 
-VideoPlayer::VideoPlayer()
+VideoPlayer::VideoPlayer(QObject* parent) //:
+    //QObject(parent)
 {
     paused = false;
 }
 
-void VideoPlayer::togglePause()
-{
+void VideoPlayer::togglePause() {
     if (paused) {
         unPause();
     } else {
