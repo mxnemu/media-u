@@ -72,7 +72,7 @@ void SearchResult::downloadBestResults(QDir directory, Rating ratingFilter) {
         while (threads.length() > 1) {
             for (int i=0; i < threads.length(); ++i) {
                 if (threads.at(i)->isFinished()) {
-                    //delete threads[i]; // they delete themself
+                    delete threads[i];
                     threads.removeAt(i);
                     --i;
                 }

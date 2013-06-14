@@ -25,7 +25,6 @@ void FileDownloadThread::run() {
     if (!dir.exists()) {
         if (!QDir::root().mkpath(dir.absolutePath())) {
             qDebug() << "could not create director for fileDownload" << dir.absolutePath();
-            deleteLater();
             return;
         }
     }
@@ -39,7 +38,6 @@ void FileDownloadThread::run() {
     QFile file(filepath);
     if (file.exists() && !overwriteExisting) {
         qDebug() << "won't download file. It already exists locally: " << filepath;
-        deleteLater();
         return;
     }
 
@@ -55,7 +53,6 @@ void FileDownloadThread::run() {
     } else {
         qDebug() << "could not write download to " << filepath;
     }
-    deleteLater();
 }
 
 CURL* FileDownloadThread::curlClient(const char* url, QFile& file) {

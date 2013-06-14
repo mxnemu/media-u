@@ -76,7 +76,7 @@ void TvShow::downloadImage(const QString url, QDir libraryDirectory) {
         FileDownloadThread* t = new FileDownloadThread(url, directory(libraryDirectory).absoluteFilePath("cover"));
         //connect(t, SIGNAL(finished()),
         //        this, SLOT(posterDownloadFinished()));
-
+        QObject::connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
         t->start(QThread::LowPriority);
     }
 }
