@@ -15,7 +15,7 @@ CURL *Client::curlClient(QString tag, CurlResult& userdata)
 {
     // TODO set limit and search the next page if not enough wallpapers were found that match the ratingfilter
     CURL* handle = curl_easy_init();
-    curl_easy_setopt(handle, CURLOPT_URL, QString("%1/post.json?tags=%3").arg(baseUrl, tag).toLocal8Bit().data());
+    curl_easy_setopt(handle, CURLOPT_URL, QString("%1/post.json?tags=%2").arg(baseUrl, tag).toLocal8Bit().data());
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
