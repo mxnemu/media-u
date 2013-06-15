@@ -1,5 +1,7 @@
 #include "mplayer.h"
 #include <QKeyEvent>
+#include <QDir>
+#include <QDebug>
 
 Mplayer::Mplayer() :
     VideoPlayer()
@@ -13,11 +15,16 @@ Mplayer::~Mplayer() {
 void Mplayer::playFile(QString filepath) {
     paused = false;
     QStringList args;
-    args.append(filepath);
+    args.append(QString("%1").arg(filepath));
     args.append("-fs");
     args.append("-ass");
     args.append("-embeddedfonts");
+    args.append("-input");
+    args.append(QString("conf=%1").arg(QDir::current().absoluteFilePath("mplayer.inputConfig")));
     process.start("mplayer", args);
+    //process.start(QString("mplayer -fs -ass -embeddedfonts -input conf=%1").arg(QDir::current().absoluteFilePath("mplayer.inputConfig")));
+    process.waitForStarted();
+    qDebug() << "process started" << process.error();
 }
 
 void Mplayer::pause() {
@@ -40,15 +47,11 @@ void Mplayer::stop() {
 
 // TODO doesn't work find a workaround for mplayer communication
 void Mplayer::backwards() {
-    const Qt::Key key = Qt::Key_Left;
-    const QByteArray leftArrowKeyCode((const char*)&key, sizeof(key));
-    process.write(leftArrowKeyCode); // left arrow key
+    process.write("b"); // left arrow key
 }
 
 void Mplayer::forwards() {
-    const Qt::Key key = Qt::Key_Left;
-    const QByteArray rightArrowKeyCode((const char*)&key, sizeof(key));
-    process.write(rightArrowKeyCode); // right arrow key
+    process.write("f"); // right arrow key
 }
 
 float Mplayer::incrementVolume() {

@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
     library.fetchMetaData();
 
     // time to die
-    //library.downloadWallpapers();
+    library.downloadWallpapers();
+    //player->playFile("/media/nehmulos/INTENSO/anime/[Commie] Inferno Cop/[Commie] Inferno Cop - 04v2 [B6264EE0].mkv");
     return a.exec();
 }
