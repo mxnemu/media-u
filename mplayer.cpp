@@ -12,7 +12,10 @@ Mplayer::Mplayer() :
 Mplayer::~Mplayer() {
 }
 
-void Mplayer::playFile(QString filepath) {
+int Mplayer::playFile(QString filepath) {
+    if (QFile(filepath).exists()) {
+        qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
+    }
     paused = false;
     QStringList args;
     args.append(QString("%1").arg(filepath));
@@ -22,9 +25,8 @@ void Mplayer::playFile(QString filepath) {
     args.append("-input");
     args.append(QString("conf=%1").arg(QDir::current().absoluteFilePath("mplayer.inputConfig")));
     process.start("mplayer", args);
-    //process.start(QString("mplayer -fs -ass -embeddedfonts -input conf=%1").arg(QDir::current().absoluteFilePath("mplayer.inputConfig")));
     process.waitForStarted();
-    qDebug() << "process started" << process.error();
+    return process.error();
 }
 
 void Mplayer::pause() {

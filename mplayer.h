@@ -8,7 +8,7 @@ class Mplayer : public VideoPlayer
 public:
     Mplayer();
     virtual ~Mplayer();
-    virtual void playFile(QString filepath);
+    virtual int playFile(QString filepath);
 
     virtual void pause();
     virtual void unPause();

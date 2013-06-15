@@ -62,12 +62,14 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         nw::JsonReader jr(ss);
         NwUtils::describe(jr, "filename", episode);
         jr.close();
-        player->playFile(episode);
-        qDebug() << "play " << episode;
 
-        // TODO handle this api request somewhere else and check if the episode is actually in the show
+        int error = player->playFile(episode);
+        if (error == 0) {
+            simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
+        } else {
+            simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
+        }
 
-        simpleWrite(resp, 200, QString("{\"status\":\"ok\"}"));
         return true;
     } else if (path.startsWith("/api/player/")) {
         return player->handleApiRequest(req, resp);
