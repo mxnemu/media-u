@@ -24,14 +24,29 @@ int main(int argc, char *argv[]) {
     for (int i=0; i < argc; ++i) {
 
         if (strcmp(argv[i], "--configdir") == 0) {
-            configPath = (QString(argv[i]));
+            ++i;
+            if (i < argc) {
+                configPath = (QString(argv[i]));
 
-            QDir dir(configPath);
-            if (!dir.exists() && !dir.mkdir(QString(argv[i]))) {
-                configPath = QString();
+                QDir dir(configPath);
+                if (!dir.exists() && !QDir::root().mkpath(QString(argv[i]))) {
+                    configPath = QString();
+                    qDebug() << "config dir does not exist and couldn't be created";
+                }
             }
         } else if (strcmp(argv[i], "--fullscreen") == 0) {
             fullscreen = true;
+        } else if (strcmp(argv[i], "--help") == 0) {
+            std::cout << "A Qt Application to manage and play your media library.\n\n";
+            std::cout << "available Arguments:\n";
+            std::cout << "--fullscreen\n";
+            std::cout << "    launch qt gui in fullscreen.\n";
+            std::cout << "--configdir %dir\n";
+            std::cout << "    %dir path to a directory where configs shall be written/read\n";
+            std::cout << "    if %dir does not exist it will be created. If it can't be created\n";
+            std::cout << "    .media-u in the home directory will be the default configdir.\n";
+            std::cout.flush();
+            return 0;
         }
     }
 
