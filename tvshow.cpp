@@ -86,7 +86,7 @@ bool TvShow::isAiring() const {
 }
 
 QDir TvShow::directory(QDir libraryDirectory) const {
-    return QDir(libraryDirectory.absoluteFilePath(this->name()));
+    return QDir(libraryDirectory.absoluteFilePath(this->name().toLower()));
 }
 
 QDir TvShow::wallpaperDirectory(QDir libraryDirectory) const {

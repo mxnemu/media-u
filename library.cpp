@@ -39,7 +39,7 @@ QString Library::randomWallpaperPath() const {
 
 TvShow& Library::tvShow(const QString name) {
     for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        if (it->name() == name) {
+        if (it->name().compare(name, Qt::CaseInsensitive) == 0) {
             return it.i->t();
         }
     }
@@ -94,7 +94,7 @@ void Library::readAll() {
             jr.describeValue(name);
             TvShow& show = tvShow(QString(name.data()));
 
-            QDir showDir(directory.absoluteFilePath(show.name()));
+            QDir showDir = show.directory(directory);
             if (!showDir.exists()) {
                 qDebug() << "show does not have a directory: " << show.name();
                 break;
@@ -114,7 +114,7 @@ void Library::write() {
             std::string name = show.name().toStdString();
             jw.describeValue(name);
 
-            QDir showDir(directory.absoluteFilePath(show.name()));
+            QDir showDir = show.directory(directory);
             if (!showDir.exists() && !directory.mkdir(show.name())) {
                 // TODO
                 qDebug() << "TODO thow error can not write library";
