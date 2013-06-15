@@ -60,6 +60,7 @@ void MalClient::fetchShowBlocking(TvShow& show, QDir libraryDir) {
     CurlResult userData(this);
     CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
     CURLcode error = curl_easy_perform(handle);
+    curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {
         qDebug() << "received error" << error << "for query '" << url << "'' with this message:\n";
         userData.print();
@@ -106,6 +107,7 @@ CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
     curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
+    curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
 }

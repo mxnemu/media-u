@@ -44,6 +44,7 @@ void FileDownloadThread::run() {
     if (file.open(QFile::WriteOnly)) {
         CURL* handle = curlClient(url.toLocal8Bit().data(), file);
         int error = curl_easy_perform(handle);
+        curl_easy_cleanup(handle);
         if (error) {
             qDebug() << "could not fetch file " << url;
         } else {
@@ -59,6 +60,7 @@ CURL* FileDownloadThread::curlClient(const char* url, QFile& file) {
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, url);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, FileDownloadThread::write_data);
+    curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &file);
     //emit preparedCurl(handle); // TODO fix this to compile
     return handle;
