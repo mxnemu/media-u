@@ -1,8 +1,6 @@
 Roadmap:
 -remember play status for files in library
--fix wallpaper download (thread delete&flow probably messed up)
 -compile it on a raspberry pi (only tested on 64bit desktop so far)
--find a way to fwd/bwd with the mplayer process, maybe custom input configfile
 
 Bugs:
 -Some remaining false-positive results from MAL search, get better query compare
