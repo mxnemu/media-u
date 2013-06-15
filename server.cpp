@@ -53,24 +53,6 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     } else if (path.startsWith("/api/activePage")) {
         simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()));
         return true;
-    } else if (path.startsWith("/api/airingTvShows")) {
-        //simpleWrite(window.getLibrary().airingShowsJson());
-        //return true;
-    } else if (path.startsWith("/api/playEpisode")) {
-        stringstream ss; ss << req->url().query(QUrl::FullyDecoded).toStdString();
-        QString episode;
-        nw::JsonReader jr(ss);
-        NwUtils::describe(jr, "filename", episode);
-        jr.close();
-
-        int error = player->playFile(episode);
-        if (error == 0) {
-            simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
-        } else {
-            simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
-        }
-
-        return true;
     } else if (path.startsWith("/api/player/")) {
         return player->handleApiRequest(req, resp);
     } else if (path.startsWith("/api/library/")) {

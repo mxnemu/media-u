@@ -62,9 +62,10 @@ TvShowPage.prototype.play = function(episode) {
         tvShow: this.tvShow.name,
         filename: episode
     }    
-    $.getJSON("api/playEpisode?" + JSON.stringify(json), function() {
+    $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
         console.log("TODO set page to mplayer remote controller");
-        window.location.hash = "#!/PlayerPage";
+        if (!data.error) {
+            window.location.hash = "#!/PlayerPage";
+        }
     });
-
 }

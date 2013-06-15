@@ -17,7 +17,21 @@ void VideoPlayer::togglePause() {
 }
 
 bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
-    if (req->path() == "/api/player/stop") {
+    if (req->path().startsWith("/api/player/play") && !req->url().query().isEmpty()) {
+        stringstream ss;
+        ss << req->url().query(QUrl::FullyDecoded).toStdString();
+        QString episode;
+        nw::JsonReader jr(ss);
+        NwUtils::describe(jr, "filename", episode);
+        jr.close();
+
+        int error = player->playFile(episode);
+        if (error == 0) {
+            simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
+        } else {
+            simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
+        }
+    } else if (req->path() == "/api/player/stop") {
         this->stop();
         Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}");
     } else if (req->path() == "/api/player/unPause") {
