@@ -17,6 +17,7 @@ CURL *Client::curlClient(QString tag, CurlResult& userdata)
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, QString("%1/post.json?tags=%2").arg(baseUrl, tag).toLocal8Bit().data());
     curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
+    curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;

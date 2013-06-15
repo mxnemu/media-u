@@ -61,6 +61,7 @@ CURL* FileDownloadThread::curlClient(const char* url, QFile& file) {
     curl_easy_setopt(handle, CURLOPT_URL, url);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, FileDownloadThread::write_data);
     curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
+    curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &file);
     //emit preparedCurl(handle); // TODO fix this to compile
     return handle;
