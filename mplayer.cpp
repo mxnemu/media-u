@@ -13,7 +13,7 @@ Mplayer::~Mplayer() {
 }
 
 int Mplayer::playFile(QString filepath) {
-    if (QFile(filepath).exists()) {
+    if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
     paused = false;
@@ -32,12 +32,14 @@ int Mplayer::playFile(QString filepath) {
 void Mplayer::pause() {
     if (!paused) {
         process.write("p");
+        paused = true;
     }
 }
 
 void Mplayer::unPause() {
     if (paused) {
         process.write("p");
+        paused = false;
     }
 }
 

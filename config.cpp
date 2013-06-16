@@ -97,6 +97,22 @@ QString Config::malConfigFilePath() {
     return configPath().absoluteFilePath("malConfig.json");
 }
 
+QString Config::mplayerLocation() {
+    return "/usr/bin/mplayer";
+}
+
+QString Config::omxplayerLocation() {
+    return "/usr/bin/omxplayer";
+}
+
+bool Config::omxPlayerIsInstalled() {
+    return QFile::exists(omxplayerLocation());
+}
+
+bool Config::mplayerIsInstalled() {
+    return QFile::exists(mplayerLocation());
+}
+
 int Config::serverPort() {
     if (initialized && mServerPort > 0) {
         return mServerPort;

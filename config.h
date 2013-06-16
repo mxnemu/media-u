@@ -20,6 +20,10 @@ public:
 
     QDir configPath();
     QString malConfigFilePath();
+    QString mplayerLocation();
+    QString omxplayerLocation();
+    bool omxPlayerIsInstalled();
+    bool mplayerIsInstalled();
 private:
     QString mConfigPath;
     QString mLibraryPath;

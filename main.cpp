@@ -9,6 +9,7 @@
 #include "tvshowscanner.h"
 #include "malclient.h"
 #include "mplayer.h"
+#include "omxplayer.h"
 
 #include <string.h>
 #include <curl/curl.h>
@@ -73,7 +74,12 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    VideoPlayer* player = new Mplayer(); // TODO get player from config
+    VideoPlayer* player;
+    if (config.omxPlayerIsInstalled()) {
+        player = new Omxplayer();
+    } else {
+        player = new Mplayer(); // TODO get player from config
+    }
 
     QDir publicDir = QDir::current();
     publicDir.cd("public");
