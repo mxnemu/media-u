@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QDebug>
+#include "systemutils.h"
 
 // TODO get rid of all the redunant stuff from mplayer and merge it into 1 base
 
@@ -19,6 +20,9 @@ int Omxplayer::playFile(QString filepath) {
     args.append(filepath);
     process.start("omxplayer", args);
     process.waitForStarted();
+
+    SystemUtils::setProcessPriority(process, -20);
+
     return process.error();
 }
 

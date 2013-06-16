@@ -1,6 +1,7 @@
 #include "systemutils.h"
 
 #ifdef __unix__
+#include <sys/resource.h>
 #elif defined(windows)
 #endif
 
@@ -26,4 +27,12 @@ QString SystemUtils::fileMime(const QString filepath) {
     return mimeBuffer;
 #endif
     return QString();
+}
+
+int SystemUtils::setProcessPriority(QProcess &process, int nice) {
+#ifdef __unix__
+    return setpriority(PRIO_PROCESS, process.pid(), nice);
+#else
+    return 0;
+#endif
 }

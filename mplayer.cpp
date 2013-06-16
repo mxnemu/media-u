@@ -2,6 +2,7 @@
 #include <QKeyEvent>
 #include <QDir>
 #include <QDebug>
+#include "systemutils.h"
 
 Mplayer::Mplayer() :
     VideoPlayer()
@@ -26,6 +27,9 @@ int Mplayer::playFile(QString filepath) {
     args.append(QString("conf=%1").arg(QDir::current().absoluteFilePath("mplayer.inputConfig")));
     process.start("mplayer", args);
     process.waitForStarted();
+
+    SystemUtils::setProcessPriority(process, -20);
+
     return process.error();
 }
 
