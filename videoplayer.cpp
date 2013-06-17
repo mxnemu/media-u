@@ -34,6 +34,10 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     } else if (req->path() == "/api/player/stop") {
         this->stop();
         Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}");
+    } else if (req->path() == "/api/player/togglePause") {
+        this->togglePause();
+        QString status = paused ? "paused" : "unPaused";
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status));
     } else if (req->path() == "/api/player/unPause") {
         this->unPause();
         Server::simpleWrite(resp, 200, "{\"status\":\"unPaused\"}");
