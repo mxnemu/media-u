@@ -23,7 +23,11 @@ int Omxplayer::playFile(QString filepath) {
 
     SystemUtils::setProcessPriority(process, -20);
 
-    return process.error();
+    int error = process.error();
+    if (process.state() == QProcess::NotRunning) {
+        return error;
+    }
+    return 0;
 }
 
 void Omxplayer::pause() {
