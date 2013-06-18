@@ -27,6 +27,11 @@ public:
     QStringList techTags() const;
     QString hashId() const;
     QString releaseGroup() const;
+
+    QString xbmcEpisodeNumber() const;
+    QString xbmcEpisodeName() const;
+    QString fileExtension() const;
+
 signals:
     
 public slots:

@@ -119,6 +119,20 @@ QString TvShow::coverPath(QDir libaryPath) const {
     return this->directory(libaryPath).absoluteFilePath("cover");
 }
 
+void TvShow::exportXbmcLinks(QDir dir) {
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+    int i = 0;
+    for (QList<Season>::iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        QString seasonName = it->name().length() > 0 ? it->name() :
+                             QString("Season %1").arg(i+1);
+        QDir seasonDir(dir.absoluteFilePath(seasonName));
+        it->exportXbmcLinks(seasonDir);
+        ++i;
+    }
+}
+
 QString TvShow::name() const {
     return mName;
 }

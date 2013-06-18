@@ -26,8 +26,10 @@ public:
     LibraryFilter& filter();
     void importTvShowEpisode(QString episodePath);
 
+    void xbmcLinkExport(QDir outputDir);
     void write();
     void readAll();
+
 
     void fetchMetaData();
     QDir getDirectory() const;

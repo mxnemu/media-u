@@ -19,6 +19,7 @@ void MovieFile::setPath(QString path) {
     mPath = path;
     path = QFileInfo(path).completeBaseName();
 
+
     int spaces = path.count(' ');
     if (path.count('_') > spaces) {
         path.replace('_', ' ');
@@ -147,6 +148,29 @@ bool MovieFile::hasMovieExtension(QString filename) {
 
 QString MovieFile::releaseGroup() const {
     return mReleaseGroup;
+}
+
+QString MovieFile::xbmcEpisodeNumber() const {
+    if (episodeNumber().contains(QRegExp("OP|ED|Opening|Ending|EX"))) {
+        return QString("0x%1").arg(episodeNumber());
+    }
+    QRegExp pureNumber("([0-9]+)");
+    int index = pureNumber.indexIn(mEpisodeNumber);
+    if (index != -1) {
+        return pureNumber.cap(1);
+    }
+    return episodeNumber();
+}
+
+QString MovieFile::fileExtension() const {
+    return QFileInfo(mPath).completeSuffix();
+}
+
+QString MovieFile::xbmcEpisodeName() const {
+    if (episodeName().length() > 0) {
+        return episodeName();
+    }
+    return "Episode";
 }
 
 QString MovieFile::episodeName() const {

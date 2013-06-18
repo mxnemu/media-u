@@ -67,6 +67,16 @@ void Library::importTvShowEpisode(QString episodePath) {
     show.importEpisode(episode);
 }
 
+void Library::xbmcLinkExport(QDir outputDir) {
+    if (!outputDir.exists()) {
+        outputDir.mkpath(".");
+    }
+
+    for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
+        it->exportXbmcLinks(it->directory(outputDir));
+    }
+}
+
 void Library::fetchMetaData() {
     malClient.fetchShows(tvShows, directory);
     connect(&malClient, SIGNAL(fetchingFinished()),

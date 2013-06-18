@@ -23,6 +23,8 @@ public:
     bool isAiring() const;
     QString coverPath(QDir libaryPath) const;
 
+    void exportXbmcLinks(QDir dir);
+
     QString name() const;
     QStringList getSynonyms() const;
     QString getAiringStatus() const;
