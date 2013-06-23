@@ -34,6 +34,8 @@ void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
         if (!handleApiRequest(req, resp)) {
             simpleWrite(resp, 405, "Api request not supported. Maybe a typo");
         }
+    } else if (req->path().startsWith("/video/")) {
+        streamVideo(req, resp);
     } else {
         sendFile(req, resp);
     }
@@ -61,6 +63,18 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         return window.activePage()->handleApiRequest(req, resp);
     }
     return false;
+}
+
+void Server::streamVideo(QHttpRequest* req, QHttpResponse* resp) {
+    QString filePath = QString(req->url().path(QUrl::FullyDecoded)).remove(0, sizeof("/video") -1);
+    QFile file(filePath);
+    if (file.exists() && file.open(QFile::ReadOnly)) {
+       QByteArray data = file.readAll();
+       simpleWrite(resp, 200, QString(data), SystemUtils::fileMime(filePath));
+       file.close();
+    } else {
+       simpleWrite(resp, 404, "File not found (Error 404)");
+    }
 }
 
 void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {

@@ -35,7 +35,8 @@ Application.prototype.setScreenFromLocationHash = function()
 Application.prototype.pageList = {
     "StartPage": StartPage,
     "TvShowPage": TvShowPage,
-    "PlayerPage": PlayerPage
+    "PlayerPage": PlayerPage,
+    "StreamPlayerPage": StreamPlayerPage
 };
 
 Application.prototype.setPage = function(page) {
@@ -56,7 +57,8 @@ Application.prototype.setBackground = function(img) {
 
 $(function() {
     window.G = {
-        app: new Application()
+        app: new Application(),
+        playerType: "stream"
     }
     
     $(window).bind("hashchange", function()

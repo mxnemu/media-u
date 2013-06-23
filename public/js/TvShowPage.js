@@ -61,11 +61,16 @@ TvShowPage.prototype.play = function(episode) {
     var json = {
         tvShow: this.tvShow.name,
         filename: episode
-    }    
-    $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
-        console.log("TODO set page to mplayer remote controller");
-        if (!data.error) {
-            window.location.hash = "#!/PlayerPage";
-        }
-    });
+    }
+    if (G.playerType == "stream") {
+        G.video = "/video/" + episode; // TODO DON'T SAVE IT HERE
+        window.location.hash = "#!/StreamPlayerPage/";
+    } else {
+        $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
+            console.log("TODO set page to mplayer remote controller");
+            if (!data.error) {
+                window.location.hash = "#!/PlayerPage";
+            }
+        });
+    }
 }
