@@ -58,7 +58,7 @@ Application.prototype.setBackground = function(img) {
 $(function() {
     window.G = {
         app: new Application(),
-        playerType: "stream"
+        playerType: "remote"
     }
     
     $(window).bind("hashchange", function()
