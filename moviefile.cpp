@@ -54,6 +54,14 @@ void MovieFile::setPath(QString path) {
     }
 
 
+    QRegExp techTags("((\\[.*\\])|(\\(.*\\)))");
+    techTags.setMinimal(true);
+    int techTagsIndex = techTags.indexIn(path);
+    while (techTagsIndex != -1) {
+        path.remove(techTagsIndex, techTags.cap(1).length());
+        techTagsIndex = techTags.indexIn(path);
+    }
+
     // TODO differ techtags in [] from release groups
     // hints: at the end, multiple [] like [720p][AAC]
     // comma separated [720p, AAC]
