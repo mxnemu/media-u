@@ -35,6 +35,11 @@ void TvShowPage::setTvShow(TvShow* show) {
     ui->endDate->setText(show->getEndDate().toString("yyyy-MM-dd"));
     ui->medium->setText(show->getShowType());
     ui->synopsis->setText(show->getSynopsis());
+
+    QString backgroundWallpaper = show->randomWallpaper(library);
+    if (!backgroundWallpaper.isNull()) {
+        this->setStyleSheet(QString("background-image:%1"));
+    }
 }
 
 bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
