@@ -26,9 +26,9 @@ void MainWindow::setPage(const QString& pageName, const QString& initString)
     }
     page = pageFactory.pageForKey(pageName);
     if (page) {
-        page->initFromQuery(initString);
         this->ui->verticalLayout->addWidget(page);
         this->pageId = pageName;
+        page->initFromQuery(initString);
     } else {
         this->page = NULL;
     }
@@ -45,4 +45,8 @@ QString MainWindow::activePageId() {
 
 Page *MainWindow::activePage() {
     return page;
+}
+
+MainBackgroundWidget *MainWindow::getCentralWidget() {
+    return ui->centralWidget;
 }

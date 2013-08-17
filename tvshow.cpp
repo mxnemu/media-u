@@ -100,9 +100,11 @@ int TvShow::numberOfWallpapers(QDir libraryDirectory) const {
 QString TvShow::randomWallpaper(QDir libraryDirectory) const
 {
     QStringList walls = wallpapers(libraryDirectory);
-    int randomIndex = rand() % walls.length();
-    if (randomIndex < walls.length()) {
-        return walls.at(randomIndex);
+    if (!walls.empty()) {
+        int randomIndex = rand() % walls.length();
+        if (randomIndex < walls.length()) {
+            return walls.at(randomIndex);
+        }
     }
     return QString();
 }
