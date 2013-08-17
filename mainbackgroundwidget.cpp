@@ -9,13 +9,14 @@ MainBackgroundWidget::MainBackgroundWidget(QWidget *parent) :
 void MainBackgroundWidget::paintEvent(QPaintEvent *e) {
     QPainter p(this);
     if (!backgroundImage.isNull()) {
-        p.drawPixmap(0,0,backgroundImage);
+        p.drawPixmap(0,0, width(), height(), backgroundImage);
     }
     QWidget::paintEvent(e);
 }
 
 void MainBackgroundWidget::setBackground(QString backgroundUrl) {
     if (backgroundUrl.isNull()) {
+        backgroundImage = QPixmap();
         return;
     }
     this->backgroundUrl = backgroundUrl;
