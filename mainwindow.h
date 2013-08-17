@@ -5,6 +5,7 @@
 #include "library.h"
 #include "pagefactory.h"
 #include "page.h"
+#include "mainbackgroundwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,8 @@ public:
     void setPage(const QString& pageName);
     QString activePageId();
     Page* activePage();
+
+    MainBackgroundWidget* getCentralWidget();
     
 private:
     Ui::MainWindow *ui;

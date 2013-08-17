@@ -46,3 +46,7 @@ QString MainWindow::activePageId() {
 Page *MainWindow::activePage() {
     return page;
 }
+
+MainBackgroundWidget *MainWindow::getCentralWidget() {
+    return ui->centralWidget;
+}

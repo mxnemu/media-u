@@ -38,9 +38,9 @@ void TvShowPage::setTvShow(TvShow* show) {
 
     QString backgroundWallpaper = show->randomWallpaper(library.getDirectory());
     if (!backgroundWallpaper.isNull()) {
-        this->parentWidget()->setStyleSheet(QString("MainWindow > QWidget {background-image:url(%1);}").arg(backgroundWallpaper));
+        dynamic_cast<MainBackgroundWidget*>(this->parentWidget())->setBackground(backgroundWallpaper);
     } else {
-        this->parentWidget()->setStyleSheet("MainWindow > QWidget {background-image:none;}");
+        dynamic_cast<MainBackgroundWidget*>(this->parentWidget())->setBackground(QString());
     }
 }
 

@@ -57,7 +57,8 @@ SOURCES += main.cpp\
     filefilterscanner.cpp \
     videoplayer.cpp \
     mplayer.cpp \
-    omxplayer.cpp
+    omxplayer.cpp \
+    mainbackgroundwidget.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -85,7 +86,8 @@ HEADERS  += mainwindow.h \
     filefilterscanner.h \
     videoplayer.h \
     mplayer.h \
-    omxplayer.h
+    omxplayer.h \
+    mainbackgroundwidget.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \
