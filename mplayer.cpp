@@ -53,13 +53,12 @@ void Mplayer::stop() {
     paused = true;
 }
 
-// TODO doesn't work find a workaround for mplayer communication
 void Mplayer::backwards() {
-    process.write("b"); // left arrow key
+    process.write("b");
 }
 
 void Mplayer::forwards() {
-    process.write("f"); // right arrow key
+    process.write("f");
 }
 
 float Mplayer::incrementVolume() {
