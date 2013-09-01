@@ -1,8 +1,20 @@
 Roadmap:
+-add search directories (via qt gui)
+-use searchdirectories instead of fixed paths in main.cpp
+-list subtitleTracks & audiotracks for show and select prefered track (multiling rips)
+-seekbar that shows the progress of the video
+-generate thumbnails with libavconv when hovering the seekbar (like youtube)
+-generate thumbnails for each episode
 -remember play status for files in library
+-detect favourite fansubber: (check fs of last 2 eps if notEq check most used fs)
+-search nyaa for new episodes of favourite fansubber
+-add new episodes to transmission-cli
+
+Probably won't fix:
 -make mplayer use the gpu of the raspberry pi
  alternative: fix omxplayers playbackerrors and horrific subtitles
  alternative: just import stuff and export symlinks with xbmc compatible names
+-any raspberry pi support
 
 Bugs:
 -Some remaining false-positive results from MAL search, get better query compare
