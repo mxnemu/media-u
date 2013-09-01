@@ -70,5 +70,11 @@ QString Season::name() const {
 
 int Season::numberOfEpisodes() const
 {
-    return episodes.length();
+    int count = 0;
+    for (int i=0; i < episodes.length(); ++i) {
+        if (!episodes.at(i)->isSpecial()) {
+            ++count;
+        }
+    }
+    return count;
 }

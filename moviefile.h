@@ -20,6 +20,8 @@ public:
 
     static bool hasMovieExtension(QString filename);
 
+    bool isSpecial() const;
+
     QString episodeName() const;
     QString showName() const;
     QString seasonName() const;

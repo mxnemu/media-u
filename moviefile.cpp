@@ -154,6 +154,25 @@ bool MovieFile::hasMovieExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$", Qt::CaseInsensitive));
 }
 
+// TODO specialsRegex into a separate function to avoid redundance
+bool MovieFile::isSpecial() const {
+    QRegExp specialRegex("("
+        "\\sED(\\s|$)|"
+        "\\sOP(\\s|$)|"
+        "ED[0-9]+|"
+        "OP[0-9]+[a-z]?|"
+        "SP[0-9]+|"
+        "EP[0-9]+|"
+        "NC.?OP([0-9]+)?|"
+        "NC.?ED([0-9]+)?|"
+        "Opening(\\s?[0-9]+)?|"
+        "Ending(\\s?[0-9]+)?"
+        ")", Qt::CaseInsensitive);
+    bool is = -1 != specialRegex.indexIn(this->episodeName());
+    //qDebug() << specialRegex.cap(1);
+    return is;
+}
+
 QString MovieFile::releaseGroup() const {
     return mReleaseGroup;
 }
