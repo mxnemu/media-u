@@ -68,3 +68,4 @@ PlayerPage.prototype.createNodes = function() {
     page.append(backButton);
     page.append(playerControls);
 }
+                 
