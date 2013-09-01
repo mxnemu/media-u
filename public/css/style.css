@@ -15,16 +15,20 @@ body, html {
     font-size: 1.1em;
 }
 
-.showList li {
+ul {
+    border: 2px solid gray;
+}
+
+li {
     padding-left: 1em;
     list-style-type: none;
 }
 
-.showList li:nth-child(even) {
+li:nth-child(even) {
     background-color: #4D4D4D;
 }
 
-.showList li:nth-child(odd) {
+li:nth-child(odd) {
     background-color: #444;
 }
 
