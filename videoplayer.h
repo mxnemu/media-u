@@ -10,6 +10,7 @@ class VideoPlayer //: public QObject
    //Q_OBJECT // TODO build breaks here when trying to inherit qobject
 public:
     explicit VideoPlayer(QObject *parent = NULL);
+    virtual ~VideoPlayer();
     virtual int playFile(QString filepath) = 0;
 
     void togglePause();

@@ -7,13 +7,16 @@ VideoPlayer::VideoPlayer(QObject* parent) //:
     paused = false;
 }
 
+VideoPlayer::~VideoPlayer() {
+    this->process.kill();
+}
+
 void VideoPlayer::togglePause() {
     if (paused) {
         unPause();
     } else {
         pause();
     }
-    paused = !paused;
 }
 
 bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
@@ -26,7 +29,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         jr.close();
 
         int error = this->playFile(episode);
-        if (error == 0) {
+        if (this->process.state() == QProcess::Running) {
             Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
         } else {
             Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));

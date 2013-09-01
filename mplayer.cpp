@@ -11,13 +11,13 @@ Mplayer::Mplayer() :
 }
 
 Mplayer::~Mplayer() {
+
 }
 
 int Mplayer::playFile(QString filepath) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
-    paused = false;
     QStringList args;
     args.append(QString("%1").arg(filepath));
     args.append("-fs");
@@ -29,6 +29,12 @@ int Mplayer::playFile(QString filepath) {
     process.waitForStarted();
 
     SystemUtils::setProcessPriority(process, -20);
+
+    if (process.state() == process.Running) {
+        this->paused = false;
+    } else {
+        paused = true;
+    }
 
     return process.error();
 }

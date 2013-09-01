@@ -17,10 +17,14 @@ PlayerPage.prototype.createNodes = function() {
     
     togglePauseButton.click(function() {
         if (togglePauseButton.attr("data-status") == "unPaused") {
-            $.getJSON("api/player/togglePause");
+            $.getJSON("api/player/togglePause", function(data) {
+                togglePauseButton.attr("data-status", data.status);
+            });
             togglePauseButton.text("▶");
         } else {
-            $.getJSON("api/player/togglePause");
+            $.getJSON("api/player/togglePause", function(data) {
+                togglePauseButton.attr("data-status", data.status);
+            });
             togglePauseButton.text("II");
         }
     });
