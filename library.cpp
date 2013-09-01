@@ -118,6 +118,11 @@ void Library::readAll() {
 void Library::write() {
     if (directory.exists()) {
         nw::JsonWriter jw(directory.absoluteFilePath("library.json").toStdString());
+        jw.describeValueArray("searchDirectories", searchDirectories.length());
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            QString dirpath = searchDirectories.at(i).path();
+            NwUtils::describe(jw, "directory", dirpath);
+        }
         jw.describeValueArray("tvShows", tvShows.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
             TvShow& show = tvShows[i];

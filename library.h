@@ -46,6 +46,8 @@ private:
     QDir directory;
     QList<TvShow> tvShows;
     QList<MovieFile> movies;
+    QList<QDir> searchDirectories;
+
     MalClient malClient;
     LibraryFilter mFilter;
     Moebooru::Client konachanClient;
