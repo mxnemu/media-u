@@ -3,11 +3,35 @@ body, html {
     height:100%;
     margin:0px;
     padding:0px;
+    background-color: #333;
+    color: #FFF;
+}
+
+.showList {
+    margin-bottom: 1em;
+}
+
+.showList .headline{
+    font-size: 1.1em;
+}
+
+.showList li {
+    padding-left: 1em;
+    list-style-type: none;
+}
+
+.showList li:nth-child(even) {
+    background-color: #4D4D4D;
+}
+
+.showList li:nth-child(odd) {
+    background-color: #444;
 }
 
 li.focused, .season li:hover {
-    background: green;
+    color: gold;
 }
+
 
 .playerControls {
     position:absolute;
