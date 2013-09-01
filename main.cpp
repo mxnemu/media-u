@@ -10,6 +10,7 @@
 #include "malclient.h"
 #include "mplayer.h"
 #include "omxplayer.h"
+#include "metadataparseravconv.h"
 
 #include <string.h>
 #include <curl/curl.h>
@@ -81,6 +82,9 @@ int main(int argc, char *argv[]) {
         player = new Mplayer(); // TODO get player from config
     }
 
+    MetaDataParserAvconv metaDataParser;
+    player->setMetaDataParser(&metaDataParser);
+
     QDir publicDir = QDir::current();
     publicDir.cd("public");
     Server s(publicDir.path(), w, library, player);
@@ -93,7 +97,8 @@ int main(int argc, char *argv[]) {
     DirectoryScanner scanner;
     scanner.addScanner(new TvShowScanner(library));
     scanner.scan("/mnt/fields1/torrents/");
-    scanner.scan("/media/nehmulos/INTENSO/anime");
+    scanner.scan("/mnt/fields2/torrents/");
+    //scanner.scan("/media/nehmulos/INTENSO/anime");
    //library.write();
 
     library.initMalClient(config.malConfigFilePath());

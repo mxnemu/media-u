@@ -58,7 +58,9 @@ SOURCES += main.cpp\
     videoplayer.cpp \
     mplayer.cpp \
     omxplayer.cpp \
-    mainbackgroundwidget.cpp
+    mainbackgroundwidget.cpp \
+    metadataparser.cpp \
+    metadataparseravconv.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -87,7 +89,9 @@ HEADERS  += mainwindow.h \
     videoplayer.h \
     mplayer.h \
     omxplayer.h \
-    mainbackgroundwidget.h
+    mainbackgroundwidget.h \
+    metadataparser.h \
+    metadataparseravconv.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \

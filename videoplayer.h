@@ -4,6 +4,7 @@
 #include <QProcess>
 #include <qhttpconnection.h>
 #include <QObject>
+#include "metadataparser.h"
 
 class VideoPlayer //: public QObject
 {
@@ -27,9 +28,14 @@ public:
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
 
+    const MetaDataParser *getMetaDataParser() const;
+    void setMetaDataParser(const MetaDataParser *value);
+
 protected:
     virtual bool customHandleApiRequest() { return false; }
 
+    QString playingFile;
+    const MetaDataParser* metaDataParser;
     QProcess process;
     bool paused;
 };

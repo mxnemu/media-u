@@ -62,8 +62,21 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     } else if (req->path() == "/api/player/pauseStatus") {
         QString status = paused ? "paused" : "unPaused";
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status));
+    } else if (req->path() == "/api/player/metaData") {
+        MetaData m = this->metaDataParser->parse(this->playingFile);
+        Server::simpleWrite(resp, 200, QString("{\"duration\": %1}").arg(m.duration));
     } else {
         return customHandleApiRequest();
     }
     return true;
+}
+
+const MetaDataParser *VideoPlayer::getMetaDataParser() const
+{
+    return metaDataParser;
+}
+
+void VideoPlayer::setMetaDataParser(const MetaDataParser *value)
+{
+    metaDataParser = value;
 }

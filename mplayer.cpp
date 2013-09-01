@@ -32,6 +32,7 @@ int Mplayer::playFile(QString filepath) {
 
     if (process.state() == process.Running) {
         this->paused = false;
+        playingFile = filepath;
     } else {
         paused = true;
     }
