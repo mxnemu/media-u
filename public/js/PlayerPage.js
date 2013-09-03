@@ -61,7 +61,42 @@ PlayerPage.prototype.createNodes = function() {
         
     });
     */
-
+    
+    var seekBar = $(document.createElement("div"));
+    seekBar.addClass("seekBar");
+    
+    var seekBarTooltip = $(document.createElement("div"));
+    seekBarTooltip.addClass("seekBarTooltip");
+    seekBar.hover(function(event) {
+        seekBarTooltip.show();
+    });
+    seekBar.mouseout(function() {
+        seekBarTooltip.hide();
+    });
+    
+    var metaData = null;
+    $.getJSON("api/player/metaData", function(data) {
+        metaData = data;
+        
+        seekBar.mousemove(function(event) {
+            var x = Math.max(event.clientX, 50);
+            x = Math.min(x, window.innerWidth - 50);
+            seekBarTooltip.css("left", x);
+            seekBarTooltip.css("top", seekBar.position().top);
+            
+            var videoPos = metaData.duration * (event.clientX / window.innerWidth);
+            var minute = (videoPos / 60);
+            var second = videoPos % 60;
+            seekBarTooltip.text(
+                Utils.paddedNumber(Math.floor(minute), 2) + ":" +
+                Utils.paddedNumber(Math.floor(second), 2)
+            );
+        });
+    });
+    
+    page.append(seekBarTooltip);
+    page.append(seekBar);
+    
     var playerControls = $(document.createElement("div"));
     playerControls.addClass("playerControls");
 
