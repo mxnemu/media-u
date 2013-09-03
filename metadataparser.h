@@ -15,6 +15,10 @@ struct SubtitleTrack {
 
 };
 
+enum MetaDataTrackType {
+    video, subtitle, attachment, audio
+};
+
 struct MetaDataTrack {
     float id;
     QString name;

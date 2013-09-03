@@ -58,16 +58,22 @@ int MetaDataParserAvconv::parseDuration(QString durationString) const {
 }
 
 QList<MetaDataTrack> MetaDataParserAvconv::parseTracks(QString outputString) const {
-    QRegExp streamRegex("\\sStream #([0-9\\.]?):\\(.*?\\): (.*?):");
+    QRegExp streamRegex("\\sStream \\#([0-9\\.]*)(\\((.*)\\))?: (.*):");
+    streamRegex.setMinimal(true);
     QList<MetaDataTrack> l;
     int latestIndex = outputString.indexOf(streamRegex);
+    qDebug() << "found at" << latestIndex;
     while (-1 != latestIndex) {
         MetaDataTrack t;
         t.id = streamRegex.cap(1).toFloat();
-        t.name = streamRegex.cap(2);
-        // TODO get more info from the streams by using the type (cap3)
-        t.type = 0;
-        latestIndex = outputString.indexOf(streamRegex);
+        t.name = streamRegex.cap(3); // skip 2 as it's the optional name with the brackets
+        QString typeString = streamRegex.cap(4);
+        if (t.name == "Video") { t.type = video; }
+        else if (t.name == "Audio") { t.type = audio; }
+        else if (t.name == "Subtitle") { t.type = subtitle; }
+        else if (t.name == "Attachment") { t.type = attachment; }
+        // TODO parse type specific infos like video resolution
+        latestIndex = outputString.indexOf(streamRegex, latestIndex+1);
     }
 
     return l;
