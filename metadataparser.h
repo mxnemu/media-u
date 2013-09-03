@@ -4,7 +4,8 @@
 #include <QStringList>
 
 struct VideoTrack {
-    int resolution;
+    int resolutionX;
+    int resolutionY;
 };
 
 struct AudioTrack {
@@ -26,7 +27,7 @@ struct MetaDataTrack {
         struct VideoTrack video;
         struct AudioTrack audio;
         struct SubtitleTrack subtitle;
-    } stream;
+    } track;
     int type;
 };
 

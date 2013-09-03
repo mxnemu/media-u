@@ -64,16 +64,33 @@ QList<MetaDataTrack> MetaDataParserAvconv::parseTracks(QString outputString) con
     int latestIndex = outputString.indexOf(streamRegex);
     qDebug() << "found at" << latestIndex;
     while (-1 != latestIndex) {
+        int nextIndex = outputString.indexOf(streamRegex, latestIndex+1);
+        latestIndex = outputString.indexOf(streamRegex, latestIndex); // stupid repetition to gain back the captures
+
         MetaDataTrack t;
         t.id = streamRegex.cap(1).toFloat();
         t.name = streamRegex.cap(3); // skip 2 as it's the optional name with the brackets
         QString typeString = streamRegex.cap(4);
-        if (t.name == "Video") { t.type = video; }
-        else if (t.name == "Audio") { t.type = audio; }
-        else if (t.name == "Subtitle") { t.type = subtitle; }
-        else if (t.name == "Attachment") { t.type = attachment; }
+        QString detailsString = outputString.mid(latestIndex + streamRegex.cap(0).length(), nextIndex != -1 ? (outputString.length() - (nextIndex-latestIndex)) : 0);
+
+        if (typeString == "Video") {
+            t.type = video;
+            qDebug() << detailsString;
+            QRegExp videoDetailsRegex("([0-9]+)x([0-9]+).");
+
+            if (-1 != detailsString.indexOf(videoDetailsRegex)) {
+                t.track.video.resolutionX = videoDetailsRegex.cap(1).toInt();
+                t.track.video.resolutionY = videoDetailsRegex.cap(2).toInt();
+            } else {
+                t.track.video.resolutionX = 0;
+                t.track.video.resolutionY = 0;
+            }
+
+        } else if (typeString == "Audio") { t.type = audio; }
+        else if (typeString == "Subtitle") { t.type = subtitle; }
+        else if (typeString == "Attachment") { t.type = attachment; }
         // TODO parse type specific infos like video resolution
-        latestIndex = outputString.indexOf(streamRegex, latestIndex+1);
+        latestIndex = nextIndex;
     }
 
     return l;
