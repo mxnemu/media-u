@@ -23,6 +23,7 @@ public:
 
 
     static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data, QString mime = QString("text/plain"));
+    static void simpleWriteBytes(QHttpResponse *resp, int statusCode, const QByteArray &data, QString mime = QString("text/plain"));
     void streamVideo(QHttpRequest *req, QHttpResponse *resp);
 public slots:
     void handleRequest(QHttpRequest *req, QHttpResponse* resp);

@@ -5,10 +5,11 @@
 #include <qhttpconnection.h>
 #include <QObject>
 #include "metadataparser.h"
+#include "thumbnailcreator.h"
 
-class VideoPlayer //: public QObject
+class VideoPlayer : public QObject
 {
-   //Q_OBJECT // TODO build breaks here when trying to inherit qobject
+   Q_OBJECT // TODO build breaks here when trying to inherit qobject
 public:
     explicit VideoPlayer(QObject *parent = NULL);
     virtual ~VideoPlayer();
@@ -31,13 +32,20 @@ public:
     const MetaDataParser *getMetaDataParser() const;
     void setMetaDataParser(const MetaDataParser *value);
 
+    const ThumbnailCreator *getThumbnailCreator() const;
+    void setThumbnailCreator(const ThumbnailCreator *value);
+
 protected:
     virtual bool customHandleApiRequest() { return false; }
 
     QString playingFile;
     const MetaDataParser* metaDataParser;
+    const ThumbnailCreator* thumbnailCreator;
     QProcess process;
     bool paused;
+
+public slots:
+    void onThumbnailCreated(const QByteArray img);
 };
 
 #endif // VIDEOPLAYER_H

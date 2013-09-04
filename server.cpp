@@ -116,3 +116,13 @@ void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& dat
     resp->write(QString("                "));// shitty workaround for some fucking bug with content-legnth
     resp->end();
 }
+
+void Server::simpleWriteBytes(QHttpResponse* resp, int statusCode, const QByteArray& data, QString mime) {
+    resp->setHeader("Content-Length", QString::number(data.size()));// + sizeof(char)*16));
+    // Setting more than 1 header breaks the sent message.
+    //resp->setHeader("Content-Type", mime);
+    resp->writeHead(statusCode);
+    resp->write(data);
+    //resp->write(QString("                "));// shitty workaround for some fucking bug with content-legnth
+    resp->end();
+}

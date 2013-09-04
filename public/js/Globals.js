@@ -1,0 +1,3 @@
+window.G = {
+    preloadSeekBarPreviews: true
+}

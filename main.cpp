@@ -11,6 +11,7 @@
 #include "mplayer.h"
 #include "omxplayer.h"
 #include "metadataparseravconv.h"
+#include "thumbnailcreatoravconv.h"
 
 #include <string.h>
 #include <curl/curl.h>
@@ -83,7 +84,9 @@ int main(int argc, char *argv[]) {
     }
 
     MetaDataParserAvconv metaDataParser;
+    ThumbnailCreatorAvconv thumbnailCreator;
     player->setMetaDataParser(&metaDataParser);
+    player->setThumbnailCreator(&thumbnailCreator);
 
     QDir publicDir = QDir::current();
     publicDir.cd("public");

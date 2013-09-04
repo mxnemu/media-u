@@ -60,7 +60,9 @@ SOURCES += main.cpp\
     omxplayer.cpp \
     mainbackgroundwidget.cpp \
     metadataparser.cpp \
-    metadataparseravconv.cpp
+    metadataparseravconv.cpp \
+    thumbnailcreator.cpp \
+    thumbnailcreatoravconv.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -91,7 +93,9 @@ HEADERS  += mainwindow.h \
     omxplayer.h \
     mainbackgroundwidget.h \
     metadataparser.h \
-    metadataparseravconv.h
+    metadataparseravconv.h \
+    thumbnailcreator.h \
+    thumbnailcreatoravconv.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \

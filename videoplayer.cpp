@@ -1,8 +1,7 @@
 #include "videoplayer.h"
 #include <server.h>
 
-VideoPlayer::VideoPlayer(QObject* parent) //:
-    //QObject(parent)
+VideoPlayer::VideoPlayer(QObject* parent) : QObject(parent)
 {
     paused = false;
 }
@@ -65,6 +64,16 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     } else if (req->path() == "/api/player/metaData") {
         MetaData m = this->metaDataParser->parse(this->playingFile);
         Server::simpleWrite(resp, 200, QString("{\"duration\": %1}").arg(m.duration));
+    } else if (req->path().startsWith("/api/player/thumbnail")) {
+        bool ok;
+        int second = req->url().query().toInt(&ok);
+        if (ok) {
+            ThumbCreationCallback* tcc = thumbnailCreator->generateJpeg(this->playingFile, second, 100, 70, resp);
+            connect(tcc, SIGNAL(jpegGenerated(QByteArray)), this, SLOT(onThumbnailCreated(QByteArray)));
+        } else {
+            QByteArray errorData;
+            Server::simpleWriteBytes(resp, 404, errorData);
+        }
     } else {
         return customHandleApiRequest();
     }
@@ -79,4 +88,21 @@ const MetaDataParser *VideoPlayer::getMetaDataParser() const
 void VideoPlayer::setMetaDataParser(const MetaDataParser *value)
 {
     metaDataParser = value;
+}
+
+const ThumbnailCreator *VideoPlayer::getThumbnailCreator() const
+{
+    return thumbnailCreator;
+}
+
+void VideoPlayer::setThumbnailCreator(const ThumbnailCreator *value)
+{
+    thumbnailCreator = value;
+}
+
+void VideoPlayer::onThumbnailCreated(const QByteArray img) {
+    ThumbCreationCallback* tcc = dynamic_cast<ThumbCreationCallback*>(this->sender());
+    QHttpResponse* resp = static_cast<QHttpResponse*>(tcc->data);
+    Server::simpleWriteBytes(resp, 200, img);
+    tcc->deleteLater();
 }

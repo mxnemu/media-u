@@ -56,10 +56,8 @@ Application.prototype.setBackground = function(img) {
 }
 
 $(function() {
-    window.G = {
-        app: new Application(),
-        playerType: "remote"
-    }
+    G.app = new Application();
+    G.playerType = "remote";
     
     $(window).bind("hashchange", function()
     {

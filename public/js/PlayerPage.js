@@ -78,6 +78,10 @@ PlayerPage.prototype.createNodes = function() {
     $.getJSON("api/player/metaData", function(data) {
         metaData = data;
         
+        var thumbnailCache = new ThumbnailCache();
+        if (G.preloadSeekBarPreviews) {
+            thumbnailCache.loadAll(metaData.duration);
+        }
         seekBar.mousemove(function(event) {
             var x = Math.max(event.clientX, 50);
             x = Math.min(x, window.innerWidth - 50);
@@ -91,6 +95,9 @@ PlayerPage.prototype.createNodes = function() {
                 Utils.paddedNumber(Math.floor(minute), 2) + ":" +
                 Utils.paddedNumber(Math.floor(second), 2)
             );
+            thumbnailCache.get(videoPos, function(img) {
+                seekBarTooltip.append(img);
+            });
         });
     });
     
