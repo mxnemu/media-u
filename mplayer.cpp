@@ -91,6 +91,5 @@ void Mplayer::onProcessOutput() {
     QRegExp progressRegex("V:(\\s*)?([0-9\\.]*)\\s");
     if (-1 != output.indexOf(progressRegex)) {
         this->progress = progressRegex.cap(2).toFloat();
-        qDebug() << "m at" << this->progress;
     }
 }
