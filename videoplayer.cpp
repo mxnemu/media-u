@@ -55,6 +55,16 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     } else if (req->path() == "/api/player/pause") {
         this->pause();
         Server::simpleWrite(resp, 200, "{\"status\":\"paused\"}");
+    } else if (req->path().startsWith("/api/player/jumpTo")) {
+        bool ok;
+        int second = req->url().query().toInt(&ok);
+        if (ok) {
+            this->jumpTo(second);
+            Server::simpleWrite(resp, 200, "{\"status\":\"done\"}");
+        } else {
+            QByteArray errorData;
+            Server::simpleWriteBytes(resp, 404, errorData);
+        }
     } else if (req->path() == "/api/player/backwards") {
         this->backwards();
         Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}");

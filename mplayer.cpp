@@ -20,14 +20,13 @@ int Mplayer::playFile(QString filepath) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
-    QStringList args;
-    args.append(QString("%1").arg(filepath));
-    args.append("-fs");
-    args.append("-ass");
-    args.append("-embeddedfonts");
-    args.append("-input");
-    args.append(QString("conf=%1").arg(QDir::current().absoluteFilePath("mplayer.inputConfig")));
-    process.start("mplayer", args);
+    process.start("mplayer", QStringList() <<
+        QString("%1").arg(filepath) <<
+        "-fs" <<
+        "-ass" <<
+        "-embeddedfonts" <<
+        "-slave"
+    );
     process.waitForStarted();
 
     SystemUtils::setProcessPriority(process, -20);
@@ -44,34 +43,30 @@ int Mplayer::playFile(QString filepath) {
 
 void Mplayer::pause() {
     if (!paused) {
-        process.write("p");
+        process.write("pause\n");
         paused = true;
     }
 }
 
 void Mplayer::unPause() {
     if (paused) {
-        process.write("p");
+        process.write("pause\n");
         paused = false;
     }
 }
 
 void Mplayer::stop() {
     //process.kill();
-    process.write("q");
+    process.write("quit\n");
     paused = true;
 }
 
 void Mplayer::backwards(const int seconds) {
-    for (int i=0; i  < seconds; ++i) {
-        process.write("b");
-    }
+    process.write(QString("seek -%1\n").arg(seconds).toUtf8());
 }
 
 void Mplayer::forwards(const int seconds) {
-    for (int i=0; i  < seconds; ++i) {
-        process.write("f");
-    }
+    process.write(QString("seek %1\n").arg(seconds).toUtf8());
 }
 
 float Mplayer::incrementVolume() {
@@ -96,5 +91,6 @@ void Mplayer::onProcessOutput() {
     QRegExp progressRegex("V:(\\s*)?([0-9\\.]*)\\s");
     if (-1 != output.indexOf(progressRegex)) {
         this->progress = progressRegex.cap(2).toFloat();
+        qDebug() << "m at" << this->progress;
     }
 }

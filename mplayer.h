@@ -25,7 +25,7 @@ public:
 
 private slots:
     void onProcessFinished(int exitCode);
-    void onStdOut();
+    void onProcessOutput();
 };
 
 #endif // MPLAYER_H
