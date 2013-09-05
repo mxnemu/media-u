@@ -104,9 +104,34 @@ PlayerPage.prototype.createNodes = function() {
             });
         });
         
+        // TODO cleanup this lazy mess
+        var progress;
+        var progressBar = document.createElement("div");
+        progressBar.className = "progressBar";
+        seekBar.append(progressBar);
+        function setProgress(second) {
+            progress = second;
+            progressBar.style.width = ((second/metaData.duration)*100) + "%";
+        };
+        
+        $.getJSON("api/player/progress", function(data) {
+            setProgress(data.progress);
+            window.setInterval(function() {
+                setProgress(progress +1);
+            }, 1000);
+            // sync with the player's progress every 10s
+            window.setInterval(function() {
+                $.getJSON("api/player/progress", function(d) {
+                    setProgress(d.progress);
+                });
+            }, 10000);
+        });
+        
         seekBar.click(function(event) {
             var videoPos = metaData.duration * (event.clientX / window.innerWidth);
-            $.getJSON("api/player/jumpTo?" + Math.floor(videoPos));
+            $.getJSON("api/player/jumpTo?" + Math.floor(videoPos), function() {
+                setProgress(videoPos);
+            });
         });
     });
     

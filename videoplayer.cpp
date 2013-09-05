@@ -93,6 +93,8 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             QByteArray errorData;
             Server::simpleWriteBytes(resp, 404, errorData);
         }
+    } else if (req->path() == "/api/player/progress") {
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"unknown\",\"progress\":%1}").arg(progress));
     } else {
         return customHandleApiRequest();
     }
