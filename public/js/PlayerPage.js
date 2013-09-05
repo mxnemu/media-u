@@ -86,7 +86,7 @@ PlayerPage.prototype.createNodes = function() {
             var x = Math.max(event.clientX, 50);
             x = Math.min(x, window.innerWidth - 50);
             seekBarTooltip.css("left", x);
-            seekBarTooltip.css("top", seekBar.position().top);
+            seekBarTooltip.css("top", seekBar.offset().top);
             
             var videoPos = metaData.duration * (event.clientX / window.innerWidth);
             var minute = (videoPos / 60);
@@ -103,14 +103,19 @@ PlayerPage.prototype.createNodes = function() {
                 seekBarTooltip.append(img);
             });
         });
+        
+        seekBar.click(function(event) {
+            var videoPos = metaData.duration * (event.clientX / window.innerWidth);
+            $.getJSON("api/player/jumpTo?" + Math.floor(videoPos));
+        });
     });
     
     page.append(seekBarTooltip);
-    page.append(seekBar);
     
     var playerControls = $(document.createElement("div"));
     playerControls.addClass("playerControls");
 
+    playerControls.append(seekBar);
     playerControls.append(backwardsButton);
     playerControls.append(togglePauseButton);
     playerControls.append(forwardsButton);

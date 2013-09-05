@@ -41,7 +41,7 @@ li.focused, .season li:hover {
     height: 8px;
     background-color: orange;
     position: absolute; /* TODO proper positioning this is DEBUG */
-    bottom: 50px;
+    top: 0px;
 }
 
 .seekBarTooltip {
@@ -62,6 +62,7 @@ li.focused, .season li:hover {
     background-color: #555;
     border-top: 2px solid #333;
     color: #FeFeFe;
+    padding-top: 15px;
 }
 
 .playerControls span {
