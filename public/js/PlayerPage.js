@@ -96,6 +96,10 @@ PlayerPage.prototype.createNodes = function() {
                 Utils.paddedNumber(Math.floor(second), 2)
             );
             thumbnailCache.get(videoPos, function(img) {
+                seekBarTooltip.text(
+                    Utils.paddedNumber(Math.floor(minute), 2) + ":" +
+                    Utils.paddedNumber(Math.floor(second), 2)
+                );
                 seekBarTooltip.append(img);
             });
         });

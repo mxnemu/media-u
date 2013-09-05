@@ -8,6 +8,8 @@ Mplayer::Mplayer() :
     VideoPlayer()
 {
  // TODO connect finish slot
+
+    connect(&process, SIGNAL(readyRead()), this, SLOT(onProcessOutput()));
 }
 
 Mplayer::~Mplayer() {
@@ -60,12 +62,16 @@ void Mplayer::stop() {
     paused = true;
 }
 
-void Mplayer::backwards() {
-    process.write("b");
+void Mplayer::backwards(const int seconds) {
+    for (int i=0; i  < seconds; ++i) {
+        process.write("b");
+    }
 }
 
-void Mplayer::forwards() {
-    process.write("f");
+void Mplayer::forwards(const int seconds) {
+    for (int i=0; i  < seconds; ++i) {
+        process.write("f");
+    }
 }
 
 float Mplayer::incrementVolume() {
@@ -83,4 +89,12 @@ void Mplayer::onProcessFinished(int exitCode) {
 
     }
     paused = true;
+}
+
+void Mplayer::onProcessOutput() {
+    QString output = this->process.readAll();
+    QRegExp progressRegex("V:(\\s*)?([0-9\\.]*)\\s");
+    if (-1 != output.indexOf(progressRegex)) {
+        this->progress = progressRegex.cap(2).toFloat();
+    }
 }

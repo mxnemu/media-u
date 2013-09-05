@@ -18,6 +18,15 @@ void VideoPlayer::togglePause() {
     }
 }
 
+void VideoPlayer::jumpTo(int second) {
+    int difference = second - this->progress;
+    if (difference > 0) {
+        forwards(difference);
+    } else if (difference < 0) {
+        backwards(-difference);
+    }
+}
+
 bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/player/play") && !req->url().query().isEmpty()) {
         stringstream ss;

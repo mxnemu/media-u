@@ -1,5 +1,5 @@
-f seek +10
-b seek -10
+f seek +1
+b seek -1
 q quit
 #* volume -1
 #/ volume +1

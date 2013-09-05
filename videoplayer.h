@@ -21,8 +21,9 @@ public:
 
     virtual void stop() = 0;
 
-    virtual void backwards() = 0;
-    virtual void forwards() = 0;
+    virtual void jumpTo(int second);
+    virtual void backwards(const int seconds = 5) = 0;
+    virtual void forwards(const int seconds = 5) = 0;
 
     virtual float incrementVolume() = 0; ///< returns the new sound level
     virtual float decrementVolume() = 0; ///< returns the new sound level
@@ -43,6 +44,7 @@ protected:
     const ThumbnailCreator* thumbnailCreator;
     QProcess process;
     bool paused;
+    int progress; ///< in seconds
 
 public slots:
     void onThumbnailCreated(const QByteArray img);
