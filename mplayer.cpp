@@ -63,10 +63,12 @@ void Mplayer::stop() {
 
 void Mplayer::backwards(const int seconds) {
     process.write(QString("seek -%1\n").arg(seconds).toUtf8());
+    paused = false;
 }
 
 void Mplayer::forwards(const int seconds) {
     process.write(QString("seek %1\n").arg(seconds).toUtf8());
+    paused = false;
 }
 
 float Mplayer::incrementVolume() {
