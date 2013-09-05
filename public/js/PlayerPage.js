@@ -117,7 +117,9 @@ PlayerPage.prototype.createNodes = function() {
         $.getJSON("api/player/progress", function(data) {
             setProgress(data.progress);
             window.setInterval(function() {
-                setProgress(progress +1);
+                if (togglePauseButton.attr("data-status") == "unPaused") {
+                    setProgress(progress +1);
+                }
             }, 1000);
             // sync with the player's progress every 10s
             window.setInterval(function() {
