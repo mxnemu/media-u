@@ -133,6 +133,7 @@ PlayerPage.prototype.createNodes = function() {
             var videoPos = metaData.duration * (event.clientX / window.innerWidth);
             $.getJSON("api/player/jumpTo?" + Math.floor(videoPos), function() {
                 togglePauseButton.attr("data-status", "unPaused");
+                togglePauseButton.text("II");
                 setProgress(videoPos);
             });
         });
