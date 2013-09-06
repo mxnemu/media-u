@@ -90,8 +90,39 @@ QList<MetaDataTrack> MetaDataParserAvconv::parseTracks(QString outputString) con
         else if (typeString == "Subtitle") { t.type = subtitle; }
         else if (typeString == "Attachment") { t.type = attachment; }
         // TODO parse type specific infos like video resolution
+
+        l.append(t);
         latestIndex = nextIndex;
     }
 
     return l;
+}
+
+QList<MetaDataChapter> MetaDataParserAvconv::parseChapters(QString outputString) const {
+    QList<MetaDataChapter> chapters;
+    QRegExp chapterHeadRegex("\\sChapter \\#([0-9\\.]*)(\\((.*)\\))?: start ([0-9\\.]*), end ([0-9\\.]*)");
+    int chapterHead = outputString.indexOf(chapterHeadRegex);
+    while (-1 != chapterHead) {
+        int nextIndex = outputString.indexOf(chapterHeadRegex, chapterHead+1);
+        outputString.indexOf(chapterHeadRegex, chapterHead);
+
+        MetaDataChapter c;
+        c.start = chapterHeadRegex.cap(4).toFloat();
+        c.end = chapterHeadRegex.cap(5).toFloat();
+
+        /* Probably just a bad example I saved up above. gonna leave this since I don't have example files atm
+        QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([0-9]*):([0-9]*):([0-9\\.]*)");
+        int hour = chapterTitleRegex.cap(3).toInt();
+        int minute = chapterTitleRegex.cap(4).toInt();
+        float second = chapterTitleRegex.cap(5).toFloat();
+        */
+
+        QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([^\n])\n");
+        int chapterTitle = outputString.indexOf(chapterTitleRegex, chapterHead);
+        if (-1 != chapterTitle && chapterTitle < nextIndex) {
+            c.title = chapterTitleRegex.cap(3);
+        }
+        chapters.append(c);
+        chapterHead = nextIndex;
+    }
 }

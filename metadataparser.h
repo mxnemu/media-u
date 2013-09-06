@@ -31,10 +31,17 @@ struct MetaDataTrack {
     int type;
 };
 
+struct MetaDataChapter {
+    float start;
+    float end;
+    QString title;
+};
+
 class MetaData {
 public:
     int duration;
     QList<MetaDataTrack> tracks;
+    QList<MetaDataChapter> chapters;
 };
 
 class MetaDataParser
