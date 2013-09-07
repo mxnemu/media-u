@@ -82,7 +82,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status));
     } else if (req->path() == "/api/player/metaData") {
         MetaData m = this->metaDataParser->parse(this->playingFile);
-        Server::simpleWrite(resp, 200, QString("{\"duration\": %1}").arg(m.duration));
+        Server::simpleWrite(resp, 200, m.toJson());
     } else if (req->path().startsWith("/api/player/thumbnail")) {
         bool ok;
         int second = req->url().query().toInt(&ok);

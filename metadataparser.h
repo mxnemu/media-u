@@ -42,6 +42,7 @@ public:
     int duration;
     QList<MetaDataTrack> tracks;
     QList<MetaDataChapter> chapters;
+    QString toJson();
 };
 
 class MetaDataParser
