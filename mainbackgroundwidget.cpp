@@ -1,5 +1,6 @@
 #include "mainbackgroundwidget.h"
 #include <QPainter>
+#include <QPixmap>
 
 MainBackgroundWidget::MainBackgroundWidget(QWidget *parent) :
     QWidget(parent)
@@ -9,7 +10,27 @@ MainBackgroundWidget::MainBackgroundWidget(QWidget *parent) :
 void MainBackgroundWidget::paintEvent(QPaintEvent *e) {
     QPainter p(this);
     if (!backgroundImage.isNull()) {
-        p.drawPixmap(0,0, width(), height(), backgroundImage);
+        int w = backgroundImage.width();
+        int h = backgroundImage.height();
+        h = std::min(h, height());
+        float scale = ((float)h) / (float)backgroundImage.height();
+        w = ((float)w)*scale;
+        p.drawPixmap(0,0, w, h, backgroundImage);
+        if (w < width()) {
+            QBrush brush(QColor(Qt::darkRed));
+
+            p.scale(-1, 1);
+
+            p.drawPixmap(QRect(QPoint(-w*2,0), QPoint(-w, height())), backgroundImage);
+            p.scale(-1,1);
+
+            QRect grect(QPoint(w,0), QPoint(width(), h));
+            QLinearGradient gradient(QPoint(grect.left(), 0), QPoint(grect.right(), 0));
+            gradient.setColorAt(0, QColor(255,255,255,0));
+            gradient.setColorAt(1, QColor(Qt::white));
+            p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+            p.fillRect(grect, gradient);
+        }
     }
     QWidget::paintEvent(e);
 }
