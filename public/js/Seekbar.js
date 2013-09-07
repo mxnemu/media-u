@@ -34,17 +34,33 @@ Seekbar.prototype.createNodes = function() {
             var videoPos = metaData.duration * (event.clientX / window.innerWidth);
             var minute = (videoPos / 60);
             var second = videoPos % 60;
-            tooltip.text(
-                Utils.paddedNumber(Math.floor(minute), 2) + ":" +
-                Utils.paddedNumber(Math.floor(second), 2)
-            );
-            thumbnailCache.get(videoPos, function(img) {
-                tooltip.text(
+            
+            var chapter = null;
+            for (var i=0; i < metaData.chapters; ++i) {
+                if (videoPos > metaData.chapters[i].start &&
+                    videoPos > metaData.chapters[i].end) {
+                    
+                    chapter = metaData.chapters[i].title;
+                }
+            }
+            
+            function setTooltip(img) {
+                tooltip.empty();
+                if (chapter) {
+                    tooltip.append("<span>chapter</span>");
+                    tooltip.append("<br/>");
+                }
+                tooltip.append("<span>" +
                     Utils.paddedNumber(Math.floor(minute), 2) + ":" +
-                    Utils.paddedNumber(Math.floor(second), 2)
+                    Utils.paddedNumber(Math.floor(second), 2) +
+                    "</span>"
                 );
-                tooltip.append(img);
-            });
+                if (img) {
+                    tooltip.append(img);
+                }
+            }
+            setTooltip();
+            thumbnailCache.get(videoPos, setTooltip);
         });
         
         // TODO cleanup this lazy mess
