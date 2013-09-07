@@ -2,13 +2,14 @@ Roadmap:
 -add search directories (via qt gui)
 -use searchdirectories instead of fixed paths in main.cpp
 -list subtitleTracks & audiotracks for show and select prefered track (multiling rips)
--seekbar that shows the progress of the video
--generate thumbnails with libavconv when hovering the seekbar (like youtube)
--generate thumbnails for each episode
 -remember play status for files in library
+-detect if mplayer ends naturally and mark the episode and all previous episodes as watched;
 -detect favourite fansubber: (check fs of last 2 eps if notEq check most used fs)
 -search nyaa for new episodes of favourite fansubber
 -add new episodes to transmission-cli
+
+Optional:
+-generate thumbnails for each episode
 
 Probably won't fix:
 -make mplayer use the gpu of the raspberry pi
