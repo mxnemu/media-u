@@ -12,20 +12,20 @@ PlayerPage.prototype.createNodes = function() {
         window.location.hash = "#!/TvShowPage"; // TODO get active page via api
     });
     
-    var togglePauseButton = $(document.createElement("span"));
-    togglePauseButton.text("II");
+    this.togglePauseButton = $(document.createElement("span"));
+    this.setPauseDisplay("paused")
     
-    togglePauseButton.click(function() {
-        if (togglePauseButton.attr("data-status") == "unPaused") {
+    this.togglePauseButton.click(function() {
+        if (self.togglePauseButton.attr("data-status") == "unPaused") {
             $.getJSON("api/player/togglePause", function(data) {
-                togglePauseButton.attr("data-status", data.status);
+                self.setPauseDisplay(data.status);
             });
-            togglePauseButton.text("▶");
+            self.togglePauseButton.text("▶");
         } else {
             $.getJSON("api/player/togglePause", function(data) {
-                togglePauseButton.attr("data-status", data.status);
+                self.setPauseDisplay(data.status);
             });
-            togglePauseButton.text("II");
+            self.togglePauseButton.text("II");
         }
     });
     
@@ -50,10 +50,7 @@ PlayerPage.prototype.createNodes = function() {
     });
     
     $.getJSON("api/player/pauseStatus", function(data) {
-        if (data.status != "unPaused") {
-            togglePauseButton.text("▶");
-        }
-        togglePauseButton.attr("data-status", data.status);
+        self.setPauseDisplay(data.status);
     });
     
     /* TODO impl in server
@@ -62,94 +59,28 @@ PlayerPage.prototype.createNodes = function() {
     });
     */
     
-    var seekBar = $(document.createElement("div"));
-    seekBar.addClass("seekBar");
+    this.seekbar = new Seekbar(this);
     
-    var seekBarTooltip = $(document.createElement("div"));
-    seekBarTooltip.addClass("seekBarTooltip");
-    seekBar.hover(function(event) {
-        seekBarTooltip.show();
-    });
-    seekBar.mouseout(function() {
-        seekBarTooltip.hide();
-    });
-    
-    var metaData = null;
-    $.getJSON("api/player/metaData", function(data) {
-        metaData = data;
-        
-        var thumbnailCache = new ThumbnailCache();
-        if (G.preloadSeekBarPreviews) {
-            thumbnailCache.loadAll(metaData.duration);
-        }
-        seekBar.mousemove(function(event) {
-            var x = Math.max(event.clientX, 50);
-            x = Math.min(x, window.innerWidth - 50);
-            seekBarTooltip.css("left", x);
-            seekBarTooltip.css("top", seekBar.offset().top);
-            
-            var videoPos = metaData.duration * (event.clientX / window.innerWidth);
-            var minute = (videoPos / 60);
-            var second = videoPos % 60;
-            seekBarTooltip.text(
-                Utils.paddedNumber(Math.floor(minute), 2) + ":" +
-                Utils.paddedNumber(Math.floor(second), 2)
-            );
-            thumbnailCache.get(videoPos, function(img) {
-                seekBarTooltip.text(
-                    Utils.paddedNumber(Math.floor(minute), 2) + ":" +
-                    Utils.paddedNumber(Math.floor(second), 2)
-                );
-                seekBarTooltip.append(img);
-            });
-        });
-        
-        // TODO cleanup this lazy mess
-        var progress;
-        var progressBar = document.createElement("div");
-        progressBar.className = "progressBar";
-        seekBar.append(progressBar);
-        function setProgress(second) {
-            progress = second;
-            progressBar.style.width = ((second/metaData.duration)*100) + "%";
-        };
-        
-        $.getJSON("api/player/progress", function(data) {
-            setProgress(data.progress);
-            window.setInterval(function() {
-                if (togglePauseButton.attr("data-status") == "unPaused") {
-                    setProgress(progress +1);
-                }
-            }, 1000);
-            // sync with the player's progress every 10s
-            window.setInterval(function() {
-                $.getJSON("api/player/progress", function(d) {
-                    setProgress(d.progress);
-                });
-            }, 10000);
-        });
-        
-        seekBar.click(function(event) {
-            var videoPos = metaData.duration * (event.clientX / window.innerWidth);
-            $.getJSON("api/player/jumpTo?" + Math.floor(videoPos), function() {
-                togglePauseButton.attr("data-status", "unPaused");
-                togglePauseButton.text("II");
-                setProgress(videoPos);
-            });
-        });
-    });
-    
-    page.append(seekBarTooltip);
+    page.append(this.seekbar.tooltip);
     
     var playerControls = $(document.createElement("div"));
     playerControls.addClass("playerControls");
 
-    playerControls.append(seekBar);
+    playerControls.append(this.seekbar.bar);
     playerControls.append(backwardsButton);
-    playerControls.append(togglePauseButton);
+    playerControls.append(this.togglePauseButton);
     playerControls.append(forwardsButton);
     playerControls.append(stopButton);
     page.append(backButton);
     page.append(playerControls);
+}
+
+PlayerPage.prototype.setPauseDisplay = function(status) {
+    this.togglePauseButton.attr("data-status", status);
+    if (status != "unPaused") {
+        this.togglePauseButton.text("▶");
+    } else {
+        this.togglePauseButton.text("II");
+    }
 }
                  

@@ -18,5 +18,6 @@ QString MetaData::toJson() {
         NwUtils::describe(jw, "end", c.end);
         NwUtils::describe(jw, "title", c.title);
     }
+    jw.close();
     return QString(ss.str().c_str());
 }
