@@ -62,7 +62,8 @@ SOURCES += main.cpp\
     metadataparser.cpp \
     metadataparseravconv.cpp \
     thumbnailcreator.cpp \
-    thumbnailcreatoravconv.cpp
+    thumbnailcreatoravconv.cpp \
+    settingspage.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -95,9 +96,11 @@ HEADERS  += mainwindow.h \
     metadataparser.h \
     metadataparseravconv.h \
     thumbnailcreator.h \
-    thumbnailcreatoravconv.h
+    thumbnailcreatoravconv.h \
+    settingspage.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \
     tvshowlistwidget.ui \
-    tvshowpage.ui
+    tvshowpage.ui \
+    settingspage.ui

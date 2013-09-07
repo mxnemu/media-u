@@ -7,7 +7,7 @@ MainWindow::MainWindow(Library &library, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     library(library),
-    pageFactory(library)
+    pageFactory(library, this)
 {
     ui->setupUi(this);
     page = NULL;
@@ -22,7 +22,8 @@ void MainWindow::setPage(const QString& pageName, const QString& initString)
 {
     std::cout << "setpage " << pageName.toStdString() << std::endl;
     if (page) {
-        delete page; // also removes from parent
+        page->deleteLater();
+       // delete page; // also removes from parent
     }
     page = pageFactory.pageForKey(pageName);
     if (page) {

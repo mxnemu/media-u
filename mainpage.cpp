@@ -2,11 +2,13 @@
 #include "ui_mainpage.h"
 #include "tvshowlistwidget.h"
 #include "server.h"
+#include "mainwindow.h"
 
-MainPage::MainPage(Library& library, QWidget *parent) :
+MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
     Page(parent),
     ui(new Ui::MainPage),
-    library(library)
+    library(library),
+    mainwindow(mainwindow)
 {
     ui->setupUi(this);
 
@@ -29,4 +31,9 @@ MainPage::~MainPage()
 bool MainPage::handleApiRequest(QHttpRequest *, QHttpResponse *)
 {
     return false;
+}
+
+void MainPage::on_settingsButton_clicked()
+{
+    mainwindow->setPage(PageFactory::settingsPageKey);
 }

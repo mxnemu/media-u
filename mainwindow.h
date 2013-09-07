@@ -32,6 +32,7 @@ private:
     PageFactory pageFactory;
     Page* page;
     QString pageId;
+    MainWindow* mainwindow;
 };
 
 #endif // MAINWINDOW_H
