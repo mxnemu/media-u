@@ -36,6 +36,7 @@ MetaData MetaDataParserAvconv::parse(QString filename) const {
 
     m.duration = parseDuration(output);
     m.tracks = parseTracks(output);
+    m.chapters = parseChapters(output);
 
     return m;
 }
@@ -117,12 +118,13 @@ QList<MetaDataChapter> MetaDataParserAvconv::parseChapters(QString outputString)
         float second = chapterTitleRegex.cap(5).toFloat();
         */
 
-        QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([^\n])\n");
+        QRegExp chapterTitleRegex("Metadata:\n(.*)title(\\s*):\\s([^\n]*)\n");
         int chapterTitle = outputString.indexOf(chapterTitleRegex, chapterHead);
-        if (-1 != chapterTitle && chapterTitle < nextIndex) {
+        if (-1 != chapterTitle && (nextIndex == -1 || chapterTitle < nextIndex)) {
             c.title = chapterTitleRegex.cap(3);
         }
         chapters.append(c);
         chapterHead = nextIndex;
     }
+    return chapters;
 }
