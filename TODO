@@ -2,6 +2,7 @@ Roadmap:
 -list subtitleTracks & audiotracks for show and select prefered track (multiling rips)
 -remember play status for files in library
 -detect if mplayer ends naturally and mark the episode and all previous episodes as watched;
+-playlists: add all following episodes of a show to a playlist. Start playing the next when mplayer closes naturally;
 -detect favourite fansubber: (check fs of last 2 eps if notEq check most used fs)
 -search nyaa for new episodes of favourite fansubber
 -add new episodes to transmission-cli
