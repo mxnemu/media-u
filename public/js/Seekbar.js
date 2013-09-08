@@ -28,17 +28,16 @@ Seekbar.prototype.createNodes = function() {
         bar.mousemove(function(event) {
             var x = Math.max(event.clientX, 50);
             x = Math.min(x, window.innerWidth - 50);
-            tooltip.css("left", x);
-            tooltip.css("top", bar.offset().top);
+            var tooltipY = bar.offset().top
             
             var videoPos = metaData.duration * (event.clientX / window.innerWidth);
             var minute = (videoPos / 60);
             var second = videoPos % 60;
             
             var chapter = null;
-            for (var i=0; i < metaData.chapters; ++i) {
+            for (var i=0; i < metaData.chapters.length; ++i) {
                 if (videoPos > metaData.chapters[i].start &&
-                    videoPos > metaData.chapters[i].end) {
+                    videoPos < metaData.chapters[i].end) {
                     
                     chapter = metaData.chapters[i].title;
                 }
@@ -47,8 +46,9 @@ Seekbar.prototype.createNodes = function() {
             function setTooltip(img) {
                 tooltip.empty();
                 if (chapter) {
-                    tooltip.append("<span>chapter</span>");
+                    tooltip.append("<span>" + chapter + "</span>");
                     tooltip.append("<br/>");
+                    tooltipY -= 15;
                 }
                 tooltip.append("<span>" +
                     Utils.paddedNumber(Math.floor(minute), 2) + ":" +
@@ -58,6 +58,8 @@ Seekbar.prototype.createNodes = function() {
                 if (img) {
                     tooltip.append(img);
                 }
+                tooltip.css("left", x);
+                tooltip.css("top", tooltipY);
             }
             setTooltip();
             thumbnailCache.get(videoPos, setTooltip);
@@ -91,7 +93,7 @@ Seekbar.prototype.createNodes = function() {
         bar.click(function(event) {
             var videoPos = metaData.duration * (event.clientX / window.innerWidth);
             $.getJSON("api/player/jumpTo?" + Math.floor(videoPos), function() {
-                this.page.setPauseDisplay("unPaused");
+                self.page.setPauseDisplay("unPaused");
                 setProgress(videoPos);
             });
         });

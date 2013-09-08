@@ -118,7 +118,8 @@ QList<MetaDataChapter> MetaDataParserAvconv::parseChapters(QString outputString)
         float second = chapterTitleRegex.cap(5).toFloat();
         */
 
-        QRegExp chapterTitleRegex("Metadata:\n(.*)title(\\s*):\\s([^\n]*)\n");
+        qDebug() << outputString;
+        QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([^\n]*)\n");
         int chapterTitle = outputString.indexOf(chapterTitleRegex, chapterHead);
         if (-1 != chapterTitle && (nextIndex == -1 || chapterTitle < nextIndex)) {
             c.title = chapterTitleRegex.cap(3);
