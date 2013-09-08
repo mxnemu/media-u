@@ -10,6 +10,7 @@
 #include "malclient.h"
 #include "moebooruclient.h"
 #include "libraryfilter.h"
+#include "searchdirectory.h"
 
 class Library : public QObject
 {
@@ -35,6 +36,14 @@ public:
     QDir getDirectory() const;
 
     void downloadWallpapers();
+
+    void startSearch();
+
+    const QList<SearchDirectory>& getSearchDirectories() const;
+    bool addSearchDirectory(SearchDirectory dir);
+    SearchDirectory* getSearchDirectory(QString path);
+    bool removeSearchDirectory(QString path);
+
 signals:
     
 public slots:
@@ -46,7 +55,7 @@ private:
     QDir directory;
     QList<TvShow> tvShows;
     QList<MovieFile> movies;
-    QList<QDir> searchDirectories;
+    QList<SearchDirectory> searchDirectories;
 
     MalClient malClient;
     LibraryFilter mFilter;

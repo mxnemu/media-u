@@ -2,6 +2,8 @@
 #include "nwutils.h"
 #include <QDebug>
 #include "server.h"
+#include "directoryscanner.h"
+#include "tvshowscanner.h"
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
@@ -89,6 +91,46 @@ void Library::downloadWallpapers() {
     connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
 }
 
+void Library::startSearch() {
+    DirectoryScanner scanner;
+    scanner.addScanner(new TvShowScanner(*this));
+    for (int i=0; i < searchDirectories.length(); ++i) {
+        scanner.scan(searchDirectories.at(i).dir.absolutePath());
+    }
+    //library.write();
+}
+
+const QList<SearchDirectory>& Library::getSearchDirectories() const {
+    return searchDirectories;
+}
+
+bool Library::addSearchDirectory(SearchDirectory dir) {
+    if (getSearchDirectory(dir.dir.absolutePath()) == NULL) {
+        searchDirectories.append(dir);
+        return true;
+    }
+    return false;
+}
+
+SearchDirectory *Library::getSearchDirectory(const QString path) {
+    for (int i=0; i < searchDirectories.length(); ++i) {
+        if (searchDirectories.at(i).dir.absolutePath() == QDir(path).absolutePath()) {
+            return &searchDirectories[i];
+        }
+    }
+    return NULL;
+}
+
+bool Library::removeSearchDirectory(QString path) {
+    for (int i=0; i < searchDirectories.length(); ++i) {
+        if (searchDirectories.at(i).dir.absolutePath() == QDir(path).absolutePath()) {
+            searchDirectories.removeAt(i);
+            return true;
+        }
+    }
+    return false;
+}
+
 void Library::fetchingFinished() {
     qDebug() << "finished mal fetching, writing things now";
     this->write();
@@ -98,6 +140,17 @@ void Library::fetchingFinished() {
 void Library::readAll() {
     if (directory.exists()) {
         nw::JsonReader jr(directory.absoluteFilePath("library.json").toStdString());
+
+
+        jr.describeArray("searchDirectories", "directory", searchDirectories.length());
+        for (int i=0; jr.enterNextElement(i); ++i) {
+            QString dirpath;
+            bool enabled = false;
+            NwUtils::describe(jr, "path", dirpath);
+            NwUtils::describe(jr, "enabled", enabled);
+            searchDirectories.append(SearchDirectory(dirpath, enabled));
+        }
+
         jr.describeValueArray("tvShows", tvShows.length());
         for (int i=0; jr.enterNextElement(i); ++i) {
             std::string name;
@@ -118,10 +171,11 @@ void Library::readAll() {
 void Library::write() {
     if (directory.exists()) {
         nw::JsonWriter jw(directory.absoluteFilePath("library.json").toStdString());
-        jw.describeValueArray("searchDirectories", searchDirectories.length());
+        jw.describeArray("searchDirectories", "directory", searchDirectories.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
-            QString dirpath = searchDirectories.at(i).path();
-            NwUtils::describe(jw, "directory", dirpath);
+            QString dirpath = searchDirectories.at(i).dir.path();
+            NwUtils::describe(jw, "path", dirpath);
+            NwUtils::describe(jw, "enabled", searchDirectories[i].enabled);
         }
         jw.describeValueArray("tvShows", tvShows.length());
         for (int i=0; jw.enterNextElement(i); ++i) {

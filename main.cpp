@@ -5,8 +5,6 @@
 #include "config.h"
 #include "server.h"
 #include "library.h"
-#include "directoryscanner.h"
-#include "tvshowscanner.h"
 #include "malclient.h"
 #include "mplayer.h"
 #include "omxplayer.h"
@@ -96,20 +94,13 @@ int main(int argc, char *argv[]) {
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
 
-    // debug scanner
-    DirectoryScanner scanner;
-    scanner.addScanner(new TvShowScanner(library));
-    scanner.scan("/mnt/fields1/torrents/");
-    scanner.scan("/mnt/fields2/torrents/");
-    //scanner.scan("/media/nehmulos/INTENSO/anime");
-   //library.write();
+    library.startSearch();
 
     library.initMalClient(config.malConfigFilePath());
     library.fetchMetaData();
-
-    // time to die
     library.downloadWallpapers();
-    library.xbmcLinkExport(QDir("/tmp/xbmcex"));
-    //player->playFile("/media/nehmulos/INTENSO/anime/[Commie] Inferno Cop/[Commie] Inferno Cop - 04v2 [B6264EE0].mkv");
-    return a.exec();
+
+    int returnCode = a.exec();
+    library.write(); // write before exit
+    return returnCode;
 }

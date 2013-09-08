@@ -21,6 +21,11 @@ public:
     virtual bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     virtual void initFromQuery(const QString& initString);
     
+private slots:
+    void on_addButton_clicked();
+    void on_toggleDisableButton_clicked();
+    void on_removeButton_clicked();
+
 private:
     Ui::SettingsPage *ui;
     Library& library;

@@ -63,7 +63,8 @@ SOURCES += main.cpp\
     metadataparseravconv.cpp \
     thumbnailcreator.cpp \
     thumbnailcreatoravconv.cpp \
-    settingspage.cpp
+    settingspage.cpp \
+    searchdirectory.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -97,7 +98,8 @@ HEADERS  += mainwindow.h \
     metadataparseravconv.h \
     thumbnailcreator.h \
     thumbnailcreatoravconv.h \
-    settingspage.h
+    settingspage.h \
+    searchdirectory.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \
