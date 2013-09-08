@@ -39,6 +39,7 @@ public:
     QStringList getPlaylist() const;
     void setPlaylist(const QStringList &value);
 
+    void resetPlayingStatus();
 signals:
     void playbackEndedNormally();
     void playbackCanceled();

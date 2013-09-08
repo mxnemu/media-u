@@ -164,10 +164,18 @@ void VideoPlayer::onPlaybackEndedNormally() {
         this->playFile(this->playlist.first());
         this->playlist.removeFirst();
     }
+    this->resetPlayingStatus();
 }
 
 void VideoPlayer::onPlaybackCanceled() {
     this->playlist.clear();
+    this->resetPlayingStatus();
+}
+
+void VideoPlayer::resetPlayingStatus() {
+    this->progress = -1;
+    this->playingFile = QString();
+    this->paused = true;
 }
 
 QStringList VideoPlayer::getPlaylist() const {
