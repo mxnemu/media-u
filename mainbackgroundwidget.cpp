@@ -11,8 +11,7 @@ void MainBackgroundWidget::paintEvent(QPaintEvent *e) {
     QPainter p(this);
     if (!backgroundImage.isNull()) {
         int w = backgroundImage.width();
-        int h = backgroundImage.height();
-        h = std::min(h, height());
+        int h = height();
         float scale = ((float)h) / (float)backgroundImage.height();
         w = ((float)w)*scale;
         p.drawPixmap(0,0, w, h, backgroundImage);
