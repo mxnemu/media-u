@@ -13,6 +13,7 @@ public:
     virtual ~Season();
 
     void exportXbmcLinks(QDir dir);
+    void writeDetailed(nw::JsonWriter &jw);
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);
 
@@ -20,6 +21,7 @@ public:
     void addEpisode(QString file);
     QString name() const;
     int numberOfEpisodes() const;
+
 
 private:
     QList<MovieFile*> episodes;

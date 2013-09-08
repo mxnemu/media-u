@@ -48,6 +48,15 @@ void Season::writeAsElement(nw::JsonWriter &jw) {
     }
 }
 
+void Season::writeDetailed(nw::JsonWriter &jw) {
+    NwUtils::describe(jw, "name", mName);
+    jw.describeArray("episodes", "episode", episodes.length());
+    for (int i=0; jw.enterNextElement(i); ++i) {
+        MovieFile* episode = episodes[i];
+        episode->writeDetailed(jw);
+    }
+}
+
 void Season::addEpisode(const MovieFile& file) {
     addEpisode(file.path());
 }

@@ -43,10 +43,20 @@ TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
     var self = this;
     var seasonEl = $(document.createElement("ul"));
     seasonEl.addClass("season");
+    
+    season.episodes = season.episodes.sort(function(a,b) {
+        return a.episodeNumber < b.episodeNumber ? -1 : 1;
+    })
+    
     $.each(season.episodes, function() {
         var episodeEl = $(document.createElement("li"));
-        episodeEl.text(this); // TODO get another json with all the details
-        episodeEl.attr("data-fileName", this);
+        var line = this.episodeNumber + " " +
+            this.showName + " " +
+            (this.episodeName ? ("- " + this.episodeName + " ") : "") +
+            this.releaseGroup;
+            
+        episodeEl.text(line);
+        episodeEl.attr("data-fileName", this.path);
         
         episodeEl.click(function() {
             self.play($(this).nextAll("li").andSelf().map(function() {

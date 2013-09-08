@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <QDebug>
+#include "nwutils.h"
 
 MovieFile::MovieFile(QString path, QObject *parent) :
     QObject(parent)
@@ -148,6 +149,17 @@ void MovieFile::writeAsElement(nw::JsonWriter &jw) const
     jw.describe("path", path);
     //jw.describe("number", epNum);
     //jw.describe();
+}
+
+void MovieFile::writeDetailed(nw::JsonWriter &jw) {
+    NwUtils::describe(jw, "episodeNumber", mEpisodeNumber);
+    NwUtils::describe(jw, "path", mPath);
+    NwUtils::describe(jw, "releaseGroup", mReleaseGroup);
+    NwUtils::describe(jw, "showName", mShowName);
+    NwUtils::describe(jw, "episodeName", mEpisodeName);
+    //NwUtils::describe(jw, "tech", mTechTags);
+    NwUtils::describe(jw, "seasonName", mSeasonName);
+    NwUtils::describe(jw, "hashId", mHashId);
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {

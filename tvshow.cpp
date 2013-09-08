@@ -47,9 +47,16 @@ void TvShow::read(QDir &dir) {
 void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "name", mName);
     jw.describeArray("seasons", "season", seasons.length());
-    for (int i=0; jw.enterNextElement(i); ++i) {
-        Season& season = seasons[i];
-        season.writeAsElement(jw);
+    if (jw.hasState("detailed")) {
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            Season& season = seasons[i];
+            season.writeDetailed(jw);
+        }
+    } else {
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            Season& season = seasons[i];
+            season.writeAsElement(jw);
+        }
     }
 
     jw.describeValueArray("synonymes", synonyms.length());

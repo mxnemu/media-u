@@ -17,6 +17,7 @@ public:
     void setPath(QString path);
 
     void writeAsElement(nw::JsonWriter& jw) const;
+    void writeDetailed(nw::JsonWriter& jw);
 
     static bool hasMovieExtension(QString filename);
 
