@@ -1,6 +1,4 @@
 Roadmap:
--add search directories (via qt gui)
--use searchdirectories instead of fixed paths in main.cpp
 -list subtitleTracks & audiotracks for show and select prefered track (multiling rips)
 -remember play status for files in library
 -detect if mplayer ends naturally and mark the episode and all previous episodes as watched;
