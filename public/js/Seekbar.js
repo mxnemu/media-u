@@ -71,7 +71,7 @@ Seekbar.prototype.createNodes = function() {
         progressBar.className = "progressBar";
         bar.append(progressBar);
         function setProgress(second) {
-            progress = second;
+            progress = Math.min(second, metaData.duration);
             progressBar.style.width = ((second/metaData.duration)*100) + "%";
         };
         
