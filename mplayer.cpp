@@ -7,8 +7,7 @@
 Mplayer::Mplayer() :
     VideoPlayer()
 {
- // TODO connect finish slot
-
+    connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(onProcessOutput()));
 }
 
@@ -59,6 +58,7 @@ void Mplayer::stop() {
     //process.kill();
     process.write("quit\n");
     paused = true;
+    emit playbackCanceled();
 }
 
 void Mplayer::backwards(const int seconds) {
@@ -83,8 +83,9 @@ float Mplayer::decrementVolume() {
 
 void Mplayer::onProcessFinished(int exitCode) {
     if (exitCode == 0) {
-
+        emit playbackEndedNormally();
     }
+    qDebug() << "mplayer closed with error code" << exitCode;
     paused = true;
 }
 

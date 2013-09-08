@@ -4,6 +4,8 @@
 VideoPlayer::VideoPlayer(QObject* parent) : QObject(parent)
 {
     paused = false;
+    connect(this, SIGNAL(playbackEndedNormally()), this, SLOT(onPlaybackEndedNormally()));
+    connect(this, SIGNAL(playbackCanceled()), this, SLOT(onPlaybackCanceled()));
 }
 
 VideoPlayer::~VideoPlayer() {
@@ -41,6 +43,35 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
         } else {
             Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
+        }
+    } else if (req->path() == "/api/player/setPlaylist") {
+        stringstream ss;
+        // TODO switch to a http-server that can parse request bodies
+        //ss << req->body().data();
+        //qDebug() << req->body();
+        ss << req->url().query(QUrl::FullyDecoded).toStdString();
+        nw::JsonReader jr(ss);
+        jr.describeValueArray("episodes", -1);
+        QStringList episodes;
+        for (int i=0; jr.enterNextElement(i); ++i) {
+            std::string ep;
+            jr.describeValue(ep);
+            episodes.append(ep.c_str());
+        }
+        jr.close();
+
+        this->setPlaylist(episodes);
+
+        if (!episodes.isEmpty()) {
+            QString firstEpisode = this->playlist.takeFirst();
+            int error = this->playFile(firstEpisode);
+            if (this->process.state() == QProcess::Running) {
+                Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
+            } else {
+                Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
+            }
+        } else {
+            Server::simpleWrite(resp, 500, QString("{\"status\":\"playlist is empty\", \"error\":-1}"));
         }
     } else if (req->path() == "/api/player/stop") {
         this->stop();
@@ -126,4 +157,23 @@ void VideoPlayer::onThumbnailCreated(const QByteArray img) {
     QHttpResponse* resp = static_cast<QHttpResponse*>(tcc->data);
     Server::simpleWriteBytes(resp, 200, img);
     tcc->deleteLater();
+}
+
+void VideoPlayer::onPlaybackEndedNormally() {
+    if (this->playlist.length() > 0) {
+        this->playFile(this->playlist.first());
+        this->playlist.removeFirst();
+    }
+}
+
+void VideoPlayer::onPlaybackCanceled() {
+    this->playlist.clear();
+}
+
+QStringList VideoPlayer::getPlaylist() const {
+    return playlist;
+}
+
+void VideoPlayer::setPlaylist(const QStringList &value) {
+    playlist = value;
 }

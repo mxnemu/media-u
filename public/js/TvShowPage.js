@@ -49,7 +49,9 @@ TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
         episodeEl.attr("data-fileName", this);
         
         episodeEl.click(function() {
-            self.play($(this).attr("data-fileName"));
+            self.play($(this).nextAll("li").andSelf().map(function() {
+                return this.getAttribute("data-fileName");
+            }).toArray());
         });
         
         seasonEl.append(episodeEl);
@@ -58,19 +60,47 @@ TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
 }
 
 TvShowPage.prototype.play = function(episode) {
-    var json = {
-        tvShow: this.tvShow.name,
-        filename: episode
-    }
     if (G.playerType == "stream") {
         G.video = "/video/" + episode; // TODO DON'T SAVE IT HERE
         window.location.hash = "#!/StreamPlayerPage/";
     } else {
-        $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
-            console.log("TODO set page to mplayer remote controller");
-            if (!data.error) {
-                window.location.hash = "#!/PlayerPage";
+        if (episode instanceof Array) {
+            var json = {
+                tvShow: this.tvShow.name,
+                episodes: episode
             }
-        });
+            
+            $.getJSON("api/player/setPlaylist?" + JSON.stringify(json), function(data) {
+                if (!data.error) {
+                    window.location.hash = "#!/PlayerPage";
+                }
+            });
+        
+            /*
+            $.ajax({
+                url: "api/player/setPlaylist",
+                type:"POST",
+                data:JSON.stringify(json),
+                processData: false
+            }).done(function(data) {
+                console.log("set playlist got response:", data)
+                if (!data.error) {
+                    window.location.hash = "#!/PlayerPage";
+                }
+            });
+            */
+            
+        } else {
+            var json = {
+                tvShow: this.tvShow.name,
+                filename: episode
+            }
+        
+            $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
+                if (!data.error) {
+                    window.location.hash = "#!/PlayerPage";
+                }
+            });
+        }
     }
 }

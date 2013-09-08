@@ -36,6 +36,13 @@ public:
     const ThumbnailCreator *getThumbnailCreator() const;
     void setThumbnailCreator(const ThumbnailCreator *value);
 
+    QStringList getPlaylist() const;
+    void setPlaylist(const QStringList &value);
+
+signals:
+    void playbackEndedNormally();
+    void playbackCanceled();
+
 protected:
     virtual bool customHandleApiRequest() { return false; }
 
@@ -46,8 +53,14 @@ protected:
     bool paused;
     int progress; ///< in seconds
 
+    QStringList playlist;
+
 public slots:
     void onThumbnailCreated(const QByteArray img);
+
+private slots:
+    void onPlaybackEndedNormally();
+    void onPlaybackCanceled();
 };
 
 #endif // VIDEOPLAYER_H
