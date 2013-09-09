@@ -1,6 +1,8 @@
 function Seekbar(page) {
     this.page = page;
     this.createNodes();
+    this.progressUpdateIntervalId = null;
+    this.progressSyncIntervalId = null;
 }
 
 Seekbar.prototype.createNodes = function() {
@@ -9,12 +11,6 @@ Seekbar.prototype.createNodes = function() {
     
     var tooltip = $(document.createElement("div"));
     tooltip.addClass("seekbartooltip");
-    bar.hover(function(event) {
-        tooltip.show();
-    });
-    bar.mouseout(function() {
-        tooltip.hide();
-    });
     
     var metaData = null;
     var self = this;
@@ -65,6 +61,13 @@ Seekbar.prototype.createNodes = function() {
             thumbnailCache.get(videoPos, setTooltip);
         });
         
+        bar.mouseenter(function(event) {
+            tooltip.show();
+        });
+        bar.mouseleave(function(event) {
+            tooltip.hide();
+        });
+        
         // TODO cleanup this lazy mess
         var progress;
         var progressBar = document.createElement("div");
@@ -73,17 +76,21 @@ Seekbar.prototype.createNodes = function() {
         function setProgress(second) {
             progress = Math.min(second, metaData.duration);
             progressBar.style.width = ((second/metaData.duration)*100) + "%";
+            if (progress == metaData.duration) {
+                window.clearInterval(self.progressUpdateIntervalId);
+                window.clearInterval(self.progressSyncIntervalId);
+            }
         };
         
         $.getJSON("api/player/progress", function(data) {
             setProgress(data.progress);
-            window.setInterval(function() {
+            self.progressUpdateIntervalId = window.setInterval(function() {
                 if (self.page.togglePauseButton.attr("data-status") == "unPaused") {
                     setProgress(progress +1);
                 }
             }, 1000);
             // sync with the player's progress every 10s
-            window.setInterval(function() {
+            self.progressSyncIntervalId = window.setInterval(function() {
                 $.getJSON("api/player/progress", function(d) {
                     setProgress(d.progress);
                 });
