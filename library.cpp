@@ -184,10 +184,10 @@ void Library::write() {
             jw.describeValue(name);
 
             QDir showDir = show.directory(directory);
-            if (!showDir.exists() && !directory.mkdir(show.name())) {
+            if (!showDir.exists() && !directory.mkdir(showDir.dirName())) {
                 // TODO
-                qDebug() << "TODO thow error can not write library";
-                break;
+                qDebug() << "TODO thow error can not write library" << showDir.absolutePath();
+                continue;
             }
             nw::JsonWriter showJw(showDir.absoluteFilePath("tvShow.json").toStdString());
             show.write(showJw);
