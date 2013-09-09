@@ -50,7 +50,9 @@ TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
     
     $.each(season.episodes, function() {
         var episodeEl = $(document.createElement("li"));
-        var line = this.episodeNumber + " " +
+        var line = 
+            (this.watched ? "+ " : "- ") + 
+            this.episodeNumber + " " +
             this.showName + " " +
             (this.episodeName ? ("- " + this.episodeName + " ") : "") +
             this.releaseGroup;

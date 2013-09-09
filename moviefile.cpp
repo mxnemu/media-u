@@ -148,9 +148,12 @@ void MovieFile::setPath(QString path) {
     }
 }
 
-void MovieFile::describe(nw::Describer *jw) {
-    NwUtils::describe(*jw, "path", mPath);
-    jw->describe("watched", watched);
+void MovieFile::describe(nw::Describer *de) {
+    NwUtils::describe(*de, "path", mPath);
+    de->describe("watched", watched);
+    if (de->isInReadMode()) {
+        this->setPath(mPath);
+    }
 }
 
 void MovieFile::writeDetailed(nw::JsonWriter &jw) {
@@ -162,6 +165,7 @@ void MovieFile::writeDetailed(nw::JsonWriter &jw) {
     //NwUtils::describe(jw, "tech", mTechTags);
     NwUtils::describe(jw, "seasonName", mSeasonName);
     NwUtils::describe(jw, "hashId", mHashId);
+    NwUtils::describe(jw, "watched", watched);
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
