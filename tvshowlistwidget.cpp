@@ -19,8 +19,9 @@ void TvShowListWidget::set(QList<TvShow*> showList, QString title) {
         const TvShow* show = showList.at(i);
         QStringList strings;
         strings.append(show->name());
-        strings.append(QString("%1/%2").arg(
+        strings.append(QString("%1/%2/%3").arg(
             QString::number(show->getWatchedEpisodes()),
+            QString::number(show->episodesDownloaded()),
             QString::number(show->getTotalEpisodes())
         ));
         QTreeWidgetItem* item = new QTreeWidgetItem(strings);
