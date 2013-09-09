@@ -154,8 +154,15 @@ int TvShow::episodesDownloaded() const {
     return sum;
 }
 
-int TvShow::getTotalEpisodes() const
-{
+int TvShow::getWatchedEpisodes() const {
+    int sum = 0;
+    for (QList<Season>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        sum += it->numberOfWatchedEpisodes();
+    }
+    return sum;
+}
+
+int TvShow::getTotalEpisodes() const {
     return totalEpisodes;
 }
 

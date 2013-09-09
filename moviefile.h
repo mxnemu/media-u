@@ -35,6 +35,9 @@ public:
     QString xbmcEpisodeNumber() const;
     QString xbmcEpisodeName() const;
     QString fileExtension() const;
+    bool getWatched() const;
+    void setWatched(bool value);
+
 signals:
     
 public slots:

@@ -50,6 +50,7 @@ public:
     QString randomWallpaper(QDir libraryDirectory) const;
     QStringList wallpapers(QDir libraryDirectory) const;
     int episodesDownloaded() const;
+    int getWatchedEpisodes() const;
 private:
 
     QString mName;

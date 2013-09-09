@@ -236,3 +236,13 @@ QStringList MovieFile::techTags() const {
 QString MovieFile::hashId() const {
     return mHashId;
 }
+
+bool MovieFile::getWatched() const
+{
+    return watched;
+}
+
+void MovieFile::setWatched(bool value)
+{
+    watched = value;
+}

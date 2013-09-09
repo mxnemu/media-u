@@ -97,3 +97,14 @@ int Season::numberOfEpisodes() const
     }
     return count;
 }
+
+int Season::numberOfWatchedEpisodes() const
+{
+    int count = 0;
+    for (int i=0; i < episodes.length(); ++i) {
+        if (!episodes.at(i)->isSpecial() && episodes.at(i)->getWatched()) {
+            ++count;
+        }
+    }
+    return count;
+}

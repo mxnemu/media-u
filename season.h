@@ -22,8 +22,7 @@ public:
     void addEpisode(QString file);
     QString name() const;
     int numberOfEpisodes() const;
-
-
+    int numberOfWatchedEpisodes() const;
 private:
     QList<MovieFile*> episodes;
     QString mName;
