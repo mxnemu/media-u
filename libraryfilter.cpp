@@ -44,6 +44,16 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
+MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
+    for (int i=0; i < tvShows.length(); ++i) {
+        MovieFile* episode = tvShows[i].getEpisodeForPath(path);
+        if (episode) {
+            return episode;
+        }
+    }
+    return NULL;
+}
+
 QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &))
 {
     QList<TvShow*> filteredList;

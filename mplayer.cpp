@@ -4,8 +4,8 @@
 #include <QDebug>
 #include "systemutils.h"
 
-Mplayer::Mplayer() :
-    VideoPlayer()
+Mplayer::Mplayer(Library& library) :
+    VideoPlayer(library)
 {
     connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(onProcessOutput()));

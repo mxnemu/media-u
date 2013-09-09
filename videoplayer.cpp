@@ -1,7 +1,7 @@
 #include "videoplayer.h"
 #include <server.h>
 
-VideoPlayer::VideoPlayer(QObject* parent) : QObject(parent)
+VideoPlayer::VideoPlayer(Library& library, QObject* parent) : QObject(parent), library(library)
 {
     paused = false;
     connect(this, SIGNAL(playbackEndedNormally()), this, SLOT(onPlaybackEndedNormally()));
@@ -160,6 +160,12 @@ void VideoPlayer::onThumbnailCreated(const QByteArray img) {
 }
 
 void VideoPlayer::onPlaybackEndedNormally() {
+
+    MovieFile* episode = this->library.filter().getEpisodeForPath(playingFile);
+    if (episode) {
+        episode->setWatched(true);
+    }
+
     if (this->playlist.length() > 0) {
         this->playFile(this->playlist.first());
         this->playlist.removeFirst();

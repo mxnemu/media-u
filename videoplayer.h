@@ -6,12 +6,13 @@
 #include <QObject>
 #include "metadataparser.h"
 #include "thumbnailcreator.h"
+#include "library.h"
 
 class VideoPlayer : public QObject
 {
    Q_OBJECT // TODO build breaks here when trying to inherit qobject
 public:
-    explicit VideoPlayer(QObject *parent = NULL);
+    explicit VideoPlayer(Library &library, QObject *parent = NULL);
     virtual ~VideoPlayer();
     virtual int playFile(QString filepath) = 0;
 
@@ -47,6 +48,7 @@ signals:
 protected:
     virtual bool customHandleApiRequest() { return false; }
 
+    Library& library;
     QString playingFile;
     const MetaDataParser* metaDataParser;
     const ThumbnailCreator* thumbnailCreator;

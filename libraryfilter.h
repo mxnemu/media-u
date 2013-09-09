@@ -14,6 +14,7 @@ public:
     QList<TvShow*> airing();
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
+    MovieFile* getEpisodeForPath(const QString& path);
 
 private:
     QList<TvShow*> filter(bool (*filterFunc)(const TvShow &));

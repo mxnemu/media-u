@@ -6,7 +6,7 @@
 class Omxplayer : public VideoPlayer
 {
 public:
-    Omxplayer();
+    Omxplayer(Library& library);
 
     virtual int playFile(QString filepath);
 

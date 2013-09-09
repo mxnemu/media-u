@@ -68,16 +68,9 @@ void Season::addEpisode(const MovieFile& file) {
 }
 
 void Season::addEpisode(QString file) {
-    if (file.isEmpty()) {
+    if (file.isEmpty() || NULL != getEpisodeForPath(file)) {
         return;
-    }
-
-    for (int i=0; i < episodes.length(); ++i) {
-        const MovieFile* f = episodes.at(i);
-        if (f->path() == file) {
-            return;
-        }
-    }
+    }    
 
     episodes.append(new MovieFile(file));
     qDebug() << episodes.back()->releaseGroup() << episodes.back()->episodeNumber() << episodes.back()->showName();
@@ -107,4 +100,14 @@ int Season::numberOfWatchedEpisodes() const
         }
     }
     return count;
+}
+
+MovieFile* Season::getEpisodeForPath(const QString& path) {
+    for (int i=0; i < episodes.length(); ++i) {
+        MovieFile* f = episodes[i];
+        if (f->path() == path) {
+            return f;
+        }
+    }
+    return NULL;
 }

@@ -162,6 +162,16 @@ int TvShow::getWatchedEpisodes() const {
     return sum;
 }
 
+MovieFile *TvShow::getEpisodeForPath(const QString& path) {
+    for (int i=0; i < seasons.length(); ++i) {
+        MovieFile* episode = seasons[i].getEpisodeForPath(path);
+        if (episode) {
+            return episode;
+        }
+    }
+    return NULL;
+}
+
 int TvShow::getTotalEpisodes() const {
     return totalEpisodes;
 }

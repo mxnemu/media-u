@@ -6,7 +6,7 @@
 
 // TODO get rid of all the redunant stuff from mplayer and merge it into 1 base
 
-Omxplayer::Omxplayer() {
+Omxplayer::Omxplayer(Library& library) : VideoPlayer(library) {
 }
 
 int Omxplayer::playFile(QString filepath) {

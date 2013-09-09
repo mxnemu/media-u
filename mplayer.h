@@ -8,7 +8,7 @@ class Mplayer : public VideoPlayer
 {
     Q_OBJECT
 public:
-    Mplayer();
+    Mplayer(Library& library);
     virtual ~Mplayer();
     virtual int playFile(QString filepath);
 

@@ -23,6 +23,8 @@ public:
     QString name() const;
     int numberOfEpisodes() const;
     int numberOfWatchedEpisodes() const;
+
+    MovieFile* getEpisodeForPath(const QString &path);
 private:
     QList<MovieFile*> episodes;
     QString mName;

@@ -51,6 +51,8 @@ public:
     QStringList wallpapers(QDir libraryDirectory) const;
     int episodesDownloaded() const;
     int getWatchedEpisodes() const;
+
+    MovieFile* getEpisodeForPath(const QString &path);
 private:
 
     QString mName;
