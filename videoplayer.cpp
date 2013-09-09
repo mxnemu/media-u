@@ -166,11 +166,11 @@ void VideoPlayer::onPlaybackEndedNormally() {
         episode->setWatched(true);
     }
 
+    this->resetPlayingStatus();
     if (this->playlist.length() > 0) {
         this->playFile(this->playlist.first());
         this->playlist.removeFirst();
     }
-    this->resetPlayingStatus();
 }
 
 void VideoPlayer::onPlaybackCanceled() {
