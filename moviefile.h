@@ -11,12 +11,13 @@ class MovieFile : public QObject
 {
     Q_OBJECT
 public:
+    explicit MovieFile(nw::Describer *jw, QObject *parent = 0);
     explicit MovieFile(QString path, QObject *parent = 0);
     
     QString path() const;
     void setPath(QString path);
 
-    void writeAsElement(nw::JsonWriter& jw) const;
+    void describe(nw::Describer *jw);
     void writeDetailed(nw::JsonWriter& jw);
 
     static bool hasMovieExtension(QString filename);
@@ -34,7 +35,6 @@ public:
     QString xbmcEpisodeNumber() const;
     QString xbmcEpisodeName() const;
     QString fileExtension() const;
-
 signals:
     
 public slots:

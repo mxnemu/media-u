@@ -5,6 +5,12 @@
 #include <QDebug>
 #include "nwutils.h"
 
+MovieFile::MovieFile(nw::Describer *jw, QObject* parent) :
+    QObject(parent)
+{
+    this->describe(jw);
+}
+
 MovieFile::MovieFile(QString path, QObject *parent) :
     QObject(parent)
 {
@@ -142,13 +148,9 @@ void MovieFile::setPath(QString path) {
     }
 }
 
-void MovieFile::writeAsElement(nw::JsonWriter &jw) const
-{
-    std::string path = mPath.toStdString(),
-                epNum = mEpisodeNumber.toStdString();
-    jw.describe("path", path);
-    //jw.describe("number", epNum);
-    //jw.describe();
+void MovieFile::describe(nw::Describer *jw) {
+    NwUtils::describe(*jw, "path", mPath);
+    jw->describe("watched", watched);
 }
 
 void MovieFile::writeDetailed(nw::JsonWriter &jw) {

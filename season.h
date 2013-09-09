@@ -17,6 +17,7 @@ public:
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);
 
+    void addEpisode(MovieFile *file); ///< takes ownage
     void addEpisode(const MovieFile& file);
     void addEpisode(QString file);
     QString name() const;

@@ -30,21 +30,19 @@ void Season::exportXbmcLinks(QDir dir) {
 
 void Season::readAsElement(nw::JsonReader &jr) {
     NwUtils::describe(jr, "name", mName);
-    jr.describeValueArray("episodes", episodes.length());
+    jr.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jr.enterNextElement(i); ++i) {
-        std::string episodePath;
-        jr.describeValue(episodePath);
-        addEpisode(QString(episodePath.data()));
+        MovieFile* episode = new MovieFile(&jr);
+        addEpisode(episode);
     }
 }
 
 void Season::writeAsElement(nw::JsonWriter &jw) {
     NwUtils::describe(jw, "name", mName);
-    jw.describeValueArray("episodes", episodes.length());
+    jw.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
-        const MovieFile* episode = episodes.at(i);
-        std::string episodePath = episode->path().toStdString();
-        jw.describeValue(episodePath);
+        MovieFile* episode = episodes[i];
+        episode->describe(&jw);
     }
 }
 
@@ -57,11 +55,23 @@ void Season::writeDetailed(nw::JsonWriter &jw) {
     }
 }
 
+void Season::addEpisode(MovieFile* episode) {
+    if (episode->path().isEmpty()) {
+        delete episode;
+    } else {
+        episodes.append(episode);
+    }
+}
+
 void Season::addEpisode(const MovieFile& file) {
     addEpisode(file.path());
 }
 
 void Season::addEpisode(QString file) {
+    if (file.isEmpty()) {
+        return;
+    }
+
     for (int i=0; i < episodes.length(); ++i) {
         const MovieFile* f = episodes.at(i);
         if (f->path() == file) {
