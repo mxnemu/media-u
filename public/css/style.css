@@ -32,8 +32,16 @@ li:nth-child(odd) {
     background-color: #444;
 }
 
-li.focused, .season li:hover {
+li.focused {
     color: gold;
+}
+
+.season li:hover {
+    color: gold;
+}
+
+.season li:hover > span:hover ~ span {
+    color: white;
 }
 
 .seekbar {
@@ -88,6 +96,6 @@ li.focused, .season li:hover {
     overflow:auto;
 }
 
-.season li input {
-    float:right;
+.season li .textButton:hover {
+    cursor: pointer;
 }

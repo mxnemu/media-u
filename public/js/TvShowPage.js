@@ -49,34 +49,33 @@ TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
     })
     
     $.each(season.episodes, function() {
+        var ep = this;
         var episodeEl = $(document.createElement("li"));
         var text = $("<span></span>");
-        var ep = this;
-        function updateText() {
-            var line = 
-                (ep.watched ? "+ " : "- ") + 
-                ep.episodeNumber + " " +
-                ep.showName + " " +
-                (ep.episodeName ? ("- " + ep.episodeName + " ") : "") +
-                ep.releaseGroup;
-            text.text(line);
-        }
         
-        updateText();
-        episodeEl.append(text);
+        var title = 
+            ep.episodeNumber + " " +
+            ep.showName + " " +
+            (ep.episodeName ? ("- " + ep.episodeName + " ") : "") +
+            ep.releaseGroup;
+        text.text(title);
         
-        var toggleWatchButton = $("<input type=\"button\" value=\"toggle Watched\"/>");
+        
+        var toggleWatchButton = $("<span class=\"textButton\"></span>");
+        toggleWatchButton.text(ep.watched ? "+ " : "- ");
         toggleWatchButton.click(function(event) {
             ep.watched = !ep.watched;
-            updateText();
+            toggleWatchButton.text(ep.watched ? "+ " : "- ");
             $.getJSON("api/library/toggleWatched?" + ep.path);
         });
         
         episodeEl.append(toggleWatchButton);
+        episodeEl.append(text);
+        
         episodeEl.attr("data-fileName", this.path);
         
         episodeEl.click(function() {
-            if (event.target != toggleWatchButton.get(0)) {
+            if (!event.target.classList.contains("textButton")) {
                 self.play($(this).nextAll("li").andSelf().map(function() {
                     return this.getAttribute("data-fileName");
                 }).toArray());
