@@ -50,20 +50,37 @@ TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
     
     $.each(season.episodes, function() {
         var episodeEl = $(document.createElement("li"));
-        var line = 
-            (this.watched ? "+ " : "- ") + 
-            this.episodeNumber + " " +
-            this.showName + " " +
-            (this.episodeName ? ("- " + this.episodeName + " ") : "") +
-            this.releaseGroup;
-            
-        episodeEl.text(line);
+        var text = $("<span></span>");
+        var ep = this;
+        function updateText() {
+            var line = 
+                (ep.watched ? "+ " : "- ") + 
+                ep.episodeNumber + " " +
+                ep.showName + " " +
+                (ep.episodeName ? ("- " + ep.episodeName + " ") : "") +
+                ep.releaseGroup;
+            text.text(line);
+        }
+        
+        updateText();
+        episodeEl.append(text);
+        
+        var toggleWatchButton = $("<input type=\"button\" value=\"toggle Watched\"/>");
+        toggleWatchButton.click(function(event) {
+            ep.watched = !ep.watched;
+            updateText();
+            $.getJSON("api/library/toggleWatched?" + ep.path);
+        });
+        
+        episodeEl.append(toggleWatchButton);
         episodeEl.attr("data-fileName", this.path);
         
         episodeEl.click(function() {
-            self.play($(this).nextAll("li").andSelf().map(function() {
-                return this.getAttribute("data-fileName");
-            }).toArray());
+            if (event.target != toggleWatchButton.get(0)) {
+                self.play($(this).nextAll("li").andSelf().map(function() {
+                    return this.getAttribute("data-fileName");
+                }).toArray());
+            }
         });
         
         seasonEl.append(episodeEl);

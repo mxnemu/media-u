@@ -83,3 +83,11 @@ li.focused, .season li:hover {
     float:left;
     margin-left: 1.5em;
 }
+
+.season li {
+    overflow:auto;
+}
+
+.season li input {
+    float:right;
+}
