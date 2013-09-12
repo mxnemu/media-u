@@ -166,6 +166,8 @@ void MovieFile::writeDetailed(nw::JsonWriter &jw) {
     NwUtils::describe(jw, "seasonName", mSeasonName);
     NwUtils::describe(jw, "hashId", mHashId);
     NwUtils::describe(jw, "watched", watched);
+    int num = numericEpisodeNumber();
+    NwUtils::describe(jw, "numericEpisodeNumber", num);
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
@@ -196,15 +198,26 @@ QString MovieFile::releaseGroup() const {
 }
 
 QString MovieFile::xbmcEpisodeNumber() const {
-    if (episodeNumber().contains(QRegExp("OP|ED|Opening|Ending|EX"))) {
+    int num = numericEpisodeNumber();
+    if (num == -2) {
         return QString("0x%1").arg(episodeNumber());
+    }
+    if (num != -1) {
+        return QString::number(num);
+    }
+    return episodeNumber();
+}
+
+int MovieFile::numericEpisodeNumber() const {
+    if (episodeNumber().contains(QRegExp("OP|ED|Opening|Ending|EX"))) {
+        return -2;
     }
     QRegExp pureNumber("([0-9]+)");
     int index = pureNumber.indexIn(mEpisodeNumber);
     if (index != -1) {
-        return pureNumber.cap(1);
+        return pureNumber.cap(1).toInt();
     }
-    return episodeNumber();
+    return -1;
 }
 
 QString MovieFile::fileExtension() const {

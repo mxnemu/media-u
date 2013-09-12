@@ -38,6 +38,7 @@ public:
     bool getWatched() const;
     void setWatched(bool value);
 
+    int numericEpisodeNumber() const;
 signals:
     
 public slots:
