@@ -44,7 +44,7 @@ bool Config::parse(const QString& jsonData)
 
 
 
-    istringstream input(jsonData.toStdString());
+    std::istringstream input(jsonData.toStdString());
     nw::JsonReader jr(input);
     jr.describe("port", mServerPort);
     jr.push("library");

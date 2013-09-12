@@ -31,7 +31,7 @@ void VideoPlayer::jumpTo(int second) {
 
 bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/player/play") && !req->url().query().isEmpty()) {
-        stringstream ss;
+        std::stringstream ss;
         ss << req->url().query(QUrl::FullyDecoded).toStdString();
         QString episode;
         nw::JsonReader jr(ss);
@@ -45,7 +45,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
         }
     } else if (req->path() == "/api/player/setPlaylist") {
-        stringstream ss;
+        std::stringstream ss;
         // TODO switch to a http-server that can parse request bodies
         //ss << req->body().data();
         //qDebug() << req->body();

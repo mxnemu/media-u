@@ -8,7 +8,7 @@ MetaDataParser::MetaDataParser()
 
 
 QString MetaData::toJson() {
-    stringstream ss;
+    std::stringstream ss;
     nw::JsonWriter jw(ss);
     NwUtils::describe(jw, "duration", this->duration);
     jw.describeArray("chapters", "chapter", this->chapters.size());
