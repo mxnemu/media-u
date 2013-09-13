@@ -75,8 +75,8 @@ void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "synopsis", synopsis);
 }
 
-void TvShow::importEpisode(const MovieFile &episode) {
-    Season& season = this->season(episode.seasonName());
+void TvShow::importEpisode(MovieFile *episode) {
+    Season& season = this->season(episode->seasonName());
     season.addEpisode(episode);
 }
 

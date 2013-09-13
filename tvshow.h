@@ -18,7 +18,7 @@ public:
     void read(QDir &dir);
     void write(nw::JsonWriter &jw);
 
-    void importEpisode(const MovieFile& episode);
+    void importEpisode(MovieFile *episode);
     void downloadImage(const QString url, QDir libraryDirectory);
 
     bool isAiring() const;

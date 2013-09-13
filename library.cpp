@@ -72,9 +72,14 @@ LibraryFilter &Library::filter()
 }
 
 void Library::importTvShowEpisode(QString episodePath) {
-    MovieFile episode(episodePath);
-    TvShow& show = this->tvShow(episode.showName());
-    show.importEpisode(episode);
+    MovieFile* episode = new MovieFile(episodePath);
+    if (!episode->showName().isEmpty()) {
+        TvShow& show = this->tvShow(episode->showName());
+        show.importEpisode(episode); // takes ownage
+    } else {
+        qDebug() << "could not import (no show name parsed):" << episode->path();
+        delete episode;
+    }
 }
 
 void Library::xbmcLinkExport(QDir outputDir) {

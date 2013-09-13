@@ -6,13 +6,7 @@ Season::Season(QString name, QObject* parent) : QObject(parent) {
     mName = name;
 }
 
-Season::~Season()
-{
-    foreach (MovieFile* file, episodes) {
-        if (file) {
-            delete file;
-        }
-    }
+Season::~Season() {
 }
 
 // TODO put specials into season 0
@@ -32,7 +26,7 @@ void Season::readAsElement(nw::JsonReader &jr) {
     NwUtils::describe(jr, "name", mName);
     jr.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jr.enterNextElement(i); ++i) {
-        MovieFile* episode = new MovieFile(&jr);
+        MovieFile* episode = new MovieFile(&jr, this);
         addEpisode(episode);
     }
 }
@@ -56,24 +50,21 @@ void Season::writeDetailed(nw::JsonWriter &jw) {
 }
 
 void Season::addEpisode(MovieFile* episode) {
-    if (episode->path().isEmpty()) {
+    if (episode->path().isEmpty() || NULL != getEpisodeForPath(episode->path())) {
         delete episode;
     } else {
         episodes.append(episode);
+        episode->setParent(this);
         connect(episode, SIGNAL(watchedChanged(bool,bool)), this, SLOT(watchedChanged(bool,bool)));
     }
-}
-
-void Season::addEpisode(const MovieFile& file) {
-    addEpisode(file.path());
 }
 
 void Season::addEpisode(QString file) {
     if (file.isEmpty() || NULL != getEpisodeForPath(file)) {
         return;
-    }    
+    }
 
-    addEpisode(new MovieFile(file));
+    addEpisode(new MovieFile(file, this));
     qDebug() << episodes.back()->releaseGroup() << episodes.back()->episodeNumber() << episodes.back()->showName();
 }
 
