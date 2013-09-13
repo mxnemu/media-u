@@ -7,10 +7,11 @@
 #include <season.h>
 #include <N0Slib.h>
 
-class TvShow
+class TvShow : public QObject
 {
+    Q_OBJECT
 public:
-    TvShow(QString name);
+    TvShow(QString name, QObject* parent = NULL);
 
     Season &season(QString name);
 
@@ -53,10 +54,16 @@ public:
     int getWatchedEpisodes() const;
 
     MovieFile* getEpisodeForPath(const QString &path);
+
+signals:
+    void watchCountChanged(int oldCount, int newCount);
+
+private slots:
+    void watchedChanged(int oldSeasonCount, int newSeasonCount);
 private:
 
     QString mName;
-    QList<Season> seasons;
+    QList<Season*> seasons;
 
     QString remoteId;
     QStringList synonyms;

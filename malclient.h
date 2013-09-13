@@ -24,7 +24,7 @@ public:
     //CurlXmlResult curlPerform(const char *url);
     bool hasValidCredentials() const;
 
-    void fetchShows(QList<TvShow>& showList, QDir libraryDir);
+    void fetchShows(QList<TvShow *> &showList, QDir libraryDir);
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
 signals:
     void fetchingFinished();
@@ -43,12 +43,12 @@ private:
 
 class MalClientThread : public QThread {
 public:
-    MalClientThread(MalClient& client, QList<TvShow>& shows, QDir libraryDir);
+    MalClientThread(MalClient& client, QList<TvShow*>& shows, QDir libraryDir);
 
     void run();
 private:
     MalClient& malClient;
-    QList<TvShow>& tvShows;
+    QList<TvShow*>& tvShows;
     QDir libraryDir;
 };
 

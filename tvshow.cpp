@@ -4,19 +4,21 @@
 #include "directoryscanner.h"
 #include "filefilterscanner.h"
 
-TvShow::TvShow(QString name) {
+TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     this->mName = name;
     totalEpisodes = 0;
 }
 
 Season& TvShow::season(QString name) {
-    for (QList<Season>::iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        if (it->name() == name) {
-            return it.i->t();
+    for (QList<Season*>::iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        if ((*it)->name() == name) {
+            return *(it.i->t());
         }
     }
-    this->seasons.push_back(Season(name));
-    return this->seasons.back();
+    this->seasons.push_back(new Season(name, this));
+    Season* s = this->seasons.back();
+    connect(s, SIGNAL(watchCountChanged(int,int)), this, SLOT(watchedChanged(int,int)));
+    return *s;
 }
 
 void TvShow::read(QDir &dir) {
@@ -49,12 +51,12 @@ void TvShow::write(nw::JsonWriter& jw) {
     jw.describeArray("seasons", "season", seasons.length());
     if (jw.hasState("detailed")) {
         for (int i=0; jw.enterNextElement(i); ++i) {
-            Season& season = seasons[i];
+            Season& season = *seasons[i];
             season.writeDetailed(jw);
         }
     } else {
         for (int i=0; jw.enterNextElement(i); ++i) {
-            Season& season = seasons[i];
+            Season& season = *seasons[i];
             season.writeAsElement(jw);
         }
     }
@@ -133,11 +135,11 @@ void TvShow::exportXbmcLinks(QDir dir) {
         dir.mkpath(".");
     }
     int i = 0;
-    for (QList<Season>::iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        QString seasonName = it->name().length() > 0 ? it->name() :
+    for (QList<Season*>::iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        QString seasonName = (*it)->name().length() > 0 ? (*it)->name() :
                              QString("Season %1").arg(i+1);
         QDir seasonDir(dir.absoluteFilePath(seasonName));
-        it->exportXbmcLinks(seasonDir);
+        (*it)->exportXbmcLinks(seasonDir);
         ++i;
     }
 }
@@ -148,23 +150,23 @@ QString TvShow::name() const {
 
 int TvShow::episodesDownloaded() const {
     int sum = 0;
-    for (QList<Season>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        sum += it->numberOfEpisodes();
+    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        sum += (*it)->numberOfEpisodes();
     }
     return sum;
 }
 
 int TvShow::getWatchedEpisodes() const {
     int sum = 0;
-    for (QList<Season>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        sum += it->numberOfWatchedEpisodes();
+    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        sum += (*it)->numberOfWatchedEpisodes();
     }
     return sum;
 }
 
 MovieFile *TvShow::getEpisodeForPath(const QString& path) {
     for (int i=0; i < seasons.length(); ++i) {
-        MovieFile* episode = seasons[i].getEpisodeForPath(path);
+        MovieFile* episode = seasons[i]->getEpisodeForPath(path);
         if (episode) {
             return episode;
         }
@@ -249,4 +251,10 @@ QString TvShow::getRemoteId() const
 void TvShow::setRemoteId(const QString &value)
 {
     remoteId = value;
+}
+
+
+void TvShow::watchedChanged(int oldSeasonCount, int newSeasonCount) {
+    int count = getWatchedEpisodes();
+    emit watchCountChanged(count - newSeasonCount + oldSeasonCount, count);
 }

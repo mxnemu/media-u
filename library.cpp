@@ -48,19 +48,19 @@ QString Library::randomWallpaperPath() const {
 }
 
 TvShow& Library::tvShow(const QString name) {
-    for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        if (it->name().compare(name, Qt::CaseInsensitive) == 0) {
-            return it.i->t();
+    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
+        if ((*it)->name().compare(name, Qt::CaseInsensitive) == 0) {
+            return *(it.i->t());
         }
     }
-    this->tvShows.push_back(TvShow(name));
-    return this->tvShows.back();
+    this->tvShows.push_back(new TvShow(name, this));
+    return *this->tvShows.back();
 }
 
 TvShow* Library::existingTvShow(const QString name) {
-    for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        if (it->name() == name) {
-            return &it.i->t();
+    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
+        if ((*it)->name() == name) {
+            return it.i->t();
         }
     }
     return NULL;
@@ -82,8 +82,8 @@ void Library::xbmcLinkExport(QDir outputDir) {
         outputDir.mkpath(".");
     }
 
-    for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        it->exportXbmcLinks(it->directory(outputDir));
+    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
+        (*it)->exportXbmcLinks((*it)->directory(outputDir));
     }
 }
 
@@ -187,18 +187,18 @@ void Library::write() {
         }
         jw.describeValueArray("tvShows", tvShows.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
-            TvShow& show = tvShows[i];
-            std::string name = show.name().toStdString();
+            TvShow* show = tvShows[i];
+            std::string name = show->name().toStdString();
             jw.describeValue(name);
 
-            QDir showDir = show.directory(directory);
+            QDir showDir = show->directory(directory);
             if (!showDir.exists() && !directory.mkdir(showDir.dirName())) {
                 // TODO
                 qDebug() << "TODO thow error can not write library" << showDir.absolutePath();
                 continue;
             }
             nw::JsonWriter showJw(showDir.absoluteFilePath("tvShow.json").toStdString());
-            show.write(showJw);
+            show->write(showJw);
             showJw.close();
         }
         jw.close();

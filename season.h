@@ -6,10 +6,11 @@
 #include <QDir>
 #include "moviefile.h"
 
-class Season
+class Season : public QObject
 {
+    Q_OBJECT
 public:
-    Season(QString name);
+    Season(QString name, QObject *parent = NULL);
     virtual ~Season();
 
     void exportXbmcLinks(QDir dir);
@@ -25,6 +26,12 @@ public:
     int numberOfWatchedEpisodes() const;
 
     MovieFile* getEpisodeForPath(const QString &path);
+signals:
+    void watchCountChanged(int oldCount, int newCount);
+
+private slots:
+    void watchedChanged(bool oldValue, bool newValue);
+
 private:
     QList<MovieFile*> episodes;
     QString mName;

@@ -40,6 +40,7 @@ public:
 
     int numericEpisodeNumber() const;
 signals:
+    void watchedChanged(bool oldValue, bool newValue);
     
 public slots:
     

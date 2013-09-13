@@ -24,17 +24,20 @@ void TvShowPage::initFromQuery(const QString &initString) {
 
 void TvShowPage::setTvShow(TvShow* show) {
     this->tvShow = show;
+    connect(tvShow, SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
+
     ui->title->setText(show->name());
     if (show->coverPath(library.getDirectory()).length() > 0) {
         QPixmap pix(show->coverPath(library.getDirectory()));
         ui->cover->setPixmap(pix);
     }
-    ui->episodes->setText(QString("%1/%2/%3").arg(0).arg(show->episodesDownloaded()).arg(show->getTotalEpisodes()));
     ui->status->setText(show->getAiringStatus());
     ui->startDate->setText(show->getStartDate().toString("yyyy-MM-dd"));
     ui->endDate->setText(show->getEndDate().toString("yyyy-MM-dd"));
     ui->medium->setText(show->getShowType());
     ui->synopsis->setText(show->getSynopsis());
+
+    this->updateWatched(0,0);
 
     QString backgroundWallpaper = show->randomWallpaper(library.getDirectory());
     if (!backgroundWallpaper.isNull()) {
@@ -42,6 +45,14 @@ void TvShowPage::setTvShow(TvShow* show) {
     } else {
         dynamic_cast<MainBackgroundWidget*>(this->parentWidget())->setBackground(QString());
     }
+}
+
+void TvShowPage::updateWatched(int,  int) {
+    ui->episodes->setText(QString("%1/%2/%3").arg(
+        QString::number(tvShow->getWatchedEpisodes()),
+        QString::number(tvShow->episodesDownloaded()),
+        QString::number(tvShow->getTotalEpisodes())
+    ));
 }
 
 bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)

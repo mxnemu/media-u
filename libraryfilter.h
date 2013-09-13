@@ -8,7 +8,7 @@
 class LibraryFilter
 {
 public:
-    LibraryFilter(QList<TvShow>& shows);
+    LibraryFilter(QList<TvShow*>& shows);
 
     QList<TvShow*> all();
     QList<TvShow*> airing();
@@ -22,7 +22,7 @@ private:
     static bool filterAll(const TvShow&);
     static bool filterAiring(const TvShow & show);
 
-    QList<TvShow>& tvShows;
+    QList<TvShow*>& tvShows;
 };
 
 #endif // LIBRARYFILTER_H

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include "nwutils.h"
 
-Season::Season(QString name) {
+Season::Season(QString name, QObject* parent) : QObject(parent) {
     mName = name;
 }
 
@@ -60,6 +60,7 @@ void Season::addEpisode(MovieFile* episode) {
         delete episode;
     } else {
         episodes.append(episode);
+        connect(episode, SIGNAL(watchedChanged(bool,bool)), this, SLOT(watchedChanged(bool,bool)));
     }
 }
 
@@ -72,7 +73,7 @@ void Season::addEpisode(QString file) {
         return;
     }    
 
-    episodes.append(new MovieFile(file));
+    addEpisode(new MovieFile(file));
     qDebug() << episodes.back()->releaseGroup() << episodes.back()->episodeNumber() << episodes.back()->showName();
 }
 
@@ -110,4 +111,15 @@ MovieFile* Season::getEpisodeForPath(const QString& path) {
         }
     }
     return NULL;
+}
+
+void Season::watchedChanged(bool oldValue, bool newValue) {
+    int count = numberOfWatchedEpisodes();
+    if (!oldValue && newValue) {
+        emit watchCountChanged(count-1, count);
+    } else if (oldValue && !newValue) {
+        emit watchCountChanged(count+1, count);
+    } else {
+        emit watchCountChanged(count, count);
+    }
 }

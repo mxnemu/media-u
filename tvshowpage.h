@@ -22,6 +22,9 @@ public:
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     
     void setTvShow(TvShow *show);
+
+public slots:
+    void updateWatched(int, int);
 private:
     Ui::TvShowPage *ui;
     Library& library;

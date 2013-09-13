@@ -1,7 +1,7 @@
 #include "libraryfilter.h"
 #include "server.h"
 
-LibraryFilter::LibraryFilter(QList<TvShow> &shows) : tvShows(shows)
+LibraryFilter::LibraryFilter(QList<TvShow *> &shows) : tvShows(shows)
 {
 }
 
@@ -46,7 +46,7 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
 
 MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
     for (int i=0; i < tvShows.length(); ++i) {
-        MovieFile* episode = tvShows[i].getEpisodeForPath(path);
+        MovieFile* episode = tvShows[i]->getEpisodeForPath(path);
         if (episode) {
             return episode;
         }
@@ -58,7 +58,7 @@ QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &))
 {
     QList<TvShow*> filteredList;
     for (int i=0; i < tvShows.length(); ++i) {
-        TvShow& show = tvShows[i];
+        TvShow& show = *tvShows[i];
         if (filterFunc(show)) {
             filteredList.append(&show);
         }

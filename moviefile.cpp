@@ -259,7 +259,8 @@ bool MovieFile::getWatched() const
     return watched;
 }
 
-void MovieFile::setWatched(bool value)
-{
+void MovieFile::setWatched(bool value) {
+    bool oldValue = this->watched;
     watched = value;
+    emit watchedChanged(oldValue, value);
 }

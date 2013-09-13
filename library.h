@@ -53,8 +53,8 @@ private slots:
 
 private:
     QDir directory;
-    QList<TvShow> tvShows;
-    QList<MovieFile> movies;
+    QList<TvShow*> tvShows;
+    QList<MovieFile*> movies;
     QList<SearchDirectory> searchDirectories;
 
     MalClient malClient;

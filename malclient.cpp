@@ -30,7 +30,7 @@ void MalClient::init(QString configFilePath) {
     }
 }
 
-void MalClient::fetchShows(QList<TvShow> &showList, QDir libraryDir) {
+void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
     MalClientThread* activeThread = new MalClientThread(*this, showList, libraryDir);
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
@@ -139,7 +139,7 @@ bool MalClient::hasValidCredentials() const {
 //
 //////////////////////////////////////////////////////////////////
 
-MalClientThread::MalClientThread(MalClient &client, QList<TvShow> &shows, QDir libraryDir) :
+MalClientThread::MalClientThread(MalClient &client, QList<TvShow*> &shows, QDir libraryDir) :
     malClient(client),
     tvShows(shows),
     libraryDir(libraryDir)
@@ -153,8 +153,8 @@ void MalClientThread::run() {
         return;
     }
 
-    for (QList<TvShow>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        TvShow& show = it.i->t();
+    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
+        TvShow& show = *(it.i->t());
         if (show.getRemoteId().isNull() || show.getRemoteId().isEmpty()) {
             malClient.fetchShowBlocking(show, libraryDir);
         }
