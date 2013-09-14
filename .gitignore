@@ -6,4 +6,6 @@ ui_*.h
 ui_*.cpp
 moc_*.cpp
 moc_*.h
+*.moc
 MediaU
+tests/tst_*test
