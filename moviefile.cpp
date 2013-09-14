@@ -182,13 +182,12 @@ bool MovieFile::isSpecial() const {
         "ED[0-9]+|"
         "OP[0-9]+[a-z]?|"
         "SP[0-9]+|"
-        "EP[0-9]+|"
         "NC.?OP([0-9]+)?|"
         "NC.?ED([0-9]+)?|"
         "Opening(\\s?[0-9]+)?|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
-    bool is = -1 != specialRegex.indexIn(this->episodeName());
+    bool is = -1 != specialRegex.indexIn(this->episodeNumber());
     //qDebug() << specialRegex.cap(1);
     return is;
 }
@@ -209,7 +208,7 @@ QString MovieFile::xbmcEpisodeNumber() const {
 }
 
 int MovieFile::numericEpisodeNumber() const {
-    if (episodeNumber().contains(QRegExp("OP|ED|Opening|Ending|EX"))) {
+    if (isSpecial()) {
         return -2;
     }
     QRegExp pureNumber("([0-9]+)");
