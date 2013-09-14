@@ -13,6 +13,8 @@ public:
 private Q_SLOTS:
     void testEpisodeNumberParsing_data();
     void testEpisodeNumberParsing();
+    void testReleaseGroup_data();
+    void testReleaseGroup();
 };
 
 MovieFileTest::MovieFileTest()
@@ -57,8 +59,7 @@ void MovieFileTest::testEpisodeNumberParsing_data()
 }
 
 
-void MovieFileTest::testEpisodeNumberParsing()
-{
+void MovieFileTest::testEpisodeNumberParsing() {
     QFETCH(QString, path);
     QFETCH(QString, episodeNumber);
     QFETCH(int, numericEpisodeNumber);
@@ -66,6 +67,23 @@ void MovieFileTest::testEpisodeNumberParsing()
     MovieFile m(path);
     QCOMPARE(m.episodeNumber(), episodeNumber);
     QCOMPARE(m.numericEpisodeNumber(), numericEpisodeNumber);
+}
+
+void MovieFileTest::testReleaseGroup_data() {
+    QTest::addColumn<QString>("path");
+    QTest::addColumn<QString>("releaseGroup");
+
+    QTest::newRow("in front with [techtags] behind") <<
+        "/mnt/fields1/torrents/[DeadFish] Nisemonogatari - Batch [BD][720p][MP4][AAC]/[DeadFish] Nisemonogatari - 01 [BD][720p][AAC].mp4" <<
+        "[DeadFish]";
+}
+
+void MovieFileTest::testReleaseGroup() {
+    QFETCH(QString, path);
+    QFETCH(QString, releaseGroup);
+
+    MovieFile m(path);
+    QCOMPARE(m.releaseGroup(), releaseGroup);
 }
 
 QTEST_APPLESS_MAIN(MovieFileTest)
