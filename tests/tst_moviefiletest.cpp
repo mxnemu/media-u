@@ -35,6 +35,25 @@ void MovieFileTest::testEpisodeNumberParsing_data()
         "1x04" <<
         4;
 
+    QTest::newRow("versionedEpisode") <<
+        "/t/[Mazui]_Hyouka_[720p]/[Mazui]_Hyouka_-_13v2_[BE011245].mkv" <<
+        "13v2" <<
+        13;
+
+    QTest::newRow("decimalEpisode") <<
+        "/mnt/fields1/torrents/[Mazui]_Hyouka_[720p]/[Mazui]_Hyouka_-_11.5_[3C10E2F9].mkv" <<
+        "11.5" <<
+        11;
+
+    QTest::newRow("'Episode' prefix") <<
+        "/home/nehmulos/Downloads/Spice and Wolf Complete Series/Season 01/Spice and Wolf Episode 01.mkv" <<
+        "Episode 01" <<
+        1;
+
+    QTest::newRow("Ep prefix") <<
+        "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
+        "Ep02" <<
+        2;
 }
 
 

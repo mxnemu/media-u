@@ -31,6 +31,8 @@ void MovieFile::setPath(QString path) {
     if (path.count('_') > spaces) {
         path.replace('_', ' ');
     }
+
+    spaces = path.count(' ');
     if (path.count('.') > spaces) {
         path.replace('.', ' ');
     }
