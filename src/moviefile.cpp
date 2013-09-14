@@ -211,10 +211,10 @@ int MovieFile::numericEpisodeNumber() const {
     if (isSpecial()) {
         return -2;
     }
-    QRegExp pureNumber("([0-9]+)");
+    QRegExp pureNumber("([0-9]+x)?([0-9]+)", Qt::CaseInsensitive);
     int index = pureNumber.indexIn(mEpisodeNumber);
     if (index != -1) {
-        return pureNumber.cap(1).toInt();
+        return pureNumber.cap(2).toInt();
     }
     return -1;
 }
