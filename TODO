@@ -21,4 +21,3 @@ Probably won't fix:
 Bugs:
 -Some remaining false-positive results from MAL search, get better query compare
 -some strings form MAL are not properly decoded with QUrl::fromPercentEncoding
--fix border for background wallpapers;
