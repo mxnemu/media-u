@@ -83,6 +83,14 @@ void MovieFileTest::testReleaseGroup_data() {
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
         "THORA";
 
+    QTest::newRow("no goup") <<
+        "/home/nehmulos/Downloads/Spice and Wolf Complete Series/Season 01/Spice and Wolf Episode 02.mkv" <<
+        "";
+
+    QTest::newRow("no group2") <<
+        "/mnt/fields2/torrents/When They Cry - Higurashi [Hi10]/Season1/Higurashi no Naku Koro ni 1x01.mkv" <<
+        "";
+
 }
 
 void MovieFileTest::testReleaseGroup() {
