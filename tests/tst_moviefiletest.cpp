@@ -79,11 +79,10 @@ void MovieFileTest::testReleaseGroup_data() {
         "/mnt/fields1/torrents/[DeadFish] Nisemonogatari - Batch [BD][720p][MP4][AAC]/[DeadFish] Nisemonogatari - 01 [BD][720p][AAC].mp4" <<
         "[DeadFish]";
 
-    /* TODO impl that
     QTest::newRow("at the end") <<
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
         "THORA";
-    */
+
 }
 
 void MovieFileTest::testReleaseGroup() {

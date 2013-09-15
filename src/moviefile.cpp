@@ -104,13 +104,13 @@ void MovieFile::setPath(QString path) {
         "[0-9]+x[0-9]+|"
         "\\sED(\\s|$)|"
         "\\sOP(\\s|$)|"
-        "ED[0-9]+|"
-        "OP[0-9]+[a-z]?|"
-        "SP[0-9]+|"
-        "EP[0-9]+|"
-        "NC.?OP([0-9]+)?|"
-        "NC.?ED([0-9]+)?|"
-        "EX([0-9]+)?|"
+        "ED\\s?[0-9]+|"
+        "OP\\s?[0-9]+[a-z]?|"
+        "SP\\s?[0-9]+|"
+        "EP\\s?[0-9]+|"
+        "NC.?OP\\s?([0-9]+)?|"
+        "NC.?ED\\s?([0-9]+)?|"
+        "EX\\s?([0-9]+)?|"
         "Episode\\s?[0-9]+|"
         "Opening(\\s?[0-9]+)?|"
         "Ending(\\s?[0-9]+)?"
@@ -130,6 +130,8 @@ void MovieFile::setPath(QString path) {
     }
 
     // TODO check for shows with a [0-9]+ ending and just 1 episode to avoid some false positives
+
+    // check epNum after epName
     if (mEpisodeNumber.isEmpty() || mEpisodeNumber.isNull()) {
         //QRegExp regexNumberAfterShowName("(\\s[0-9]+\\s?)$");
         //int epIndex = regexNumberAfterShowName.indexIn(mShowName);
@@ -146,6 +148,22 @@ void MovieFile::setPath(QString path) {
                 mShowName.remove(epIndex, regexEpName.cap(1).length());
             }
             mShowName = mShowName.trimmed();
+        }
+    }
+
+    // release group at the end (last word)
+    if (mReleaseGroup.isEmpty()) {
+        QRegExp releaseGroupAtEnd("([^\\s]+)($|\\s)");
+        int occurance = path.indexOf(releaseGroupAtEnd);
+        int latestOccurance = occurance;
+        while (occurance != -1) {
+            latestOccurance = occurance;
+            occurance = path.indexOf(releaseGroupAtEnd, occurance + releaseGroupAtEnd.cap(0).length());
+        }
+
+        if (latestOccurance != -1) {
+            path.indexOf(releaseGroupAtEnd, latestOccurance);
+            mReleaseGroup = releaseGroupAtEnd.cap(1);
         }
     }
 }
