@@ -157,7 +157,11 @@ void MovieFile::setPath(QString path) {
         int occurance = path.indexOf(releaseGroupAtEnd);
         int latestOccurance = occurance;
         while (occurance != -1) {
-            latestOccurance = occurance;
+            // ignore file version at the end like: " - THORA 1.0v2.1.vid"
+            QRegExp releaseVersionRegex("([0-9\\.]+)?v[0-9\\.]");
+            if (-1 == releaseVersionRegex.indexIn(releaseGroupAtEnd.cap(1))) {
+                latestOccurance = occurance;
+            }
             occurance = path.indexOf(releaseGroupAtEnd, occurance + releaseGroupAtEnd.cap(0).length());
         }
 

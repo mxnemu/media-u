@@ -83,6 +83,11 @@ void MovieFileTest::testReleaseGroup_data() {
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
         "THORA";
 
+    QTest::newRow("at the end with version behind") <<
+        "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_ED_[1080p,BluRay,x264]_-_THORA v2.mkv" <<
+        "THORA";
+
+
     QTest::newRow("no goup") <<
         "/home/nehmulos/Downloads/Spice and Wolf Complete Series/Season 01/Spice and Wolf Episode 02.mkv" <<
         "";
