@@ -15,6 +15,8 @@ private Q_SLOTS:
     void testEpisodeNumberParsing();
     void testReleaseGroup_data();
     void testReleaseGroup();
+    void testShowName_data();
+    void testShowName();
 };
 
 MovieFileTest::MovieFileTest()
@@ -76,6 +78,12 @@ void MovieFileTest::testReleaseGroup_data() {
     QTest::newRow("in front with [techtags] behind") <<
         "/mnt/fields1/torrents/[DeadFish] Nisemonogatari - Batch [BD][720p][MP4][AAC]/[DeadFish] Nisemonogatari - 01 [BD][720p][AAC].mp4" <<
         "[DeadFish]";
+
+    /* TODO impl that
+    QTest::newRow("at the end") <<
+        "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
+        "THORA";
+    */
 }
 
 void MovieFileTest::testReleaseGroup() {
@@ -84,6 +92,31 @@ void MovieFileTest::testReleaseGroup() {
 
     MovieFile m(path);
     QCOMPARE(m.releaseGroup(), releaseGroup);
+}
+
+void MovieFileTest::testShowName_data() {
+    QTest::addColumn<QString>("path");
+    QTest::addColumn<QString>("showName");
+
+    QTest::newRow("[group] name - num [tech][tags].vid") <<
+        "/home/nehmulos/Downloads/[DeadFish] Bakemonogatari [BD][1080p][MP4][AAC]/[DeadFish] Bakemonogatari - 01 [BD][1080p][AAC].mp4" <<
+        "Bakemonogatari";
+
+    QTest::newRow("name Ep.num[tech][tags].vid") <<
+        "/home/nehmulos/Downloads/[SSP-Corp] Noir [Dual-Audio]/Noir_Ep.01[h.264-AAC][SSP-Corp][E5A84450].mkv" <<
+        "Noir";
+
+    QTest::newRow("mind the stupid space before v2") <<
+        "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_ED_[1080p,BluRay,x264]_-_THORA v2.mkv" <<
+        "K-ON!";
+}
+
+void MovieFileTest::testShowName() {
+    QFETCH(QString, path);
+    QFETCH(QString, showName);
+
+    MovieFile m(path);
+    QCOMPARE(m.showName(), showName);
 }
 
 QTEST_APPLESS_MAIN(MovieFileTest)
