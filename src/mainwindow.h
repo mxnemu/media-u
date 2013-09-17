@@ -26,6 +26,9 @@ public:
 
     MainBackgroundWidget* getCentralWidget();
     
+    void dropEvent(QDropEvent *drop);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
 private:
     Ui::MainWindow *ui;
     Library& library;

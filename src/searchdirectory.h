@@ -6,7 +6,7 @@
 class SearchDirectory
 {
 public:
-    SearchDirectory(QDir dir, bool enabled);
+    SearchDirectory(QDir dir, bool enabled = true);
 
 public:
     QDir dir;

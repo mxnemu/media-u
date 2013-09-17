@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 
 #include <iostream>
+#include <QDropEvent>
+#include <QMimeData>
 
 MainWindow::MainWindow(Library &library, QWidget *parent) :
     QMainWindow(parent),
@@ -11,6 +13,7 @@ MainWindow::MainWindow(Library &library, QWidget *parent) :
 {
     ui->setupUi(this);
     page = NULL;
+    this->setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow()
@@ -50,4 +53,36 @@ Page *MainWindow::activePage() {
 
 MainBackgroundWidget *MainWindow::getCentralWidget() {
     return ui->centralWidget;
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent *event) {
+    event->accept();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent *event) {
+    if (!event->mimeData()) {
+        event->dropAction();
+        return;
+    }
+    const QList<QUrl> urls = event->mimeData()->urls();
+    bool addedDirectory = false;
+    for (int i=0; i < urls.length(); ++i) {
+
+        const QUrl& url = urls.at(i);
+        if (QDir(url.path()).exists()) {
+            library.addSearchDirectory(SearchDirectory(url.path()));
+            addedDirectory = true;
+        }
+    }
+    if (addedDirectory) {
+        event->accept();
+        library.startSearch();
+        qDebug() << "search dirs added!";
+    } else {
+        event->accept();
+    }
 }
