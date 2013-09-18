@@ -54,7 +54,9 @@ TvShow& Library::tvShow(const QString name) {
         }
     }
     this->tvShows.push_back(new TvShow(name, this));
-    return *this->tvShows.back();
+    TvShow* show = this->tvShows.back();
+    emit showAdded(show);
+    return *show;
 }
 
 TvShow* Library::existingTvShow(const QString name) {

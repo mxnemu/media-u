@@ -45,6 +45,7 @@ public:
     bool removeSearchDirectory(QString path);
 
 signals:
+    void showAdded(TvShow* show);
     
 public slots:
 

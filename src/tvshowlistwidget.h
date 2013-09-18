@@ -18,6 +18,8 @@ public:
 
     void set(QList<TvShow *> showList, QString title = QString());
     void setFields(QStringList fields); // TODO impl for customization
+    void add(const TvShow *show, bool sort = true);
+    void sortList();
 private:
     Ui::GuiTvShowList *ui;
 };

@@ -21,6 +21,7 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
     this->allShows = library.filter().all();
     this->ui->currentlyAiringShows->set(airingShows, QString("Airing Shows"));
     this->ui->allShows->set(allShows, QString("All Shows"));
+    connect(&library, SIGNAL(showAdded(TvShow*)), this, SLOT(onShowAdded(TvShow*)));
 }
 
 MainPage::~MainPage()
@@ -36,4 +37,11 @@ bool MainPage::handleApiRequest(QHttpRequest *, QHttpResponse *)
 void MainPage::on_settingsButton_clicked()
 {
     mainwindow->setPage(PageFactory::settingsPageKey);
+}
+
+void MainPage::onShowAdded(TvShow *show) {
+    if (show->isAiring()) {
+        this->ui->currentlyAiringShows->add(show);
+    }
+    this->ui->allShows->add(show);
 }

@@ -2,7 +2,9 @@
 #include "moviefile.h"
 #include <iostream>
 
-TvShowScanner::TvShowScanner(Library& library) : MediaScanner(), library(library)
+TvShowScanner::TvShowScanner(Library& library, QObject* parent) :
+    MediaScanner(parent),
+    library(library)
 {
 }
 

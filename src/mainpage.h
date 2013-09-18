@@ -21,6 +21,7 @@ public:
     
 private slots:
     void on_settingsButton_clicked();
+    void onShowAdded(TvShow* show);
 
 private:
     Ui::MainPage *ui;
