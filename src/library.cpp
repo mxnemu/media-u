@@ -4,6 +4,7 @@
 #include "server.h"
 #include "directoryscanner.h"
 #include "tvshowscanner.h"
+#include <QStandardPaths>
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
@@ -180,6 +181,16 @@ void Library::readAll() {
             show.read(showDir);
         }
         jr.close();
+    } else {
+        QStringList defaultDirs = QStandardPaths::standardLocations(QStandardPaths::MoviesLocation);
+        defaultDirs.append(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation));
+
+        for (int i=0; i < defaultDirs.length(); ++i) {
+            QDir dir = QDir(defaultDirs.at(i));
+            if (dir.exists()) {
+                searchDirectories.append(SearchDirectory(dir));
+            }
+        }
     }
 }
 
