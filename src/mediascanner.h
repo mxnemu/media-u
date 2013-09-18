@@ -4,10 +4,11 @@
 #include <QStringList>
 #include "library.h"
 
-class MediaScanner
+class MediaScanner : public QObject
 {
+    Q_OBJECT
 public:
-    MediaScanner();
+    MediaScanner(QObject* parent = NULL);
     virtual ~MediaScanner();
     virtual void scanFiles(const QStringList &files, const QDir &dir) = 0;
 };

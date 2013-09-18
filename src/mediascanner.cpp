@@ -1,6 +1,6 @@
 #include "mediascanner.h"
 
-MediaScanner::MediaScanner() {
+MediaScanner::MediaScanner(QObject* parent) : QObject(parent) {
 }
 
 MediaScanner::~MediaScanner()
