@@ -1,5 +1,5 @@
 Roadmap:
--write test cases for filepath parsing
+-observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotracks for show and select prefered track (multiling rips)
 -detect favourite fansubber: (check fs of last 2 eps if notEq check most used fs)
 -check for progress when mplayer ends (maybe get metadata before playing)
