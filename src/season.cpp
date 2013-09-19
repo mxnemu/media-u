@@ -94,6 +94,33 @@ int Season::numberOfWatchedEpisodes() const
     return count;
 }
 
+int Season::highestWatchedEpisodeNumber() const
+{
+    int highest = -1;
+    for (int i=0; i < episodes.length(); ++i) {
+        int num = episodes.at(i)->numericEpisodeNumber();
+        highest = num > highest ? num : highest;
+    }
+    return highest;
+}
+
+QString Season::favouriteReleaseGroup() {
+    QMap<QString, int> groups;
+    for (int i=0; i < episodes.length(); ++i) {
+        QString group = episodes.at(i)->releaseGroup();
+        groups[group]++;
+    }
+    std::pair<QString, int> highest;
+    for (QMap<QString, int>::iterator it=groups.begin(); it != groups.end(); ++it) {
+        int num = it.value();
+        if (num > highest.second) {
+            highest.second = num;
+            highest.first = it.key();
+        }
+    }
+    return highest.first;
+}
+
 MovieFile* Season::getEpisodeForPath(const QString& path) {
     for (int i=0; i < episodes.length(); ++i) {
         MovieFile* f = episodes[i];

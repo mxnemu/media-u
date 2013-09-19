@@ -52,6 +52,8 @@ public:
     QStringList wallpapers(QDir libraryDirectory) const;
     int episodesDownloaded() const;
     int getWatchedEpisodes() const;
+    int highestWatchedEpisodeNumber() const; // TODO rework show -> seasons to show/season (of Franchise) -> episodes
+    QString favouriteReleaseGroup();
 
     MovieFile* getEpisodeForPath(const QString &path);
 

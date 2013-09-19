@@ -164,6 +164,21 @@ int TvShow::getWatchedEpisodes() const {
     return sum;
 }
 
+int TvShow::highestWatchedEpisodeNumber() const {
+    int highest = 0;
+    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        int num = (*it)->highestWatchedEpisodeNumber();
+        highest = num > highest ? num : highest;
+    }
+    return highest;
+}
+
+QString TvShow::favouriteReleaseGroup() {
+    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        return (*it)->favouriteReleaseGroup(); // TOOD get rid of seasons
+    }
+}
+
 MovieFile *TvShow::getEpisodeForPath(const QString& path) {
     for (int i=0; i < seasons.length(); ++i) {
         MovieFile* episode = seasons[i]->getEpisodeForPath(path);

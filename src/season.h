@@ -24,8 +24,10 @@ public:
     QString name() const;
     int numberOfEpisodes() const;
     int numberOfWatchedEpisodes() const;
+    int highestWatchedEpisodeNumber() const;
 
     MovieFile* getEpisodeForPath(const QString &path);
+    QString favouriteReleaseGroup();
 signals:
     void watchCountChanged(int oldCount, int newCount);
 
