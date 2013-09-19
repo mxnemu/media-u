@@ -272,3 +272,32 @@ void MalSearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) con
         qDebug() << "updated " << show.getShowType() << show.name();
     }
 }
+
+
+MalUpdaterAnimeData::MalUpdaterAnimeData(TvShow *show) {
+    this->episode = show->highestWatchedEpisodeNumber();
+    this->status = calculateWatchStatus(this->episode, show->getTotalEpisodes());
+    this->downloaded_episodes = show->episodesDownloaded();
+
+    score = -1;
+    storage_type = -1; // int (will be updated to accomodate strings soon) // yeah sure soon...
+    storage_value = -1; // wat
+    times_rewatched = -1;
+    rewatch_value = -1; // 0 - 10 ? dont know didn't check
+    priority = -1; // 0 - 10 ? dont know didn't check
+    enable_discussion = 0; // int. 1=enable, 0=disable
+    enable_rewatching = -1; // int. 1=enable, 0=disable
+    fansub_group = show->favouriteReleaseGroup();
+    QStringList tags; // string. tags separated by commas
+}
+
+MalUpdaterWatchStatus MalUpdaterAnimeData::calculateWatchStatus(int episodesWatched, int total) {
+    if (episodesWatched == 0) {
+        return plantowatch;
+    } else if (episodesWatched == total) {
+        return completed;
+    } else if (episodesWatched > 0) {
+        return watching;
+    }
+    return onhold;
+}

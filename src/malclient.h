@@ -89,5 +89,36 @@ private:
     QString query;
 };
 
+enum MalUpdaterWatchStatus {
+    watching = 1,
+    completed = 2,
+    onhold = 3,
+    dropped = 4,
+    plantowatch = 6
+};
+
+class MalUpdaterAnimeData {
+public:
+    MalUpdaterAnimeData(TvShow*);
+    static MalUpdaterWatchStatus calculateWatchStatus(int watched, int total);
+private:
+    int episode;
+    MalUpdaterWatchStatus status; // int OR string. 1/watching, 2/completed, 3/onhold, 4/dropped, 6/plantowatch
+    short score; // 0 - 10
+    int downloaded_episodes;
+    int storage_type; // int (will be updated to accomodate strings soon) // yeah sure soon...
+    float storage_value; // wat
+    int times_rewatched;
+    short rewatch_value; // 0 - 10 ? dont know didn't check
+    QDate date_start; // date. mmddyyyy
+    QDate date_finish; // date. mmddyyyy
+    int priority; // 0 - 10 ? dont know didn't check
+    short enable_discussion; // int. 1=enable, 0=disable
+    short enable_rewatching; // int. 1=enable, 0=disable
+    QString comments; // free text field?
+    QString fansub_group;
+    QStringList tags; // string. tags separated by commas
+};
+
 
 #endif // MALCLIENT_H
