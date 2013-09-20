@@ -28,6 +28,7 @@ public:
 
     MovieFile* getEpisodeForPath(const QString &path);
     QString favouriteReleaseGroup();
+    int highestDownloadedEpisodeNumber() const;
 signals:
     void watchCountChanged(int oldCount, int newCount);
 
