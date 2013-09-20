@@ -29,7 +29,6 @@ int Mplayer::playFileImpl(QString filepath) {
 
     if (process.state() == process.Running) {
         this->paused = false;
-        playingFile = filepath;
     } else {
         paused = true;
     }
@@ -90,6 +89,6 @@ void Mplayer::onProcessOutput() {
     QString output = this->process.readAll();
     QRegExp progressRegex("V:(\\s*)?([0-9\\.]*)\\s");
     if (-1 != output.indexOf(progressRegex)) {
-        this->progress = progressRegex.cap(2).toFloat();
+        this->nowPlaying.seconds = progressRegex.cap(2).toFloat();
     }
 }

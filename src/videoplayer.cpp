@@ -16,6 +16,10 @@ int VideoPlayer::playFile(QString filepath) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
+
+    this->nowPlaying.seconds = 0;
+    this->nowPlaying.path = filepath;
+    this->nowPlaying.metaData = this->metaDataParser->parse(filepath);
     return this->playFileImpl(filepath);
 }
 
@@ -28,7 +32,7 @@ void VideoPlayer::togglePause() {
 }
 
 void VideoPlayer::jumpTo(int second) {
-    int difference = second - this->progress;
+    int difference = second - this->nowPlaying.seconds;
     if (difference > 0) {
         forwards(difference);
     } else if (difference < 0) {
@@ -119,20 +123,19 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         QString status = paused ? "paused" : "unPaused";
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status));
     } else if (req->path() == "/api/player/metaData") {
-        MetaData m = this->metaDataParser->parse(this->playingFile);
-        Server::simpleWrite(resp, 200, m.toJson());
+        Server::simpleWrite(resp, 200, nowPlaying.metaData.toJson());
     } else if (req->path().startsWith("/api/player/thumbnail")) {
         bool ok;
         int second = req->url().query().toInt(&ok);
         if (ok) {
-            ThumbCreationCallback* tcc = thumbnailCreator->generateJpeg(this->playingFile, second, 100, 70, resp);
+            ThumbCreationCallback* tcc = thumbnailCreator->generateJpeg(nowPlaying.path, second, 100, 70, resp);
             connect(tcc, SIGNAL(jpegGenerated(QByteArray)), this, SLOT(onThumbnailCreated(QByteArray)));
         } else {
             QByteArray errorData;
             Server::simpleWriteBytes(resp, 404, errorData);
         }
     } else if (req->path() == "/api/player/progress") {
-        Server::simpleWrite(resp, 200, QString("{\"status\":\"unknown\",\"progress\":%1}").arg(progress));
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"unknown\",\"progress\":%1}").arg(nowPlaying.seconds));
     } else {
         return customHandleApiRequest();
     }
@@ -168,7 +171,7 @@ void VideoPlayer::onThumbnailCreated(const QByteArray img) {
 
 void VideoPlayer::onPlaybackEndedNormally() {
 
-    MovieFile* episode = this->library.filter().getEpisodeForPath(playingFile);
+    MovieFile* episode = this->library.filter().getEpisodeForPath(nowPlaying.path);
     if (episode) {
         episode->setWatched(true);
     }
@@ -186,8 +189,8 @@ void VideoPlayer::onPlaybackCanceled() {
 }
 
 void VideoPlayer::resetPlayingStatus() {
-    this->progress = -1;
-    this->playingFile = QString();
+    this->nowPlaying.seconds = -1;
+    this->nowPlaying.path = QString();
     this->paused = true;
 }
 

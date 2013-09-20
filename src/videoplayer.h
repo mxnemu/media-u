@@ -8,6 +8,13 @@
 #include "thumbnailcreator.h"
 #include "library.h"
 
+class VideoProgress {
+public:
+    int seconds;
+    MetaData metaData;
+    QString path;
+};
+
 class VideoPlayer : public QObject
 {
    Q_OBJECT // TODO build breaks here when trying to inherit qobject
@@ -50,12 +57,11 @@ protected:
     virtual bool customHandleApiRequest() { return false; }
 
     Library& library;
-    QString playingFile;
     const MetaDataParser* metaDataParser;
     const ThumbnailCreator* thumbnailCreator;
     QProcess process;
     bool paused;
-    int progress; ///< in seconds
+    VideoProgress nowPlaying;
 
     QStringList playlist;
 
