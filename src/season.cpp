@@ -9,7 +9,6 @@ Season::Season(QString name, QObject* parent) : QObject(parent) {
 Season::~Season() {
 }
 
-// TODO put specials into season 0
 void Season::exportXbmcLinks(QDir dir) {
     if (!dir.exists()) {
         dir.mkpath(".");
