@@ -1,4 +1,5 @@
-SOURCES += library.cpp \
+SOURCES += main.cpp\
+    library.cpp \
     moviefile.cpp \
     config.cpp \
     directoryscanner.cpp \
@@ -24,7 +25,8 @@ SOURCES += library.cpp \
     metadataparseravconv.cpp \
     thumbnailcreator.cpp \
     thumbnailcreatoravconv.cpp \
-    searchdirectory.cpp
+    searchdirectory.cpp \
+    server.cpp
 
 HEADERS  += library.h \
     moviefile.h \
@@ -52,4 +54,5 @@ HEADERS  += library.h \
     metadataparseravconv.h \
     thumbnailcreator.h \
     thumbnailcreatoravconv.h \
-    searchdirectory.h
+    searchdirectory.h \
+    server.h
