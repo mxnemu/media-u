@@ -23,9 +23,9 @@ Progress.prototype.startUp = function() {
         self.update(data.seconds);
         self.progressUpdateIntervalId = window.setInterval(function() {
             if (self.page.togglePauseButton.attr("data-status") == "unPaused") {
-                self.update(self.seconds +1);
+                self.update(self.seconds +0.05);
             }
-        }, 1000);
+        }, 50);
         // sync with the player's progress every 10s
         self.progressSyncIntervalId = window.setInterval(function() {
             self.resync();
