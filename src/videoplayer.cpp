@@ -16,7 +16,7 @@ int VideoPlayer::playFile(QString filepath) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
-    this->playFileImpl(filepath);
+    return this->playFileImpl(filepath);
 }
 
 void VideoPlayer::togglePause() {
