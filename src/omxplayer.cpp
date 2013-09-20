@@ -9,7 +9,7 @@
 Omxplayer::Omxplayer(Library& library) : VideoPlayer(library) {
 }
 
-int Omxplayer::playFile(QString filepath) {
+int Omxplayer::playFileImpl(QString filepath) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }

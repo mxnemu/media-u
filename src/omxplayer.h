@@ -8,7 +8,7 @@ class Omxplayer : public VideoPlayer
 public:
     Omxplayer(Library& library);
 
-    virtual int playFile(QString filepath);
+    virtual int playFileImpl(QString filepath);
 
     virtual void pause();
     virtual void unPause();

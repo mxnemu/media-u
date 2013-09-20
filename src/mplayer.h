@@ -10,7 +10,6 @@ class Mplayer : public VideoPlayer
 public:
     Mplayer(Library& library);
     virtual ~Mplayer();
-    virtual int playFile(QString filepath);
 
     virtual void pause();
     virtual void unPause();
@@ -22,6 +21,9 @@ public:
 
     virtual float incrementVolume();
     virtual float decrementVolume();
+
+protected:
+    virtual int playFileImpl(QString filepath);
 
 private slots:
     void onProcessFinished(int exitCode);

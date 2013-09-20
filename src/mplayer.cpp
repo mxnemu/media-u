@@ -15,10 +15,7 @@ Mplayer::~Mplayer() {
 
 }
 
-int Mplayer::playFile(QString filepath) {
-    if (!QFile::exists(filepath)) {
-        qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
-    }
+int Mplayer::playFileImpl(QString filepath) {
     process.start("mplayer", QStringList() <<
         QString("%1").arg(filepath) <<
         "-fs" <<
