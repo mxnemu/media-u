@@ -108,8 +108,10 @@ int Season::highestWatchedEpisodeNumber() const
 {
     int highest = -1;
     for (int i=0; i < episodes.length(); ++i) {
-        int num = episodes.at(i)->numericEpisodeNumber();
-        highest = num > highest ? num : highest;
+        if (episodes.at(i)->getWatched()) {
+            int num = episodes.at(i)->numericEpisodeNumber();
+            highest = num > highest ? num : highest;
+        }
     }
     return highest;
 }
