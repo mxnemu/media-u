@@ -135,7 +135,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             Server::simpleWriteBytes(resp, 404, errorData);
         }
     } else if (req->path() == "/api/player/progress") {
-        Server::simpleWrite(resp, 200, QString("{\"status\":\"unknown\",\"progress\":%1}").arg(nowPlaying.seconds));
+        Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson());
     } else {
         return customHandleApiRequest();
     }
@@ -200,4 +200,14 @@ QStringList VideoPlayer::getPlaylist() const {
 
 void VideoPlayer::setPlaylist(const QStringList &value) {
     playlist = value;
+}
+
+
+QString VideoProgress::toSecondsAndPathJson() {
+    std::stringstream ss;
+    nw::JsonWriter jw(ss);
+    NwUtils::describe(jw, "seconds", seconds);
+    NwUtils::describe(jw, "path", path);
+    jw.close();
+    return ss.str().c_str();
 }

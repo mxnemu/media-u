@@ -13,6 +13,8 @@ public:
     int seconds;
     MetaData metaData;
     QString path;
+
+    QString toSecondsAndPathJson();
 };
 
 class VideoPlayer : public QObject

@@ -83,7 +83,7 @@ Seekbar.prototype.createNodes = function() {
         };
         
         $.getJSON("api/player/progress", function(data) {
-            setProgress(data.progress);
+            setProgress(data.seconds);
             self.progressUpdateIntervalId = window.setInterval(function() {
                 if (self.page.togglePauseButton.attr("data-status") == "unPaused") {
                     setProgress(progress +1);
@@ -92,7 +92,7 @@ Seekbar.prototype.createNodes = function() {
             // sync with the player's progress every 10s
             self.progressSyncIntervalId = window.setInterval(function() {
                 $.getJSON("api/player/progress", function(d) {
-                    setProgress(d.progress);
+                    setProgress(d.seconds);
                 });
             }, 10000);
         });
