@@ -177,6 +177,7 @@ QString TvShow::favouriteReleaseGroup() {
     for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
         return (*it)->favouriteReleaseGroup(); // TOOD get rid of seasons
     }
+    return QString();
 }
 
 MovieFile *TvShow::getEpisodeForPath(const QString& path) {
