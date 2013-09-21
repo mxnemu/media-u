@@ -22,6 +22,10 @@ QString SystemUtils::fileMime(const QString filepath) {
     }
     while (fgets(mimeBuffer, sizeof(mimeBuffer)-1, fp) != NULL) {
         //printf("mime: %s\n", mimeBuffer);
+        int length = strlen(mimeBuffer);
+        if (mimeBuffer[length-1] == '\n') {
+            mimeBuffer[length-1] = '\0';
+        }
         return mimeBuffer;
     }
     return mimeBuffer;
