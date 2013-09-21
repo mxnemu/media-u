@@ -1,3 +1,3 @@
 window.G = {
-    preloadSeekBarPreviews: true
+    preloadSeekBarPreviews: false
 }

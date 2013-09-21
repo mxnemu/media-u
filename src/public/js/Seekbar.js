@@ -34,6 +34,8 @@ Progress.prototype.startUp = function() {
     $.getJSON("api/player/progress", function(data) {
         self.path = data.path;
         self.update(data.seconds);
+        window.clearInterval(self.progressUpdateIntervalId);
+        window.clearInterval(self.progressSyncIntervalId);
         self.progressUpdateIntervalId = window.setInterval(function() {
             if (self.page.togglePauseButton.attr("data-status") == "unPaused") {
                 self.update(self.seconds +0.05);
@@ -43,6 +45,8 @@ Progress.prototype.startUp = function() {
         self.progressSyncIntervalId = window.setInterval(function() {
             self.resync();
         }, 10000);
+    }).error(function(a,b,c,d,e) {
+        console.log("error",a,b,c,d,e);
     });
 }
 
