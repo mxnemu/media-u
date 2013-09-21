@@ -27,8 +27,8 @@ public:
     void sendFile(QHttpRequest *req, QHttpResponse *resp);
 
 
-    static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data, QString mime = QString("text/plain"));
-    static void simpleWriteBytes(QHttpResponse *resp, int statusCode, const QByteArray &data, QString mime = QString("text/plain"));
+    static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data, QString mime = mime::text);
+    static void simpleWriteBytes(QHttpResponse *resp, int statusCode, const QByteArray &data, QString mime = mime::text);
     void streamVideo(QHttpRequest *req, QHttpResponse *resp);
 public slots:
     void handleRequest(QHttpRequest *req, QHttpResponse* resp);
