@@ -77,53 +77,53 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             QString firstEpisode = this->playlist.takeFirst();
             int error = this->playFile(firstEpisode);
             if (this->process.state() == QProcess::Running) {
-                Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"));
+                Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"), mime::json);
             } else {
-                Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
+                Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error), mime::json);
             }
         } else {
-            Server::simpleWrite(resp, 500, QString("{\"status\":\"playlist is empty\", \"error\":-1}"));
+            Server::simpleWrite(resp, 500, QString("{\"status\":\"playlist is empty\", \"error\":-1}"), mime::json);
         }
     } else if (req->path() == "/api/player/stop") {
         this->stop();
-        Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}");
+        Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}", mime::json);
     } else if (req->path() == "/api/player/togglePause") {
         this->togglePause();
         QString status = paused ? "paused" : "unPaused";
-        Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status));
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status), mime::json);
     } else if (req->path() == "/api/player/unPause") {
         this->unPause();
-        Server::simpleWrite(resp, 200, "{\"status\":\"unPaused\"}");
+        Server::simpleWrite(resp, 200, "{\"status\":\"unPaused\"}", mime::json);
     } else if (req->path() == "/api/player/pause") {
         this->pause();
-        Server::simpleWrite(resp, 200, "{\"status\":\"paused\"}");
+        Server::simpleWrite(resp, 200, "{\"status\":\"paused\"}", mime::json);
     } else if (req->path().startsWith("/api/player/jumpTo")) {
         bool ok;
         int second = req->url().query().toInt(&ok);
         if (ok) {
             this->jumpTo(second);
-            Server::simpleWrite(resp, 200, "{\"status\":\"done\"}");
+            Server::simpleWrite(resp, 200, "{\"status\":\"done\"}", mime::json);
         } else {
             QByteArray errorData;
             Server::simpleWriteBytes(resp, 404, errorData);
         }
     } else if (req->path() == "/api/player/backwards") {
         this->backwards();
-        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}");
+        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
     } else if (req->path() == "/api/player/forwards") {
         this->forwards();
-        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}");
+        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
     } else if (req->path() == "/api/player/incrementVolume") {
         float volume = this->incrementVolume();
-        Server::simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"volume\":%1}").arg(volume));
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"volume\":%1}").arg(volume), mime::json);
     } else if (req->path() == "/api/player/decrementVolume") {
         float volume = this->decrementVolume();
-        Server::simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"volume\":%1}").arg(volume));
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"volume\":%1}").arg(volume), mime::json);
     } else if (req->path() == "/api/player/pauseStatus") {
         QString status = paused ? "paused" : "unPaused";
-        Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status));
+        Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status), mime::json);
     } else if (req->path() == "/api/player/metaData") {
-        Server::simpleWrite(resp, 200, nowPlaying.metaData.toJson());
+        Server::simpleWrite(resp, 200, nowPlaying.metaData.toJson(), mime::json);
     } else if (req->path().startsWith("/api/player/thumbnail")) {
         bool ok;
         int second = req->url().query().toInt(&ok);
@@ -135,7 +135,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             Server::simpleWriteBytes(resp, 404, errorData);
         }
     } else if (req->path() == "/api/player/progress") {
-        Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson());
+        Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson(), mime::json);
     } else {
         return customHandleApiRequest();
     }

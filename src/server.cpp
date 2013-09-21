@@ -108,19 +108,16 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
 }
 
 void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data, QString mime) {
-    resp->setHeader("content-length", QString::number(data.size()));
-    // Setting more than 1 header breaks the sent message.
-    //resp->setHeader("Content-Type", mime);
+    resp->setHeader("Content-Length", QString::number(data.size()));
+    resp->setHeader("Content-Type", mime);
     resp->writeHead(statusCode);
     resp->write(data);
-    resp->write(QString("                "));// shitty workaround for some fucking bug with content-legnth
     resp->end();
 }
 
 void Server::simpleWriteBytes(QHttpResponse* resp, int statusCode, const QByteArray& data, QString mime) {
-    resp->setHeader("content-length", QString::number(data.size()));// + sizeof(char)*16));
-    // Setting more than 1 header breaks the sent message.
-    //resp->setHeader("Content-Type", mime);
+    resp->setHeader("Content-Length", QString::number(data.size()));
+    resp->setHeader("Content-Type", mime);
     resp->writeHead(statusCode);
     resp->write(data);
     resp->end();

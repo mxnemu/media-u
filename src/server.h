@@ -11,6 +11,11 @@
 #include "mainwindow.h"
 #include "videoplayer.h"
 
+namespace mime {
+const QString json = "application/json";
+const QString text = "text/plain";
+};
+
 
 class Server : public QObject
 {
