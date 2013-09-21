@@ -28,14 +28,14 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         return filter().handleApiRequest(req, resp);
     } else if(req->path().startsWith("/api/library/randomWallpaper")) {
         // TODO change abs img path to server url
-        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(randomWallpaperPath()));
+        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(randomWallpaperPath()), mime::json);
     } else if(req->path().startsWith("/api/library/toggleWatched")) {
         MovieFile* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
         if (episode) {
             episode->setWatched(!episode->getWatched());
-            Server::simpleWrite(resp, 200, QString("{\"watched\":\"%1\"}").arg(episode->getWatched()));
+            Server::simpleWrite(resp, 200, QString("{\"watched\":\"%1\"}").arg(episode->getWatched()), mime::json);
         } else {
-            Server::simpleWrite(resp, 200, QString("{\"error\":\"Episode not found\"}"));
+            Server::simpleWrite(resp, 200, QString("{\"error\":\"Episode not found\"}"), mime::json);
         }
     } else {
         return false;

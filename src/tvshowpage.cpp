@@ -63,7 +63,7 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         jw.setState("detailed", true);
         tvShow->write(jw);
         jw.close();
-        Server::simpleWrite(resp, 200, ss.str().data());
+        Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
         return true;
     }
     return false;

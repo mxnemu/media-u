@@ -50,10 +50,10 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         qDebug() << "set page " << pageName << " with q"  << req->url().query(QUrl::FullyDecoded);
 
         window.setPage(pageName, req->url().query(QUrl::FullyDecoded));
-        simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(pageName));
+        simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(pageName), mime::json);
         return true;
     } else if (path.startsWith("/api/activePage")) {
-        simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()));
+        simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()), mime::json);
         return true;
     } else if (path.startsWith("/api/player/")) {
         return player->handleApiRequest(req, resp);

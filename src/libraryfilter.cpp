@@ -36,8 +36,7 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         }
         jw.pop();
         jw.close();
-        Server::simpleWrite(resp, 200, ss.str().data());
-        qDebug() << "resp on lists" << ss.str().data();
+        Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
     } else {
         return false;
     }
