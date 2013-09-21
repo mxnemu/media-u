@@ -108,7 +108,7 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
 }
 
 void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data, QString mime) {
-    resp->setHeader("Content-Length", QString::number(data.size() + 16));
+    resp->setHeader("content-length", QString::number(data.size()));
     // Setting more than 1 header breaks the sent message.
     //resp->setHeader("Content-Type", mime);
     resp->writeHead(statusCode);
@@ -118,7 +118,7 @@ void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& dat
 }
 
 void Server::simpleWriteBytes(QHttpResponse* resp, int statusCode, const QByteArray& data, QString mime) {
-    resp->setHeader("Content-Length", QString::number(data.size()));// + sizeof(char)*16));
+    resp->setHeader("content-length", QString::number(data.size()));// + sizeof(char)*16));
     // Setting more than 1 header breaks the sent message.
     //resp->setHeader("Content-Type", mime);
     resp->writeHead(statusCode);
