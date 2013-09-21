@@ -7,6 +7,10 @@ MetaDataParser::MetaDataParser()
 }
 
 
+MetaData::MetaData() : duration(-1)
+{
+}
+
 QString MetaData::toJson() {
     std::stringstream ss;
     nw::JsonWriter jw(ss);

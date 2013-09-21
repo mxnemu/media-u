@@ -39,6 +39,7 @@ struct MetaDataChapter {
 
 class MetaData {
 public:
+    MetaData();
     int duration;
     QList<MetaDataTrack> tracks;
     QList<MetaDataChapter> chapters;
