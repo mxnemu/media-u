@@ -191,6 +191,7 @@ void VideoPlayer::onPlaybackCanceled() {
 void VideoPlayer::resetPlayingStatus() {
     this->nowPlaying.seconds = -1;
     this->nowPlaying.path = QString();
+    this->nowPlaying.metaData = MetaData();
     this->paused = true;
 }
 
