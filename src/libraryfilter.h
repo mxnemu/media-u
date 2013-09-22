@@ -15,6 +15,7 @@ public:
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     MovieFile* getEpisodeForPath(const QString& path);
+    TvShow* getRandomShow();
 
 private:
     QList<TvShow*> filter(bool (*filterFunc)(const TvShow &));

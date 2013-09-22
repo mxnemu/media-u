@@ -12,11 +12,11 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QString backgroundPath = library.randomWallpaperPath();
-    //this->setStyleSheet(QString("background-color:black;background-image: url('%1');").arg(backgroundPath));
+    MainBackgroundWidget* mbw = mainwindow->getCentralWidget();
+    if (mbw) {
+        mbw->setBackground(library.randomWallpaperPath());
+    }
 
-    // TODO update ui
-    //this->ui->currentlyAiringShows = new TvShowListWidget();
     this->airingShows = library.filter().airing();
     this->allShows = library.filter().all();
     this->ui->currentlyAiringShows->set(airingShows, QString("Airing Shows"));

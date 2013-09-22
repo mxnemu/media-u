@@ -53,6 +53,14 @@ MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
     return NULL;
 }
 
+TvShow *LibraryFilter::getRandomShow() {
+    int randomIndex = rand() % tvShows.length();
+    if (randomIndex < tvShows.length()) {
+        return tvShows[randomIndex];
+    }
+    return NULL;
+}
+
 QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &))
 {
     QList<TvShow*> filteredList;

@@ -43,9 +43,12 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
     return true;
 }
 
-QString Library::randomWallpaperPath() const {
-    // TODO debug test file; Impl actual fn
-    return QString("/home/nehmulos/Downloads/test-wall.jpg");
+QString Library::randomWallpaperPath() {
+    TvShow* show  = this->filter().getRandomShow();
+    if (show) {
+        return show->randomWallpaper(this->directory);
+    }
+    return QString();
 }
 
 TvShow& Library::tvShow(const QString name) {
