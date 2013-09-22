@@ -9,7 +9,7 @@
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
-    mFilter(tvShows),
+    mFilter(tvShows, directory),
     konachanClient("http://konachan.com"),
     yandereClient("https://yande.re")
 {
@@ -28,7 +28,7 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         return filter().handleApiRequest(req, resp);
     } else if(req->path().startsWith("/api/library/randomWallpaper")) {
         // TODO change abs img path to server url
-        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(randomWallpaperPath()), mime::json);
+        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(filter().getRandomWallpaper()), mime::json);
     } else if(req->path().startsWith("/api/library/toggleWatched")) {
         MovieFile* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
         if (episode) {
@@ -41,14 +41,6 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         return false;
     }
     return true;
-}
-
-QString Library::randomWallpaperPath() {
-    TvShow* show  = this->filter().getRandomShow();
-    if (show) {
-        return show->randomWallpaper(this->directory);
-    }
-    return QString();
 }
 
 TvShow& Library::tvShow(const QString name) {

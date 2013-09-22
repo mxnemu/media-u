@@ -20,7 +20,6 @@ public:
     void initMalClient(QString malConfigFilepath);
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
-    QString randomWallpaperPath();
 
     TvShow& tvShow(const QString name);
     TvShow* existingTvShow(const QString name);

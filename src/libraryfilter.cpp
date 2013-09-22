@@ -1,7 +1,9 @@
 #include "libraryfilter.h"
 #include "server.h"
 
-LibraryFilter::LibraryFilter(QList<TvShow *> &shows) : tvShows(shows)
+LibraryFilter::LibraryFilter(QList<TvShow *> &shows, QDir libraryDir) :
+    tvShows(shows),
+    libraryDir(libraryDir)
 {
 }
 
@@ -13,6 +15,10 @@ QList<TvShow *> LibraryFilter::all()
 QList<TvShow *> LibraryFilter::airing()
 {
     return filter(LibraryFilter::filterAiring);
+}
+
+QList<TvShow *> LibraryFilter::withWallpaper() {
+    return filter(LibraryFilter::filterHasWallpaper);
 }
 
 bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
@@ -54,31 +60,54 @@ MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
 }
 
 TvShow *LibraryFilter::getRandomShow() {
-    int randomIndex = rand() % tvShows.length();
-    if (randomIndex < tvShows.length()) {
-        return tvShows[randomIndex];
+    return getRandomShow(tvShows);
+}
+
+TvShow *LibraryFilter::getRandomShow(const QList<TvShow*>& shows) {
+    int randomIndex = rand() % shows.length();
+    if (randomIndex < shows.length()) {
+        return shows[randomIndex];
     }
     return NULL;
 }
 
-QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &))
+QString LibraryFilter::getRandomWallpaper() {
+    TvShow* show = getRandomShow(withWallpaper());
+    if (show) {
+        return show->randomWallpaper(libraryDir);
+    }
+    return QString();
+}
+
+QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &, const LibraryFilter&))
 {
     QList<TvShow*> filteredList;
     for (int i=0; i < tvShows.length(); ++i) {
         TvShow& show = *tvShows[i];
-        if (filterFunc(show)) {
+        if (filterFunc(show, *this)) {
             filteredList.append(&show);
         }
     }
     return filteredList;
 }
 
-bool LibraryFilter::filterAll(const TvShow &)
+bool LibraryFilter::filterAll(const TvShow &, const LibraryFilter &)
 {
     return true;
 }
 
-bool LibraryFilter::filterAiring(const TvShow & show)
+bool LibraryFilter::filterAiring(const TvShow & show, const LibraryFilter &)
 {
     return show.isAiring();
 }
+
+bool LibraryFilter::filterHasWallpaper(const TvShow &show, const LibraryFilter &filter)
+{
+    return !show.wallpapers(filter.getLibraryDir()).isEmpty();
+}
+
+QDir LibraryFilter::getLibraryDir() const
+{
+    return libraryDir;
+}
+

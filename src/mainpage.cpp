@@ -14,7 +14,7 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
 
     MainBackgroundWidget* mbw = mainwindow->getCentralWidget();
     if (mbw) {
-        mbw->setBackground(library.randomWallpaperPath());
+        mbw->setBackground(library.filter().getRandomWallpaper());
     }
 
     this->airingShows = library.filter().airing();
