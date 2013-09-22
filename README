@@ -10,3 +10,10 @@ that is ment to be remote controlled via a web interface from a portable device.
 - add the LIBPATH entries listed in src/libs.pri file to LD_LIBRARY_PATH
   alternative: install the libraries to your system's LD_LIBRARY_PATH
 - run the compiled binary with src/ as workingpath
+
+# required packages
+following binaries must be in your path:
+| name | (min version) |
+* mplayer (mplayer2)
+* avconf (0.8.6)
+* xdg-mime (1.0.2) (only on linux)
