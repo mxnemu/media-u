@@ -108,11 +108,7 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
 }
 
 void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data, QString mime) {
-    resp->setHeader("Content-Length", QString::number(data.size()));
-    resp->setHeader("Content-Type", mime);
-    resp->writeHead(statusCode);
-    resp->write(data);
-    resp->end();
+    simpleWriteBytes(resp, statusCode, data.toUtf8(), mime);
 }
 
 void Server::simpleWriteBytes(QHttpResponse* resp, int statusCode, const QByteArray& data, QString mime) {
