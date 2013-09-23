@@ -10,6 +10,9 @@ public:
     SystemUtils();
     static QString fileMime(const QString filepath);
     static int setProcessPriority(QProcess& process, int nice);
+
+private:
+    static void removeNewline(char *buffer);
 };
 
 #endif // SYSTEMUTILS_H

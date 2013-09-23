@@ -22,15 +22,21 @@ QString SystemUtils::fileMime(const QString filepath) {
     }
     while (fgets(mimeBuffer, sizeof(mimeBuffer)-1, fp) != NULL) {
         //printf("mime: %s\n", mimeBuffer);
-        int length = strlen(mimeBuffer);
-        if (mimeBuffer[length-1] == '\n') {
-            mimeBuffer[length-1] = '\0';
-        }
+        removeNewline(mimeBuffer);
         return mimeBuffer;
     }
+    removeNewline(mimeBuffer);
     return mimeBuffer;
 #endif
     return QString();
+}
+
+void SystemUtils::removeNewline(char* buffer) {
+    int length = strlen(buffer);
+    while (buffer[length-1] == '\n') {
+        buffer[length-1] = '\0';
+        length = strlen(buffer);
+    }
 }
 
 int SystemUtils::setProcessPriority(QProcess &process, int nice) {
