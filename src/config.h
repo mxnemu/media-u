@@ -11,7 +11,7 @@ public:
     QString path;
     QStringList arguments;
 private:
-    void postInit();
+    void initDefaultValues(); ///< init uninitialized values
 };
 
 class Config
@@ -22,6 +22,7 @@ public:
     bool init(QString path = QString());
     bool parse(const QString &jsonData);
     bool createNewConfig(QString filepath);
+    void describe(nw::Describer *de);
 
     QString libraryPath();
     int serverPort();
@@ -36,6 +37,7 @@ public:
 
 
     const MplayerConfig& getMplayerConfigConstRef() const;
+
 private:
     QString mConfigPath;
     QString mLibraryPath;

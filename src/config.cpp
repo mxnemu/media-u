@@ -2,8 +2,9 @@
 #include <QFile>
 #include <QDir>
 #include <iostream>
-#include <N0Slib.h>
+#include <QDebug>
 #include "systemutils.h"
+
 
 Config::Config(QString initPath)
 {
@@ -17,8 +18,7 @@ bool Config::init(QString path) {
     if (path.isNull() || path.isEmpty()) {
         dir = this->configPath();
         if (!dir.exists() && !dir.mkpath(dir.absoluteFilePath(".mediaU"))) {
-            // TODO global error quit with dialogue message
-            // home not writeable
+            throw "could not create config dir";
         }
     } else {
         dir = QDir(path);
@@ -34,47 +34,37 @@ bool Config::init(QString path) {
 
 bool Config::parse(const QString& jsonData)
 {
-    // TODO parse json
-    mLibraryPath = QString();
-    std::string nwlibraryPath = libraryPath().toStdString();
-    mServerPort = 8082;
-
-
-
     std::istringstream input(jsonData.toStdString());
     nw::JsonReader jr(input);
-    jr.describe("port", mServerPort);
-
-    jr.push("library");
-    jr.describe("path", nwlibraryPath);
-    jr.pop();
-
-    jr.push("mplayer");
-    mplayerConfig.describe(&jr);
-    jr.pop();
-
+    this->describe(&jr);
     jr.close();
-
-    mLibraryPath = QString(nwlibraryPath.data());
 
     initialized = true;
     return true;
 }
 
+void Config::describe(nw::Describer* de) {
+    de->describe("port", mServerPort);
+
+    de->push("library");
+    NwUtils::describe(*de, "path", mLibraryPath);
+    de->pop();
+
+    de->push("mplayer");
+    mplayerConfig.describe(de);
+    de->pop();
+}
+
 bool Config::createNewConfig(QString filepath)
 {
-    QFile file(filepath);
-    file.open(QFile::WriteOnly);
-    file.write(QString(
-        "{\n"
-        "    \"port\":\"8082\",\n"
-        "    \"library\": {\n"
-        "        \"path\":\"%1\"\n"
-        "    }\n"
-        "}").arg(libraryPath()).toUtf8().data());
-    file.close();
+    mLibraryPath = libraryPath();
+    mServerPort = 8082;
 
-    std::cout << libraryPath().toStdString() << std::endl;
+    nw::JsonWriter jw(filepath.toStdString());
+    this->describe(&jw);
+    jw.close();
+
+    qDebug() << libraryPath();
 
     initialized = true;
     return true;
@@ -124,14 +114,17 @@ int Config::serverPort() {
 }
 
 void MplayerConfig::describe(nw::Describer *de) {
+    if (de->isInWriteMode()) {
+        this->initDefaultValues();
+    }
     NwUtils::describe(*de, "path", path);
     NwUtils::describe(*de, "arguments", arguments);
     if (de->isInReadMode()) {
-        this->postInit();
+        this->initDefaultValues();
     }
 }
 
-void MplayerConfig::postInit() {
+void MplayerConfig::initDefaultValues() {
     if (this->path.isEmpty()) {
         this->path = "mplayer";
         this->arguments = QStringList() <<
