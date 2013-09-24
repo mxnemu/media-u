@@ -17,7 +17,7 @@ Mplayer::~Mplayer() {
 }
 
 int Mplayer::playFileImpl(QString filepath) {
-    process.start("mplayer", QStringList() <<
+    process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
         "-slave" <<
         config.arguments
