@@ -8,9 +8,9 @@
 
 Config::Config(QString initPath)
 {
-    this->init(initPath);
     mServerPort = -1;
     initialized = false;
+    this->init(initPath);
 }
 
 bool Config::init(QString path) {
