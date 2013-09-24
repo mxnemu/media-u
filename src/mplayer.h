@@ -3,12 +3,13 @@
 
 #include "videoplayer.h"
 #include <QObject>
+#include "config.h"
 
 class Mplayer : public VideoPlayer
 {
     Q_OBJECT
 public:
-    Mplayer(Library& library);
+    Mplayer(Library& library, const MplayerConfig& config);
     virtual ~Mplayer();
 
     virtual void pause();
@@ -24,6 +25,9 @@ public:
 
 protected:
     virtual int playFileImpl(QString filepath);
+
+
+    const MplayerConfig& config;
 
 private slots:
     void onProcessFinished(int exitCode);

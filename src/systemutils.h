@@ -11,6 +11,7 @@ public:
     static QString fileMime(const QString filepath);
     static int setProcessPriority(QProcess& process, int nice);
 
+    static bool commandExists(QString command);
 private:
     static void removeNewline(char *buffer);
 };

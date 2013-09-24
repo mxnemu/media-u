@@ -3,16 +3,13 @@
 #include <QDir>
 #include <iostream>
 #include <N0Slib.h>
+#include "systemutils.h"
 
 Config::Config(QString initPath)
 {
     this->init(initPath);
     mServerPort = -1;
     initialized = false;
-}
-
-bool Config::init() {
-    return this->init(QString());
 }
 
 bool Config::init(QString path) {
@@ -47,9 +44,15 @@ bool Config::parse(const QString& jsonData)
     std::istringstream input(jsonData.toStdString());
     nw::JsonReader jr(input);
     jr.describe("port", mServerPort);
+
     jr.push("library");
     jr.describe("path", nwlibraryPath);
     jr.pop();
+
+    jr.push("mplayer");
+    mplayerConfig.describe(&jr);
+    jr.pop();
+
     jr.close();
 
     mLibraryPath = QString(nwlibraryPath.data());
@@ -98,7 +101,7 @@ QString Config::malConfigFilePath() {
 }
 
 QString Config::mplayerLocation() {
-    return "/usr/bin/mplayer";
+    return mplayerConfig.path;
 }
 
 QString Config::omxplayerLocation() {
@@ -106,11 +109,11 @@ QString Config::omxplayerLocation() {
 }
 
 bool Config::omxPlayerIsInstalled() {
-    return QFile::exists(omxplayerLocation());
+    return SystemUtils::commandExists(omxplayerLocation());
 }
 
 bool Config::mplayerIsInstalled() {
-    return QFile::exists(mplayerLocation());
+     return SystemUtils::commandExists(mplayerLocation());
 }
 
 int Config::serverPort() {
@@ -118,4 +121,32 @@ int Config::serverPort() {
         return mServerPort;
     }
     return 8082;
+}
+
+void MplayerConfig::describe(nw::Describer *de) {
+    NwUtils::describe(*de, "path", path);
+    NwUtils::describe(*de, "arguments", arguments);
+    if (de->isInReadMode()) {
+        this->postInit();
+    }
+}
+
+void MplayerConfig::postInit() {
+    if (this->path.isEmpty()) {
+        this->path = "mplayer";
+        this->arguments = QStringList() <<
+             "-fs" <<
+             "-ass" <<
+#ifdef __linux__
+             // workaround for a pulse audio bug
+             "-ao" <<
+             "alsa" <<
+#endif
+             "-embeddedfonts";
+    }
+}
+
+const MplayerConfig& Config::getMplayerConfigConstRef() const
+{
+    return mplayerConfig;
 }

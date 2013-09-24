@@ -39,6 +39,13 @@ void SystemUtils::removeNewline(char* buffer) {
     }
 }
 
+bool SystemUtils::commandExists(QString command) {
+#ifdef __unix__
+    return 0 == system(QString("command -v %1 > /dev/null").arg(command).toUtf8());
+#endif
+    return false;
+}
+
 int SystemUtils::setProcessPriority(QProcess &process, int nice) {
 #ifdef __unix__
     return setpriority(PRIO_PROCESS, process.pid(), nice);

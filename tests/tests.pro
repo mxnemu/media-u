@@ -40,10 +40,12 @@ TEMPLATE = app
 
 SOURCES += tst_moviefiletest.cpp \
     ../src/nwutils.cpp \
-    ../src/moviefile.cpp
+    ../src/moviefile.cpp \
+    ../src/systemutils.cpp
 
 HEADERS  += ../src/nwutils.h \
-    ../src/moviefile.h
+    ../src/moviefile.h \
+    ../src/systemutils.h
 
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

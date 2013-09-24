@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     if (config.omxPlayerIsInstalled()) {
         player = new Omxplayer(library);
     } else {
-        player = new Mplayer(library); // TODO get player from config
+        player = new Mplayer(library, config.getMplayerConfigConstRef());
     }
 
     MetaDataParserAvconv metaDataParser;

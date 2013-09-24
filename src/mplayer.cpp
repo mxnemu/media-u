@@ -4,8 +4,9 @@
 #include <QDebug>
 #include "systemutils.h"
 
-Mplayer::Mplayer(Library& library) :
-    VideoPlayer(library)
+Mplayer::Mplayer(Library& library, const MplayerConfig &config) :
+    VideoPlayer(library),
+    config(config)
 {
     connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(onProcessOutput()));
@@ -18,10 +19,8 @@ Mplayer::~Mplayer() {
 int Mplayer::playFileImpl(QString filepath) {
     process.start("mplayer", QStringList() <<
         QString("%1").arg(filepath) <<
-        "-fs" <<
-        "-ass" <<
-        "-embeddedfonts" <<
-        "-slave"
+        "-slave" <<
+        config.arguments
     );
     process.waitForStarted();
 
@@ -91,4 +90,5 @@ void Mplayer::onProcessOutput() {
     if (-1 != output.indexOf(progressRegex)) {
         this->nowPlaying.seconds = progressRegex.cap(2).toFloat();
     }
+    qDebug() << output;
 }

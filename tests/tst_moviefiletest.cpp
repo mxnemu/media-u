@@ -2,6 +2,7 @@
 #include <QtTest>
 
 #include "../src/moviefile.h"
+#include "../src/systemutils.h"
 
 class MovieFileTest : public QObject
 {
@@ -17,6 +18,9 @@ private Q_SLOTS:
     void testReleaseGroup();
     void testShowName_data();
     void testShowName();
+
+    // TODO figure out how I can use multiple test files in qt
+    void testCommandExists();
 };
 
 MovieFileTest::MovieFileTest()
@@ -129,6 +133,11 @@ void MovieFileTest::testShowName() {
 
     MovieFile m(path);
     QCOMPARE(m.showName(), showName);
+}
+
+void MovieFileTest::testCommandExists() {
+    QVERIFY(true  == SystemUtils::commandExists("command"));
+    QVERIFY(false == SystemUtils::commandExists("alsdhadhaasghoaishknasflkhasdfkljkashf")); // let's hope nobody installed this
 }
 
 QTEST_APPLESS_MAIN(MovieFileTest)
