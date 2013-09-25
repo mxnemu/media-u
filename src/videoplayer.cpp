@@ -20,7 +20,11 @@ int VideoPlayer::playFile(QString filepath) {
     this->nowPlaying.seconds = 0;
     this->nowPlaying.path = filepath;
     this->nowPlaying.metaData = this->metaDataParser->parse(filepath);
-    return this->playFileImpl(filepath);
+    MovieFile* episode = library.filter().getEpisodeForPath(filepath);
+    if (episode) {
+        return this->playFileImpl(filepath, library.existingTvShow(episode->showName())->playerSettings);
+    }
+    return -1;
 }
 
 void VideoPlayer::togglePause() {

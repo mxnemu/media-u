@@ -24,7 +24,7 @@ public:
     virtual float decrementVolume();
 
 protected:
-    virtual int playFileImpl(QString filepath);
+    virtual int playFileImpl(QString filepath, const TvShowPlayerSettings &settings);
 
 
     const MplayerConfig& config;

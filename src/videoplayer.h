@@ -55,7 +55,7 @@ signals:
     void playbackCanceled();
 
 protected:
-    virtual int playFileImpl(QString filepath) = 0;
+    virtual int playFileImpl(QString filepath, const TvShowPlayerSettings& settings) = 0;
     virtual bool customHandleApiRequest() { return false; }
 
     Library& library;

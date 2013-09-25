@@ -20,7 +20,28 @@ TvShowPage.prototype.createNodes = function() {
         var file = $(".season:first li:first").attr("data-fileName");
         self.play(file);
         console.log("TODO check for first unplayed file and play it");
-    })
+    });
+    
+    var subtitleTrackField = $("<input type=\"number\"/>");
+    var audioTrackField = $("<input type=\"number\"/>");
+    $.getJSON("api/page/playerSettings", function(data) {
+        subtitleTrackField.get(0).value = data.subtitleTrack;
+        audioTrackField.get(0).value = data.audioTrack;
+        
+        function setFn(key) {
+            return function() {
+                var number = this.value;
+                data[key] = number;
+                var json = JSON.stringify(data);
+                $.getJSON("api/page/setPlayerSettings?" + json, function() {
+                    console.log("set subtitle to ", number);
+                });
+            }
+        }
+        
+        subtitleTrackField.on("input", setFn("subtitleTrack"));
+        audioTrackField.on("input", setFn("audioTrack"));
+    });
     
     var seasonsEl = $(document.createElement("div"));
     seasonsEl.addClass("seasons");
@@ -36,6 +57,10 @@ TvShowPage.prototype.createNodes = function() {
 
     page.append(backButton);
     page.append(playButton);
+    page.append("<span> sub: </span>");
+    page.append(subtitleTrackField);
+    page.append("<span> audio: </span>");
+    page.append(audioTrackField);
     page.append(seasonsEl);
 }
 

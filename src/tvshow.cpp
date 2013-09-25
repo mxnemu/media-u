@@ -37,6 +37,10 @@ void TvShow::read(QDir &dir) {
         jr.describeValue(s);
     }
 
+    jr.push("playerSettings");
+    this->playerSettings.describe(&jr);
+    jr.pop();
+
     NwUtils::describe(jr, "remoteId", remoteId);
     jr.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jr, "airingStatus", airingStatus);
@@ -66,6 +70,10 @@ void TvShow::write(nw::JsonWriter& jw) {
         std::string s = synonyms.at(i).toStdString();
         jw.describeValue(s);
     }
+
+    jw.push("playerSettings");
+    this->playerSettings.describe(&jw);
+    jw.pop();
 
     NwUtils::describe(jw, "remoteId", remoteId);
     jw.describe("totalEpisodes", totalEpisodes);
@@ -273,4 +281,18 @@ void TvShow::setRemoteId(const QString &value)
 void TvShow::watchedChanged(int oldSeasonCount, int newSeasonCount) {
     int count = getWatchedEpisodes();
     emit watchCountChanged(count - newSeasonCount + oldSeasonCount, count);
+}
+
+
+TvShowPlayerSettings::TvShowPlayerSettings() :
+    subtileTrack(0),
+    audioTrack(0),
+    videoTrack(0)
+{
+}
+
+void TvShowPlayerSettings::describe(nw::Describer*de) {
+    NwUtils::describe(*de, "subtitleTrack", subtileTrack);
+    NwUtils::describe(*de, "audioTrack", audioTrack);
+    NwUtils::describe(*de, "videoTrack", videoTrack);
 }

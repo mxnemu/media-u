@@ -7,6 +7,15 @@
 #include <season.h>
 #include <N0Slib.h>
 
+class TvShowPlayerSettings {
+public:
+    TvShowPlayerSettings();
+    int subtileTrack;
+    int audioTrack;
+    int videoTrack;
+    void describe(nw::Describer *de);
+};
+
 class TvShow : public QObject
 {
     Q_OBJECT
@@ -57,6 +66,7 @@ public:
 
     MovieFile* getEpisodeForPath(const QString &path);
 
+    TvShowPlayerSettings playerSettings;
 signals:
     void watchCountChanged(int oldCount, int newCount);
 

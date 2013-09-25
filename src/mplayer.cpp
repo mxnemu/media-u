@@ -16,18 +16,25 @@ Mplayer::~Mplayer() {
 
 }
 
-int Mplayer::playFileImpl(QString filepath) {
+int Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
     process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
         "-slave" <<
         config.arguments
     );
     process.waitForStarted();
-
-    SystemUtils::setProcessPriority(process, -20);
+    SystemUtils::setProcessPriority(process, -20);   
 
     if (process.state() == process.Running) {
         this->paused = false;
+
+        if (settings.audioTrack != 0) {
+            process.write(QString("switch_audio %1\n").arg(settings.audioTrack).toUtf8());
+        }
+        if (settings.subtileTrack != 0) {
+            process.write(QString("sub_select %1\n").arg(settings.subtileTrack).toUtf8());
+        }
+
     } else {
         paused = true;
     }
