@@ -33,9 +33,9 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         MovieFile* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
         if (episode) {
             episode->setWatched(!episode->getWatched());
-            Server::simpleWrite(resp, 200, QString("{\"watched\":\"%1\"}").arg(episode->getWatched()), mime::json);
+            Server::simpleWrite(resp, 200, QString("{\"watched\":%1}").arg(episode->getWatched() ? "true" : "false"), mime::json);
         } else {
-            Server::simpleWrite(resp, 200, QString("{\"error\":\"Episode not found\"}"), mime::json);
+            Server::simpleWrite(resp, 400, QString("{\"error\":\"Episode not found\"}"), mime::json);
         }
     } else {
         return false;
