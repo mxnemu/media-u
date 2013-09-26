@@ -40,6 +40,7 @@ void SettingsPage::on_addButton_clicked() {
         library.addSearchDirectory(SearchDirectory(QDir(dir), true));
         //this->ui->searchDirectories->addTopLevelItem();
         new QTreeWidgetItem(this->ui->searchDirectories, QStringList() << dir << "enabled");
+        library.startSearch();
     }
 }
 

@@ -1,5 +1,11 @@
 function StartPage() {
     this.updateFocus = true;
+    var self = this;
+    G.app.serverEvents.addEventListener("showAdded", function(event) {
+        var show = JSON.parse(event.data);
+        self.addShow(show);
+        console.log("added show", show);
+    });
 }
 
 StartPage.prototype.fetchInfos = function(callback) {
@@ -30,7 +36,7 @@ StartPage.prototype.createNodes = function() {
         var p = $(".page");
         G.app.setBackground(this.background);
         p.append("<h1>StartPage</h1>");
-        self.createLists(p);        
+        self.createLists(p);
     });
 }
 
@@ -43,7 +49,8 @@ StartPage.prototype.createLists = function(page) {
         }
         var listNode = $("<div class='showList list'></div>");
         var listHead = $("<div class='headline'></div>");
-        var items = $("<ul></ul>");
+        list.node = listNode;
+        
         listHead.text(listName);
         listNode.append(listHead);
         
@@ -54,24 +61,55 @@ StartPage.prototype.createLists = function(page) {
         // show
         $.each(list, function() {
             var show = this;
-            var item = $("<li></li>");
-            item.text(this.name);
-            item.mousemove(function() {
-                if (self.updateFocus && !$(this).hasClass("focused")) {
-                    $("li").removeClass("focused");
-                    $(this).addClass("focused");
-                    $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
-                        // remote set done
-                    });
-                }
-            });
-            item.click(function() {
-                self.updateFocus = false;
-                window.location.hash = "#!/TvShowPage"
-                //G.app.setPage(new TvShowPage());
-            });
+            var item = self.liForShow(show);
             listNode.append(item);
         });
         page.append(listNode);
     };
+}
+
+StartPage.prototype.liForShow = function(show) {
+    var self = this;
+    var item = $("<li></li>");
+    item.text(show.name);
+    item.mousemove(function() {
+        if (self.updateFocus && !$(this).hasClass("focused")) {
+            $("li").removeClass("focused");
+            $(this).addClass("focused");
+            $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
+                // remote set done
+            });
+        }
+    });
+    item.click(function() {
+        self.updateFocus = false;
+        window.location.hash = "#!/TvShowPage"
+        //G.app.setPage(new TvShowPage());
+    });
+    return item;
+}
+
+StartPage.prototype.listsForShow = function(show) {
+    var lists = [];
+    for (var listName in this.lists) {
+        if (listName === "airing" && show.airingStatus === "airing") {
+            lists.push(this.lists[listName]);
+        } else if (listName === "all") {
+            lists.push(this.lists[listName]);
+        }
+    }
+    if (lists.length === 0) {
+        console.error("no lists for show", show, this.lists);
+    }
+    return lists;
+}
+
+// TODO sort the list again
+StartPage.prototype.addShow = function(show) {
+    var lists = this.listsForShow(show);
+    for (var i=0; i < lists.length; ++i) {
+        var item = this.liForShow(show);
+        lists[i].node.append(item);
+        console.log("it happend!", show, item);
+    }
 }

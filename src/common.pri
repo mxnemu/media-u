@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     thumbnailcreator.cpp \
     thumbnailcreatoravconv.cpp \
     searchdirectory.cpp \
-    server.cpp
+    server.cpp \
+    apipushevents.cpp
 
 HEADERS  += library.h \
     moviefile.h \
@@ -55,4 +56,5 @@ HEADERS  += library.h \
     thumbnailcreator.h \
     thumbnailcreatoravconv.h \
     searchdirectory.h \
-    server.h
+    server.h \
+    apipushevents.h

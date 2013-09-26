@@ -10,6 +10,7 @@
 
 #include "mainwindow.h"
 #include "videoplayer.h"
+#include "apipushevents.h"
 
 namespace mime {
 const QString json = "application/json";
@@ -39,6 +40,7 @@ private:
     MainWindow& window;
     Library& library;
     VideoPlayer* player;
+    ApiPushEvents pushEvents;
     Q_DISABLE_COPY(Server)
 };
 

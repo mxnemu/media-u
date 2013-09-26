@@ -10,7 +10,8 @@ Server::Server(QString publicDirectoryPath, MainWindow &window, Library &library
     QObject(NULL), publicDirectory(publicDirectoryPath),
     window(window),
     library(library),
-    player(player)
+    player(player),
+    pushEvents(library)
 {
 
 }
@@ -59,6 +60,8 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         return player->handleApiRequest(req, resp);
     } else if (path.startsWith("/api/library/")) {
         return library.handleApiRequest(req, resp);
+    } else if (path.startsWith("/api/events/")) {
+        return pushEvents.handleApiRequest(req, resp);
     } else if (path.startsWith("/api/page/") && window.activePage()) {
         return window.activePage()->handleApiRequest(req, resp);
     }

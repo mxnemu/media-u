@@ -30,6 +30,17 @@ Application.prototype.setScreenFromLocationHash = function()
             console.error("did not receive active page id");
         });
     }
+    self.addServerEventListener();
+}
+
+Application.prototype.addServerEventListener = function() {
+    this.serverEvents = new EventSource("api/events/all");
+    this.serverEvents.onopen = function(event) {
+        console.log("sse open", event);
+    }
+    this.serverEvents.onerror = function(event) {
+        console.log("sse error", event);
+    }
 }
 
 Application.prototype.pageList = {
