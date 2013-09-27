@@ -68,6 +68,18 @@ StartPage.prototype.createLists = function(page) {
     };
 }
 
+// don't send a preview request when the mouse moves really fast
+StartPage.prototype.delayedShowPreviewRequest = function(element) {
+    var delayId = window.setTimeout(function() {
+        var el = $(element);
+        if (el.hasClass("focused")) {
+            $.getJSON("api/setPage/TvShowPage?" + el.text());
+        } else {
+            console.log("cancel");
+        }
+    }, 50);
+}
+
 StartPage.prototype.liForShow = function(show) {
     var self = this;
     var item = $("<li></li>");
@@ -76,9 +88,7 @@ StartPage.prototype.liForShow = function(show) {
         if (self.updateFocus && !$(this).hasClass("focused")) {
             $("li").removeClass("focused");
             $(this).addClass("focused");
-            $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
-                // remote set done
-            });
+            self.delayedShowPreviewRequest(this);
         }
     });
     item.click(function() {
