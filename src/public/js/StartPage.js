@@ -84,6 +84,8 @@ StartPage.prototype.liForShow = function(show) {
     });
     item.click(function() {
         self.updateFocus = false;
+        // todo don't send when the active page is already correct,
+        // because this causes a new background img to be shown.
         $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
             window.location.hash = "#!/TvShowPage"
         });
