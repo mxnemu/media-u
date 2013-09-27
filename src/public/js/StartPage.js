@@ -4,7 +4,6 @@ function StartPage() {
     G.app.serverEvents.addEventListener("showAdded", function(event) {
         var show = JSON.parse(event.data);
         self.addShow(show);
-        console.log("added show", show);
     });
 }
 
@@ -22,11 +21,6 @@ StartPage.prototype.fetchInfos = function(callback) {
         onFetched();
     }).error(function(err, reason, dat, m) {
         console.error(err, reason, dat, m);
-    });
-    $.getJSON("api/library/randomWallpaper", function(data) {
-        console.log("got a bg pic:" + data.image);
-        self.background = data.image;
-        onFetched();
     });
 }
 
@@ -74,8 +68,6 @@ StartPage.prototype.delayedShowPreviewRequest = function(element) {
         var el = $(element);
         if (el.hasClass("focused")) {
             $.getJSON("api/setPage/TvShowPage?" + el.text());
-        } else {
-            console.log("cancel");
         }
     }, 50);
 }
@@ -122,6 +114,5 @@ StartPage.prototype.addShow = function(show) {
     for (var i=0; i < lists.length; ++i) {
         var item = this.liForShow(show);
         lists[i].node.append(item);
-        console.log("it happend!", show, item);
     }
 }

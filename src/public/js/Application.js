@@ -62,10 +62,6 @@ Application.prototype.setPage = function(page) {
     }
 }
 
-Application.prototype.setBackground = function(img) {
-    $(".page").css("background-image:" + img);
-}
-
 $(function() {
     G.app = new Application();
     G.playerType = "remote";
