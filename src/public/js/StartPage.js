@@ -83,7 +83,9 @@ StartPage.prototype.liForShow = function(show) {
     });
     item.click(function() {
         self.updateFocus = false;
-        window.location.hash = "#!/TvShowPage"
+        $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
+            window.location.hash = "#!/TvShowPage"
+        });
         //G.app.setPage(new TvShowPage());
     });
     return item;
