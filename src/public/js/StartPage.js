@@ -9,7 +9,7 @@ function StartPage() {
 
 StartPage.prototype.fetchInfos = function(callback) {
     var self = this;
-    var unfetched = 2;
+    var unfetched = 1;
     var onFetched = function() {
         --unfetched;
         if (unfetched <= 0) {
@@ -28,7 +28,6 @@ StartPage.prototype.createNodes = function() {
     var self = this;
     this.fetchInfos(function() {
         var p = $(".page");
-        G.app.setBackground(this.background);
         p.append("<h1>StartPage</h1>");
         self.createLists(p);
     });
