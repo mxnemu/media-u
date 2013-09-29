@@ -23,10 +23,10 @@ public:
     RequestBodyListener(QHttpResponse* resp, QObject* parent);
 
 signals:
-    void bodyReceived(QHttpRequest* req, QHttpResponse* resp);
+    void bodyReceived(QHttpResponse* resp, const QByteArray& bytes);
 
 public slots:
-    void onRequestEnd();
+    void onDataReceived(QByteArray);
 
 private:
     QHttpResponse* resp;

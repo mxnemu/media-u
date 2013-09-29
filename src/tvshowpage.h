@@ -25,6 +25,7 @@ public:
 
 public slots:
     void updateWatched(int, int);
+    void receivedPlayerSettings(QHttpResponse* resp, const QByteArray&);
 private:
     Ui::TvShowPage *ui;
     Library& library;

@@ -52,7 +52,21 @@ void TvShowPage::updateWatched(int,  int) {
         QString::number(tvShow->getWatchedEpisodes()),
         QString::number(tvShow->episodesDownloaded()),
         QString::number(tvShow->getTotalEpisodes())
-    ));
+                              ));
+}
+
+void TvShowPage::receivedPlayerSettings(QHttpResponse *resp, const QByteArray& body) {
+    std::stringstream ss;
+    ss << body.data();
+    nw::JsonReader jr(ss);
+
+    if (jr.getErrorMessage().empty()) {
+        tvShow->playerSettings.describe(&jr);
+        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+    } else {
+        Server::simpleWrite(resp, 400, "{\"error\": \"no valid number provided in query\"}", mime::json);
+    }
+    jr.close();
 }
 
 
@@ -66,28 +80,22 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         jw.close();
         Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
         return true;
-    } else if (req->path().startsWith("/api/page/setPlayerSettings")) {
+    } else if (req->path().startsWith("/api/page/playerSettings")) {
         // TODO handle this independet from the page
-        // TODO take a json in the body (won't pare in qhttpserver?) and use PUT with same name
 
-        std::stringstream ss;
-        ss << req->url().query(QUrl::FullyDecoded).toStdString();
-        nw::JsonReader jr(ss);
-
-        if (jr.getErrorMessage().empty()) {
-            tvShow->playerSettings.describe(&jr);
-            Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+        if (req->method() == QHttpRequest::HTTP_PUT) {
+            RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
+            connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
+            connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(receivedPlayerSettings(QHttpResponse*,const QByteArray&)));
+        } else if (req->method() == QHttpRequest::HTTP_GET) {
+            std::stringstream ss;
+            nw::JsonWriter jw(ss);
+            tvShow->playerSettings.describe(&jw);
+            jw.close();
+            Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
         } else {
-            Server::simpleWrite(resp, 400, "{\"error\": \"no valid number provided in query\"}", mime::json);
+            return false;
         }
-        jr.close();
-        return true;
-    } else if (req->path() == "/api/page/playerSettings") {
-        std::stringstream ss;
-        nw::JsonWriter jw(ss);
-        tvShow->playerSettings.describe(&jw);
-        jw.close();
-        Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
         return true;
     }
     return false;

@@ -33,7 +33,11 @@ TvShowPage.prototype.createNodes = function() {
                 var number = this.value;
                 data[key] = number;
                 var json = JSON.stringify(data);
-                $.getJSON("api/page/setPlayerSettings?" + json, function() {
+                $.ajax({
+                    url:"api/page/playerSettings",
+                    type: "PUT",
+                    data: json
+                }).complete(function() {
                     console.log("set subtitle to ", number);
                 });
             }

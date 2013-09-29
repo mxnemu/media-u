@@ -129,10 +129,10 @@ RequestBodyListener::RequestBodyListener(QHttpResponse *resp, QObject* parent) :
 {
 }
 
-void RequestBodyListener::onRequestEnd() {
+void RequestBodyListener::onDataReceived(QByteArray bytes) {
     QHttpRequest* req = dynamic_cast<QHttpRequest*>(sender());
     if (req) {
-        emit bodyReceived(req, resp);
+        emit bodyReceived(resp, bytes);
     } else {
         Server::simpleWrite(resp, 500, "Internal-Server-Error: wrong callback connected to bodyEnd()");
     }
