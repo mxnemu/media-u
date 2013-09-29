@@ -169,7 +169,7 @@ void VideoPlayer::setThumbnailCreator(const ThumbnailCreator *value)
 void VideoPlayer::onThumbnailCreated(const QByteArray img) {
     ThumbCreationCallback* tcc = dynamic_cast<ThumbCreationCallback*>(this->sender());
     QHttpResponse* resp = static_cast<QHttpResponse*>(tcc->data);
-    Server::simpleWriteBytes(resp, 200, img);
+    Server::simpleWriteBytes(resp, 200, img, "image/jpeg");
     tcc->deleteLater();
 }
 
