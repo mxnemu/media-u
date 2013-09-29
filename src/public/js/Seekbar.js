@@ -5,6 +5,10 @@ function Progress(page, onUpdateCallback) {
     this.page = page;
     this.onUpdateCallback = onUpdateCallback;
     this.onResetCallback = null;
+    
+    this.progressUpdateIntervalId = null;
+    this.progressSyncIntervalId = null;
+    this.refetchMetaDataTimeout = null;
 }
 
 Progress.prototype.fetchMetaData = function(callback) {
@@ -12,7 +16,7 @@ Progress.prototype.fetchMetaData = function(callback) {
     
     $.getJSON("api/player/metaData", function(data) {
         if (data.duration < 0) {
-            window.setTimeout(function() {
+            self.refetchMetaDataTimeout = window.setTimeout(function() {
                 self.fetchMetaData(callback);
             }, 500);
             return;
@@ -34,8 +38,7 @@ Progress.prototype.startUp = function() {
     $.getJSON("api/player/progress", function(data) {
         self.path = data.path;
         self.update(data.seconds);
-        window.clearInterval(self.progressUpdateIntervalId);
-        window.clearInterval(self.progressSyncIntervalId);
+        self.clearIntervals();
         self.progressUpdateIntervalId = window.setInterval(function() {
             if (self.page.togglePauseButton.attr("data-status") == "unPaused") {
                 self.update(self.seconds +0.05);
@@ -64,11 +67,16 @@ Progress.prototype.resync = function() {
         self.update(d.seconds);
         console.log(d.path);
         if (d.path != self.path) {
-            window.clearInterval(this.progressUpdateIntervalId);
-            window.clearInterval(this.progressSyncIntervalId);
+            self.clearIntervals();
             self.fetchMetaData();
         }
     });
+}
+
+Progress.prototype.clearIntervals = function() {
+    window.clearInterval(this.progressUpdateIntervalId);
+    window.clearInterval(this.progressSyncIntervalId);
+    window.clearTimeout(this.refetchMetaDataTimeout);
 }
 
 function Seekbar(page) {
@@ -181,4 +189,8 @@ Seekbar.prototype.createNodes = function() {
     this.progress.fetchMetaData(function() {
         self.bindListeners();
     });
+}
+
+Seekbar.prototype.destroy = function() {
+    this.progress.clearIntervals();
 }

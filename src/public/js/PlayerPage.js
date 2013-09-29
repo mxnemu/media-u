@@ -75,6 +75,10 @@ PlayerPage.prototype.createNodes = function() {
     page.append(playerControls);
 }
 
+PlayerPage.prototype.removeNodes = function() {
+    this.seekbar.destroy();
+}
+
 PlayerPage.prototype.setPauseDisplay = function(status) {
     this.togglePauseButton.attr("data-status", status);
     if (status != "unPaused") {
