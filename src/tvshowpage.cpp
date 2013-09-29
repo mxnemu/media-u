@@ -52,7 +52,7 @@ void TvShowPage::updateWatched(int,  int) {
         QString::number(tvShow->getWatchedEpisodes()),
         QString::number(tvShow->episodesDownloaded()),
         QString::number(tvShow->getTotalEpisodes())
-                              ));
+    ));
 }
 
 void TvShowPage::receivedPlayerSettings(QHttpResponse *resp, const QByteArray& body) {
