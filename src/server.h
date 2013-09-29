@@ -17,6 +17,20 @@ const QString json = "application/json";
 const QString text = "text/plain";
 };
 
+class RequestBodyListener : public QObject {
+    Q_OBJECT
+public:
+    RequestBodyListener(QHttpResponse* resp, QObject* parent);
+
+signals:
+    void bodyReceived(QHttpRequest* req, QHttpResponse* resp);
+
+public slots:
+    void onRequestEnd();
+
+private:
+    QHttpResponse* resp;
+};
 
 class Server : public QObject
 {

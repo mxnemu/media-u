@@ -121,3 +121,20 @@ void Server::simpleWriteBytes(QHttpResponse* resp, int statusCode, const QByteAr
     resp->write(data);
     resp->end();
 }
+
+
+RequestBodyListener::RequestBodyListener(QHttpResponse *resp, QObject* parent) :
+    QObject(parent),
+    resp(resp)
+{
+}
+
+void RequestBodyListener::onRequestEnd() {
+    QHttpRequest* req = dynamic_cast<QHttpRequest*>(sender());
+    if (req) {
+        emit bodyReceived(req, resp);
+    } else {
+        Server::simpleWrite(resp, 500, "Internal-Server-Error: wrong callback connected to bodyEnd()");
+    }
+    deleteLater();
+}
