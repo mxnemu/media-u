@@ -1,6 +1,7 @@
 function Application() {
     this.page = null;
     this.setScreenFromLocationHash();
+    this.addServerEventListener();
 }
 
 Application.prototype.setScreenFromLocationHash = function()
@@ -30,7 +31,6 @@ Application.prototype.setScreenFromLocationHash = function()
             console.error("did not receive active page id");
         });
     }
-    self.addServerEventListener();
 }
 
 Application.prototype.addServerEventListener = function() {
