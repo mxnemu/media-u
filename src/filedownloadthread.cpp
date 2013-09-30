@@ -37,7 +37,6 @@ void FileDownloadThread::run() {
     }
     QFile file(filepath);
     if (file.exists() && !overwriteExisting) {
-        qDebug() << "won't download file. It already exists locally: " << filepath;
         return;
     }
 

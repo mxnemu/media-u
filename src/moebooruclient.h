@@ -64,7 +64,7 @@ private:
 
 class FetchThread : public QThread {
 public:
-    FetchThread(Client& client, QList<TvShow*> tvShows, QDir libraryDirectory);
+    FetchThread(Client& client, QList<TvShow*> tvShows, QDir libraryDirectory, QObject* parent);
     void run();
 private:
     Client& client;

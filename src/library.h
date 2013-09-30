@@ -12,10 +12,19 @@
 #include "libraryfilter.h"
 #include "searchdirectory.h"
 
+class DirectoryScannerThread;
+
 class Library : public QObject
 {
     Q_OBJECT
-public:
+public:  
+
+    enum searchStatus {
+        notStarted,
+        inProgress,
+        done
+    };
+
     explicit Library(QString path, QObject *parent = 0);
     void initMalClient(QString malConfigFilepath);
 
@@ -37,6 +46,7 @@ public:
     void downloadWallpapers();
 
     void startSearch();
+    Library::searchStatus getSearchStatus();
 
     const QList<SearchDirectory>& getSearchDirectories() const;
     bool addSearchDirectory(SearchDirectory dir);
@@ -45,6 +55,7 @@ public:
 
 signals:
     void showAdded(TvShow* show);
+    void searchFinished();
     
 public slots:
 
@@ -61,6 +72,7 @@ private:
     LibraryFilter mFilter;
     Moebooru::Client konachanClient;
     Moebooru::Client yandereClient;
+    DirectoryScannerThread* searchThread;
 };
 
 #endif // LIBRARY_H

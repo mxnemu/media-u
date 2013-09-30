@@ -31,7 +31,8 @@ void MalClient::init(QString configFilePath) {
 }
 
 void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
-    MalClientThread* activeThread = new MalClientThread(*this, showList, libraryDir);
+    MalClientThread* activeThread = new MalClientThread(*this, showList, libraryDir, this);
+    //connect(this, SIGNAL(destroyed()), activeThread, SLOT(terminate()));
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
 
@@ -139,7 +140,8 @@ bool MalClient::hasValidCredentials() const {
 //
 //////////////////////////////////////////////////////////////////
 
-MalClientThread::MalClientThread(MalClient &client, QList<TvShow*> &shows, QDir libraryDir) :
+MalClientThread::MalClientThread(MalClient &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
+    QThread(parent),
     malClient(client),
     tvShows(shows),
     libraryDir(libraryDir)

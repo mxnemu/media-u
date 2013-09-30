@@ -12,9 +12,14 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    MainBackgroundWidget* mbw = mainwindow->getCentralWidget();
-    if (mbw) {
-        mbw->setBackground(library.filter().getRandomWallpaper());
+    if (library.getSearchStatus() != Library::done) {
+        connect(&library, SIGNAL(searchFinished()), this, SLOT(setRandomWallpaper()));
+        // could this race even happen? I don't know
+        if (library.getSearchStatus() == Library::done) {
+            this->setRandomWallpaper();
+        }
+    } else {
+        this->setRandomWallpaper();
     }
 
     this->airingShows = library.filter().airing();
@@ -44,4 +49,11 @@ void MainPage::onShowAdded(TvShow *show) {
         this->ui->currentlyAiringShows->add(show);
     }
     this->ui->allShows->add(show);
+}
+
+void MainPage::setRandomWallpaper() {
+    MainBackgroundWidget* mbw = mainwindow->getCentralWidget();
+    if (mbw) {
+        mbw->setBackground(library.filter().getRandomWallpaper());
+    }
 }

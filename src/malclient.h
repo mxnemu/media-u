@@ -43,7 +43,7 @@ private:
 
 class MalClientThread : public QThread {
 public:
-    MalClientThread(MalClient& client, QList<TvShow*>& shows, QDir libraryDir);
+    MalClientThread(MalClient& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
 
     void run();
 private:

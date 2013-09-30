@@ -11,7 +11,8 @@ Library::Library(QString path, QObject *parent) :
     directory(path),
     mFilter(tvShows, directory),
     konachanClient("http://konachan.com"),
-    yandereClient("https://yande.re")
+    yandereClient("https://yande.re"),
+    searchThread(NULL)
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
@@ -97,18 +98,36 @@ void Library::fetchMetaData() {
 }
 
 void Library::downloadWallpapers() {
-    Moebooru::FetchThread* ft = new Moebooru::FetchThread(konachanClient, filter().all(), directory);
-    ft->start(QThread::LowPriority);
+    Moebooru::FetchThread* ft = new Moebooru::FetchThread(konachanClient, filter().all(), directory, this);
+    //connect(this, SIGNAL(destroyed()), ft, SLOT(terminate()));
     connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
+    ft->start(QThread::LowPriority);
 }
 
 void Library::startSearch() {
-    DirectoryScanner scanner;
-    scanner.addScanner(new TvShowScanner(*this));
-    for (int i=0; i < searchDirectories.length(); ++i) {
-        scanner.scan(searchDirectories.at(i).dir.absolutePath());
+    if (this->searchThread) {
+        if (this->searchThread->isFinished()) {
+            QThread* t = this->searchThread;
+            this->searchThread = NULL;
+            delete t;
+        } else {
+            return;
+        }
     }
+    DirectoryScanner* scanner = new DirectoryScanner();
+    scanner->addScanner(new TvShowScanner(*this));
+    this->searchThread = new DirectoryScannerThread(scanner, searchDirectories, this);
+    //connect(this, SIGNAL(destroyed()), searchThread, SLOT(terminate()));
+    connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
+    this->searchThread->run();
     //library.write();
+}
+
+Library::searchStatus Library::getSearchStatus() {
+    if (this->searchThread) {
+        return this->searchThread->isRunning() ? inProgress : done;
+    }
+    return notStarted;
 }
 
 const QList<SearchDirectory>& Library::getSearchDirectories() const {
@@ -222,4 +241,3 @@ QDir Library::getDirectory() const
 {
     return directory;
 }
-

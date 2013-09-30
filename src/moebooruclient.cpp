@@ -23,7 +23,8 @@ CURL *Client::curlClient(QString tag, CurlResult& userdata)
     return handle;
 }
 
-FetchThread::FetchThread(Client &client, QList<TvShow *> tvShows, QDir libraryDirectory) :
+FetchThread::FetchThread(Client &client, QList<TvShow *> tvShows, QDir libraryDirectory, QObject *parent) :
+    QThread(parent),
     client(client),
     tvShows(tvShows),
     libraryDirectory(libraryDirectory)
@@ -66,7 +67,6 @@ void SearchResult::downloadBestResults(QDir directory, Rating ratingFilter) {
             fileThread->start();
             threads.push_back(fileThread);
             matches++;
-            qDebug() << "download wallpaper " << entry.fileUrl;
         }
 
         // blocking to avoid sending to many requests, so we don't get banned

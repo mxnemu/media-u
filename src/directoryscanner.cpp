@@ -45,3 +45,22 @@ void DirectoryScanner::scan(QString path) {
     QStringList handledDirs;
     this->scan(path, handledDirs, QDir(path).absolutePath());
 }
+
+DirectoryScannerThread::DirectoryScannerThread(DirectoryScanner *scanner, const QList<SearchDirectory> &dirs, QObject *parent) :
+    QThread(parent),
+    scanner(scanner),
+    dirs(dirs)
+{
+}
+
+DirectoryScannerThread::~DirectoryScannerThread()
+{
+    delete this->scanner;
+}
+
+void DirectoryScannerThread::run() {
+    for (int i=0; i < dirs.length(); ++i) {
+        scanner->scan(dirs.at(i).dir.absolutePath());
+    }
+    emit done();
+}

@@ -22,6 +22,7 @@ public:
 private slots:
     void on_settingsButton_clicked();
     void onShowAdded(TvShow* show);
+    void setRandomWallpaper();
 
 private:
     Ui::MainPage *ui;
