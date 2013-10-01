@@ -37,10 +37,9 @@ class SearchResult {
 public:
     SearchResult(std::stringstream& ss, int limit);
     SearchResult();
-    void downloadBestResults(QDir directory, Rating ratingFilter);
 
-private:
     QList<Entry> entries;
+private:
     int limit;
 };
 
@@ -49,13 +48,15 @@ class Client
 public:
     Client(QString baseUrl, int limit = 10, Rating ratingFilter = ratingSafe);
 
-    SearchResult fetchPostsBlocking(QString tagName);
+    SearchResult fetchPostsBlocking(QString tagName, int page = 1);
 
     Rating getRatingFilter() const;
     int getLimit() const;
 
+    void downloadBestResults(QDir directory, const QList<Entry> &entries);
+
 private:
-    CURL* curlClient(QString tag, CurlResult& userdata);
+    CURL* curlClient(QString tag, CurlResult& userdata, const unsigned int page = 1);
 
     QString baseUrl;
     Rating ratingFilter;
