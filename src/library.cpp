@@ -119,7 +119,7 @@ void Library::startSearch() {
     this->searchThread = new DirectoryScannerThread(scanner, searchDirectories, this);
     //connect(this, SIGNAL(destroyed()), searchThread, SLOT(terminate()));
     connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
-    this->searchThread->run();
+    this->searchThread->start(QThread::HighPriority);
     //library.write();
 }
 
