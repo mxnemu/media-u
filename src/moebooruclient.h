@@ -10,67 +10,22 @@
 #include "curlresult.h"
 #include "tvshow.h"
 #include "filedownloadthread.h"
+#include "wallpaperdownloadclient.h"
 
 namespace Moebooru {
+using WallpaperDownload::Entry;
+using WallpaperDownload::FetchThread;
+using WallpaperDownload::Rating;
+using WallpaperDownload::SearchResult;
 
-enum Rating {
-    ratingInvalid = 0,
-    ratingSafe = 1 << 0,
-    ratingQuestionable = 1 << 1,
-    ratingExplicit = 1 << 2
-};
-
-class Entry {
-public:
-    Entry(nw::JsonReader& jr);
-    QString id;
-    QStringList tags;
-    QString fileUrl;
-    QString sampleUrl;
-    QString previewUrl;
-    QString rating;
-
-    Rating ratingFromString() const;
-};
-
-class SearchResult {
-public:
-    SearchResult(std::stringstream& ss, int limit);
-    SearchResult();
-
-    QList<Entry> entries;
-private:
-    int limit;
-};
-
-class Client
+class Client : public WallpaperDownload::Client
 {
 public:
-    Client(QString baseUrl, int limit = 10, Rating ratingFilter = ratingSafe);
+    Client(QString baseUrl, int limit = 10, Rating ratingFilter = WallpaperDownload::ratingSafe);
 
     SearchResult fetchPostsBlocking(QString tagName, int page = 1);
-
-    Rating getRatingFilter() const;
-    int getLimit() const;
-
-    void downloadBestResults(QDir directory, const QList<Entry> &entries);
-
-private:
+protected:
     CURL* curlClient(QString tag, CurlResult& userdata, const unsigned int page = 1);
-
-    QString baseUrl;
-    Rating ratingFilter;
-    int limit;
-};
-
-class FetchThread : public QThread {
-public:
-    FetchThread(Client& client, QList<TvShow*> tvShows, QDir libraryDirectory, QObject* parent);
-    void run();
-private:
-    Client& client;
-    QList<TvShow*> tvShows;
-    QDir libraryDirectory;
 };
 
 }

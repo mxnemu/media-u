@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     thumbnailcreatoravconv.cpp \
     searchdirectory.cpp \
     server.cpp \
-    apipushevents.cpp
+    apipushevents.cpp \
+    wallpaperdownloadclient.cpp
 
 HEADERS  += library.h \
     moviefile.h \
@@ -57,4 +58,5 @@ HEADERS  += library.h \
     thumbnailcreatoravconv.h \
     searchdirectory.h \
     server.h \
-    apipushevents.h
+    apipushevents.h \
+    wallpaperdownloadclient.h
