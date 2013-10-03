@@ -172,8 +172,9 @@ void Library::fetchingFinished() {
 }
 
 void Library::readAll() {
-    if (directory.exists()) {
-        nw::JsonReader jr(directory.absoluteFilePath("library.json").toStdString());
+    QString filepath = directory.absoluteFilePath("library.json");
+    if (QFile(filepath).exists()) {
+        nw::JsonReader jr(filepath.toStdString());
 
 
         jr.describeArray("searchDirectories", "directory", searchDirectories.length());
