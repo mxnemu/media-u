@@ -49,14 +49,20 @@ void SearchResult::sortEntries() {
 ///////////////////////////////////////////////////////
 Entry::Entry() {}
 
+// TODO move into another function so the method name actually makes sense
+// reverse results to get desc order (this is stupid)
 bool Entry::operator <(const Entry &b) const {
+    // don't dl gifs!
+    if (QFileInfo(QUrl(fileUrl).path()).suffix() == "gif") {
+        return false;
+    }
     if (width == b.width) {
         if (score == b.score) {
-            return height < b.height;
+            return height > b.height;
         }
-        return score < b.score;
+        return score > b.score;
     }
-    return width < b.width;
+    return width > b.width;
 }
 
 Rating Entry::ratingFromString() const {
