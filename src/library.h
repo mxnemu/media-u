@@ -72,9 +72,7 @@ private:
     MalClient malClient;
     LibraryFilter mFilter;
     // TODO put into an array
-    Moebooru::Client konachanClient;
-    Moebooru::Client yandereClient;
-    Gelbooru::Client gelbooruClient;
+    QList<WallpaperDownload::Client*> wallpaperDownloaders;
     DirectoryScannerThread* searchThread;
 };
 

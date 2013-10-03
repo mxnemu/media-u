@@ -10,14 +10,14 @@ Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
     mFilter(tvShows, directory),
-    konachanClient("http://konachan.com"),
-    yandereClient("https://yande.re"),
-    gelbooruClient(),
     searchThread(NULL)
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
     }
+    wallpaperDownloaders.push_back(new Moebooru::Client(("http://konachan.com")));
+    wallpaperDownloaders.push_back(new Moebooru::Client(("https://yande.re")));
+    wallpaperDownloaders.push_back(new Gelbooru::Client());
 }
 
 void Library::initMalClient(QString malConfigFilepath) {
@@ -99,11 +99,13 @@ void Library::fetchMetaData() {
 }
 
 void Library::downloadWallpapers() {
-
-    WallpaperDownload::FetchThread* ft = new WallpaperDownload::FetchThread(gelbooruClient, filter().all(), directory, this);
-    //connect(this, SIGNAL(destroyed()), ft, SLOT(terminate()));
-    connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
-    ft->start(QThread::LowPriority);
+    for (int i=0; i < wallpaperDownloaders.size(); ++i) {
+        WallpaperDownload::Client* downloader = wallpaperDownloaders[i];
+        WallpaperDownload::FetchThread* ft = new WallpaperDownload::FetchThread(*downloader, filter().all(), directory, this);
+        //connect(this, SIGNAL(destroyed()), ft, SLOT(terminate()));
+        connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
+        ft->start(QThread::LowPriority);
+    }
 }
 
 void Library::startSearch() {
