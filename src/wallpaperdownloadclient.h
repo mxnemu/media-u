@@ -31,6 +31,11 @@ public:
     QString sampleUrl;
     QString previewUrl;
     QString rating;
+    int width;
+    int height;
+    int score;
+
+    bool operator <(const Entry& b) const;
 
     Rating ratingFromString() const;
 };
@@ -38,6 +43,7 @@ public:
 class SearchResult {
 public:
     SearchResult(int limit = 10);
+    void sortEntries();
 
     QList<Entry> entries;
 private:
@@ -64,6 +70,8 @@ protected:
     QString baseUrl;
     Rating ratingFilter;
     int limit;
+private:
+    const QString hostname;
 };
 
 class FetchThread : public QThread {

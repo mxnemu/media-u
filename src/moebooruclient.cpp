@@ -22,7 +22,7 @@ CURL *Client::curlClient(QString tag, CurlResult& userdata, const unsigned int p
 }
 
 SearchResult Client::parseSearchResult(std::stringstream& ss, int limit) {
-    SearchResult sr;
+    SearchResult sr(limit);
     nw::JsonReader jr(ss);
     jr.describeArray("","", 0);
     for (int i=0; jr.enterNextElement(i); ++i) {
@@ -38,7 +38,10 @@ Entry Client::parseEntry(nw::Describer *de) {
     NwUtils::describe(*de, "file_url", entry.fileUrl);
     NwUtils::describe(*de, "sample_url", entry.sampleUrl);
     NwUtils::describe(*de, "preview_url", entry.previewUrl);
-    NwUtils::describe(*de, "tags", entry.tags);
+    NwUtils::describe(*de, "tags", entry.tags, ' ');
+    NwUtils::describe(*de, "width", entry.width);
+    NwUtils::describe(*de, "height", entry.height);
+    NwUtils::describe(*de, "score", entry.score);
     return entry;
 }
 

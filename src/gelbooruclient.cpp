@@ -10,10 +10,6 @@ Client::Client(QString baseUrl, int limit, Rating ratingFilter) :
 }
 
 Entry Client::parseEntry(nw::Describer *de) {
-    int height = -1;
-    int width = -1;
-    int score = -1;
-
     Entry entry;
     NwUtils::describe(*de, "file_url", entry.fileUrl);
     NwUtils::describe(*de, "sample_url", entry.sampleUrl);
@@ -21,11 +17,9 @@ Entry Client::parseEntry(nw::Describer *de) {
     NwUtils::describe(*de, "rating", entry.rating);
     NwUtils::describe(*de, "id", entry.id);
     NwUtils::describe(*de, "tags", entry.tags, ' ');
-
-    // optional TODO use it
-    NwUtils::describe(*de, "height", height);
-    NwUtils::describe(*de, "width", width);
-    NwUtils::describe(*de, "score", score);
+    NwUtils::describe(*de, "height", entry.height);
+    NwUtils::describe(*de, "width", entry.width);
+    NwUtils::describe(*de, "score", entry.score);
     return entry;
 }
 

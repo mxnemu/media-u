@@ -2,6 +2,7 @@
 
 #include "moebooruclient.h"
 #include <QDebug>
+#include <QUrl>
 #include "filedownloadthread.h"
 
 namespace WallpaperDownload {
@@ -24,6 +25,7 @@ void FetchThread::run()
         bool noEntriesLeft = false;
         for (int page=1; show->numberOfWallpapers(libraryDirectory) < client.getLimit() && !noEntriesLeft; ++page)  {
             SearchResult result = client.fetchPostsBlocking(show->name(), page);
+            result.sortEntries();
             client.downloadBestResults(show->wallpaperDirectory(libraryDirectory), result.entries);
             noEntriesLeft = result.entries.empty();
         }
@@ -38,10 +40,24 @@ SearchResult::SearchResult(int limit) :
 {
 }
 
+void SearchResult::sortEntries() {
+    qSort(entries);
+}
+
 ///////////////////////////////////////////////////////
 // Entry
 ///////////////////////////////////////////////////////
 Entry::Entry() {}
+
+bool Entry::operator <(const Entry &b) const {
+    if (width == b.width) {
+        if (score == b.score) {
+            return height < b.height;
+        }
+        return score < b.score;
+    }
+    return width < b.width;
+}
 
 Rating Entry::ratingFromString() const {
     if (rating == "s") return ratingSafe;
@@ -56,7 +72,8 @@ Rating Entry::ratingFromString() const {
 Client::Client(QString baseUrl, int limit, Rating ratingFilter) :
     baseUrl(baseUrl),
     ratingFilter(ratingFilter),
-    limit(limit)
+    limit(limit),
+    hostname(QUrl(baseUrl).host())
 {
 }
 
@@ -97,7 +114,7 @@ void Client::downloadBestResults(QDir directory, const QList<Entry>& entries) {
         const Entry& entry = entries.at(i);
         Rating rating = entry.ratingFromString();
         if ((ratingFilter & rating) == rating) {
-            QString filename = QString("todo-domain_%1").arg(entry.id);
+            QString filename = QString("%1_%2").arg(hostname, entry.id);
             FileDownloadThread* fileThread = new FileDownloadThread(entry.fileUrl, directory.absoluteFilePath(filename), false);
             //QObject::connect(fileThread, SIGNAL(finished()), fileThread, SLOT(deleteLater()));
             fileThread->start();
