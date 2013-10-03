@@ -9,7 +9,8 @@
 #include "utils.h"
 
 MalClient::MalClient(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    activeThread(NULL)
 {
     mHasValidCredentials = false;
 }
@@ -31,7 +32,10 @@ void MalClient::init(QString configFilePath) {
 }
 
 void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
-    MalClientThread* activeThread = new MalClientThread(*this, showList, libraryDir, this);
+    if (activeThread) {
+        return;
+    }
+    activeThread = new MalClientThread(*this, showList, libraryDir, this);
     //connect(this, SIGNAL(destroyed()), activeThread, SLOT(terminate()));
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
@@ -41,9 +45,11 @@ void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
 }
 
 void MalClient::fetchThreadFinished() {
-    QThread* thread = static_cast<QThread*>(sender());
-    if (thread) {
-        delete thread;
+    if (activeThread == sender()) {
+        delete activeThread;
+        this->activeThread = NULL;
+    } else {
+        throw "fetchThreadFinished() signal received from unknown sender()";
     }
     emit fetchingFinished();
 }

@@ -39,8 +39,6 @@ public:
     void write();
     void readAll();
 
-
-    void fetchMetaData();
     QDir getDirectory() const;
 
     void startSearch();
@@ -60,6 +58,7 @@ signals:
 public slots:
     void importTvShowEpisode(QString episodePath);
     void startWallpaperDownloaders();
+    void fetchMetaData();
 
 private slots:
     void fetchingFinished();

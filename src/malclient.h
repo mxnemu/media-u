@@ -12,6 +12,19 @@
 #include "filedownloadthread.h"
 #include "nwutils.h"
 
+class MalClient;
+class MalClientThread : public QThread {
+public:
+    MalClientThread(MalClient& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
+
+    void run();
+private:
+    MalClient& malClient;
+    QList<TvShow*>& tvShows;
+    QDir libraryDir;
+};
+
+
 class MalClient : public QObject
 {
     Q_OBJECT
@@ -38,18 +51,7 @@ private:
     bool mHasValidCredentials;
     QString username;
     QString password;
-    //MalClientThread* activeThread;
-};
-
-class MalClientThread : public QThread {
-public:
-    MalClientThread(MalClient& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
-
-    void run();
-private:
-    MalClient& malClient;
-    QList<TvShow*>& tvShows;
-    QDir libraryDir;
+    MalClientThread* activeThread;
 };
 
 class MalEntry {

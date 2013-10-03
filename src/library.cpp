@@ -22,6 +22,8 @@ Library::Library(QString path, QObject *parent) :
 
 void Library::initMalClient(QString malConfigFilepath) {
     malClient.init(malConfigFilepath);
+    connect(&malClient, SIGNAL(fetchingFinished()),
+            this, SLOT(fetchingFinished()));
 }
 
 bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
@@ -94,8 +96,6 @@ void Library::xbmcLinkExport(QDir outputDir) {
 
 void Library::fetchMetaData() {
     malClient.fetchShows(tvShows, directory);
-    connect(&malClient, SIGNAL(fetchingFinished()),
-            this, SLOT(fetchingFinished()));
 }
 
 void Library::startWallpaperDownloaders() {
@@ -130,6 +130,7 @@ void Library::startSearch() {
     connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
     connect(searchThread, SIGNAL(machingFile(QString)), this, SLOT(importTvShowEpisode(QString)));
     connect(searchThread, SIGNAL(done()), this, SLOT(startWallpaperDownloaders()));
+    connect(searchThread, SIGNAL(done()), this, SLOT(fetchMetaData()));
     this->searchThread->start(QThread::HighPriority);
     //library.write();
 }
