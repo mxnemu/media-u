@@ -22,6 +22,7 @@ bool Config::init(QString path) {
         }
     } else {
         dir = QDir(path);
+        mConfigPath = path;
     }
 
     QFile configFile(dir.absoluteFilePath("config.json"));
@@ -82,8 +83,8 @@ QString Config::libraryPath() {
         return this->mLibraryPath;
     }
 
-    QDir dir = QDir::home();
-    return dir.absoluteFilePath(".mediaU/library");
+    QDir dir = configPath();
+    return dir.absoluteFilePath("library");
 }
 
 QString Config::malConfigFilePath() {
