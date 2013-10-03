@@ -64,6 +64,9 @@ TvShow *LibraryFilter::getRandomShow() {
 }
 
 TvShow *LibraryFilter::getRandomShow(const QList<TvShow*>& shows) {
+    if (shows.empty()) {
+        return NULL;
+    }
     int randomIndex = rand() % shows.length();
     if (randomIndex < shows.length()) {
         return shows[randomIndex];
