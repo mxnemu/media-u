@@ -24,7 +24,7 @@ enum Rating {
 
 class Entry {
 public:
-    Entry(nw::JsonReader& jr);
+    Entry();
     QString id;
     QStringList tags;
     QString fileUrl;
@@ -37,8 +37,7 @@ public:
 
 class SearchResult {
 public:
-    SearchResult(std::stringstream& ss, int limit);
-    SearchResult();
+    SearchResult(int limit = 10);
 
     QList<Entry> entries;
 private:

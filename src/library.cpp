@@ -12,6 +12,7 @@ Library::Library(QString path, QObject *parent) :
     mFilter(tvShows, directory),
     konachanClient("http://konachan.com"),
     yandereClient("https://yande.re"),
+    gelbooruClient(),
     searchThread(NULL)
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
@@ -98,7 +99,8 @@ void Library::fetchMetaData() {
 }
 
 void Library::downloadWallpapers() {
-    Moebooru::FetchThread* ft = new Moebooru::FetchThread(konachanClient, filter().all(), directory, this);
+
+    WallpaperDownload::FetchThread* ft = new WallpaperDownload::FetchThread(gelbooruClient, filter().all(), directory, this);
     //connect(this, SIGNAL(destroyed()), ft, SLOT(terminate()));
     connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
     ft->start(QThread::LowPriority);

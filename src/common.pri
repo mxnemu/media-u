@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     searchdirectory.cpp \
     server.cpp \
     apipushevents.cpp \
-    wallpaperdownloadclient.cpp
+    wallpaperdownloadclient.cpp \
+    gelbooruclient.cpp
 
 HEADERS  += library.h \
     moviefile.h \
@@ -59,4 +60,5 @@ HEADERS  += library.h \
     searchdirectory.h \
     server.h \
     apipushevents.h \
-    wallpaperdownloadclient.h
+    wallpaperdownloadclient.h \
+    gelbooruclient.h

@@ -23,8 +23,7 @@ SearchResult Client::fetchPostsBlocking(QString tagName, int page) {
         qDebug() << "received error" << error << "for tagquery '" << tagName << "'' with this message:\n";
         userData.print();
     } else {
-        SearchResult result(userData.data, limit);
-        return result;
+        return this->parseSearchResult(userData.data, limit);
     }
     return SearchResult();
 }
@@ -39,6 +38,27 @@ CURL *Client::curlClient(QString tag, CurlResult& userdata, const unsigned int p
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
+}
+
+SearchResult Client::parseSearchResult(std::stringstream& ss, int limit) {
+    SearchResult sr;
+    nw::JsonReader jr(ss);
+    jr.describeArray("","", 0);
+    for (int i=0; jr.enterNextElement(i); ++i) {
+        sr.entries.push_back(parseEntry(&jr));
+    }
+    return sr;
+}
+
+Entry Client::parseEntry(nw::Describer *de) {
+    Entry entry;
+    NwUtils::describe(*de, "id", entry.id);
+    NwUtils::describe(*de, "rating", entry.rating);
+    NwUtils::describe(*de, "file_url", entry.fileUrl);
+    NwUtils::describe(*de, "sample_url", entry.sampleUrl);
+    NwUtils::describe(*de, "preview_url", entry.previewUrl);
+    NwUtils::describe(*de, "tags", entry.tags);
+    return entry;
 }
 
 };

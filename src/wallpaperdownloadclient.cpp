@@ -33,30 +33,15 @@ void FetchThread::run()
 ///////////////////////////////////////////////////////
 // SearchResult
 ///////////////////////////////////////////////////////
-SearchResult::SearchResult() {}
-
-SearchResult::SearchResult(std::stringstream &ss, int limit) :
+SearchResult::SearchResult(int limit) :
     limit(limit)
 {
-    nw::JsonReader jr(ss);
-    jr.describeArray("","", 0);
-    for (int i=0; jr.enterNextElement(i); ++i) {
-        entries.push_back(Entry(jr));
-    }
 }
 
 ///////////////////////////////////////////////////////
 // Entry
 ///////////////////////////////////////////////////////
-Entry::Entry(nw::JsonReader &jr)
-{
-    NwUtils::describe(jr, "id", id);
-    NwUtils::describe(jr, "rating", rating);
-    NwUtils::describe(jr, "file_url", fileUrl);
-    NwUtils::describe(jr, "sample_url", sampleUrl);
-    NwUtils::describe(jr, "preview_url", previewUrl);
-    NwUtils::describe(jr, "tags", tags);
-}
+Entry::Entry() {}
 
 Rating Entry::ratingFromString() const {
     if (rating == "s") return ratingSafe;

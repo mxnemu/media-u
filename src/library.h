@@ -9,6 +9,7 @@
 #include "moviefile.h"
 #include "malclient.h"
 #include "moebooruclient.h"
+#include "gelbooruclient.h"
 #include "libraryfilter.h"
 #include "searchdirectory.h"
 
@@ -70,8 +71,10 @@ private:
 
     MalClient malClient;
     LibraryFilter mFilter;
+    // TODO put into an array
     Moebooru::Client konachanClient;
     Moebooru::Client yandereClient;
+    Gelbooru::Client gelbooruClient;
     DirectoryScannerThread* searchThread;
 };
 
