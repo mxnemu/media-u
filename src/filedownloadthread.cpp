@@ -29,29 +29,39 @@ void FileDownloadThread::run() {
         }
     }
 
-    QString filepath;
+    QString finalPath;
+    QString filename;
     if (keepRemoteName) {
-        filepath = dir.absoluteFilePath(QFileInfo(QUrl(url).path()).fileName());
+        filename = QFileInfo(QUrl(url).path()).fileName();
+        finalPath = dir.absoluteFilePath(filename);
     } else {
-        filepath = downloadPath;
+        finalPath = downloadPath;
+        filename = QFileInfo(downloadPath).fileName();
     }
-    QFile file(filepath);
-    if (file.exists() && !overwriteExisting) {
+
+    if (QFile(finalPath).exists() && !overwriteExisting) {
         return;
     }
 
-    if (file.open(QFile::WriteOnly)) {
-        CURL* handle = curlClient(url.toLocal8Bit().data(), file);
+    const QString tmpFilename(QString().sprintf("%p", this).append(filename));
+    QFile tmpFile(QDir::temp().absoluteFilePath(tmpFilename));
+    if (tmpFile.open(QFile::WriteOnly)) {
+        CURL* handle = curlClient(url.toLocal8Bit().data(), tmpFile);
         int error = curl_easy_perform(handle);
         curl_easy_cleanup(handle);
         if (error) {
             qDebug() << "could not fetch file " << url;
+            tmpFile.remove();
         } else {
-            qDebug() << "finished file-download of " << filepath;
+            qDebug() << "finished file-download of " << finalPath;
         }
-        file.close();
+        tmpFile.close();
+        if (!tmpFile.rename(finalPath)) {
+            qDebug() << "could not rename downloaded tmp file to destination file: " << finalPath;
+            tmpFile.remove();
+        }
     } else {
-        qDebug() << "could not write download to " << filepath;
+        qDebug() << "could not write download to " << finalPath;
     }
 }
 
