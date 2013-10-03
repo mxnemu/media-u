@@ -25,9 +25,9 @@ public:
     Client(QString baseUrl = "http://gelbooru.com", int limit = 10, Rating ratingFilter = WallpaperDownload::ratingSafe);
 
     SearchResult fetchPostsBlocking(QString tagName, int page = 1);
+protected:
     Entry parseEntry(nw::Describer *de);
     SearchResult parseSearchResult(std::stringstream &ss, int limit);
-protected:
     CURL* curlClient(QString tag, CurlResult& userdata, const unsigned int page = 1);
 };
 

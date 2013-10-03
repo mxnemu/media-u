@@ -9,25 +9,6 @@ Client::Client(QString baseUrl, int limit, Rating ratingFilter) :
 {
 }
 
-SearchResult Client::fetchPostsBlocking(QString tagName, int page) {
-    if (tagName.isEmpty() || tagName.isNull()) {
-        return SearchResult();
-    }
-    tagName.replace(' ', '_');
-
-    CurlResult userData(this);
-    CURL* handle = curlClient(tagName, userData, page);
-    CURLcode error = curl_easy_perform(handle);
-    curl_easy_cleanup(handle);
-    if (error || userData.data.str().size() < 2) {
-        qDebug() << "received error" << error << "for tagquery '" << tagName << "'' with this message:\n";
-        userData.print();
-    } else {
-        return parseSearchResult(userData.data, limit);
-    }
-    return SearchResult();
-}
-
 Entry Client::parseEntry(nw::Describer *de) {
     int height = -1;
     int width = -1;

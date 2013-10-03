@@ -49,7 +49,7 @@ class Client
 public:
     Client(QString baseUrl, int limit = 10, Rating ratingFilter = ratingSafe);
 
-    virtual SearchResult fetchPostsBlocking(QString tagName, int page = 1) = 0;
+    SearchResult fetchPostsBlocking(QString tagName, int page = 1);
 
     Rating getRatingFilter() const;
     int getLimit() const;
@@ -57,6 +57,8 @@ public:
     void downloadBestResults(QDir directory, const QList<Entry> &entries);
 
 protected:
+    virtual Entry parseEntry(nw::Describer *de) = 0;
+    virtual SearchResult parseSearchResult(std::stringstream &, int limit) = 0;
     virtual CURL* curlClient(QString tag, CurlResult& userdata, const unsigned int page = 1) = 0;
 
     QString baseUrl;
