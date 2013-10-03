@@ -94,10 +94,8 @@ int main(int argc, char *argv[]) {
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
 
-    library.startSearch();
-
     library.initMalClient(config.malConfigFilePath());
-    library.fetchMetaData();
+    library.startSearch();
 
     int returnCode = a.exec();
     library.write(); // write before exit
