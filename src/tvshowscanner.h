@@ -5,6 +5,7 @@
 
 class TvShowScanner : public MediaScanner
 {
+    Q_OBJECT
 public:
     TvShowScanner(Library &library, QObject* parent = NULL);
     void scanFiles(const QStringList &files, const QDir &dir);

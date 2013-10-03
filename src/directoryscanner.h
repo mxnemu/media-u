@@ -6,8 +6,9 @@
 #include "library.h"
 #include "mediascanner.h"
 
-class DirectoryScanner
+class DirectoryScanner : public QObject
 {
+    Q_OBJECT
 public:
     DirectoryScanner();
     virtual ~DirectoryScanner();
@@ -16,6 +17,8 @@ public:
     void scan(QString path);
     void scan(const QString& path, QStringList& handledDirs, const QString& rootPath);
     void scanFiles(const QStringList &files);
+signals:
+    void machingFile(QString);
 private:
 
     QList<MediaScanner*> mediaScanners;
@@ -29,6 +32,7 @@ public:
     virtual ~DirectoryScannerThread();
     void run();
 signals:
+    void machingFile(QString);
     void done();
 private:
     DirectoryScanner* scanner;

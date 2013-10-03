@@ -34,7 +34,6 @@ public:
     TvShow& tvShow(const QString name);
     TvShow* existingTvShow(const QString name);
     LibraryFilter& filter();
-    void importTvShowEpisode(QString episodePath);
 
     void xbmcLinkExport(QDir outputDir);
     void write();
@@ -59,6 +58,7 @@ signals:
     void searchFinished();
     
 public slots:
+    void importTvShowEpisode(QString episodePath);
 
 private slots:
     void fetchingFinished();

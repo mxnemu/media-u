@@ -11,6 +11,8 @@ public:
     MediaScanner(QObject* parent = NULL);
     virtual ~MediaScanner();
     virtual void scanFiles(const QStringList &files, const QDir &dir) = 0;
+signals:
+    void machingFile(QString);
 };
 
 #endif // MEDIASCANNER_H

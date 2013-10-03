@@ -123,6 +123,7 @@ void Library::startSearch() {
     this->searchThread = new DirectoryScannerThread(scanner, searchDirectories, this);
     //connect(this, SIGNAL(destroyed()), searchThread, SLOT(terminate()));
     connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
+    connect(searchThread, SIGNAL(machingFile(QString)), this, SLOT(importTvShowEpisode(QString)));
     this->searchThread->start(QThread::HighPriority);
     //library.write();
 }

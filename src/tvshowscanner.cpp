@@ -13,7 +13,7 @@ void TvShowScanner::scanFiles(const QStringList &files, const QDir& dir)
     foreach(QString file, files) {
         if (MovieFile::hasMovieExtension(file)) {
             std::cout << "movie file found " << file.toStdString() << std::endl;
-            library.importTvShowEpisode(dir.absoluteFilePath(file));
+            emit machingFile((dir.absoluteFilePath(file)));
         }
     }
 }

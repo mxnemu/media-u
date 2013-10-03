@@ -16,6 +16,7 @@ DirectoryScanner::~DirectoryScanner()
 void DirectoryScanner::addScanner(MediaScanner *scanner) {
     if (scanner) {
         this->mediaScanners.append(scanner);
+        connect(scanner, SIGNAL(machingFile(QString)), this, SIGNAL(machingFile(QString)));
     }
 }
 
@@ -51,6 +52,7 @@ DirectoryScannerThread::DirectoryScannerThread(DirectoryScanner *scanner, const 
     scanner(scanner),
     dirs(dirs)
 {
+    connect(scanner, SIGNAL(machingFile(QString)), this, SIGNAL(machingFile(QString)));
 }
 
 DirectoryScannerThread::~DirectoryScannerThread()
