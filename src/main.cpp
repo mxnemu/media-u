@@ -98,7 +98,6 @@ int main(int argc, char *argv[]) {
 
     library.initMalClient(config.malConfigFilePath());
     library.fetchMetaData();
-    library.downloadWallpapers();
 
     int returnCode = a.exec();
     library.write(); // write before exit

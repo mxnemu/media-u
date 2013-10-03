@@ -43,10 +43,9 @@ public:
     void fetchMetaData();
     QDir getDirectory() const;
 
-    void downloadWallpapers();
-
     void startSearch();
     Library::searchStatus getSearchStatus();
+    bool getWallpaperDownloadRunning();
 
     const QList<SearchDirectory>& getSearchDirectories() const;
     bool addSearchDirectory(SearchDirectory dir);
@@ -56,12 +55,15 @@ public:
 signals:
     void showAdded(TvShow* show);
     void searchFinished();
+    void wallpaperDownloadersFinished();
     
 public slots:
     void importTvShowEpisode(QString episodePath);
+    void startWallpaperDownloaders();
 
 private slots:
     void fetchingFinished();
+    void wallpaperDownloaderFinished();
 
 private:
     QDir directory;
@@ -73,6 +75,7 @@ private:
     LibraryFilter mFilter;
     // TODO put into an array
     QList<WallpaperDownload::Client*> wallpaperDownloaders;
+    QList<WallpaperDownload::FetchThread*> runningWallpaperDownloaders;
     DirectoryScannerThread* searchThread;
 };
 

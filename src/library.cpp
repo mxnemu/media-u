@@ -98,12 +98,17 @@ void Library::fetchMetaData() {
             this, SLOT(fetchingFinished()));
 }
 
-void Library::downloadWallpapers() {
+void Library::startWallpaperDownloaders() {
+    if (getWallpaperDownloadRunning()) {
+        return;
+    }
     for (int i=0; i < wallpaperDownloaders.size(); ++i) {
         WallpaperDownload::Client* downloader = wallpaperDownloaders[i];
         WallpaperDownload::FetchThread* ft = new WallpaperDownload::FetchThread(*downloader, filter().all(), directory, this);
         //connect(this, SIGNAL(destroyed()), ft, SLOT(terminate()));
         connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
+        connect(ft, SIGNAL(finished()), this, SLOT(wallpaperDownloaderFinished()));
+        runningWallpaperDownloaders.push_back(ft);
         ft->start(QThread::LowPriority);
     }
 }
@@ -124,6 +129,7 @@ void Library::startSearch() {
     //connect(this, SIGNAL(destroyed()), searchThread, SLOT(terminate()));
     connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
     connect(searchThread, SIGNAL(machingFile(QString)), this, SLOT(importTvShowEpisode(QString)));
+    connect(searchThread, SIGNAL(done()), this, SLOT(startWallpaperDownloaders()));
     this->searchThread->start(QThread::HighPriority);
     //library.write();
 }
@@ -133,6 +139,10 @@ Library::searchStatus Library::getSearchStatus() {
         return this->searchThread->isRunning() ? inProgress : done;
     }
     return notStarted;
+}
+
+bool Library::getWallpaperDownloadRunning() {
+    return !runningWallpaperDownloaders.empty();
 }
 
 const QList<SearchDirectory>& Library::getSearchDirectories() const {
@@ -170,6 +180,13 @@ void Library::fetchingFinished() {
     qDebug() << "finished mal fetching, writing things now";
     this->write();
     qDebug() << "writing done!";
+}
+
+void Library::wallpaperDownloaderFinished() {
+    runningWallpaperDownloaders.removeOne(dynamic_cast<WallpaperDownload::FetchThread*>(sender()));
+    if (!getWallpaperDownloadRunning()) {
+        emit wallpaperDownloadersFinished();
+    }
 }
 
 void Library::readAll() {
