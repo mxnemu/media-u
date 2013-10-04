@@ -22,7 +22,8 @@ public:
 private slots:
     void on_settingsButton_clicked();
     void onShowAdded(TvShow* show);
-    void setRandomWallpaper();
+    void setRandomWallpaperAfterSearch();
+    void setRandomWallpaper(QString path = QString());
 
 private:
     Ui::MainPage *ui;

@@ -54,6 +54,7 @@ signals:
     void showAdded(TvShow* show);
     void searchFinished();
     void wallpaperDownloadersFinished();
+    void wallpaperDownloaded(QString);
     
 public slots:
     void importTvShowEpisode(QString episodePath);

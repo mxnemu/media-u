@@ -18,6 +18,12 @@ Library::Library(QString path, QObject *parent) :
     wallpaperDownloaders.push_back(new Moebooru::Client(("http://konachan.com")));
     wallpaperDownloaders.push_back(new Moebooru::Client(("https://yande.re")));
     wallpaperDownloaders.push_back(new Gelbooru::Client());
+
+    for (int i=0; i < wallpaperDownloaders.length(); ++i) {
+        wallpaperDownloaders[i]->setParent(this);
+        connect(wallpaperDownloaders[i], SIGNAL(wallpaperDownloaded(QString)), this, SIGNAL(wallpaperDownloaded(QString)));
+    }
+
 }
 
 void Library::initMalClient(QString malConfigFilepath) {

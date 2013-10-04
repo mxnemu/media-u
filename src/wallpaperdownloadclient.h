@@ -50,8 +50,9 @@ private:
     int limit;
 };
 
-class Client
+class Client : public QObject
 {
+    Q_OBJECT
 public:
     Client(QString baseUrl, int limit = 10, Rating ratingFilter = ratingSafe);
 
@@ -61,6 +62,9 @@ public:
     int getLimit() const;
 
     void downloadBestResults(QDir directory, const QList<Entry> &entries);
+
+signals:
+    void wallpaperDownloaded(QString path);
 
 protected:
     virtual Entry parseEntry(nw::Describer *de) = 0;

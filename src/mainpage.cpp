@@ -13,7 +13,7 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
     ui->setupUi(this);
 
     if (library.getSearchStatus() != Library::done) {
-        connect(&library, SIGNAL(searchFinished()), this, SLOT(setRandomWallpaper()));
+        connect(&library, SIGNAL(searchFinished()), this, SLOT(setRandomWallpaperAfterSearch()));
         // could this race even happen? I don't know
         if (library.getSearchStatus() == Library::done) {
             this->setRandomWallpaper();
@@ -51,9 +51,23 @@ void MainPage::onShowAdded(TvShow *show) {
     this->ui->allShows->add(show);
 }
 
-void MainPage::setRandomWallpaper() {
+void MainPage::setRandomWallpaperAfterSearch() {
+    QString path = library.filter().getRandomWallpaper();
+    if (path.isNull()) {
+        this->setRandomWallpaper(path);
+    } else {
+        connect(&library, SIGNAL(wallpaperDownloaded(QString)), this, SLOT(setRandomWallpaper(QString)));
+    }
+    disconnect(&library, SIGNAL(searchFinished()), this, SLOT(setRandomWallpaperAfterSearch()));
+}
+
+void MainPage::setRandomWallpaper(QString path) {
     MainBackgroundWidget* mbw = mainwindow->getCentralWidget();
     if (mbw) {
-        mbw->setBackground(library.filter().getRandomWallpaper());
+        if (path.isNull()) {
+            path = library.filter().getRandomWallpaper();
+        }
+        mbw->setBackground(path);
     }
+    disconnect(&library, SIGNAL(wallpaperDownloaded(QString)), this, SLOT(setRandomWallpaper(QString)));
 }

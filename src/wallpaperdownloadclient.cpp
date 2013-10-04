@@ -122,7 +122,8 @@ void Client::downloadBestResults(QDir directory, const QList<Entry>& entries) {
         if ((ratingFilter & rating) == rating) {
             QString filename = QString("%1_%2").arg(hostname, entry.id);
             FileDownloadThread* fileThread = new FileDownloadThread(entry.fileUrl, directory.absoluteFilePath(filename), false);
-            //QObject::connect(fileThread, SIGNAL(finished()), fileThread, SLOT(deleteLater()));
+            connect(fileThread, SIGNAL(finished()), fileThread, SLOT(deleteLater()));
+            connect(fileThread, SIGNAL(downloadSucceeded(QString)), this, SIGNAL(wallpaperDownloaded(QString)));
             fileThread->start();
             threads.push_back(fileThread);
             matches++;

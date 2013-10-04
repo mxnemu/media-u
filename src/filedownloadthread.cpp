@@ -49,13 +49,17 @@ void FileDownloadThread::run() {
         CURL* handle = curlClient(url.toLocal8Bit().data(), tmpFile);
         int error = curl_easy_perform(handle);
         curl_easy_cleanup(handle);
+        tmpFile.close();
+
         if (error) {
             qDebug() << "could not fetch file " << url;
             tmpFile.remove();
         } else {
             qDebug() << "finished file-download of " << finalPath;
+            emit downloadSucceeded(finalPath);
         }
-        tmpFile.close();
+
+
         if (!tmpFile.rename(finalPath)) {
             qDebug() << "could not rename downloaded tmp file to destination file: " << finalPath;
             tmpFile.remove();
