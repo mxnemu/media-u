@@ -61,9 +61,6 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         }
     } else if (req->path() == "/api/player/setPlaylist") {
         std::stringstream ss;
-        // TODO switch to a http-server that can parse request bodies
-        //ss << req->body().data();
-        //qDebug() << req->body();
         ss << req->url().query(QUrl::FullyDecoded).toStdString();
         nw::JsonReader jr(ss);
         jr.describeValueArray("episodes", -1);

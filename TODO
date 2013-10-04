@@ -9,8 +9,6 @@ Roadmap:
 -search nyaa for new episodes of favourite fansubber
 -add new episodes to transmission-cli
 
-replace qhttpserver with mongoose or anything else that is better;
-
 Optional:
 -generate thumbnails for each episode
 
