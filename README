@@ -13,7 +13,6 @@ that is ment to be remote controlled via a web interface from a portable device.
 
 # required packages
 following binaries must be in your path:
-| name | (min version) |
 * mplayer (mplayer2)
-* avconf (0.8.6)
+* avconv (0.8.6)
 * xdg-mime (1.0.2) (only on linux)
