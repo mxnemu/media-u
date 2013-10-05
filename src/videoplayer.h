@@ -15,6 +15,7 @@ public:
     QString path;
 
     QString toSecondsAndPathJson();
+    QString toJson();
 };
 
 class VideoPlayer : public QObject
@@ -26,8 +27,8 @@ public:
     bool playFile(QString filepath);
 
     void togglePause();
-    virtual void pause() = 0;
-    virtual void unPause() = 0;
+    void pause();
+    void unPause();
 
     virtual void stop() = 0;
 
@@ -50,19 +51,29 @@ public:
     void setPlaylist(const QStringList &value);
 
     void resetPlayingStatus();
+    VideoProgress getNowPlaying() const;
+
 signals:
+    void playbackStarted();
+    void paused();
+    void unpaused();
+    void jumped(int second);
+
+    void playbackEnded();
     void playbackEndedNormally();
     void playbackCanceled();
 
 protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings& settings) = 0;
+    virtual void pauseImpl() = 0;
+    virtual void unPauseImpl() = 0;
     virtual bool customHandleApiRequest() { return false; }
 
     Library& library;
     const MetaDataParser* metaDataParser;
     const ThumbnailCreator* thumbnailCreator;
     QProcess process;
-    bool paused;
+    bool pauseStatus;
     VideoProgress nowPlaying;
 
     QStringList playlist;

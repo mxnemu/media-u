@@ -26,7 +26,7 @@ bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& setting
     SystemUtils::setProcessPriority(process, -20);   
 
     if (process.state() == process.Running) {
-        this->paused = false;
+        this->pauseStatus = false;
 
         if (settings.audioTrack != 0) {
             process.write(QString("switch_audio %1\n").arg(settings.audioTrack).toUtf8());
@@ -39,35 +39,33 @@ bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& setting
     return false;
 }
 
-void Mplayer::pause() {
-    if (!paused) {
+void Mplayer::pauseImpl() {
+    if (!pauseStatus) {
         process.write("pause\n");
-        paused = true;
     }
 }
 
-void Mplayer::unPause() {
-    if (paused) {
+void Mplayer::unPauseImpl() {
+    if (pauseStatus) {
         process.write("pause\n");
-        paused = false;
     }
 }
 
 void Mplayer::stop() {
     //process.kill();
     process.write("quit\n");
-    paused = true;
+    pauseStatus = true;
     emit playbackCanceled();
 }
 
 void Mplayer::backwards(const int seconds) {
     process.write(QString("seek -%1\n").arg(seconds).toUtf8());
-    paused = false;
+    pauseStatus = false;
 }
 
 void Mplayer::forwards(const int seconds) {
     process.write(QString("seek %1\n").arg(seconds).toUtf8());
-    paused = false;
+    pauseStatus = false;
 }
 
 float Mplayer::incrementVolume() {
@@ -85,7 +83,7 @@ void Mplayer::onProcessFinished(int exitCode) {
         emit playbackEndedNormally();
     }
     qDebug() << "mplayer closed with error code" << exitCode;
-    paused = true;
+    pauseStatus = true;
 }
 
 void Mplayer::onProcessOutput() {

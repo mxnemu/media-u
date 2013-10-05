@@ -11,7 +11,7 @@ Server::Server(QString publicDirectoryPath, MainWindow &window, Library &library
     window(window),
     library(library),
     player(player),
-    pushEvents(library)
+    pushEvents(library, *player)
 {
 
 }

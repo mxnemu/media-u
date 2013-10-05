@@ -13,7 +13,7 @@ bool Omxplayer::playFileImpl(QString filepath, const TvShowPlayerSettings&) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
-    paused = false;
+    pauseStatus = false;
     QStringList args;
     args.append("-t");
     args.append("0");
@@ -29,23 +29,22 @@ bool Omxplayer::playFileImpl(QString filepath, const TvShowPlayerSettings&) {
     return true;
 }
 
-void Omxplayer::pause() {
-    if (!paused) {
+void Omxplayer::pauseImpl() {
+    if (!pauseStatus) {
         process.write("p");
-        paused = true;
+        pauseStatus = true;
     }
 }
 
-void Omxplayer::unPause() {
-    if (paused) {
+void Omxplayer::unPauseImpl() {
+    if (pauseStatus) {
         process.write("p");
-        paused = false;
     }
 }
 
 void Omxplayer::stop() {
     process.write("q");
-    paused = true;
+    pauseStatus = true;
 }
 
 void Omxplayer::backwards(const int) {

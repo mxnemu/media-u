@@ -2,11 +2,18 @@
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
 
-ApiPushEvents::ApiPushEvents(const Library &library, QObject *parent) :
+ApiPushEvents::ApiPushEvents(const Library &library, const VideoPlayer& videoplayer, QObject *parent) :
     QObject(parent),
-    library(library)
+    library(library),
+    videoPlayer(videoplayer)
 {
     connect(&library, SIGNAL(showAdded(TvShow*)), this, SLOT(onShowAdded(TvShow*)));
+
+    //player
+    connect(&videoplayer, SIGNAL(playbackStarted()), this, SLOT(playbackStarted()));
+    connect(&videoplayer, SIGNAL(playbackEnded()), this, SLOT(playbackEnded()));
+    connect(&videoplayer, SIGNAL(unpaused()), this, SLOT(unpaused()));
+    connect(&videoplayer, SIGNAL(paused()), this, SLOT(paused()));
 }
 
 bool ApiPushEvents::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
@@ -33,6 +40,22 @@ void ApiPushEvents::onShowAdded(TvShow *show) {
     show->write(jw);
     jw.close();
     this->sendToListeners(ss.str().data(), "showAdded");
+}
+
+void ApiPushEvents::playbackStarted() {
+    this->sendToListeners(videoPlayer.getNowPlaying().toJson(), "playbackStarted");
+}
+
+void ApiPushEvents::playbackEnded() {
+    this->sendToListeners("{}", "playbackEnded");
+}
+
+void ApiPushEvents::paused() {
+    this->sendToListeners("{}", "paused");
+}
+
+void ApiPushEvents::unpaused() {
+    this->sendToListeners("{}", "unpaused");
 }
 
 void ApiPushEvents::sendToListeners(const QString& message, const QString& event) {

@@ -3,7 +3,7 @@
 
 VideoPlayer::VideoPlayer(Library& library, QObject* parent) : QObject(parent), library(library)
 {
-    paused = false;
+    pauseStatus = false;
     connect(this, SIGNAL(playbackEndedNormally()), this, SLOT(onPlaybackEndedNormally()));
     connect(this, SIGNAL(playbackCanceled()), this, SLOT(onPlaybackCanceled()));
 }
@@ -27,16 +27,28 @@ bool VideoPlayer::playFile(QString filepath) {
     }
     if (!succeeded) {
         resetPlayingStatus();
+    } else {
+        emit playbackStarted();
     }
     return succeeded;
 }
 
 void VideoPlayer::togglePause() {
-    if (paused) {
+    if (pauseStatus) {
         unPause();
     } else {
         pause();
     }
+}
+
+void VideoPlayer::pause() {
+    pauseImpl();
+    this->pauseStatus = true;
+}
+
+void VideoPlayer::unPause() {
+    unPauseImpl();
+    this->pauseStatus = false;
 }
 
 void VideoPlayer::jumpTo(int second) {
@@ -94,7 +106,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}", mime::json);
     } else if (req->path() == "/api/player/togglePause") {
         this->togglePause();
-        QString status = paused ? "paused" : "unPaused";
+        QString status = pauseStatus ? "paused" : "unPaused";
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status), mime::json);
     } else if (req->path() == "/api/player/unPause") {
         this->unPause();
@@ -125,7 +137,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         float volume = this->decrementVolume();
         Server::simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"volume\":%1}").arg(volume), mime::json);
     } else if (req->path() == "/api/player/pauseStatus") {
-        QString status = paused ? "paused" : "unPaused";
+        QString status = pauseStatus ? "paused" : "unPaused";
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status), mime::json);
     } else if (req->path() == "/api/player/metaData") {
         Server::simpleWrite(resp, 200, nowPlaying.metaData.toJson(), mime::json);
@@ -182,6 +194,7 @@ void VideoPlayer::onPlaybackEndedNormally() {
     }
 
     this->resetPlayingStatus();
+    emit playbackEnded();
     if (this->playlist.length() > 0) {
         this->playFile(this->playlist.first());
         this->playlist.removeFirst();
@@ -191,13 +204,14 @@ void VideoPlayer::onPlaybackEndedNormally() {
 void VideoPlayer::onPlaybackCanceled() {
     this->playlist.clear();
     this->resetPlayingStatus();
+    emit playbackEnded();
 }
 
 void VideoPlayer::resetPlayingStatus() {
     this->nowPlaying.seconds = -1;
     this->nowPlaying.path = QString();
     this->nowPlaying.metaData = MetaData();
-    this->paused = true;
+    this->pauseStatus = true;
 }
 
 QStringList VideoPlayer::getPlaylist() const {
@@ -216,4 +230,18 @@ QString VideoProgress::toSecondsAndPathJson() {
     NwUtils::describe(jw, "path", path);
     jw.close();
     return ss.str().c_str();
+}
+
+QString VideoProgress::toJson() {
+    std::stringstream ss;
+    nw::JsonWriter jw(ss);
+    NwUtils::describe(jw, "seconds", seconds);
+    NwUtils::describe(jw, "path", path);
+    jw.close();
+    return ss.str().c_str();
+}
+
+VideoProgress VideoPlayer::getNowPlaying() const
+{
+    return nowPlaying;
 }

@@ -10,8 +10,8 @@ public:
 
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &);
 
-    virtual void pause();
-    virtual void unPause();
+    virtual void pauseImpl();
+    virtual void unPauseImpl();
 
     virtual void stop();
 

@@ -12,9 +12,6 @@ public:
     Mplayer(Library& library, const MplayerConfig& config);
     virtual ~Mplayer();
 
-    virtual void pause();
-    virtual void unPause();
-
     virtual void stop();
 
     virtual void backwards(const int seconds = 5);
@@ -25,7 +22,8 @@ public:
 
 protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &settings);
-
+    virtual void pauseImpl();
+    virtual void unPauseImpl();
 
     const MplayerConfig& config;
 
