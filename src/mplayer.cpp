@@ -16,7 +16,7 @@ Mplayer::~Mplayer() {
 
 }
 
-int Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
+bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
     process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
         "-slave" <<
@@ -34,12 +34,9 @@ int Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings
         if (settings.subtileTrack != 0) {
             process.write(QString("sub_select %1\n").arg(settings.subtileTrack).toUtf8());
         }
-
-    } else {
-        paused = true;
+        return true;
     }
-
-    return process.error();
+    return false;
 }
 
 void Mplayer::pause() {

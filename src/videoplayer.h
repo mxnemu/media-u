@@ -23,7 +23,7 @@ class VideoPlayer : public QObject
 public:
     explicit VideoPlayer(Library &library, QObject *parent = NULL);
     virtual ~VideoPlayer();
-    int playFile(QString filepath);
+    bool playFile(QString filepath);
 
     void togglePause();
     virtual void pause() = 0;
@@ -55,7 +55,7 @@ signals:
     void playbackCanceled();
 
 protected:
-    virtual int playFileImpl(QString filepath, const TvShowPlayerSettings& settings) = 0;
+    virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings& settings) = 0;
     virtual bool customHandleApiRequest() { return false; }
 
     Library& library;

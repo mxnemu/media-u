@@ -9,7 +9,7 @@
 Omxplayer::Omxplayer(Library& library) : VideoPlayer(library) {
 }
 
-int Omxplayer::playFileImpl(QString filepath, const TvShowPlayerSettings&) {
+bool Omxplayer::playFileImpl(QString filepath, const TvShowPlayerSettings&) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
@@ -23,11 +23,10 @@ int Omxplayer::playFileImpl(QString filepath, const TvShowPlayerSettings&) {
 
     SystemUtils::setProcessPriority(process, -20);
 
-    int error = process.error();
     if (process.state() == QProcess::NotRunning) {
-        return error;
+        return false;
     }
-    return 0;
+    return true;
 }
 
 void Omxplayer::pause() {

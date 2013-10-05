@@ -12,7 +12,7 @@ VideoPlayer::~VideoPlayer() {
     this->process.kill();
 }
 
-int VideoPlayer::playFile(QString filepath) {
+bool VideoPlayer::playFile(QString filepath) {
     if (!QFile::exists(filepath)) {
         qDebug() << "can not play: file does not exists. Is the drive connected?" << filepath;
     }
@@ -21,10 +21,14 @@ int VideoPlayer::playFile(QString filepath) {
     this->nowPlaying.path = filepath;
     this->nowPlaying.metaData = this->metaDataParser->parse(filepath);
     MovieFile* episode = library.filter().getEpisodeForPath(filepath);
+    bool succeeded = false;
     if (episode) {
-        return this->playFileImpl(filepath, library.existingTvShow(episode->showName())->playerSettings);
+        succeeded = this->playFileImpl(filepath, library.existingTvShow(episode->showName())->playerSettings);
     }
-    return -1;
+    if (succeeded) {
+        resetPlayingStatus();
+    }
+    return succeeded;
 }
 
 void VideoPlayer::togglePause() {
