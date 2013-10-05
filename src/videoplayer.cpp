@@ -25,7 +25,7 @@ bool VideoPlayer::playFile(QString filepath) {
     if (episode) {
         succeeded = this->playFileImpl(filepath, library.existingTvShow(episode->showName())->playerSettings);
     }
-    if (succeeded) {
+    if (!succeeded) {
         resetPlayingStatus();
     }
     return succeeded;
