@@ -11,7 +11,7 @@ public:
     QProcess process;
 
 public slots:
-    void processFinished(int exitCode);
+    void processFinished(int);
 };
 
 class ThumbnailCreatorAvconv : public ThumbnailCreator {

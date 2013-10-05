@@ -8,7 +8,6 @@ ThumbnailCreatorAvconv::ThumbnailCreatorAvconv()
 
 ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int second, int width, int height, void* callbackData) const
 {
-    QProcess* process = new QProcess();
     int formattedSecond = second % 60;
     int minute = (second / 60) % 60;
     int hour = (second / 60 / 60);
@@ -40,7 +39,7 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int se
 ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data) : ThumbCreationCallback(data) {
 }
 
-void ThumbCreationCallbackAvconv::processFinished(int exitCode) {
+void ThumbCreationCallbackAvconv::processFinished(int) {
     emit this->jpegGenerated(this->process.readAllStandardOutput());
 }
 

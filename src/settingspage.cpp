@@ -25,12 +25,12 @@ SettingsPage::~SettingsPage()
     delete ui;
 }
 
-bool SettingsPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
+bool SettingsPage::handleApiRequest(QHttpRequest *, QHttpResponse *)
 {
     return false;
 }
 
-void SettingsPage::initFromQuery(const QString &initString)
+void SettingsPage::initFromQuery(const QString &)
 {
 }
 

@@ -48,12 +48,12 @@ void Omxplayer::stop() {
     paused = true;
 }
 
-void Omxplayer::backwards(const int seconds) {
+void Omxplayer::backwards(const int) {
     const int key = 0x5b44; // key left
     process.write((const char*)&key, sizeof(key));
 }
 
-void Omxplayer::forwards(const int seconds) {
+void Omxplayer::forwards(const int) {
     const int key = 0x5b43; // key right
     process.write((const char*)&key, sizeof(key));
 }

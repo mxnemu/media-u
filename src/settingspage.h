@@ -18,8 +18,8 @@ public:
     ~SettingsPage();
 
 
-    virtual bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
-    virtual void initFromQuery(const QString& initString);
+    virtual bool handleApiRequest(QHttpRequest*, QHttpResponse*);
+    virtual void initFromQuery(const QString&);
     
 private slots:
     void on_addButton_clicked();

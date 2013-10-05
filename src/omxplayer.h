@@ -15,8 +15,8 @@ public:
 
     virtual void stop();
 
-    virtual void backwards(const int seconds = 5);
-    virtual void forwards(const int seconds = 5);
+    virtual void backwards(const int = 5);
+    virtual void forwards(const int = 5);
 
     virtual float incrementVolume();
     virtual float decrementVolume();
