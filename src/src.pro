@@ -15,4 +15,5 @@ OTHER_FILES += libs.pri
 include(libs.pri)
 include(common.pri)
 include(gui.pri)
+include(online.pri)
 

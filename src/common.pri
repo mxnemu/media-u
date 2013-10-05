@@ -10,12 +10,9 @@ SOURCES += main.cpp\
     systemutils.cpp \
     malclient.cpp \
     nwutils.cpp \
-    filedownloadthread.cpp \
-    curlresult.cpp \
     utils.cpp \
     tvshowlistwidget.cpp \
     libraryfilter.cpp \
-    moebooruclient.cpp \
     filefilterscanner.cpp \
     videoplayer.cpp \
     mplayer.cpp \
@@ -28,8 +25,7 @@ SOURCES += main.cpp\
     searchdirectory.cpp \
     server.cpp \
     apipushevents.cpp \
-    wallpaperdownloadclient.cpp \
-    gelbooruclient.cpp
+
 
 HEADERS  += library.h \
     moviefile.h \
@@ -42,12 +38,9 @@ HEADERS  += library.h \
     systemutils.h \
     malclient.h \
     nwutils.h \
-    filedownloadthread.h \
-    curlresult.h \
     utils.h \
     tvshowlistwidget.h \
     libraryfilter.h \
-    moebooruclient.h \
     filefilterscanner.h \
     videoplayer.h \
     mplayer.h \
@@ -60,5 +53,4 @@ HEADERS  += library.h \
     searchdirectory.h \
     server.h \
     apipushevents.h \
-    wallpaperdownloadclient.h \
-    gelbooruclient.h
+
