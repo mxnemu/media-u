@@ -24,7 +24,7 @@ void MainBackgroundWidget::paintEvent(QPaintEvent *e) {
             p.scale(-1,1);
 
             QRect grect(QPoint(w,0), QPoint(width(), h));
-            QLinearGradient gradient(QPoint(grect.left(), 0), QPoint(grect.right(), 0));
+            QLinearGradient gradient(QPoint(grect.left(), 0), QPoint(grect.left() + w, 0));
             gradient.setColorAt(0, QColor(255,255,255,0));
             gradient.setColorAt(1, QColor(Qt::white));
             p.setCompositionMode(QPainter::CompositionMode_SourceOver);
