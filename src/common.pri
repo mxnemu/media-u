@@ -8,7 +8,6 @@ SOURCES += main.cpp\
     tvshow.cpp \
     season.cpp \
     systemutils.cpp \
-    malclient.cpp \
     nwutils.cpp \
     utils.cpp \
     tvshowlistwidget.cpp \
@@ -36,7 +35,6 @@ HEADERS  += library.h \
     tvshow.h \
     season.h \
     systemutils.h \
-    malclient.h \
     nwutils.h \
     utils.h \
     tvshowlistwidget.h \
