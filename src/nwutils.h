@@ -53,6 +53,24 @@ public:
         }
     }
 
+    template<class T> static void describeValueArray(T& d, const nw::String arrayName, QStringList& value) {
+        if (d.isInReadMode()) {
+            value.clear();
+        }
+
+        d.describeValueArray(arrayName, 0);
+        for (int i=0; d.enterNextElement(i); ++i) {
+            nw::String str;
+            if (d.isInWriteMode()) {
+                str = value[i].toStdString();
+            }
+            d.describeValue(str);
+            if (d.isInReadMode()) {
+                value.append(str.data());
+            }
+        }
+    }
+
     template<class T, class T2> inline static void describe(T& d, const nw::String key, T2& value) {
         d.describe(key, value);
     }
