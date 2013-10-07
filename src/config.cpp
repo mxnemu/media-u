@@ -119,7 +119,7 @@ void MplayerConfig::describe(nw::Describer *de) {
         this->initDefaultValues();
     }
     NwUtils::describe(*de, "path", path);
-    NwUtils::describe(*de, "arguments", arguments);
+    NwUtils::describe(*de, "arguments", arguments, ' ');
     if (de->isInReadMode()) {
         this->initDefaultValues();
     }

@@ -35,7 +35,7 @@ public:
         }
     }
 
-    template<class T> static void describe(T& d, const nw::String key, QStringList& value, char separator = ' ') {
+    template<class T> static void describe(T& d, const nw::String key, QStringList& value, char separator) {
         if (d.isInWriteMode()) {
             std::stringstream ss;
             for (int i=0; i < value.length(); ++i) {
