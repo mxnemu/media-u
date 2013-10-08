@@ -8,6 +8,17 @@ Client::Client()
 {
 }
 
+bool Client::updateShow(TvShow& show, QDir &libraryDir) {
+    QString name = show.name();
+    SearchResult result = search(name);
+    const Entry* entry = result.bestResult(name);
+    if (entry) {
+        entry->updateShow(show, libraryDir);
+        return true;
+    }
+    return false;
+}
+
 SearchResult Client::search(QString anime) {
     CurlResult userData;
     QString url = QString("http://mal-api.com/anime/search?q=%1").arg(anime);
@@ -83,6 +94,10 @@ void SearchResult::describe(nw::Describer* const de) {
     }
 }
 
+const Entry* SearchResult::bestResult(QString searchQuery) {
+    return NULL;
+}
+
 Entry::Entry(nw::Describer *de) {
     describe(de);
 }
@@ -117,6 +132,20 @@ void Entry::describe(nw::Describer *de) {
     RelatedEntry::parseFromList(de, "alternative_versions", alternative_versions, true);
 }
 
+void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
+    //show.setName();
+    show.setTotalEpisodes(episodes);
+    show.setShowType(type);
+    show.setAiringStatus(status);
+    show.setStartDate(QDate::fromString(start_date, Entry::dateFormat));
+    show.setEndDate(QDate::fromString(end_date, Entry::dateFormat));
+    show.setSynopsis(synopsis);
+    show.setRemoteId(QString::number(id));
+
+    show.downloadImage(image_url, libraryDir);
+}
+
+QString Entry::dateFormat = "yyyy-MM-dd";
 
 
 } // namespace

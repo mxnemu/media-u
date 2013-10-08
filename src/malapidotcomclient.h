@@ -5,6 +5,7 @@
 #include <QThread>
 #include "nwutils.h"
 #include "curlresult.h"
+#include "tvshow.h"
 
 namespace MalApiDotCom {
 
@@ -23,6 +24,9 @@ class Entry {
 public:
     Entry(nw::Describer* de);
     void describe(nw::Describer* de);
+    void updateShow(TvShow& show, QDir &libraryDir) const;
+
+    static QString dateFormat;
 
     int id;
 
@@ -35,9 +39,9 @@ public:
     QString image_url;
     QString type;
     int episodes; // null is returned if the number of episodes is unknown.
-    int status; // Possible values: finished airing, currently airing, not yet aired.
-    QDate start_date;
-    QDate end_date;
+    QString status; // Possible values: finished airing, currently airing, not yet aired.
+    QString start_date;
+    QString end_date;
     QString classification; // This is a freeform text field, with possible values like: R - 17+ (violence & profanity), PG - Children. Not available in /animelist requests.
     QString synopsis;
     QStringList genres;
@@ -60,6 +64,7 @@ public:
 
 
     void describe(nw::Describer* const de);
+    const Entry *bestResult(QString searchQuery);
     QString searchedAnime;
     QList<Entry> entries;
 };
@@ -69,8 +74,8 @@ class Client : public QObject {
 public:
     Client();
 
+    bool updateShow(TvShow& show, QDir &libraryDir);
     SearchResult search(QString anime);
-
 private:
     static CURL *curlClient(const char *url, CurlResult &userdata);
 };
