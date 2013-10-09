@@ -72,7 +72,14 @@ private:
 class Thread : public QThread {
     Q_OBJECT
 public:
+    Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent);
+
     void run();
+
+private:
+    Client &client;
+    QList<TvShow*> &tvShows;
+    QDir libraryDir;
 };
 
 }

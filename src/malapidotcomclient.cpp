@@ -47,10 +47,6 @@ CURL* Client::curlClient(const char* url, CurlResult& userdata) {
     return handle;
 }
 
-void Thread::run()
-{
-}
-
 SearchResult::SearchResult() {}
 
 SearchResult::SearchResult(CurlResult &response, QString searchedAnime) :
@@ -153,5 +149,22 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
 
 QString Entry::dateFormat = "yyyy-MM-dd";
 
+
+Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
+    QThread(parent),
+    client(client),
+    tvShows(shows),
+    libraryDir(libraryDir)
+{
+
+}
+
+void Thread::run() {
+    foreach (TvShow* show, tvShows) {
+        if (show && show->getRemoteId() == -1) {
+            client.updateShow(*show, libraryDir);
+        }
+    }
+}
 
 } // namespace
