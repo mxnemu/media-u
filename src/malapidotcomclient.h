@@ -9,17 +9,6 @@
 
 namespace MalApiDotCom {
 
-
-class RelatedEntry {
-public:
-    int id;
-    QString title;
-
-    void parseForManga(nw::Describer* de);
-    void parseForAnime(nw::Describer* de);
-    static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedEntry> &list, const bool anime);
-};
-
 class Entry {
 public:
     Entry(nw::Describer* de);
@@ -46,15 +35,15 @@ public:
     QString synopsis;
     QStringList genres;
     QStringList tags; // popular tags set by many users in their personal lists ["supernatural", "comedy"].
-    QList<RelatedEntry> manga_adaptations;
-    QList<RelatedEntry> prequels;
-    QList<RelatedEntry> sequels;
-    QList<RelatedEntry> side_stories;
-    RelatedEntry parent_story;
-    QList<RelatedEntry> character_anime;
-    QList<RelatedEntry> spin_offs;
-    QList<RelatedEntry> summaries;
-    QList<RelatedEntry> alternative_versions;
+    QList<RelatedTvShow> manga_adaptations;
+    QList<RelatedTvShow> prequels;
+    QList<RelatedTvShow> sequels;
+    QList<RelatedTvShow> side_stories;
+    RelatedTvShow parent_story;
+    QList<RelatedTvShow> character_anime;
+    QList<RelatedTvShow> spin_offs;
+    QList<RelatedTvShow> summaries;
+    QList<RelatedTvShow> alternative_versions;
 };
 
 class SearchResult {

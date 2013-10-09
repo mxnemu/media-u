@@ -16,6 +16,21 @@ public:
     void describe(nw::Describer *de);
 };
 
+class TvShow;
+class Library;
+class RelatedTvShow {
+public:
+    RelatedTvShow(int id = -1);
+    int id;
+    QString title;
+    TvShow* get(Library &library) const;
+
+    bool operator ==(const RelatedTvShow& other) const;
+    void parseForManga(nw::Describer* de);
+    void parseForAnime(nw::Describer* de);
+    static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedTvShow> &list, const bool anime);
+};
+
 class TvShow : public QObject
 {
     Q_OBJECT
@@ -43,7 +58,12 @@ public:
     int getTotalEpisodes() const;
     QString getSynopsis() const;
     QString getShowType() const;
-    QString getRemoteId() const;
+    int getRemoteId() const;
+
+    void addPrequels(QList<RelatedTvShow> relations);
+    void addSideStories(QList<RelatedTvShow> relations);
+    void addSequels(QList<RelatedTvShow> relations);
+    void syncRelations(Library &library);
 
     void setSynonyms(const QStringList &value);
     void setAiringStatus(const QString &value);
@@ -52,7 +72,7 @@ public:
     void setTotalEpisodes(int value);
     void setShowType(const QString &value);
     void setSynopsis(const QString &value);
-    void setRemoteId(const QString &value);
+    void setRemoteId(const int &value);
 
     QDir directory(QDir libraryDirectory) const;
     QDir wallpaperDirectory(QDir libraryDirectory) const;
@@ -77,7 +97,11 @@ private:
     QString mName;
     QList<Season*> seasons;
 
-    QString remoteId;
+    QList<RelatedTvShow> prequels;
+    QList<RelatedTvShow> sideStories;
+    QList<RelatedTvShow> sequels;
+
+    int remoteId;
     QStringList synonyms;
     QString showType;
     QString airingStatus;

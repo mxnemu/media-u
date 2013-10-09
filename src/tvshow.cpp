@@ -7,6 +7,7 @@
 TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     this->mName = name;
     totalEpisodes = 0;
+    remoteId = -1;
 }
 
 Season& TvShow::season(QString name) {
@@ -267,12 +268,12 @@ void TvShow::setShowType(const QString &value)
     showType = value;
 }
 
-QString TvShow::getRemoteId() const
+int TvShow::getRemoteId() const
 {
     return remoteId;
 }
 
-void TvShow::setRemoteId(const QString &value)
+void TvShow::setRemoteId(const int &value)
 {
     remoteId = value;
 }
@@ -295,4 +296,84 @@ void TvShowPlayerSettings::describe(nw::Describer*de) {
     NwUtils::describe(*de, "subtitleTrack", subtileTrack);
     NwUtils::describe(*de, "audioTrack", audioTrack);
     NwUtils::describe(*de, "videoTrack", videoTrack);
+}
+
+
+RelatedTvShow::RelatedTvShow(int id) :
+    id(id)
+{
+}
+
+TvShow *RelatedTvShow::get(Library& library) const {
+    library.filter().getShowForRemoteId(this->id);
+}
+
+bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
+    return this->id == other.id;
+}
+
+void RelatedTvShow::parseForManga(nw::Describer* de) {
+    NwUtils::describe(*de, "manga_id", id);
+    NwUtils::describe(*de, "title", title);
+}
+
+void RelatedTvShow::parseForAnime(nw::Describer* de) {
+    NwUtils::describe(*de, "anime_id", id);
+    NwUtils::describe(*de, "title", title);
+}
+
+void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedTvShow>& list, const bool anime) {
+    list.empty();
+    de->describeArray(arrayName.toUtf8().data(), "", 0);
+    for (int i=0; de->enterNextElement(i); ++i) {
+        RelatedTvShow entry;
+        if (anime) {
+            entry.parseForAnime(de);
+        } else {
+            entry.parseForManga(de);
+        }
+        list.append(entry);
+    }
+}
+
+void TvShow::addPrequels(QList<RelatedTvShow> relations) {
+    foreach (const RelatedTvShow& rel, relations) {
+        if (!this->prequels.contains(rel)) {
+            this->prequels.append(rel);
+        }
+    }
+}
+
+void TvShow::addSideStories(QList<RelatedTvShow> relations) {
+    foreach (const RelatedTvShow& rel, relations) {
+        if (!this->sideStories.contains(rel)) {
+            this->sideStories.append(rel);
+        }
+    }
+}
+
+void TvShow::addSequels(QList<RelatedTvShow> relations) {
+    foreach (const RelatedTvShow& rel, relations) {
+        if (!this->sequels.contains(rel)) {
+            this->sequels.append(rel);
+        }
+    }
+}
+
+void TvShow::syncRelations(Library& library) {
+    if (this->remoteId == -1) {
+        return;
+    }
+
+    QList<RelatedTvShow> relation;
+    relation.append(RelatedTvShow(this->remoteId));
+    foreach (const RelatedTvShow& rel, prequels) {
+        rel.get(library)->addPrequels(relation);
+    }
+    foreach (const RelatedTvShow& rel, sideStories) {
+        rel.get(library)->addSideStories(relation);
+    }
+    foreach (const RelatedTvShow& rel, sequels) {
+        rel.get(library)->addSequels(relation);
+    }
 }

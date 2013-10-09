@@ -59,6 +59,15 @@ MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
     return NULL;
 }
 
+TvShow *LibraryFilter::getShowForRemoteId(int remoteId) {
+    foreach (TvShow* show, tvShows) {
+        if (show->getRemoteId() == remoteId) {
+            return show;
+        }
+    }
+    return NULL;
+}
+
 TvShow *LibraryFilter::getRandomShow() {
     return getRandomShow(tvShows);
 }

@@ -163,7 +163,7 @@ void MalClientThread::run() {
 
     for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = *(it.i->t());
-        if (show.getRemoteId().isNull() || show.getRemoteId().isEmpty()) {
+        if (show.getRemoteId() == -1) {
             malClient.fetchShowBlocking(show, libraryDir);
         }
     }
@@ -234,7 +234,7 @@ void MalEntry::updateShowFromEntry(TvShow &show, QDir libraryDir) const {
     show.setStartDate(QDate::fromString(startDate, MalEntry::dateFormat));
     show.setEndDate(QDate::fromString(endDate, MalEntry::dateFormat));
     show.setSynopsis(synopsis);
-    show.setRemoteId(id);
+    show.setRemoteId(id.toInt());
 
     show.downloadImage(image, libraryDir);
 }

@@ -47,33 +47,6 @@ CURL* Client::curlClient(const char* url, CurlResult& userdata) {
     return handle;
 }
 
-
-void RelatedEntry::parseForManga(nw::Describer* de) {
-    NwUtils::describe(*de, "manga_id", id);
-    NwUtils::describe(*de, "title", title);
-}
-
-void RelatedEntry::parseForAnime(nw::Describer* de) {
-    NwUtils::describe(*de, "anime_id", id);
-    NwUtils::describe(*de, "title", title);
-}
-
-void RelatedEntry::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedEntry>& list, const bool anime) {
-    list.empty();
-    de->describeArray(arrayName.toUtf8().data(), "", 0);
-    for (int i=0; de->enterNextElement(i); ++i) {
-        RelatedEntry entry;
-        if (anime) {
-            entry.parseForAnime(de);
-        } else {
-            entry.parseForManga(de);
-        }
-        list.append(entry);
-    }
-}
-
-
-
 void Thread::run()
 {
 }
@@ -144,15 +117,15 @@ void Entry::describe(nw::Describer *de) {
     NwUtils::describe(*de, "synopsis", synopsis);
     NwUtils::describeValueArray(*de, "genres", genres);
     NwUtils::describeValueArray(*de, "tags", tags);
-    RelatedEntry::parseFromList(de, "manga_adaptations", manga_adaptations, false);
-    RelatedEntry::parseFromList(de, "prequels", prequels, true);
-    RelatedEntry::parseFromList(de, "sequels", sequels, true);
-    RelatedEntry::parseFromList(de, "side_stories", side_stories, true);
+    RelatedTvShow::parseFromList(de, "manga_adaptations", manga_adaptations, false);
+    RelatedTvShow::parseFromList(de, "prequels", prequels, true);
+    RelatedTvShow::parseFromList(de, "sequels", sequels, true);
+    RelatedTvShow::parseFromList(de, "side_stories", side_stories, true);
     parent_story.parseForAnime(de);
-    RelatedEntry::parseFromList(de, "character_anime", character_anime, true);
-    RelatedEntry::parseFromList(de, "spin_offs", spin_offs, true);
-    RelatedEntry::parseFromList(de, "summaries", summaries, true);
-    RelatedEntry::parseFromList(de, "alternative_versions", alternative_versions, true);
+    RelatedTvShow::parseFromList(de, "character_anime", character_anime, true);
+    RelatedTvShow::parseFromList(de, "spin_offs", spin_offs, true);
+    RelatedTvShow::parseFromList(de, "summaries", summaries, true);
+    RelatedTvShow::parseFromList(de, "alternative_versions", alternative_versions, true);
 }
 
 void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
@@ -163,7 +136,17 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
     show.setStartDate(QDate::fromString(start_date, Entry::dateFormat));
     show.setEndDate(QDate::fromString(end_date, Entry::dateFormat));
     show.setSynopsis(synopsis);
-    show.setRemoteId(QString::number(id));
+    show.setRemoteId(id);
+
+    show.addPrequels(prequels);
+    show.addPrequels(QList<RelatedTvShow>() << parent_story);
+
+    show.addSideStories(side_stories);
+    show.addSideStories(character_anime);
+    show.addSideStories(spin_offs);
+    show.addSideStories(summaries);
+
+    show.addSequels(sequels);
 
     show.downloadImage(image_url, libraryDir);
 }
