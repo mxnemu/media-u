@@ -101,7 +101,8 @@ void Library::xbmcLinkExport(QDir outputDir) {
 }
 
 void Library::fetchMetaData() {
-    malClient.fetchShows(tvShows, directory);
+    //malClient.fetchShows(tvShows, directory);
+    malapiClient.startUpdate(tvShows, directory);
 }
 
 void Library::startWallpaperDownloaders() {

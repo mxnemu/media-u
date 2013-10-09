@@ -58,15 +58,24 @@ public:
     QList<Entry> entries;
 };
 
+class Thread;
 class Client : public QObject {
     Q_OBJECT
 public:
-    Client();
+    Client(QObject* parent = NULL);
 
+    void startUpdate(QList<TvShow *> &showList, QDir libraryDir);
     bool updateShow(TvShow& show, QDir &libraryDir);
     SearchResult search(QString anime);
+
+signals:
+    void updateFinished();
+
+public slots:
+    void threadFinished();
 private:
     static CURL *curlClient(const char *url, CurlResult &userdata);
+    Thread* activeThread;
 };
 
 class Thread : public QThread {

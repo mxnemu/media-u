@@ -8,6 +8,7 @@
 #include "tvshow.h"
 #include "moviefile.h"
 #include "malclient.h"
+#include "malapidotcomclient.h"
 #include "moebooruclient.h"
 #include "gelbooruclient.h"
 #include "libraryfilter.h"
@@ -72,6 +73,7 @@ private:
     QList<SearchDirectory> searchDirectories;
 
     MalClient malClient;
+    MalApiDotCom::Client malapiClient;
     LibraryFilter mFilter;
     // TODO put into an array
     QList<WallpaperDownload::Client*> wallpaperDownloaders;

@@ -5,8 +5,19 @@
 namespace MalApiDotCom {
 
 
-Client::Client()
+Client::Client(QObject *parent) :
+    QObject(parent),
+    activeThread(NULL)
 {
+}
+
+void Client::startUpdate(QList<TvShow*> &showList, QDir libraryDir) {
+    if (this->activeThread) {
+        return;
+    }
+    this->activeThread = new Thread(*this, showList, libraryDir, this);
+    connect(this->activeThread, SIGNAL(finished()), this, SLOT(threadFinished()));
+    this->activeThread->start();
 }
 
 bool Client::updateShow(TvShow& show, QDir &libraryDir) {
@@ -18,6 +29,14 @@ bool Client::updateShow(TvShow& show, QDir &libraryDir) {
         return true;
     }
     return false;
+}
+
+void Client::threadFinished() {
+    if (dynamic_cast<Thread*>(sender()) != this->activeThread) {
+        throw "malapidotcom::Client::threadFinished called from unknown thread";
+    }
+    this->activeThread = NULL;
+    emit updateFinished();
 }
 
 SearchResult Client::search(QString anime) {
@@ -52,6 +71,7 @@ SearchResult::SearchResult() {}
 SearchResult::SearchResult(CurlResult &response, QString searchedAnime) :
     searchedAnime(searchedAnime)
 {
+    //qDebug() << "json" << response.data.str().data();
     nw::JsonReader jr(response.data);
     this->describe(&jr);
     jr.close();
@@ -145,6 +165,8 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
     show.addSequels(sequels);
 
     show.downloadImage(image_url, libraryDir);
+
+    //qDebug() << "updated show from mal-api.com" << id << title;
 }
 
 QString Entry::dateFormat = "yyyy-MM-dd";
@@ -156,12 +178,11 @@ Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *
     tvShows(shows),
     libraryDir(libraryDir)
 {
-
 }
 
 void Thread::run() {
     foreach (TvShow* show, tvShows) {
-        if (show && show->getRemoteId() == -1) {
+        if (show && show->getRemoteId() != -1) {
             client.updateShow(*show, libraryDir);
         }
     }
