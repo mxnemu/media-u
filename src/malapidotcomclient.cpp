@@ -1,5 +1,6 @@
 #include "malapidotcomclient.h"
 #include <QDebug>
+#include "utils.h"
 
 namespace MalApiDotCom {
 
@@ -11,7 +12,7 @@ Client::Client()
 bool Client::updateShow(TvShow& show, QDir &libraryDir) {
     QString name = show.name();
     SearchResult result = search(name);
-    const Entry* entry = result.bestResult(name);
+    const Entry* entry = result.bestResult();
     if (entry) {
         entry->updateShow(show, libraryDir);
         return true;
@@ -94,8 +95,30 @@ void SearchResult::describe(nw::Describer* const de) {
     }
 }
 
-const Entry* SearchResult::bestResult(QString searchQuery) {
-    return NULL;
+const Entry* SearchResult::bestResult() {
+    std::pair<int, const Entry*> best(-1, NULL);
+    for (int i=0; i < entries.length(); ++i) {
+        const Entry* entry = &entries.at(i);
+
+        int score = Utils::querySimiliarity(this->searchedAnime, entry->title);
+        foreach (const QString& name, entry->englishTitles) {
+            int s = Utils::querySimiliarity(this->searchedAnime, name);
+            score = score >= s ? score : s;
+        }
+        foreach (const QString& name, entry->synonyms) {
+            int s = Utils::querySimiliarity(this->searchedAnime, name);
+            score = score >= s ? score : s;
+        }
+        foreach (const QString& name, entry->japaneseTitles) {
+            int s = Utils::querySimiliarity(this->searchedAnime, name);
+            score = score >= s ? score : s;
+        }
+        if (score > best.first) {
+            best.first = score;
+            best.second = entry;
+        }
+    }
+    return best.second;
 }
 
 Entry::Entry(nw::Describer *de) {

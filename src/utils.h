@@ -8,7 +8,7 @@ class Utils
 public:
     Utils();
 
-    static int querySimiliarity(const QString a, const QString b);
+    static int querySimiliarity(const QString &a, const QString &b);
 };
 
 #endif // UTILS_H

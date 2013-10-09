@@ -64,7 +64,7 @@ public:
 
 
     void describe(nw::Describer* const de);
-    const Entry *bestResult(QString searchQuery);
+    const Entry *bestResult();
     QString searchedAnime;
     QList<Entry> entries;
 };

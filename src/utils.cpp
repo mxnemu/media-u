@@ -5,7 +5,7 @@ Utils::Utils()
 {
 }
 
-int Utils::querySimiliarity(const QString a, const QString b) {
+int Utils::querySimiliarity(const QString& a, const QString& b) {
     QRegExp wordSplitRegex("(\\b)?.+?(\\s|\\b|$)");
     wordSplitRegex.indexIn(a);
     QStringList aWords = a.split(" ");
