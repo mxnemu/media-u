@@ -338,7 +338,7 @@ void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<Re
 
 void TvShow::addPrequels(QList<RelatedTvShow> relations) {
     foreach (const RelatedTvShow& rel, relations) {
-        if (!this->prequels.contains(rel)) {
+        if (!this->prequels.contains(rel) && rel.id != -1) {
             this->prequels.append(rel);
         }
     }
@@ -346,7 +346,7 @@ void TvShow::addPrequels(QList<RelatedTvShow> relations) {
 
 void TvShow::addSideStories(QList<RelatedTvShow> relations) {
     foreach (const RelatedTvShow& rel, relations) {
-        if (!this->sideStories.contains(rel)) {
+        if (!this->sideStories.contains(rel) && rel.id != -1) {
             this->sideStories.append(rel);
         }
     }
@@ -354,7 +354,7 @@ void TvShow::addSideStories(QList<RelatedTvShow> relations) {
 
 void TvShow::addSequels(QList<RelatedTvShow> relations) {
     foreach (const RelatedTvShow& rel, relations) {
-        if (!this->sequels.contains(rel)) {
+        if (!this->sequels.contains(rel) && rel.id != -1) {
             this->sequels.append(rel);
         }
     }
