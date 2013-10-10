@@ -24,6 +24,8 @@ Library::Library(QString path, QObject *parent) :
         connect(wallpaperDownloaders[i], SIGNAL(wallpaperDownloaded(QString)), this, SIGNAL(wallpaperDownloaded(QString)));
     }
 
+    connect(&malapiClient, SIGNAL(updateFinished()),
+            this, SLOT(fetchingFinished()));
 }
 
 void Library::initMalClient(QString malConfigFilepath) {
