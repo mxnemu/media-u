@@ -26,6 +26,7 @@ public:
     TvShow* get(Library &library) const;
 
     bool operator ==(const RelatedTvShow& other) const;
+    void describe(nw::Describer* de);
     void parseForManga(nw::Describer* de);
     void parseForAnime(nw::Describer* de);
     static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedTvShow> &list, const bool anime);

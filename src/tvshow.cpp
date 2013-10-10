@@ -48,6 +48,27 @@ void TvShow::read(QDir &dir) {
     NwUtils::describe(jr, "startDate", startDate);
     NwUtils::describe(jr, "endDate", endDate);
     NwUtils::describe(jr, "synopsis", synopsis);
+
+
+    prequels.clear();
+    jr.describeArray("prequels", "tvShowRelation", prequels.length());
+    for (int i=0; i < jr.enterNextElement(i); ++i) {
+        sequels.push_back(RelatedTvShow());
+        prequels[i].describe(&jr);
+    }
+    sideStories.clear();
+    jr.describeArray("sideStories", "tvShowRelation", sideStories.length());
+    for (int i=0; i < jr.enterNextElement(i); ++i) {
+        sideStories.push_back(RelatedTvShow());
+        sideStories[i].describe(&jr);
+    }
+    sequels.clear();
+    jr.describeArray("sequels", "tvShowRelation", sequels.length());
+    for (int i=0; i < jr.enterNextElement(i); ++i) {
+        sequels.push_back(RelatedTvShow());
+        sequels[i].describe(&jr);
+    }
+
     jr.close();
 }
 
@@ -82,6 +103,20 @@ void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "startDate", startDate);
     NwUtils::describe(jw, "endDate", endDate);
     NwUtils::describe(jw, "synopsis", synopsis);
+
+    jw.describeArray("prequels", "tvShowRelation", prequels.length());
+    for (int i=0; i < jw.enterNextElement(i); ++i) {
+        prequels[i].describe(&jw);
+    }
+    jw.describeArray("sideStories", "tvShowRelation", sideStories.length());
+    for (int i=0; i < jw.enterNextElement(i); ++i) {
+        sideStories[i].describe(&jw);
+    }
+    jw.describeArray("sequels", "tvShowRelation", sequels.length());
+    for (int i=0; i < jw.enterNextElement(i); ++i) {
+        sequels[i].describe(&jw);
+    }
+    jw.close();
 }
 
 void TvShow::importEpisode(MovieFile *episode) {
@@ -305,11 +340,16 @@ RelatedTvShow::RelatedTvShow(int id) :
 }
 
 TvShow *RelatedTvShow::get(Library& library) const {
-    library.filter().getShowForRemoteId(this->id);
+    return library.filter().getShowForRemoteId(this->id);
 }
 
 bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
     return this->id == other.id;
+}
+
+void RelatedTvShow::describe(nw::Describer *de) {
+    NwUtils::describe(*de, "id", id);
+    NwUtils::describe(*de, "title", title);
 }
 
 void RelatedTvShow::parseForManga(nw::Describer* de) {
