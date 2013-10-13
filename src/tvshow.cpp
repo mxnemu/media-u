@@ -53,7 +53,7 @@ void TvShow::read(QDir &dir) {
     prequels.clear();
     jr.describeArray("prequels", "tvShowRelation", prequels.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        sequels.push_back(RelatedTvShow());
+        prequels.push_back(RelatedTvShow());
         prequels[i].describe(&jr);
     }
     sideStories.clear();
@@ -135,7 +135,7 @@ void TvShow::downloadImage(const QString url, QDir libraryDirectory) {
 }
 
 bool TvShow::isAiring() const {
-    return !airingStatus.isEmpty() && airingStatus.startsWith("Currently");
+    return !airingStatus.isEmpty() && airingStatus.startsWith("Currently", Qt::CaseInsensitive);
 }
 
 QDir TvShow::directory(QDir libraryDirectory) const {
