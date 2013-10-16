@@ -86,6 +86,7 @@ public:
     MalSearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);
     void updateShowFromBestEntry(TvShow& show, QDir libraryDir) const;
+    const MalEntry*bestResult() const;
 private:
     QList<MalEntry> entries;
     QString query;

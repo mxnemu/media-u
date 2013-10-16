@@ -263,20 +263,41 @@ void MalSearchResult::parse(CurlResult &result) {
     xr.close();
 }
 
-void MalSearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const {
-    int bestResult = -1;
-    int bestIndex = -1;
+const MalEntry* MalSearchResult::bestResult() const {
+    std::pair<int, const MalEntry*> best(-1, NULL);
     for (int i=0; i < entries.length(); ++i) {
-        const MalEntry& entry = entries.at(i);
+        const MalEntry* entry = &entries.at(i);
 
-        if (entry.querySimiliarityScore > bestResult) {
-            bestResult = entry.querySimiliarityScore;
-            bestIndex = i;
+        int score = Utils::querySimiliarity(this->query, entry->title);
+        /*
+        foreach (const QString& name, entry->englishTitles) {
+            int s = Utils::querySimiliarity(this->query, name);
+            score = score >= s ? score : s;
+        }
+        */
+        foreach (const QString& name, entry->synonyms) {
+            int s = Utils::querySimiliarity(this->query, name);
+            score = score >= s ? score : s;
+        }
+        /*
+        foreach (const QString& name, entry->japaneseTitles) {
+            int s = Utils::querySimiliarity(this->query, name);
+            score = score >= s ? score : s;
+        }
+        */
+        if (score > best.first) {
+            best.first = score;
+            best.second = entry;
         }
     }
+    return best.second;
+}
 
-    if (bestIndex >= 0 && bestIndex < entries.length()) {
-        entries.at(bestIndex).updateShowFromEntry(show, libraryDir);
+void MalSearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const {
+    const MalEntry* entry = bestResult();
+
+    if (entry) {
+        entry->updateShowFromEntry(show, libraryDir);
         qDebug() << "updated " << show.getShowType() << show.name();
     }
 }
