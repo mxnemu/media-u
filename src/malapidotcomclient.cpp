@@ -71,14 +71,14 @@ SearchResult::SearchResult() {}
 SearchResult::SearchResult(CurlResult &response, QString searchedAnime) :
     searchedAnime(searchedAnime)
 {
-    //qDebug() << "json" << response.data.str().data();
+    qDebug() << "json" << response.data.str().data();
     nw::JsonReader jr(response.data);
     this->describe(&jr);
     jr.close();
 }
 
 void SearchResult::describe(nw::Describer* const de) {
-    de->describeArray("Entries", "Entry", 0);
+    de->describeArray("", "entry", 0);
     for (int i=0; de->enterNextElement(i); ++i) {
         entries.push_back(Entry(de));
     }
@@ -137,7 +137,8 @@ void Entry::describe(nw::Describer *de) {
     RelatedTvShow::parseFromList(de, "prequels", prequels, true);
     RelatedTvShow::parseFromList(de, "sequels", sequels, true);
     RelatedTvShow::parseFromList(de, "side_stories", side_stories, true);
-    parent_story.parseForAnime(de);
+    //check for parentstory == null first
+    //parent_story.parseForAnime(de);
     RelatedTvShow::parseFromList(de, "character_anime", character_anime, true);
     RelatedTvShow::parseFromList(de, "spin_offs", spin_offs, true);
     RelatedTvShow::parseFromList(de, "summaries", summaries, true);
@@ -166,7 +167,7 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
 
     show.downloadImage(image_url, libraryDir);
 
-    //qDebug() << "updated show from mal-api.com" << id << title;
+    qDebug() << "updated show from mal-api.com" << id << title;
 }
 
 QString Entry::dateFormat = "yyyy-MM-dd";
@@ -182,7 +183,7 @@ Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *
 
 void Thread::run() {
     foreach (TvShow* show, tvShows) {
-        if (show && show->getRemoteId() != -1) {
+        if (show) {
             client.updateShow(*show, libraryDir);
         }
     }

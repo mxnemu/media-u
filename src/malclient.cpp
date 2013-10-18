@@ -25,7 +25,6 @@ void MalClient::init(QString configFilePath) {
         jr.close();
 
         if (user.length() > 0 && password.length() > 0) {
-            //qDebug() << "mal connection is " << this->setCredentials(QString(user.data()), QString(password.data()));
             this->setCredentials(QString(user.data()), QString(password.data()));
         }
     }
