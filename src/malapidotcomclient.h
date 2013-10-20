@@ -15,7 +15,7 @@ enum UpdateFilter {
     ufTitle = 1 << 2,
     ufRelations = 1 << 3,
     ufAiringDates = 1 << 4,
-    ufSynonymes = 1 << 5,
+    ufSynonyms = 1 << 5,
     ufAll = ((uint)-1)
 };
 

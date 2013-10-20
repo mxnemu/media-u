@@ -152,13 +152,11 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir, UpdateFilter filter) cons
     show.setShowType(type);
     show.setRemoteId(id);
 
-    /*
-    if (filter & ufSynonymes) {
-        show.addSynonymes(synonyms);
-        show.addSynonymes(englishTitles);
-        show.addSynonymes(japaneseTitles);
+    if (filter & ufSynonyms) {
+        show.addSynonyms(synonyms);
+        show.addSynonyms(englishTitles);
+        show.addSynonyms(japaneseTitles);
     }
-    */
 
     if (filter & ufAiringDates) {
         show.setAiringStatus(status);

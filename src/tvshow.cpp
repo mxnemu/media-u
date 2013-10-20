@@ -417,3 +417,17 @@ void TvShow::syncRelations(Library& library) {
         rel.get(library)->addSequels(relation);
     }
 }
+
+void TvShow::addSynonyms(const QStringList &values) {
+    foreach (const QString& value, values) {
+        bool found = false;
+        foreach (const QString& synonym, synonyms) {
+            if (synonym.compare(value, Qt::CaseInsensitive) == 0) {
+                found = true; // TODO check if qt foreach allows break
+            }
+        }
+        if (!found) {
+            synonyms.push_back(value);
+        }
+    }
+}

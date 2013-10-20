@@ -66,6 +66,7 @@ public:
     void addSequels(QList<RelatedTvShow> relations);
     void syncRelations(Library &library);
 
+    void addSynonyms(const QStringList& values);
     void setSynonyms(const QStringList &value);
     void setAiringStatus(const QString &value);
     void setStartDate(const QDate &value);
