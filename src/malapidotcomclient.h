@@ -9,11 +9,21 @@
 
 namespace MalApiDotCom {
 
+enum UpdateFilter {
+    ufInvalid = 0,
+    ufSynopsis = 1 << 1,
+    ufTitle = 1 << 2,
+    ufRelations = 1 << 3,
+    ufAiringDates = 1 << 4,
+    ufSynonymes = 1 << 5,
+    ufAll = ((uint)-1)
+};
+
 class Entry {
 public:
     Entry(nw::Describer* de);
     void describe(nw::Describer* de);
-    void updateShow(TvShow& show, QDir &libraryDir) const;
+    void updateShow(TvShow& show, QDir &libraryDir, UpdateFilter filter = ufAll) const;
 
     static QString dateFormat;
 

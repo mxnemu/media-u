@@ -145,25 +145,42 @@ void Entry::describe(nw::Describer *de) {
     RelatedTvShow::parseFromList(de, "alternative_versions", alternative_versions, true);
 }
 
-void Entry::updateShow(TvShow& show, QDir& libraryDir) const {
-    //show.setName();
+void Entry::updateShow(TvShow& show, QDir& libraryDir, UpdateFilter filter) const {
+
+    //show.setName(title);
     show.setTotalEpisodes(episodes);
     show.setShowType(type);
-    show.setAiringStatus(status);
-    show.setStartDate(QDate::fromString(start_date, Entry::dateFormat));
-    show.setEndDate(QDate::fromString(end_date, Entry::dateFormat));
-    show.setSynopsis(synopsis);
     show.setRemoteId(id);
 
-    show.addPrequels(prequels);
-    show.addPrequels(QList<RelatedTvShow>() << parent_story);
+    /*
+    if (filter & ufSynonymes) {
+        show.addSynonymes(synonyms);
+        show.addSynonymes(englishTitles);
+        show.addSynonymes(japaneseTitles);
+    }
+    */
 
-    show.addSideStories(side_stories);
-    show.addSideStories(character_anime);
-    show.addSideStories(spin_offs);
-    show.addSideStories(summaries);
+    if (filter & ufAiringDates) {
+        show.setAiringStatus(status);
+        show.setStartDate(QDate::fromString(start_date, Entry::dateFormat));
+        show.setEndDate(QDate::fromString(end_date, Entry::dateFormat));
+    }
 
-    show.addSequels(sequels);
+    if (filter & ufSynopsis) {
+        show.setSynopsis(synopsis);
+    }
+
+    if (filter & ufRelations) {
+        show.addPrequels(prequels);
+        show.addPrequels(QList<RelatedTvShow>() << parent_story);
+
+        show.addSideStories(side_stories);
+        show.addSideStories(character_anime);
+        show.addSideStories(spin_offs);
+        show.addSideStories(summaries);
+
+        show.addSequels(sequels);
+    }
 
     show.downloadImage(image_url, libraryDir);
 
