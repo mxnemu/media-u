@@ -158,8 +158,7 @@ void MovieFileTest::testCommonSliceInStrings() {
     QFETCH(QStringList, strings);
     QFETCH(QString, commonSlice);
 
-    qDebug() << "res: " << Utils::commonSlicesInStrings(strings).toLower();
-    QCOMPARE(Utils::commonSlicesInStrings(strings).toLower(), commonSlice.toLower());
+    QCOMPARE(Utils::commonSliceInStrings(strings).toLower(), commonSlice.toLower());
 }
 
 void MovieFileTest::qstringEcodingSize() {
