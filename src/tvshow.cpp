@@ -446,7 +446,8 @@ void TvShow::addSynonyms(const QStringList &values) {
         bool found = false;
         foreach (const QString& synonym, synonyms) {
             if (synonym.compare(value, Qt::CaseInsensitive) == 0) {
-                found = true; // TODO check if qt foreach allows break
+                found = true;
+                break;
             }
         }
         if (!found) {
