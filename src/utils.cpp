@@ -96,15 +96,13 @@ QString Utils::commonSliceInStrings(const QStringList &strings) {
         }
     }
 
-    const QString* bestResult = commonResults.empty() ? NULL : &commonResults.front();
-    foreach (const QString r, commonResults) {
-        if (r.length() > bestResult->length()) {
-            bestResult = &r;
+    QString empty = QString();
+    QString& bestResult = empty;
+    foreach (const QString& r, commonResults) {
+        if (r.length() > bestResult.length()) {
+            bestResult = r;
         }
     }
 
-    if (bestResult) {
-        return QString(*bestResult);
-    }
-    return QString();
+    return bestResult;
 }

@@ -52,7 +52,6 @@ public:
     SearchDirectory* getSearchDirectory(QString path);
     bool removeSearchDirectory(QString path);
 
-    void generateFrenchises();
     void addToFrenchise(const TvShow *show);
 
 signals:
@@ -65,6 +64,7 @@ public slots:
     void importTvShowEpisode(QString episodePath);
     void startWallpaperDownloaders();
     void fetchMetaData();
+    void generateFrenchises();
 
 private slots:
     void fetchingFinished();

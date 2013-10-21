@@ -1,5 +1,6 @@
 #include "franchise.h"
 #include "utils.h"
+#include <QDebug>
 
 Franchise::Franchise(QObject *parent) :
     QObject(parent)
