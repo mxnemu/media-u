@@ -3,6 +3,7 @@
 
 #include "../src/moviefile.h"
 #include "../src/systemutils.h"
+#include "../src/utils.h"
 
 class MovieFileTest : public QObject
 {
@@ -22,6 +23,8 @@ private Q_SLOTS:
 
     // TODO figure out how I can use multiple test files in qt
     void testCommandExists();
+    void testCommonSliceInStrings_data();
+    void testCommonSliceInStrings();
 };
 
 MovieFileTest::MovieFileTest()
@@ -139,6 +142,24 @@ void MovieFileTest::testShowName() {
 void MovieFileTest::testCommandExists() {
     QVERIFY(true  == SystemUtils::commandExists("command"));
     QVERIFY(false == SystemUtils::commandExists("alsdhadhaasghoaishknasflkhasdfkljkashf")); // let's hope nobody installed this
+}
+
+void MovieFileTest::testCommonSliceInStrings_data() {
+    QTest::addColumn<QStringList>("strings");
+    QTest::addColumn<QString>("commonSlice");
+
+    QTest::newRow("caseinsensitive, prefix and postfix") <<
+                          (QStringList() << "Bakemonogatari" << "Nisemonogatari" << "Nekomonogatari black" << "Monogatari Series: Second Season") <<
+        "monogatari";
+
+}
+
+void MovieFileTest::testCommonSliceInStrings() {
+    QFETCH(QStringList, strings);
+    QFETCH(QString, commonSlice);
+
+    qDebug() << "res: " << Utils::commonSlicesInStrings(strings).toLower();
+    QCOMPARE(Utils::commonSlicesInStrings(strings).toLower(), commonSlice.toLower());
 }
 
 void MovieFileTest::qstringEcodingSize() {
