@@ -140,7 +140,6 @@ void Library::startSearch() {
     connect(searchThread, SIGNAL(machingFile(QString)), this, SLOT(importTvShowEpisode(QString)));
     connect(searchThread, SIGNAL(done()), this, SLOT(startWallpaperDownloaders()));
     connect(searchThread, SIGNAL(done()), this, SLOT(fetchMetaData()));
-    connect(searchThread, SIGNAL(done()), this, SLOT(generateFrenchises()));
     this->searchThread->start(QThread::HighPriority);
     //library.write();
 }
@@ -269,6 +268,7 @@ void Library::readAll() {
             }
         }
     }
+    generateFrenchises();
 }
 
 void Library::write() {
