@@ -478,14 +478,7 @@ QDateTime TvShow::lastWatchedDate() const {
 }
 
 bool TvShow::isCompleted() const {
-    foreach(Season* s, seasons) {
-        foreach(MovieFile* m, s->episodes) {
-            if (!m->isSpecial() && m->getWatchedDate().isNull()) {
-                return false;
-            }
-        }
-    }
-    return true;
+    return totalEpisodes > 0 && getWatchedEpisodes() >= totalEpisodes;
 }
 
 bool TvShow::startedWatching() const {
