@@ -13,6 +13,7 @@
 #include "gelbooruclient.h"
 #include "libraryfilter.h"
 #include "searchdirectory.h"
+#include "franchise.h"
 
 class DirectoryScannerThread;
 
@@ -69,7 +70,7 @@ private slots:
 private:
     QDir directory;
     QList<TvShow*> tvShows;
-    QList<MovieFile*> movies;
+    QList<Franchise*> franchises;
     QList<SearchDirectory> searchDirectories;
 
     MalClient malClient;

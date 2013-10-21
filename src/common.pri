@@ -24,6 +24,7 @@ SOURCES += main.cpp\
     searchdirectory.cpp \
     server.cpp \
     apipushevents.cpp \
+    franchise.cpp
 
 
 HEADERS  += library.h \
@@ -51,4 +52,5 @@ HEADERS  += library.h \
     searchdirectory.h \
     server.h \
     apipushevents.h \
+    franchise.h
 
