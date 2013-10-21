@@ -4,7 +4,8 @@ SOURCES += filedownloadthread.cpp \
     wallpaperdownloadclient.cpp \
     moebooruclient.cpp \
     gelbooruclient.cpp \
-    malapidotcomclient.cpp
+    malapidotcomclient.cpp \
+    onlinetvshowdatabase.cpp
 
 HEADERS += filedownloadthread.h \
     curlresult.h \
@@ -12,4 +13,5 @@ HEADERS += filedownloadthread.h \
     wallpaperdownloadclient.h \
     moebooruclient.h \
     gelbooruclient.h \
-    malapidotcomclient.h
+    malapidotcomclient.h \
+    onlinetvshowdatabase.h

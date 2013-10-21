@@ -6,24 +6,16 @@
 #include "nwutils.h"
 #include "curlresult.h"
 #include "tvshow.h"
+#include "onlinetvshowdatabase.h"
 
 namespace MalApiDotCom {
-
-enum UpdateFilter {
-    ufInvalid = 0,
-    ufSynopsis = 1 << 1,
-    ufTitle = 1 << 2,
-    ufRelations = 1 << 3,
-    ufAiringDates = 1 << 4,
-    ufSynonyms = 1 << 5,
-    ufAll = ((uint)-1)
-};
+using OnlineTvShowDatabase::UpdateFilter;
 
 class Entry {
 public:
     Entry(nw::Describer* de);
     void describe(nw::Describer* de);
-    void updateShow(TvShow& show, QDir &libraryDir, UpdateFilter filter = ufAll) const;
+    void updateShow(TvShow& show, QDir &libraryDir, UpdateFilter filter = OnlineTvShowDatabase::ufAll) const;
 
     static QString dateFormat;
 

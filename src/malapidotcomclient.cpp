@@ -152,23 +152,23 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir, UpdateFilter filter) cons
     show.setShowType(type);
     show.setRemoteId(id);
 
-    if (filter & ufSynonyms) {
+    if (filter & OnlineTvShowDatabase::ufSynonyms) {
         show.addSynonyms(synonyms);
         show.addSynonyms(englishTitles);
         show.addSynonyms(japaneseTitles);
     }
 
-    if (filter & ufAiringDates) {
+    if (filter & OnlineTvShowDatabase::ufAiringDates) {
         show.setAiringStatus(status);
         show.setStartDate(QDate::fromString(start_date, Entry::dateFormat));
         show.setEndDate(QDate::fromString(end_date, Entry::dateFormat));
     }
 
-    if (filter & ufSynopsis) {
+    if (filter & OnlineTvShowDatabase::ufSynopsis) {
         show.setSynopsis(synopsis);
     }
 
-    if (filter & ufRelations) {
+    if (filter & OnlineTvShowDatabase::ufRelations) {
         show.addPrequels(prequels);
         show.addPrequels(QList<RelatedTvShow>() << parent_story);
 
