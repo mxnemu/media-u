@@ -13,17 +13,36 @@ public:
 
     template<class T> static void describe(T& d, const nw::String key, QDate& value) {
         if (d.isInWriteMode()) {
-            std::string str = value.toString(dateFormat).toStdString();
+            std::string str = value.toString(Qt::ISODate).toStdString();
             d.describe(key, str);
         } else {
             std::string str;
             d.describe(key, str);
-            value = QDate::fromString(QString(str.data()), dateFormat);
+            value = QDate::fromString(QString(str.data()), Qt::ISODate);
         }
     }
 
-    template<class T> static void describe(T& d, const nw::String key, QTime& value) {}
-    template<class T> static void describe(T& d, const nw::String key, QDateTime& value) {}
+    template<class T> static void describe(T& d, const nw::String key, QTime& value) {
+        if (d.isInWriteMode()) {
+            std::string str = value.toString(Qt::ISODate).toStdString();
+            d.describe(key, str);
+        } else {
+            std::string str;
+            d.describe(key, str);
+            value = QTime::fromString(QString(str.data()), Qt::ISODate);
+        }
+    }
+
+    template<class T> static void describe(T& d, const nw::String key, QDateTime& value) {
+        if (d.isInWriteMode()) {
+            std::string str = value.toString(Qt::ISODate).toStdString();
+            d.describe(key, str);
+        } else {
+            std::string str;
+            d.describe(key, str);
+            value = QDateTime::fromString(QString(str.data()), Qt::ISODate);
+        }
+    }
     template<class T> static void describe(T& d, const nw::String key, QString& value) {
         if (d.isInWriteMode()) {
             std::string str = value.toStdString();
@@ -74,8 +93,6 @@ public:
     template<class T, class T2> inline static void describe(T& d, const nw::String key, T2& value) {
         d.describe(key, value);
     }
-
-    static const QString dateFormat;
 };
 
 #endif // NW_UTILS_H
