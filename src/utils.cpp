@@ -31,21 +31,21 @@ QStringList Utils::commonSlicesInStrings(const QString aParm, const QString bPar
     const QString& a = aParm.length() >= bParm.length() ? aParm : bParm;
     const QString& b = &a == &aParm ? bParm : aParm;
 
-    std::pair<QString, int> result = std::pair<QString, int>(QString(), -1);
+    QString result;
     QStringList results;
-    int index;
+    int index = -1;
     do {
-        //index = result.second + result.first.length(); // the fast & sloppy way
-        index = result.second + 1;
+        //index = index + result.length(); // the fast & sloppy way
+        index = index + 1;
         result = commonSliceAtStart(a,b, index);
-        if (result.first.length() > 1) {
-            results << result.first;
+        if (result.length() > 1) {
+            results << result;
         }
     } while (index < a.length());
     return results;
 }
 
-std::pair<QString, int> Utils::commonSliceAtStart(const QString& a, const QString& b, int startIndex) {
+QString Utils::commonSliceAtStart(const QString& a, const QString& b, int startIndex) {
     QString testCommon;
     QString lastCommon;
     for (int i=startIndex; i < a.length(); ++i) {
@@ -56,10 +56,10 @@ std::pair<QString, int> Utils::commonSliceAtStart(const QString& a, const QStrin
             break;
         }
     }
-    return std::pair<QString, int>(lastCommon.trimmed(), startIndex);
+    return lastCommon.trimmed();
 }
 
-QString Utils::commonSlicesInStrings(const QStringList &strings) {
+QString Utils::commonSliceInStrings(const QStringList &strings) {
     QStringList commonResults;
     for (int i=0; i < strings.length(); ++i) {
         QStringList results;
