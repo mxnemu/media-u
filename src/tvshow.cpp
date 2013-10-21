@@ -344,7 +344,7 @@ TvShow *RelatedTvShow::get(Library& library) const {
 }
 
 bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
-    return this->id == other.id;
+    return this->id == other.id; //|| this->title.compare(other.title, Qt::CaseInsensitive) == 0;
 }
 
 void RelatedTvShow::describe(nw::Describer *de) {
@@ -416,6 +416,29 @@ void TvShow::syncRelations(Library& library) {
     foreach (const RelatedTvShow& rel, sequels) {
         rel.get(library)->addPrequels(relation);
     }
+}
+
+bool TvShow::hasRelationTo(const TvShow *show) const {
+    if (show->remoteId == -1) {
+        return false;
+    }
+
+    foreach (const RelatedTvShow& rel, prequels) {
+        if (rel.id == show->remoteId) {
+            return true;
+        }
+    }
+    foreach (const RelatedTvShow& rel, sideStories) {
+        if (rel.id == show->remoteId) {
+            return true;
+        }
+    }
+    foreach (const RelatedTvShow& rel, sequels) {
+        if (rel.id == show->remoteId) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void TvShow::addSynonyms(const QStringList &values) {

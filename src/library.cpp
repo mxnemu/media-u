@@ -186,6 +186,34 @@ bool Library::removeSearchDirectory(QString path) {
     return false;
 }
 
+void Library::generateFrenchises() {
+    foreach (TvShow* show, tvShows) {
+        show->syncRelations(*this);
+    }
+    foreach (const TvShow* show, tvShows) {
+        addToFrenchise(show);
+    }
+    foreach (Franchise* franchise, franchises) {
+        franchise->generateName();
+    }
+}
+
+void Library::addToFrenchise(const TvShow* show) {
+    bool added = false;
+    foreach (Franchise* f, franchises) {
+        if (f->hasRelationTo(show)) {
+            f->addTvShow(show);
+            added = true;
+            break;
+        }
+    }
+    if (!added) {
+        Franchise* newFranchise = new Franchise(this);
+        newFranchise->addTvShow(show);
+        franchises.push_back(newFranchise);
+    }
+}
+
 void Library::fetchingFinished() {
     qDebug() << "finished mal fetching, writing things now";
     this->write();

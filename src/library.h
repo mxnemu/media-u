@@ -52,6 +52,9 @@ public:
     SearchDirectory* getSearchDirectory(QString path);
     bool removeSearchDirectory(QString path);
 
+    void generateFrenchises();
+    void addToFrenchise(const TvShow *show);
+
 signals:
     void showAdded(TvShow* show);
     void searchFinished();

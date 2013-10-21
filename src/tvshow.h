@@ -65,6 +65,7 @@ public:
     void addSideStories(QList<RelatedTvShow> relations);
     void addSequels(QList<RelatedTvShow> relations);
     void syncRelations(Library &library);
+    bool hasRelationTo(const TvShow *show) const;
 
     void addSynonyms(const QStringList& values);
     void setSynonyms(const QStringList &value);
