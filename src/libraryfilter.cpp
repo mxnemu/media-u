@@ -133,6 +133,9 @@ bool LibraryFilter::filterHasWallpaper(const TvShow &show, const LibraryFilter &
 }
 
 bool LibraryFilter::filterRecentlyWatched(const TvShow &show, const LibraryFilter &) {
+    if (show.isCompleted()) {
+        return false;
+    }
     QDateTime date = show.lastWatchedDate();
     return !date.isNull() && date > QDateTime::currentDateTime().addMonths(-1);
 }

@@ -91,6 +91,9 @@ public:
 
     TvShowPlayerSettings playerSettings;
     QDateTime lastWatchedDate() const;
+
+    bool isCompleted() const;
+    bool startedWatching() const;
 signals:
     void watchCountChanged(int oldCount, int newCount);
 
