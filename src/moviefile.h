@@ -6,6 +6,7 @@
 #include <QRegExp>
 #include <QStringList>
 #include <N0Slib.h>
+#include <QDateTime>
 
 class MovieFile : public QObject
 {
@@ -54,7 +55,7 @@ private:
     QString mEpisodeNumber;
     QString mHashId;
 
-    bool watched;
+    QDateTime watchedDate;
 };
 
 #endif // MOVIEFILE_H

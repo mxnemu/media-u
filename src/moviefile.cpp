@@ -15,7 +15,6 @@ MovieFile::MovieFile(QString path, QObject *parent) :
     QObject(parent)
 {
     setPath(path);
-    watched = false;
 }
 
 QString MovieFile::path() const {
@@ -174,9 +173,15 @@ void MovieFile::setPath(QString path) {
 
 void MovieFile::describe(nw::Describer *de) {
     NwUtils::describe(*de, "path", mPath);
-    de->describe("watched", watched);
+    NwUtils::describe(*de, "watchedDate", watchedDate);
     if (de->isInReadMode()) {
         this->setPath(mPath);
+
+        bool watched = false;
+        de->describe("watched", watched);
+        if (watched) {
+            watchedDate = QDateTime::currentDateTime();
+        }
     }
 }
 
@@ -189,6 +194,7 @@ void MovieFile::writeDetailed(nw::JsonWriter &jw) {
     //NwUtils::describe(jw, "tech", mTechTags);
     NwUtils::describe(jw, "seasonName", mSeasonName);
     NwUtils::describe(jw, "hashId", mHashId);
+    bool watched = getWatched();
     NwUtils::describe(jw, "watched", watched);
     int num = numericEpisodeNumber();
     NwUtils::describe(jw, "numericEpisodeNumber", num);
@@ -279,11 +285,15 @@ QString MovieFile::hashId() const {
 
 bool MovieFile::getWatched() const
 {
-    return watched;
+    return !watchedDate.isNull();
 }
 
 void MovieFile::setWatched(bool value) {
-    bool oldValue = this->watched;
-    watched = value;
+    bool oldValue = this->getWatched();
+    if (value) {
+        watchedDate = QDateTime::currentDateTime();
+    } else {
+        watchedDate = QDateTime();
+    }
     emit watchedChanged(oldValue, value);
 }
