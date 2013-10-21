@@ -135,13 +135,11 @@ void Library::startSearch() {
     DirectoryScanner* scanner = new DirectoryScanner();
     scanner->addScanner(new TvShowScanner(*this));
     this->searchThread = new DirectoryScannerThread(scanner, searchDirectories, this);
-    //connect(this, SIGNAL(destroyed()), searchThread, SLOT(terminate()));
     connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
     connect(searchThread, SIGNAL(machingFile(QString)), this, SLOT(importTvShowEpisode(QString)));
     connect(searchThread, SIGNAL(done()), this, SLOT(startWallpaperDownloaders()));
     connect(searchThread, SIGNAL(done()), this, SLOT(fetchMetaData()));
     this->searchThread->start(QThread::HighPriority);
-    //library.write();
 }
 
 Library::searchStatus Library::getSearchStatus() {
