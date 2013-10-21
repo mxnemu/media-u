@@ -408,13 +408,13 @@ void TvShow::syncRelations(Library& library) {
     QList<RelatedTvShow> relation;
     relation.append(RelatedTvShow(this->remoteId));
     foreach (const RelatedTvShow& rel, prequels) {
-        rel.get(library)->addPrequels(relation);
+        rel.get(library)->addSequels(relation);
     }
     foreach (const RelatedTvShow& rel, sideStories) {
         rel.get(library)->addSideStories(relation);
     }
     foreach (const RelatedTvShow& rel, sequels) {
-        rel.get(library)->addSequels(relation);
+        rel.get(library)->addPrequels(relation);
     }
 }
 
