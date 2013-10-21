@@ -17,56 +17,35 @@ enum UpdateFilter {
     ufRelations = 1 << 3,
     ufAiringDates = 1 << 4,
     ufSynonyms = 1 << 5,
+    ufRemoteId = 1 << 6,
+    ufImage = 1 << 7,
     ufAll = ((unsigned int)-1)
 };
 
 
 class Entry {
 public:
-    Entry(nw::Describer* de);
-    void describe(nw::Describer* de);
+    Entry();
+    virtual ~Entry();
     void updateShow(TvShow& show, QDir &libraryDir, UpdateFilter filter = OnlineTvShowDatabase::ufAll) const;
 
-    static QString dateFormat;
-
-    int id;
-
-    QString title;
-    //other_titles - A hash/dictionary containing other titles this anime has.
-    QStringList synonyms;
-    QStringList englishTitles;
-    QStringList japaneseTitles;
-
-    QString image_url;
-    QString type;
-    int episodes; // null is returned if the number of episodes is unknown.
-    QString status; // Possible values: finished airing, currently airing, not yet aired.
-    QString start_date;
-    QString end_date;
-    QString classification; // This is a freeform text field, with possible values like: R - 17+ (violence & profanity), PG - Children. Not available in /animelist requests.
-    QString synopsis;
-    QStringList genres;
-    QStringList tags; // popular tags set by many users in their personal lists ["supernatural", "comedy"].
-    QList<RelatedTvShow> manga_adaptations;
-    QList<RelatedTvShow> prequels;
-    QList<RelatedTvShow> sequels;
-    QList<RelatedTvShow> side_stories;
-    RelatedTvShow parent_story;
-    QList<RelatedTvShow> character_anime;
-    QList<RelatedTvShow> spin_offs;
-    QList<RelatedTvShow> summaries;
-    QList<RelatedTvShow> alternative_versions;
+    virtual void updateSynopsis(TvShow& show) const = 0;
+    virtual void updateTitle(TvShow& show) const = 0;
+    virtual void updateRemoteId(TvShow& show) const = 0;
+    virtual void updateRelations(TvShow& show) const = 0;
+    virtual void updateAiringDates(TvShow& show) const = 0;
+    virtual void updateSynonyms(TvShow& show) const = 0;
+    virtual void updateImage(TvShow& show, QDir libraryDir) const = 0;
 };
 
 class SearchResult {
 public:
-    SearchResult();
-    SearchResult(CurlResult& response, QString searchedAnime);
+    SearchResult(QString searchedQuery = QString());
+    virtual ~SearchResult();
 
     void describe(nw::Describer* const de);
-    const Entry *bestResult();
-    QString searchedAnime;
-    QList<Entry> entries;
+    QString searchedQuery;
+    QList<Entry*> entries;
 };
 
 
@@ -78,7 +57,8 @@ public:
 
     void startUpdate(QList<TvShow *> &showList, QDir libraryDir);
     bool updateShow(TvShow& show, QDir &libraryDir);
-    SearchResult search(QString anime);
+    virtual SearchResult search(QString anime) = 0;
+    virtual const Entry* bestResult(const SearchResult&) const = 0;
 
 signals:
     void updateFinished();
@@ -86,7 +66,6 @@ signals:
 public slots:
     void threadFinished();
 private:
-    static CURL *curlClient(const char *url, CurlResult &userdata);
     Thread* activeThread;
 };
 
@@ -102,6 +81,7 @@ private:
     QList<TvShow*> &tvShows;
     QDir libraryDir;
 };
+
 
 }
 
