@@ -29,6 +29,11 @@ public:
     MovieFile* getEpisodeForPath(const QString &path);
     QString favouriteReleaseGroup();
     int highestDownloadedEpisodeNumber() const;
+
+    // TODO
+    // This class will be removed soon, so I just made this public for some last sloppy uses
+    QList<MovieFile*> episodes;
+
 signals:
     void watchCountChanged(int oldCount, int newCount);
 
@@ -36,7 +41,7 @@ private slots:
     void watchedChanged(bool oldValue, bool newValue);
 
 private:
-    QList<MovieFile*> episodes;
+
     QString mName;
 };
 

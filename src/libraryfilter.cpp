@@ -21,10 +21,15 @@ QList<TvShow *> LibraryFilter::withWallpaper() {
     return filter(LibraryFilter::filterHasWallpaper);
 }
 
+QList<TvShow *> LibraryFilter::recentlyWatched() {
+    return filter(LibraryFilter::filterRecentlyWatched);
+}
+
 bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/library/filter/lists")) {
         QList<TvShow *> airingShows = airing();
         QList<TvShow *> allShows = all();
+        QList<TvShow *> recent = recentlyWatched();
         std::stringstream ss;
         nw::JsonWriter jw(ss);
         jw.push("lists");
@@ -34,12 +39,21 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             std::string name = show->name().toStdString();
             jw.describe("name", name);
         }
+
+        jw.describeArray("recently-watched", "show", recent.length());
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            TvShow* show = recent.at(i);
+            std::string name = show->name().toStdString();
+            jw.describe("name", name);
+        }
+
         jw.describeArray("all", "show", allShows.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
             TvShow* show = allShows.at(i);
             std::string name = show->name().toStdString();
             jw.describe("name", name);
         }
+
         jw.pop();
         jw.close();
         Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
@@ -116,6 +130,11 @@ bool LibraryFilter::filterAiring(const TvShow & show, const LibraryFilter &)
 bool LibraryFilter::filterHasWallpaper(const TvShow &show, const LibraryFilter &filter)
 {
     return !show.wallpapers(filter.getLibraryDir()).isEmpty();
+}
+
+bool LibraryFilter::filterRecentlyWatched(const TvShow &show, const LibraryFilter &) {
+    QDateTime date = show.lastWatchedDate();
+    return !date.isNull() && date > QDateTime::currentDateTime().addMonths(-1);
 }
 
 QDir LibraryFilter::getLibraryDir() const

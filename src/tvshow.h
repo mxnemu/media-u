@@ -90,6 +90,7 @@ public:
     MovieFile* getEpisodeForPath(const QString &path);
 
     TvShowPlayerSettings playerSettings;
+    QDateTime lastWatchedDate() const;
 signals:
     void watchCountChanged(int oldCount, int newCount);
 

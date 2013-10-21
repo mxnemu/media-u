@@ -40,6 +40,8 @@ public:
     void setWatched(bool value);
 
     int numericEpisodeNumber() const;
+    QDateTime getWatchedDate() const;
+
 signals:
     void watchedChanged(bool oldValue, bool newValue);
     

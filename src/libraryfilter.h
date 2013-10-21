@@ -13,6 +13,7 @@ public:
     QList<TvShow*> all();
     QList<TvShow*> airing();
     QList<TvShow*> withWallpaper();
+    QList<TvShow*> recentlyWatched();
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     MovieFile* getEpisodeForPath(const QString& path);
@@ -28,6 +29,7 @@ private:
     static bool filterAll(const TvShow&, const LibraryFilter&);
     static bool filterAiring(const TvShow & show, const LibraryFilter&);
     static bool filterHasWallpaper(const TvShow& show, const LibraryFilter& filter);
+    static bool filterRecentlyWatched(const TvShow& show, const LibraryFilter&);
 
     TvShow* getRandomShow(const QList<TvShow *> &shows);
 

@@ -464,3 +464,15 @@ void TvShow::addSynonyms(const QStringList &values) {
         }
     }
 }
+
+QDateTime TvShow::lastWatchedDate() const {
+    QDateTime latest;
+    foreach(Season* s, seasons) {
+        foreach(MovieFile* m, s->episodes) {
+            if (m->getWatchedDate() > latest) {
+                latest = m->getWatchedDate();
+            }
+        }
+    }
+    return latest;
+}

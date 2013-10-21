@@ -196,6 +196,7 @@ void MovieFile::writeDetailed(nw::JsonWriter &jw) {
     NwUtils::describe(jw, "hashId", mHashId);
     bool watched = getWatched();
     NwUtils::describe(jw, "watched", watched);
+    NwUtils::describe(jw, "watchedDate", watchedDate);
     int num = numericEpisodeNumber();
     NwUtils::describe(jw, "numericEpisodeNumber", num);
 }
@@ -296,4 +297,9 @@ void MovieFile::setWatched(bool value) {
         watchedDate = QDateTime();
     }
     emit watchedChanged(oldValue, value);
+}
+
+QDateTime MovieFile::getWatchedDate() const
+{
+    return watchedDate;
 }
