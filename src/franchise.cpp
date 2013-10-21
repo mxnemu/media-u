@@ -23,6 +23,12 @@ void Franchise::addTvShow(const TvShow* show) {
 }
 
 void Franchise::generateName() {
+    if (tvShows.length() == 1) {
+        this->name = tvShows.front()->name();
+        emit nameGenerated();
+        return;
+    }
+
     QStringList titles;
     foreach(const TvShow* show, tvShows) {
         titles << show->name();
