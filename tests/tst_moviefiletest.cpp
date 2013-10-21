@@ -18,6 +18,7 @@ private Q_SLOTS:
     void testReleaseGroup();
     void testShowName_data();
     void testShowName();
+    void qstringEcodingSize();
 
     // TODO figure out how I can use multiple test files in qt
     void testCommandExists();
@@ -138,6 +139,13 @@ void MovieFileTest::testShowName() {
 void MovieFileTest::testCommandExists() {
     QVERIFY(true  == SystemUtils::commandExists("command"));
     QVERIFY(false == SystemUtils::commandExists("alsdhadhaasghoaishknasflkhasdfkljkashf")); // let's hope nobody installed this
+}
+
+void MovieFileTest::qstringEcodingSize() {
+    QVERIFY(QString("☆☆☆").toUtf8().size() != QString("☆☆☆").toLatin1().size());
+    QVERIFY(QString("☆☆☆").toUtf8().size() > 3);
+    QVERIFY(QString("☆☆☆").size() == 3);
+    QVERIFY(QString("☆☆☆").toLatin1().size() == 3);
 }
 
 QTEST_APPLESS_MAIN(MovieFileTest)
