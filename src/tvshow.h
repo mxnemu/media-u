@@ -85,6 +85,7 @@ public:
     int episodesDownloaded() const;
     int getWatchedEpisodes() const;
     int highestWatchedEpisodeNumber() const; // TODO rework show -> seasons to show/season (of Franchise) -> episodes
+    int highestDownloadedEpisodeNumber() const;
     QString favouriteReleaseGroup();
 
     MovieFile* getEpisodeForPath(const QString &path);

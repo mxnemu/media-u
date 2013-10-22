@@ -217,6 +217,15 @@ int TvShow::highestWatchedEpisodeNumber() const {
     return highest;
 }
 
+int TvShow::highestDownloadedEpisodeNumber() const {
+    int highest = 0;
+    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
+        int num = (*it)->highestDownloadedEpisodeNumber();
+        highest = num > highest ? num : highest;
+    }
+    return highest;
+}
+
 QString TvShow::favouriteReleaseGroup() {
     for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
         return (*it)->favouriteReleaseGroup(); // TOOD get rid of seasons
@@ -478,7 +487,9 @@ QDateTime TvShow::lastWatchedDate() const {
 }
 
 bool TvShow::isCompleted() const {
-    return totalEpisodes > 0 && getWatchedEpisodes() >= totalEpisodes;
+    // assume totalEpisodes number is wrong if it's > 0, but the highest dled num is bigger
+    int total = totalEpisodes > 0 ? std::max(totalEpisodes, highestDownloadedEpisodeNumber()) : -1;
+    return total > 0 && getWatchedEpisodes() >= total;
 }
 
 bool TvShow::startedWatching() const {
