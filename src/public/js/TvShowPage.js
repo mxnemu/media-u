@@ -91,7 +91,7 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
     $.each(episodes, function() {
         var ep = this;
         var episodeEl = $(document.createElement("li"));
-        var text = $("<span></span>");
+        var text = $(document.createElement("span"));
         
         var title = 
             ep.episodeNumber + " " +
