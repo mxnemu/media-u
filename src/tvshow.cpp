@@ -74,15 +74,15 @@ void TvShow::read(QDir &dir) {
 
 void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "name", mName);
-    jw.describeArray("seasons", "season", seasons.length());
     if (jw.hasState("detailed")) {
+        jw.describeArray("seasons", "season", seasons.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
             Season& season = *seasons[i];
             season.writeDetailed(jw);
         }
     } else {
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            Season& season = *seasons[i];
+        if (!seasons.empty()) {
+            Season& season = *seasons.front();
             season.writeAsElement(jw);
         }
     }

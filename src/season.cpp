@@ -31,7 +31,6 @@ void Season::readAsElement(nw::JsonReader &jr) {
 }
 
 void Season::writeAsElement(nw::JsonWriter &jw) {
-    NwUtils::describe(jw, "name", mName);
     jw.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
         MovieFile* episode = episodes[i];
