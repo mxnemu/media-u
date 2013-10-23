@@ -6,7 +6,6 @@ SOURCES += main.cpp\
     mediascanner.cpp \
     tvshowscanner.cpp \
     tvshow.cpp \
-    season.cpp \
     systemutils.cpp \
     nwutils.cpp \
     utils.cpp \
@@ -24,7 +23,8 @@ SOURCES += main.cpp\
     searchdirectory.cpp \
     server.cpp \
     apipushevents.cpp \
-    franchise.cpp
+    franchise.cpp \
+    episodelist.cpp
 
 
 HEADERS  += library.h \
@@ -34,7 +34,6 @@ HEADERS  += library.h \
     mediascanner.h \
     tvshowscanner.h \
     tvshow.h \
-    season.h \
     systemutils.h \
     nwutils.h \
     utils.h \
@@ -52,5 +51,6 @@ HEADERS  += library.h \
     searchdirectory.h \
     server.h \
     apipushevents.h \
-    franchise.h
+    franchise.h \
+    episodelist.h
 

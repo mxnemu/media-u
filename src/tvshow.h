@@ -4,7 +4,7 @@
 #include <QList>
 #include <QDate>
 #include <QDir>
-#include <season.h>
+#include "episodelist.h"
 #include <N0Slib.h>
 
 class TvShowPlayerSettings {
@@ -38,7 +38,7 @@ class TvShow : public QObject
 public:
     TvShow(QString name, QObject* parent = NULL);
 
-    Season &season();
+    EpisodeList &season();
 
     void read(QDir &dir);
     void write(nw::JsonWriter &jw);
@@ -93,14 +93,14 @@ public:
 
     bool isCompleted() const;
     bool startedWatching() const;
-    const Season& episodeList() const;
-    Season &episodeListMutable();
+    const EpisodeList& episodeList() const;
+    EpisodeList &episodeListMutable();
 signals:
 
 private:
 
     QString mName;
-    Season episodes;
+    EpisodeList episodes;
 
     QList<RelatedTvShow> prequels;
     QList<RelatedTvShow> sideStories;

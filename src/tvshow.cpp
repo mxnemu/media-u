@@ -10,7 +10,7 @@ TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     remoteId = -1;
 }
 
-Season& TvShow::season() {
+EpisodeList& TvShow::season() {
     return episodes;
 }
 
@@ -423,10 +423,10 @@ bool TvShow::startedWatching() const {
     return false;
 }
 
-Season &TvShow::episodeListMutable() {
+EpisodeList &TvShow::episodeListMutable() {
     return episodes;
 }
 
-const Season &TvShow::episodeList() const {
+const EpisodeList &TvShow::episodeList() const {
     return episodes;
 }

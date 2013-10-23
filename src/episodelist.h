@@ -6,12 +6,12 @@
 #include <QDir>
 #include "moviefile.h"
 
-class Season : public QObject
+class EpisodeList : public QObject
 {
     Q_OBJECT
 public:
-    Season(QString name = QString(), QObject *parent = NULL);
-    virtual ~Season();
+    EpisodeList(QString name = QString(), QObject *parent = NULL);
+    virtual ~EpisodeList();
 
     void exportXbmcLinks(QDir dir);
     void writeDetailed(nw::JsonWriter &jw);

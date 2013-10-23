@@ -1,15 +1,15 @@
-#include "season.h"
+#include "episodelist.h"
 #include <QDebug>
 #include "nwutils.h"
 
-Season::Season(QString name, QObject* parent) : QObject(parent) {
+EpisodeList::EpisodeList(QString name, QObject* parent) : QObject(parent) {
     mName = name;
 }
 
-Season::~Season() {
+EpisodeList::~EpisodeList() {
 }
 
-void Season::exportXbmcLinks(QDir dir) {
+void EpisodeList::exportXbmcLinks(QDir dir) {
     if (!dir.exists()) {
         dir.mkpath(".");
     }
@@ -21,7 +21,7 @@ void Season::exportXbmcLinks(QDir dir) {
     }
 }
 
-void Season::readAsElement(nw::JsonReader &jr) {
+void EpisodeList::readAsElement(nw::JsonReader &jr) {
     NwUtils::describe(jr, "name", mName);
     jr.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jr.enterNextElement(i); ++i) {
@@ -30,7 +30,7 @@ void Season::readAsElement(nw::JsonReader &jr) {
     }
 }
 
-void Season::writeAsElement(nw::JsonWriter &jw) {
+void EpisodeList::writeAsElement(nw::JsonWriter &jw) {
     jw.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
         MovieFile* episode = episodes[i];
@@ -38,7 +38,7 @@ void Season::writeAsElement(nw::JsonWriter &jw) {
     }
 }
 
-void Season::writeDetailed(nw::JsonWriter &jw) {
+void EpisodeList::writeDetailed(nw::JsonWriter &jw) {
     NwUtils::describe(jw, "name", mName);
     jw.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
@@ -47,7 +47,7 @@ void Season::writeDetailed(nw::JsonWriter &jw) {
     }
 }
 
-void Season::addEpisode(MovieFile* episode) {
+void EpisodeList::addEpisode(MovieFile* episode) {
     if (episode->path().isEmpty() || NULL != getEpisodeForPath(episode->path())) {
         delete episode;
     } else {
@@ -57,7 +57,7 @@ void Season::addEpisode(MovieFile* episode) {
     }
 }
 
-void Season::addEpisode(QString file) {
+void EpisodeList::addEpisode(QString file) {
     if (file.isEmpty() || NULL != getEpisodeForPath(file)) {
         return;
     }
@@ -66,11 +66,11 @@ void Season::addEpisode(QString file) {
     qDebug() << episodes.back()->releaseGroup() << episodes.back()->episodeNumber() << episodes.back()->showName();
 }
 
-QString Season::name() const {
+QString EpisodeList::name() const {
     return mName;
 }
 
-int Season::numberOfEpisodes() const
+int EpisodeList::numberOfEpisodes() const
 {
     int count = 0;
     for (int i=0; i < episodes.length(); ++i) {
@@ -81,7 +81,7 @@ int Season::numberOfEpisodes() const
     return count;
 }
 
-int Season::numberOfWatchedEpisodes() const
+int EpisodeList::numberOfWatchedEpisodes() const
 {
     int count = 0;
     for (int i=0; i < episodes.length(); ++i) {
@@ -93,7 +93,7 @@ int Season::numberOfWatchedEpisodes() const
 }
 
 
-int Season::highestDownloadedEpisodeNumber() const
+int EpisodeList::highestDownloadedEpisodeNumber() const
 {
     int highest = -1;
     for (int i=0; i < episodes.length(); ++i) {
@@ -103,7 +103,7 @@ int Season::highestDownloadedEpisodeNumber() const
     return highest;
 }
 
-int Season::highestWatchedEpisodeNumber() const
+int EpisodeList::highestWatchedEpisodeNumber() const
 {
     int highest = -1;
     for (int i=0; i < episodes.length(); ++i) {
@@ -115,7 +115,7 @@ int Season::highestWatchedEpisodeNumber() const
     return highest;
 }
 
-QString Season::favouriteReleaseGroup() const {
+QString EpisodeList::favouriteReleaseGroup() const {
     QMap<QString, int> groups;
     for (int i=0; i < episodes.length(); ++i) {
         QString group = episodes.at(i)->releaseGroup();
@@ -132,7 +132,7 @@ QString Season::favouriteReleaseGroup() const {
     return highest.first;
 }
 
-MovieFile* Season::getEpisodeForPath(const QString& path) {
+MovieFile* EpisodeList::getEpisodeForPath(const QString& path) {
     for (int i=0; i < episodes.length(); ++i) {
         MovieFile* f = episodes[i];
         if (f->path() == path) {
@@ -142,7 +142,7 @@ MovieFile* Season::getEpisodeForPath(const QString& path) {
     return NULL;
 }
 
-void Season::watchedChanged(bool oldValue, bool newValue) {
+void EpisodeList::watchedChanged(bool oldValue, bool newValue) {
     int count = numberOfWatchedEpisodes();
     if (!oldValue && newValue) {
         emit watchCountChanged(count-1, count);
