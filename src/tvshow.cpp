@@ -487,9 +487,8 @@ QDateTime TvShow::lastWatchedDate() const {
 }
 
 bool TvShow::isCompleted() const {
-    // assume totalEpisodes number is wrong if it's > 0, but the highest dled num is bigger
-    int total = totalEpisodes > 0 ? std::max(totalEpisodes, highestDownloadedEpisodeNumber()) : -1;
-    return total > 0 && getWatchedEpisodes() >= total;
+    int total = std::max(totalEpisodes, highestDownloadedEpisodeNumber());
+    return !isAiring() && getWatchedEpisodes() >= total;
 }
 
 bool TvShow::startedWatching() const {
