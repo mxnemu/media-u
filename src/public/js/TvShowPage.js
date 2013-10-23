@@ -22,6 +22,17 @@ TvShowPage.prototype.createNodes = function() {
         console.log("TODO check for first unplayed file and play it");
     });
     
+    var completeButton = document.createElement("input");
+    completeButton.type = "button";
+    completeButton.value = "set completed";
+    completeButton.setAttribute("disabled", "disabled");
+    
+    completeButton.onclick = function() {
+        $("li .toggleWatchedButton:not(.watched)").each(function() {
+            this.click();
+        });
+    }
+    
     var subtitleTrackField = $("<input type=\"number\"/>");
     var audioTrackField = $("<input type=\"number\"/>");
     $.getJSON("api/page/playerSettings", function(data) {
@@ -54,6 +65,7 @@ TvShowPage.prototype.createNodes = function() {
         console.log(data);
         self.tvShow = data;
         playButton.removeAttr("disabled");
+        completeButton.removeAttribute("disabled");
         self.createSeasonList(data.episodes, seasonsEl);
     });
 
@@ -64,6 +76,7 @@ TvShowPage.prototype.createNodes = function() {
     page.append("<span> audio: </span>");
     page.append(audioTrackField);
     page.append(seasonsEl);
+    page.append(completeButton);
 }
 
 TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
@@ -88,15 +101,26 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
         text.text(title);
         
         
-        var toggleWatchButton = $("<span class=\"textButton\"></span>");
-        toggleWatchButton.text(ep.watched ? "+ " : "- ");
-        toggleWatchButton.click(function(event) {
+        function watchButtonSetDisplay() {
+            if (ep.watched) {
+                toggleWatchedButton.text("+ ");
+                toggleWatchedButton.addClass("watched");
+            } else {
+                toggleWatchedButton.text("- ");
+                toggleWatchedButton.removeClass("watched");
+            }
+        }
+        
+        var toggleWatchedButton = $(document.createElement("span"));
+        toggleWatchedButton.get(0).className = "textButton toggleWatchedButton";
+        watchButtonSetDisplay();
+        toggleWatchedButton.click(function(event) {
             ep.watched = !ep.watched;
-            toggleWatchButton.text(ep.watched ? "+ " : "- ");
+            watchButtonSetDisplay();
             $.getJSON("api/library/toggleWatched?" + ep.path);
         });
         
-        episodeEl.append(toggleWatchButton);
+        episodeEl.append(toggleWatchedButton);
         episodeEl.append(text);
         
         episodeEl.attr("data-fileName", this.path);
