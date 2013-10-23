@@ -36,6 +36,16 @@ class TvShow : public QObject
 {
     Q_OBJECT
 public:
+
+    enum WatchStatus {
+        completed,
+        watching,
+        waitingForNewEpisodes,
+        onHold,
+        dropped,
+        planToWatch
+    };
+
     TvShow(QString name, QObject* parent = NULL);
 
     EpisodeList &season();
@@ -91,6 +101,7 @@ public:
     TvShowPlayerSettings playerSettings;
     QDateTime lastWatchedDate() const;
 
+    WatchStatus getStatus() const;
     bool isCompleted() const;
     bool startedWatching() const;
     const EpisodeList& episodeList() const;

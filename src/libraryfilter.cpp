@@ -25,42 +25,78 @@ QList<TvShow *> LibraryFilter::recentlyWatched() {
     return filter(LibraryFilter::filterRecentlyWatched);
 }
 
+QList<TvShow *> LibraryFilter::statusCompleted() {
+    TvShow::WatchStatus container = TvShow::completed;
+    return filter(LibraryFilter::filterStatus, &container);
+}
+
+QList<TvShow *> LibraryFilter::statusWatching() {
+    TvShow::WatchStatus container = TvShow::watching;
+    return filter(LibraryFilter::filterStatus, &container);
+}
+
+QList<TvShow *> LibraryFilter::statusWaitingForNewEpisodes() {
+    TvShow::WatchStatus container = TvShow::waitingForNewEpisodes;
+    return filter(LibraryFilter::filterStatus, &container);
+}
+
+QList<TvShow *> LibraryFilter::statusOnHold() {
+    TvShow::WatchStatus container = TvShow::onHold;
+    return filter(LibraryFilter::filterStatus, &container);
+}
+
+QList<TvShow *> LibraryFilter::statusDropped() {
+    TvShow::WatchStatus container = TvShow::dropped;
+    return filter(LibraryFilter::filterStatus, &container);
+}
+
+QList<TvShow *> LibraryFilter::statusPlanToWatch() {
+    TvShow::WatchStatus container = TvShow::planToWatch;
+    return filter(LibraryFilter::filterStatus, &container);
+}
+
 bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/library/filter/lists")) {
-        QList<TvShow *> airingShows = airing();
-        QList<TvShow *> allShows = all();
-        QList<TvShow *> recent = recentlyWatched();
-        std::stringstream ss;
-        nw::JsonWriter jw(ss);
-        jw.push("lists");
-        jw.describeArray("airing", "show", airingShows.length());
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            TvShow* show = airingShows.at(i);
-            std::string name = show->name().toStdString();
-            jw.describe("name", name);
-        }
-
-        jw.describeArray("recently-watched", "show", recent.length());
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            TvShow* show = recent.at(i);
-            std::string name = show->name().toStdString();
-            jw.describe("name", name);
-        }
-
-        jw.describeArray("all", "show", allShows.length());
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            TvShow* show = allShows.at(i);
-            std::string name = show->name().toStdString();
-            jw.describe("name", name);
-        }
-
-        jw.pop();
-        jw.close();
-        Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
+        sendLists(resp,
+                  QList<std::pair<QString, QList<TvShow*> > >() <<
+                  std::pair<QString, QList<TvShow*> >("airing", airing()) <<
+                  std::pair<QString, QList<TvShow*> >("watching", statusWatching()) <<
+                  std::pair<QString, QList<TvShow*> >("waiting-for-new-episodes", statusWaitingForNewEpisodes()) <<
+                  std::pair<QString, QList<TvShow*> >("plan-to-watch", statusPlanToWatch()) <<
+                  std::pair<QString, QList<TvShow*> >("dropped", statusDropped()) <<
+                  std::pair<QString, QList<TvShow*> >("completed", statusCompleted())
+        );
+    } else if (req->path().startsWith("/api/library/filter/oldLists")) {
+        sendLists(resp,
+                  QList<std::pair<QString, QList<TvShow*> > >() <<
+                  std::pair<QString, QList<TvShow*> >("airing", airing()) <<
+                  std::pair<QString, QList<TvShow*> >("all", all()) <<
+                  std::pair<QString, QList<TvShow*> >("recently-watched", recentlyWatched())
+        );
     } else {
         return false;
     }
     return true;
+}
+
+void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow*> > > lists) {
+    std::stringstream ss;
+    nw::JsonWriter jw(ss);
+    jw.push("lists");
+
+    for (int i=0; i < lists.length(); ++i) {
+        const std::pair<QString, QList<TvShow*> > & l = lists.at(i);
+        jw.describeArray(l.first.toStdString(), "show", l.second.length());
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            const TvShow* show = l.second.at(i);
+            std::string name = show->name().toStdString();
+            jw.describe("name", name);
+        }
+    }
+
+    jw.pop();
+    jw.close();
+    Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
 }
 
 MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
@@ -105,39 +141,43 @@ QString LibraryFilter::getRandomWallpaper() {
     return QString();
 }
 
-QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &, const LibraryFilter&))
+QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &, const LibraryFilter&, const void* userData), const void* userData)
 {
     QList<TvShow*> filteredList;
     for (int i=0; i < tvShows.length(); ++i) {
         TvShow& show = *tvShows[i];
-        if (filterFunc(show, *this)) {
+        if (filterFunc(show, *this, userData)) {
             filteredList.append(&show);
         }
     }
     return filteredList;
 }
 
-bool LibraryFilter::filterAll(const TvShow &, const LibraryFilter &)
+bool LibraryFilter::filterAll(const TvShow &, const LibraryFilter &, const void *)
 {
     return true;
 }
 
-bool LibraryFilter::filterAiring(const TvShow & show, const LibraryFilter &)
+bool LibraryFilter::filterAiring(const TvShow & show, const LibraryFilter &, const void* )
 {
     return show.isAiring();
 }
 
-bool LibraryFilter::filterHasWallpaper(const TvShow &show, const LibraryFilter &filter)
+bool LibraryFilter::filterHasWallpaper(const TvShow &show, const LibraryFilter &filter, const void *)
 {
     return !show.wallpapers(filter.getLibraryDir()).isEmpty();
 }
 
-bool LibraryFilter::filterRecentlyWatched(const TvShow &show, const LibraryFilter &) {
+bool LibraryFilter::filterRecentlyWatched(const TvShow &show, const LibraryFilter &, const void*) {
     if (show.isCompleted()) {
         return false;
     }
     QDateTime date = show.lastWatchedDate();
     return !date.isNull() && date > QDateTime::currentDateTime().addMonths(-1);
+}
+
+bool LibraryFilter::filterStatus(const TvShow &show, const LibraryFilter &, const void *userData) {
+    return show.getStatus() == *((const TvShow::WatchStatus*)userData);
 }
 
 QDir LibraryFilter::getLibraryDir() const
