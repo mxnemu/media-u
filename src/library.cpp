@@ -92,6 +92,7 @@ void Library::importTvShowEpisode(QString episodePath) {
     }
 }
 
+/*
 void Library::xbmcLinkExport(QDir outputDir) {
     if (!outputDir.exists()) {
         outputDir.mkpath(".");
@@ -101,6 +102,7 @@ void Library::xbmcLinkExport(QDir outputDir) {
         (*it)->exportXbmcLinks((*it)->directory(outputDir));
     }
 }
+*/
 
 void Library::fetchMetaData() {
     malClient.fetchShows(tvShows, directory);

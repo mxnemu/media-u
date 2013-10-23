@@ -115,7 +115,7 @@ int Season::highestWatchedEpisodeNumber() const
     return highest;
 }
 
-QString Season::favouriteReleaseGroup() {
+QString Season::favouriteReleaseGroup() const {
     QMap<QString, int> groups;
     for (int i=0; i < episodes.length(); ++i) {
         QString group = episodes.at(i)->releaseGroup();

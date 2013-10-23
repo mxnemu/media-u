@@ -49,8 +49,8 @@ void TvShowPage::setTvShow(TvShow* show) {
 
 void TvShowPage::updateWatched(int,  int) {
     ui->episodes->setText(QString("%1/%2/%3").arg(
-        QString::number(tvShow->getWatchedEpisodes()),
-        QString::number(tvShow->episodesDownloaded()),
+        QString::number(tvShow->episodeList().numberOfWatchedEpisodes()),
+        QString::number(tvShow->episodeList().numberOfEpisodes()),
         QString::number(tvShow->getTotalEpisodes())
     ));
 }

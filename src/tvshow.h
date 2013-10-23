@@ -38,7 +38,7 @@ class TvShow : public QObject
 public:
     TvShow(QString name, QObject* parent = NULL);
 
-    Season &season(QString name);
+    Season &season();
 
     void read(QDir &dir);
     void write(nw::JsonWriter &jw);
@@ -49,7 +49,9 @@ public:
     bool isAiring() const;
     QString coverPath(QDir libaryPath) const;
 
-    void exportXbmcLinks(QDir dir);
+    // TODO reimplement for episode list
+    // or remove, since it didn't work very good to begin with
+    //void exportXbmcLinks(QDir dir);
 
     QString name() const;
     QStringList getSynonyms() const;
@@ -82,10 +84,6 @@ public:
     int numberOfWallpapers(QDir libraryDirectory) const;
     QString randomWallpaper(QDir libraryDirectory) const;
     QStringList wallpapers(QDir libraryDirectory) const;
-    int episodesDownloaded() const;
-    int getWatchedEpisodes() const;
-    int highestWatchedEpisodeNumber() const; // TODO rework show -> seasons to show/season (of Franchise) -> episodes
-    int highestDownloadedEpisodeNumber() const;
     QString favouriteReleaseGroup();
 
     MovieFile* getEpisodeForPath(const QString &path);
@@ -95,15 +93,14 @@ public:
 
     bool isCompleted() const;
     bool startedWatching() const;
+    const Season& episodeList() const;
+    Season &episodeListMutable();
 signals:
-    void watchCountChanged(int oldCount, int newCount);
 
-private slots:
-    void watchedChanged(int oldSeasonCount, int newSeasonCount);
 private:
 
     QString mName;
-    QList<Season*> seasons;
+    Season episodes;
 
     QList<RelatedTvShow> prequels;
     QList<RelatedTvShow> sideStories;

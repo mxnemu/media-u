@@ -30,8 +30,8 @@ void TvShowListWidget::add(const TvShow* show, bool sort) {
     QStringList strings;
     strings.append(show->name());
     strings.append(QString("%1/%2/%3").arg(
-        QString::number(show->getWatchedEpisodes()),
-        QString::number(show->episodesDownloaded()),
+        QString::number(show->episodeList().numberOfWatchedEpisodes()),
+        QString::number(show->episodeList().numberOfEpisodes()),
         QString::number(show->getTotalEpisodes())
     ));
     QTreeWidgetItem* item = new QTreeWidgetItem(strings);

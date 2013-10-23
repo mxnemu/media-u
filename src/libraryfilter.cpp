@@ -65,7 +65,7 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
 
 MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
     for (int i=0; i < tvShows.length(); ++i) {
-        MovieFile* episode = tvShows[i]->getEpisodeForPath(path);
+        MovieFile* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
         if (episode) {
             return episode;
         }

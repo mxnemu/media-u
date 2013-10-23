@@ -10,26 +10,14 @@ TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     remoteId = -1;
 }
 
-Season& TvShow::season(QString name) {
-    for (QList<Season*>::iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        if ((*it)->name() == name) {
-            return *(it.i->t());
-        }
-    }
-    this->seasons.push_back(new Season(name, this));
-    Season* s = this->seasons.back();
-    connect(s, SIGNAL(watchCountChanged(int,int)), this, SLOT(watchedChanged(int,int)));
-    return *s;
+Season& TvShow::season() {
+    return episodes;
 }
 
 void TvShow::read(QDir &dir) {
 
     nw::JsonReader jr(dir.absoluteFilePath("tvShow.json").toStdString());
-    jr.describeArray("seasons", "season", seasons.length());
-    for (int i=0; jr.enterNextElement(i); ++i) {
-        Season& s = season(QString());
-        s.readAsElement(jr);
-    }
+    episodes.readAsElement(jr);
 
     // TODO remove copy pasta code
     jr.describeValueArray("synonymes", synonyms.length());
@@ -75,16 +63,9 @@ void TvShow::read(QDir &dir) {
 void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "name", mName);
     if (jw.hasState("detailed")) {
-        jw.describeArray("seasons", "season", seasons.length());
-        for (int i=0; jw.enterNextElement(i); ++i) {
-            Season& season = *seasons[i];
-            season.writeDetailed(jw);
-        }
+        episodes.writeDetailed(jw);
     } else {
-        if (!seasons.empty()) {
-            Season& season = *seasons.front();
-            season.writeAsElement(jw);
-        }
+        episodes.writeAsElement(jw);
     }
 
     jw.describeValueArray("synonymes", synonyms.length());
@@ -120,8 +101,7 @@ void TvShow::write(nw::JsonWriter& jw) {
 }
 
 void TvShow::importEpisode(MovieFile *episode) {
-    Season& season = this->season(episode->seasonName());
-    season.addEpisode(episode);
+    episodes.addEpisode(episode);
 }
 
 void TvShow::downloadImage(const QString url, QDir libraryDirectory) {
@@ -174,6 +154,7 @@ QString TvShow::coverPath(QDir libaryPath) const {
     return this->directory(libaryPath).absoluteFilePath("cover");
 }
 
+/*
 void TvShow::exportXbmcLinks(QDir dir) {
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -187,60 +168,10 @@ void TvShow::exportXbmcLinks(QDir dir) {
         ++i;
     }
 }
+*/
 
 QString TvShow::name() const {
     return mName;
-}
-
-int TvShow::episodesDownloaded() const {
-    int sum = 0;
-    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        sum += (*it)->numberOfEpisodes();
-    }
-    return sum;
-}
-
-int TvShow::getWatchedEpisodes() const {
-    int sum = 0;
-    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        sum += (*it)->numberOfWatchedEpisodes();
-    }
-    return sum;
-}
-
-int TvShow::highestWatchedEpisodeNumber() const {
-    int highest = 0;
-    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        int num = (*it)->highestWatchedEpisodeNumber();
-        highest = num > highest ? num : highest;
-    }
-    return highest;
-}
-
-int TvShow::highestDownloadedEpisodeNumber() const {
-    int highest = 0;
-    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        int num = (*it)->highestDownloadedEpisodeNumber();
-        highest = num > highest ? num : highest;
-    }
-    return highest;
-}
-
-QString TvShow::favouriteReleaseGroup() {
-    for (QList<Season*>::const_iterator it = seasons.begin(); it != seasons.end(); ++it) {
-        return (*it)->favouriteReleaseGroup(); // TOOD get rid of seasons
-    }
-    return QString();
-}
-
-MovieFile *TvShow::getEpisodeForPath(const QString& path) {
-    for (int i=0; i < seasons.length(); ++i) {
-        MovieFile* episode = seasons[i]->getEpisodeForPath(path);
-        if (episode) {
-            return episode;
-        }
-    }
-    return NULL;
 }
 
 int TvShow::getTotalEpisodes() const {
@@ -321,13 +252,6 @@ void TvShow::setRemoteId(const int &value)
 {
     remoteId = value;
 }
-
-
-void TvShow::watchedChanged(int oldSeasonCount, int newSeasonCount) {
-    int count = getWatchedEpisodes();
-    emit watchCountChanged(count - newSeasonCount + oldSeasonCount, count);
-}
-
 
 TvShowPlayerSettings::TvShowPlayerSettings() :
     subtileTrack(0),
@@ -474,30 +398,35 @@ void TvShow::addSynonyms(const QStringList &values) {
     }
 }
 
+// TODO move to episodelist
 QDateTime TvShow::lastWatchedDate() const {
     QDateTime latest;
-    foreach(Season* s, seasons) {
-        foreach(MovieFile* m, s->episodes) {
-            if (m->getWatchedDate() > latest) {
-                latest = m->getWatchedDate();
-            }
+    foreach(MovieFile* m, episodes.episodes) {
+        if (m->getWatchedDate() > latest) {
+            latest = m->getWatchedDate();
         }
     }
     return latest;
 }
 
 bool TvShow::isCompleted() const {
-    int total = std::max(totalEpisodes, highestDownloadedEpisodeNumber());
-    return !isAiring() && getWatchedEpisodes() >= total;
+    int total = std::max(totalEpisodes, episodes.highestDownloadedEpisodeNumber());
+    return !isAiring() && episodes.numberOfWatchedEpisodes() >= total;
 }
 
 bool TvShow::startedWatching() const {
-    foreach(Season* s, seasons) {
-        foreach(MovieFile* m, s->episodes) {
-            if (!m->getWatchedDate().isNull()) {
-                return true;
-            }
+    foreach(MovieFile* m, episodes.episodes) {
+        if (!m->getWatchedDate().isNull()) {
+            return true;
         }
     }
     return false;
+}
+
+Season &TvShow::episodeListMutable() {
+    return episodes;
+}
+
+const Season &TvShow::episodeList() const {
+    return episodes;
 }

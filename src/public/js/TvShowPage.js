@@ -54,9 +54,7 @@ TvShowPage.prototype.createNodes = function() {
         console.log(data);
         self.tvShow = data;
         playButton.removeAttr("disabled");
-        $.each(data.seasons, function() {
-            self.createSeasonList(this, seasonsEl);
-        })
+        self.createSeasonList(data.episodes, seasonsEl);
     });
 
     page.append(backButton);
@@ -68,16 +66,16 @@ TvShowPage.prototype.createNodes = function() {
     page.append(seasonsEl);
 }
 
-TvShowPage.prototype.createSeasonList = function(season, seasonsEl) {
+TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
     var self = this;
     var seasonEl = $(document.createElement("ul"));
     seasonEl.addClass("season");
     
-    season.episodes = season.episodes.sort(function(a,b) {
+    episodes = episodes.sort(function(a,b) {
         return a.episodeNumber < b.episodeNumber ? -1 : 1;
     })
     
-    $.each(season.episodes, function() {
+    $.each(episodes, function() {
         var ep = this;
         var episodeEl = $(document.createElement("li"));
         var text = $("<span></span>");

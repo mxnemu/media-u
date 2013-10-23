@@ -10,7 +10,7 @@ class Season : public QObject
 {
     Q_OBJECT
 public:
-    Season(QString name, QObject *parent = NULL);
+    Season(QString name = QString(), QObject *parent = NULL);
     virtual ~Season();
 
     void exportXbmcLinks(QDir dir);
@@ -18,7 +18,7 @@ public:
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);
 
-    void addEpisode(MovieFile *file); ///< takes ownage
+    void addEpisode(MovieFile *file); ///< this takes ownage
     void addEpisode(const MovieFile& file);
     void addEpisode(QString file);
     QString name() const;
@@ -27,7 +27,7 @@ public:
     int highestWatchedEpisodeNumber() const;
 
     MovieFile* getEpisodeForPath(const QString &path);
-    QString favouriteReleaseGroup();
+    QString favouriteReleaseGroup() const;
     int highestDownloadedEpisodeNumber() const;
 
     // TODO
