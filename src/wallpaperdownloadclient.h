@@ -66,7 +66,6 @@ public:
     void downloadResults(QDir directory, const QList<Entry> &entries, bool onlyTheBest);
 
 signals:
-    void noEntriesFound(TvShow* show);
     void wallpaperDownloaded(QString path);
 
 private slots:
@@ -86,9 +85,13 @@ private:
 };
 
 class FetchThread : public QThread {
+    Q_OBJECT
 public:
     FetchThread(Client& client, QList<TvShow*> tvShows, QDir libraryDirectory, QObject* parent);
     void run();
+
+signals:
+    void noEntriesFound(const TvShow* show);
 private:
     Client& client;
     QList<TvShow*> tvShows;
