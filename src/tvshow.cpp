@@ -410,12 +410,14 @@ QDateTime TvShow::lastWatchedDate() const {
 }
 
 TvShow::WatchStatus TvShow::getStatus() const {
+    int eps = episodes.numberOfEpisodes();
     int total = std::max(totalEpisodes, episodes.highestDownloadedEpisodeNumber());
+    total = std::max(total, eps);
     bool unknownAiring = totalEpisodes <= 0 && isAiring();
     if (unknownAiring || episodes.numberOfWatchedEpisodes() < total) {
         if (episodes.numberOfWatchedEpisodes() > 0) {
             if (lastWatchedDate() > QDateTime::currentDateTime().addMonths(-1)) {
-                int eps = episodes.numberOfEpisodes();
+
                 if ((unknownAiring || total > eps) && eps == episodes.numberOfWatchedEpisodes()) {
 
                     return waitingForNewEpisodes;
