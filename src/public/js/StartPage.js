@@ -91,11 +91,15 @@ StartPage.prototype.delayedShowPreviewRequest = function(element) {
 
 StartPage.prototype.liForShow = function(show) {
     var self = this;
-    var item = $("<li></li>");
+    var item = $(document.createElement("li"));
+    item.attr("tabindex", "1");
+    item.on("focus", function() {
+        $(this).mousemove();
+    });
     item.text(show.name);
     item.mousemove(function() {
         if (self.updateFocus && !$(this).hasClass("focused")) {
-            $("li").removeClass("focused");
+            $("li.focused").removeClass("focused");
             $(this).addClass("focused");
             self.delayedShowPreviewRequest(this);
         }

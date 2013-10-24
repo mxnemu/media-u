@@ -149,6 +149,10 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
             }
         });
         
+        episodeEl.attr("tabindex", "1");
+        episodeEl.on("focus", function() {
+            $(this).mousemove();
+        });
         episodeEl.mousemove(function() {
             $("li.focused").removeClass("focused");
             $(this).addClass("focused");
@@ -161,6 +165,7 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
 
 TvShowPage.prototype.play = function(episode) {
     if (G.playerType == "stream") {
+        alert("gu")
         G.video = "/video/" + episode; // TODO DON'T SAVE IT HERE
         window.location.hash = "#!/StreamPlayerPage/";
     } else {
