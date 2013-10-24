@@ -5,6 +5,7 @@ function StartPage() {
         var show = JSON.parse(event.data);
         self.addShow(show);
     });
+    
 }
 
 StartPage.prototype.fetchInfos = function(callback) {
@@ -31,6 +32,54 @@ StartPage.prototype.createNodes = function() {
         p.append("<h1>StartPage</h1>");
         self.createLists(p);
     });
+    
+    this.bindEvents();
+}
+
+StartPage.prototype.removeNodes = function() {
+    this.unbindEvents();
+}
+
+StartPage.prototype.bindEvents = function() {
+    this.keyDownListener = function(event) {
+        
+        if (event.keyCode == 40) { // arrow down
+            var focused = $("li.focused");
+            if (focused.length) {
+                var next = focused.next("li");
+                if (!next.length) {
+                    next = focused.parent().next().find("li:first")
+                }
+                next.mousemove();
+            } else {
+                $("li:first").mousemove();
+            }
+            event.preventDefault();
+        } else if (event.keyCode == 38) {
+            var focused = $("li.focused");
+            if (focused.length) {
+                var next = focused.prev("li");
+                if (!next.length) {
+                    next = focused.parent().prev().find("li:last")
+                }
+                next.mousemove();
+            } else {
+                $("li:first").mousemove();
+            }
+            event.preventDefault();
+        } else if (event.keyCode == 13) {
+            var focused = $("li.focused");
+            if (focused.length) {
+                focused.click();
+                event.preventDefault();
+            }
+        }
+    }
+    window.addEventListener("keydown", this.keyDownListener);
+}
+
+StartPage.prototype.unbindEvents = function() {
+    window.removeEventListener("keydown", this.keyDownListener);
 }
 
 StartPage.prototype.createLists = function(page) {
