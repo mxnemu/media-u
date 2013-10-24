@@ -66,6 +66,7 @@ public:
     void downloadResults(QDir directory, const QList<Entry> &entries, bool onlyTheBest);
 
 signals:
+    void noEntriesFound(TvShow* show);
     void wallpaperDownloaded(QString path);
 
 private slots:

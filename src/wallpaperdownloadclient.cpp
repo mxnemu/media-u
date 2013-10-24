@@ -31,6 +31,10 @@ void FetchThread::run()
             noEntriesLeft = result.entries.empty();
             allResults.entries << result.entries;
         }
+        if (allResults.entries.length() == 0) {
+            emit noEntriesFound(show);
+            continue;
+        }
         if (show->numberOfWallpapers(libraryDirectory) < client.getLimit()) {
             allResults.sortEntries();
             client.downloadResults(show->wallpaperDirectory(libraryDirectory), allResults.entries, false);
