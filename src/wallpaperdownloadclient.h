@@ -36,6 +36,8 @@ public:
     int score;
 
     bool operator <(const Entry& b) const;
+    bool hasGoodAspectRatio() const;
+    bool isGoodWallpaper() const;
 
     Rating ratingFromString() const;
 };
@@ -61,10 +63,13 @@ public:
     Rating getRatingFilter() const;
     int getLimit() const;
 
-    void downloadBestResults(QDir directory, const QList<Entry> &entries);
+    void downloadResults(QDir directory, const QList<Entry> &entries, bool onlyTheBest);
 
 signals:
     void wallpaperDownloaded(QString path);
+
+private slots:
+    void onWallpaperDownloadSucceeded(QString path);
 
 protected:
     virtual Entry parseEntry(nw::Describer *de) = 0;
@@ -74,6 +79,7 @@ protected:
     QString baseUrl;
     Rating ratingFilter;
     int limit;
+    int matches;
 private:
     const QString hostname;
 };

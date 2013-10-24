@@ -23,11 +23,17 @@ void FetchThread::run()
     for (int i=0; i < tvShows.length(); ++i) {
         const TvShow* show = tvShows.at(i);
         bool noEntriesLeft = false;
+        SearchResult allResults(client.getLimit());
         for (int page=1; show->numberOfWallpapers(libraryDirectory) < client.getLimit() && !noEntriesLeft; ++page)  {
             SearchResult result = client.fetchPostsBlocking(show->name(), page);
             result.sortEntries();
-            client.downloadBestResults(show->wallpaperDirectory(libraryDirectory), result.entries);
+            client.downloadResults(show->wallpaperDirectory(libraryDirectory), result.entries, true);
             noEntriesLeft = result.entries.empty();
+            allResults.entries << result.entries;
+        }
+        if (show->numberOfWallpapers(libraryDirectory) < client.getLimit()) {
+            allResults.sortEntries();
+            client.downloadResults(show->wallpaperDirectory(libraryDirectory), allResults.entries, false);
         }
     }
 }
@@ -56,13 +62,32 @@ bool Entry::operator <(const Entry &b) const {
     if (QFileInfo(QUrl(fileUrl).path()).suffix() == "gif") {
         return false;
     }
-    if (width == b.width) {
+    bool thisRatio = hasGoodAspectRatio();
+    bool bRatio = b.hasGoodAspectRatio();
+    if (thisRatio && bRatio) {
         if (score == b.score) {
-            return height > b.height;
+            if (width == b.width) {
+                return height > b.height;
+            }
+            return width > b.width;
         }
         return score > b.score;
     }
-    return width > b.width;
+    return thisRatio && !bRatio;
+}
+
+bool Entry::hasGoodAspectRatio() const {
+    const float aspectRatio = (float)width/(float)height;
+    const float minRatio = 1.2;
+    const float maxRatio = 2.35; // cinema format
+    return aspectRatio >= minRatio && aspectRatio <= maxRatio;
+}
+
+bool Entry::isGoodWallpaper() const {
+    if (QFileInfo(QUrl(fileUrl).path()).suffix() == "gif") {
+        return false;
+    }
+    return hasGoodAspectRatio();
 }
 
 Rating Entry::ratingFromString() const {
@@ -113,20 +138,20 @@ SearchResult Client::fetchPostsBlocking(QString tagName, int page) {
     return SearchResult();
 }
 
-void Client::downloadBestResults(QDir directory, const QList<Entry>& entries) {
-    int matches = 0;
+void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool onlyTheBest) {
     QList<FileDownloadThread*> threads;
     for (int i=0; matches < limit && i < entries.length(); ++i) {
         const Entry& entry = entries.at(i);
         Rating rating = entry.ratingFromString();
         if ((ratingFilter & rating) == rating) {
-            QString filename = QString("%1_%2").arg(hostname, entry.id);
-            FileDownloadThread* fileThread = new FileDownloadThread(entry.fileUrl, directory.absoluteFilePath(filename), false);
-            connect(fileThread, SIGNAL(finished()), fileThread, SLOT(deleteLater()));
-            connect(fileThread, SIGNAL(downloadSucceeded(QString)), this, SIGNAL(wallpaperDownloaded(QString)));
-            fileThread->start();
-            threads.push_back(fileThread);
-            matches++;
+            if (!onlyTheBest || entry.isGoodWallpaper()) {
+                QString filename = QString("%1_%2").arg(hostname, entry.id);
+                FileDownloadThread* fileThread = new FileDownloadThread(entry.fileUrl, directory.absoluteFilePath(filename), false);
+                connect(fileThread, SIGNAL(finished()), fileThread, SLOT(deleteLater()));
+                connect(fileThread, SIGNAL(downloadSucceeded(QString)), this, SLOT(onWallpaperDownloadSucceeded(QString)));
+                fileThread->start();
+                threads.push_back(fileThread);
+            }
         }
 
         // blocking to avoid sending to many requests, so we don't get banned
@@ -141,6 +166,11 @@ void Client::downloadBestResults(QDir directory, const QList<Entry>& entries) {
             }
         }
     }
+}
+
+void Client::onWallpaperDownloadSucceeded(QString path)  {
+    emit wallpaperDownloaded(path);
+    matches++;
 }
 
 
