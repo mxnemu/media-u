@@ -2,6 +2,17 @@ function TvShowPage() {
     this.tvShow = null;
 }
 
+TvShowPage.prototype.bindEvents = function() {
+    this.keyDownListener = function(event) {
+        ListUtils.handleKeyDown(event);
+    }
+    window.addEventListener("keydown", this.keyDownListener);
+}
+
+TvShowPage.prototype.unbindEvents = function() {
+    window.removeEventListener("keydown", this.keyDownListener);
+}
+
 TvShowPage.prototype.createNodes = function() {
     var self = this;
     var page = $(".page");
@@ -77,6 +88,11 @@ TvShowPage.prototype.createNodes = function() {
     page.append(audioTrackField);
     page.append(seasonsEl);
     page.append(completeButton);
+    this.bindEvents();
+}
+
+TvShowPage.prototype.removeNodes = function() {
+    this.unbindEvents();
 }
 
 TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
@@ -131,6 +147,11 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
                     return this.getAttribute("data-fileName");
                 }).toArray());
             }
+        });
+        
+        episodeEl.mousemove(function() {
+            $("li.focused").removeClass("focused");
+            $(this).addClass("focused");
         });
         
         seasonEl.append(episodeEl);
