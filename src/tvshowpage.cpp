@@ -24,7 +24,7 @@ void TvShowPage::initFromQuery(const QString &initString) {
 
 void TvShowPage::setTvShow(TvShow* show) {
     this->tvShow = show;
-    connect(tvShow, SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
+    connect(&tvShow->episodeListMutable(), SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
 
     ui->title->setText(show->name());
     if (show->coverPath(library.getDirectory()).length() > 0) {
