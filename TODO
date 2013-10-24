@@ -1,11 +1,12 @@
 Roadmap:
--rename Season into Episode list and have each show have 1 instance of it.
-        add each show to a frenchise ((bake, nise).frenchise -> monogatari)
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
--list subtitleTracks & audiotracks for show and select prefered track (multiling rips)
--detect favourite fansubber: (check fs of last 2 eps if notEq check most used fs)
--check for progress when mplayer ends (maybe get metadata before playing)
+-list subtitleTracks & audiotrack names
+-favourite fansubber formula: (check fs of last 2 eps if notEq check most used fs)
+-use serversent events to tell pause, and other videoplayer events
+-add shows to correct lists when received as serversent event
 -move moviefile stuff into an Episode class that can hold paths to many files of different fansubbers
+-try konachan and yande.re before getting pics from gelbooru
+-continue watching random show button for html StartPage
 -search nyaa for new episodes of favourite fansubber
 -add new episodes to transmission-cli
 
