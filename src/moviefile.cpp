@@ -22,7 +22,10 @@ QString MovieFile::path() const {
 }
 
 void MovieFile::setPath(QString path) {
+    path = QFileInfo(path).canonicalFilePath();
     mPath = path;
+
+    // start processing
     path = QFileInfo(path).completeBaseName();
 
 
