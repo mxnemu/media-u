@@ -315,7 +315,7 @@ MalUpdaterAnimeData::MalUpdaterAnimeData(TvShow *show) {
     priority = -1; // 0 - 10 ? dont know didn't check
     enable_discussion = 0; // int. 1=enable, 0=disable
     enable_rewatching = -1; // int. 1=enable, 0=disable
-    fansub_group = show->episodeList().favouriteReleaseGroup();
+    fansub_group = show->episodeList().mostDownloadedReleaseGroup();
     QStringList tags; // string. tags separated by commas
 }
 

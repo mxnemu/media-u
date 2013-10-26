@@ -115,7 +115,7 @@ int EpisodeList::highestWatchedEpisodeNumber() const
     return highest;
 }
 
-QString EpisodeList::favouriteReleaseGroup() const {
+QString EpisodeList::mostDownloadedReleaseGroup() const {
     QMap<QString, int> groups;
     for (int i=0; i < episodes.length(); ++i) {
         QString group = episodes.at(i)->releaseGroup();
@@ -130,6 +130,24 @@ QString EpisodeList::favouriteReleaseGroup() const {
         }
     }
     return highest.first;
+}
+
+bool epNumLess(const MovieFile* a, const MovieFile* b) {
+    return a->numericEpisodeNumber() < b->numericEpisodeNumber();
+}
+
+QString EpisodeList::favouriteReleaseGroup() const {
+    QList<MovieFile* > episodesByNumber = episodes;
+    qSort(episodesByNumber.begin(), episodesByNumber.end(), epNumLess);
+
+    if (episodesByNumber.at(0)->releaseGroup().compare(
+            episodesByNumber.at(1)->releaseGroup(),
+            Qt::CaseInsensitive
+        )
+    ) {
+        return episodesByNumber.at(0)->releaseGroup();
+    }
+    return mostDownloadedReleaseGroup();
 }
 
 MovieFile* EpisodeList::getEpisodeForPath(const QString& path) {
