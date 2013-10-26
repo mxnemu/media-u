@@ -1,7 +1,7 @@
 Roadmap:
+-fix ed/ep ending removal from title. Example: "Elfen lied 03" becomes "ED 03 - Elfen Li"
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
--favourite fansubber formula: (check fs of last 2 eps if notEq check most used fs)
 -use serversent events to tell pause, and other videoplayer events
 -add shows to correct lists when received as serversent event
 -move moviefile stuff into an Episode class that can hold paths to many files of different fansubbers
