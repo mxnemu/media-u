@@ -80,7 +80,18 @@ void MovieFile::setPath(QString path) {
 
     // [Group] showname - 01v2 (techtags)[12345ABC].webm
     if (groupIndex >= -1 && groupIndex <= 1) {
-        QRegExp regexName("(.*)(( -)|\\[|\\(|(OP[0-9])|(ED[0-9])|(EP[0-9])|(SP[0-9])|(Episode\\s?[0-9])|$)");
+        QRegExp regexName("(.*)"
+                          "("
+                          "( -)|"
+                          "\\[|"
+                          "\\(|"
+                          "(\\sOP[0-9])|"
+                          "(\\sED[0-9])|"
+                          "(\\sEP[0-9])|"
+                          "(\\sSP[0-9])|"
+                          "(\\sEpisode\\s?[0-9])|"
+                          "$"
+                          ")");
         regexName.setMinimal(true);
         int nameIndex = regexName.indexIn(path);
         mShowName = regexName.cap(1).trimmed();
@@ -101,21 +112,24 @@ void MovieFile::setPath(QString path) {
     }
 
     QRegExp regexEpisode("("
+        // number only with separator
         "\\s[0-9]+((v|\\.)[0-9]+)?(\\s|$)|"
         "\\s[0-9]+(\\[v[0-9]+\\])(\\s|$)|"
-        "[0-9]+x[0-9]+|"
+        "\\s[0-9]+x[0-9]+|"
+        // numberless ed / op
         "\\sED(\\s|$)|"
         "\\sOP(\\s|$)|"
-        "ED\\s?[0-9]+|"
-        "OP\\s?[0-9]+[a-z]?|"
-        "SP\\s?[0-9]+|"
-        "EP\\s?[0-9]+|"
-        "NC.?OP\\s?([0-9]+)?|"
-        "NC.?ED\\s?([0-9]+)?|"
-        "EX\\s?([0-9]+)?|"
-        "Episode\\s?[0-9]+|"
-        "Opening(\\s?[0-9]+)?|"
-        "Ending(\\s?[0-9]+)?"
+        // numbered special
+        "\\sED\\s?[0-9]+|"
+        "\\sOP\\s?[0-9]+[a-z]?|"
+        "\\sSP\\s?[0-9]+|"
+        "\\sEP\\s?[0-9]+|"
+        "\\sNC.?OP\\s?([0-9]+)?|"
+        "\\sNC.?ED\\s?([0-9]+)?|"
+        "\\sEX\\s?([0-9]+)?|"
+        "\\sEpisode\\s?[0-9]+|"
+        "\\sOpening(\\s?[0-9]+)?|"
+        "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);

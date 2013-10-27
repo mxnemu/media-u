@@ -66,6 +66,13 @@ void MovieFileTest::testEpisodeNumberParsing_data()
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
         "Ep02" <<
         2;
+
+    /*
+    QTest::newRow("ed is the end of the title (Elfen lied 03)") <<
+        "/tmp/Elfen lied 03.ogg" <<
+        "03" <<
+        3;
+    */
 }
 
 
@@ -129,6 +136,10 @@ void MovieFileTest::testShowName_data() {
     QTest::newRow("mind the stupid space before v2") <<
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_ED_[1080p,BluRay,x264]_-_THORA v2.mkv" <<
         "K-ON!";
+
+    QTest::newRow("ed is the end of the title (Elfen lied 03)") <<
+        "/mnt/fields2/torrents/[Coalgirls]_Elfen_Lied_(1280x720_Blu-ray_FLAC)/[Coalgirls]_Elfen_Lied_01_(1280x720_Blu-ray_FLAC)_[5BC74BC6].mkv" <<
+        "Elfen Lied";
 }
 
 void MovieFileTest::testShowName() {
