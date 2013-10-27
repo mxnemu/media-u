@@ -1,5 +1,4 @@
 Roadmap:
--fix ed/ep ending removal from title. Example: "Elfen lied 03" becomes "ED 03 - Elfen Li"
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
 -use serversent events to tell pause, and other videoplayer events

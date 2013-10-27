@@ -22,11 +22,16 @@ QString MovieFile::path() const {
 }
 
 void MovieFile::setPath(QString path) {
-    path = QFileInfo(path).canonicalFilePath();
-    mPath = path;
+    // set the path and resolve links
+    mPath = QFileInfo(path).canonicalFilePath();
+    // if the resolved filepath does not exist just take the given path
+    // and assume the drive will be mounted later
+    if (mPath.isEmpty()) {
+        mPath = path;
+    }
 
     // start processing
-    path = QFileInfo(path).completeBaseName();
+    path = QFileInfo(mPath).completeBaseName();
 
 
     int spaces = path.count(' ');
@@ -38,13 +43,6 @@ void MovieFile::setPath(QString path) {
     if (path.count('.') > spaces) {
         path.replace('.', ' ');
     }
-
-    /*
-    // TODO match only from latest dot. Now-workaround: match after . replace
-    QRegExp extensionRegex("(\\..+$)");
-    int extensionIndex = extensionRegex.indexIn(path);
-    path.remove(extensionIndex, extensionRegex.cap(1).length());
-    */
 
     int groupIndex = -2;
     while (groupIndex != -1) {
