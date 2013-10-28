@@ -28,9 +28,13 @@ TvShowPage.prototype.createNodes = function() {
     playButton.attr("disabled", "disabled");
     
     playButton.click(function() {
-        var file = $(".season:first li:first").attr("data-fileName");
-        self.play(file);
-        console.log("TODO check for first unplayed file and play it");
+        var first = $("li .toggleWatchedButton:not(.watched):first").parent();
+        var files = [];
+        files.push(first.attr("data-filename"));
+        first.nextAll("li").each(function() {
+            files.push(this.getAttribute("data-filename"));
+        });
+        self.play(files);
     });
     
     var completeButton = document.createElement("input");
