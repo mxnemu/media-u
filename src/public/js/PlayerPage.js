@@ -16,17 +16,7 @@ PlayerPage.prototype.createNodes = function() {
     this.setPauseDisplay("paused")
     
     this.togglePauseButton.click(function() {
-        if (self.togglePauseButton.attr("data-status") == "unpaused") {
-            $.getJSON("api/player/togglePause", function(data) {
-                self.setPauseDisplay(data.status);
-            });
-            self.togglePauseButton.text("▶");
-        } else {
-            $.getJSON("api/player/togglePause", function(data) {
-                self.setPauseDisplay(data.status);
-            });
-            self.togglePauseButton.text("II");
-        }
+        $.getJSON("api/player/togglePause");
     });
     
     var stopButton = $(document.createElement("span"));

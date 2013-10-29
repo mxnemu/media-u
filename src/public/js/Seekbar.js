@@ -91,9 +91,7 @@ Seekbar.prototype.bindEvents = function() {
     this.bar.click(function(event) {
         var videoPos = self.progress.metaData.duration * 
                        (event.clientX / window.innerWidth);
-        $.getJSON("api/player/jumpTo?" + Math.floor(videoPos), function() {
-            self.progress.set(videoPos);
-        });
+        $.getJSON("api/player/jumpTo?" + Math.floor(videoPos));
     });
 }
 
