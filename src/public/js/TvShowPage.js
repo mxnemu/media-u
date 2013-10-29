@@ -145,7 +145,7 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
         
         episodeEl.attr("data-fileName", this.path);
         
-        episodeEl.click(function() {
+        episodeEl.click(function(event) {
             if (!event.target.classList.contains("textButton")) {
                 self.play($(this).nextAll("li").andSelf().map(function() {
                     return this.getAttribute("data-fileName");
