@@ -2,6 +2,7 @@
 #define METADATAPARSER_H
 
 #include <QStringList>
+#include "nwutils.h"
 
 struct VideoTrack {
     int resolutionX;
@@ -44,6 +45,7 @@ public:
     QList<MetaDataTrack> tracks;
     QList<MetaDataChapter> chapters;
     QString toJson();
+    void describe(nw::Describer *de);
 };
 
 class MetaDataParser

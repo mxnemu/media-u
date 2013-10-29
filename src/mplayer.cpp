@@ -90,7 +90,12 @@ void Mplayer::onProcessOutput() {
     QString output = this->process.readAll();
     QRegExp progressRegex("V:(\\s*)?([0-9\\.]*)\\s");
     if (-1 != output.indexOf(progressRegex)) {
-        this->nowPlaying.seconds = progressRegex.cap(2).toFloat();
+        float newTime = progressRegex.cap(2).toFloat();
+        float diff = std::abs((int)this->nowPlaying.seconds - (int)newTime);
+        this->nowPlaying.seconds = newTime;
+        if (diff > 2.f) {
+            emit jumped(newTime);
+        }
     }
     qDebug() << output;
 }

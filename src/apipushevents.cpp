@@ -14,6 +14,7 @@ ApiPushEvents::ApiPushEvents(const Library &library, const VideoPlayer& videopla
     connect(&videoplayer, SIGNAL(playbackEnded()), this, SLOT(playbackEnded()));
     connect(&videoplayer, SIGNAL(unpaused()), this, SLOT(unpaused()));
     connect(&videoplayer, SIGNAL(paused()), this, SLOT(paused()));
+    connect(&videoplayer, SIGNAL(jumped(int)), this, SLOT(jumped(int)));
 }
 
 bool ApiPushEvents::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
@@ -56,6 +57,10 @@ void ApiPushEvents::paused() {
 
 void ApiPushEvents::unpaused() {
     this->sendToListeners("{}", "unpaused");
+}
+
+void ApiPushEvents::jumped(int seconds) {
+    this->sendToListeners(QString("{\"seconds\":%1}").arg(seconds), "jumped");
 }
 
 void ApiPushEvents::sendToListeners(const QString& message, const QString& event) {

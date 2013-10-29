@@ -5,7 +5,6 @@ function StartPage() {
         var show = JSON.parse(event.data);
         self.addShow(show);
     });
-    
 }
 
 StartPage.prototype.fetchInfos = function(callback) {

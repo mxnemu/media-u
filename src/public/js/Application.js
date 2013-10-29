@@ -1,7 +1,8 @@
 function Application() {
+    G.app = this;
     this.page = null;
-    this.setScreenFromLocationHash();
     this.addServerEventListener();
+    this.setScreenFromLocationHash();
 }
 
 Application.prototype.setScreenFromLocationHash = function()
@@ -37,6 +38,9 @@ Application.prototype.addServerEventListener = function() {
     this.serverEvents = new EventSource("api/events/all");
     this.serverEvents.onopen = function(event) {
         console.log("sse open", event);
+    }
+    this.serverEvents.onmessage = function(event) {
+        console.log("sse message", event);
     }
     this.serverEvents.onerror = function(event) {
         console.log("sse error", event);

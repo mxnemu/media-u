@@ -25,6 +25,7 @@ private slots:
     void playbackEnded();
     void paused();
     void unpaused();
+    void jumped(int seconds);
 
 private:
     QList<QHttpResponse*> listeners;

@@ -1,88 +1,4 @@
-function Progress(page, onUpdateCallback) {
-    this.seconds = 0;
-    this.path = null;
-    this.metaData = null;
-    this.page = page;
-    this.onUpdateCallback = onUpdateCallback;
-    this.onResetCallback = null;
-    
-    this.progressUpdateIntervalId = null;
-    this.progressSyncIntervalId = null;
-    this.refetchMetaDataTimeout = null;
-}
-
-Progress.prototype.fetchMetaData = function(callback) {
-    var self = this;
-    
-    $.getJSON("api/player/metaData", function(data) {
-        if (data.duration < 0) {
-            self.refetchMetaDataTimeout = window.setTimeout(function() {
-                self.fetchMetaData(callback);
-            }, 500);
-            return;
-        }
-        self.metaData = data;
-        self.startUp();
-        if (self.onResetCallback) {
-            self.onResetCallback();
-        }
-        if (callback) {
-            callback();
-        }
-    });
-}
-
-Progress.prototype.startUp = function() {
-    var self = this;
-    
-    $.getJSON("api/player/progress", function(data) {
-        self.path = data.path;
-        self.update(data.seconds);
-        self.clearIntervals();
-        self.progressUpdateIntervalId = window.setInterval(function() {
-            if (self.page.togglePauseButton.attr("data-status") == "unPaused") {
-                self.update(self.seconds +0.05);
-            }
-        }, 50);
-        // sync with the player's progress every 10s
-        self.progressSyncIntervalId = window.setInterval(function() {
-            self.resync();
-        }, 10000);
-    }).error(function(a,b,c,d,e) {
-        console.log("error",a,b,c,d,e);
-    });
-}
-
-Progress.prototype.update = function(second) {
-    this.seconds = Math.min(second, this.metaData.duration);
-    this.onUpdateCallback(second, this.metaData.duration)
-    if (this.seconds >= this.metaData.duration) {
-        this.resync();
-    }
-}
-
-Progress.prototype.resync = function() {
-    var self = this;
-    $.getJSON("api/player/progress", function(d) {
-        self.update(d.seconds);
-        console.log(d.path);
-        if (d.path != self.path) {
-            self.clearIntervals();
-            self.fetchMetaData();
-        }
-    });
-}
-
-Progress.prototype.clearIntervals = function() {
-    window.clearInterval(this.progressUpdateIntervalId);
-    window.clearInterval(this.progressSyncIntervalId);
-    window.clearTimeout(this.refetchMetaDataTimeout);
-}
-
-function Seekbar(page) {
-    this.page = page;
-    this.progressUpdateIntervalId = null;
-    this.progressSyncIntervalId = null;
+function Seekbar() {
     this.progress = null;
     this.tooltip = null;
     this.createNodes();
@@ -107,14 +23,27 @@ Seekbar.prototype.setTooltip = function(time, x, y, img, chapter) {
     this.tooltip.css("top", y);
 }
 
-Seekbar.prototype.reset = function() {
+Seekbar.prototype.start = function() {
     this.thumbnailCache = new ThumbnailCache();
     if (G.preloadSeekBarPreviews) {
         this.thumbnailCache.loadAll(this.progress.metaData.duration);
     }
+    this.bindEvents();
 }
 
-Seekbar.prototype.bindListeners = function() {
+Seekbar.prototype.reset = function() {
+    this.unbindEvents();
+}
+
+Seekbar.prototype.unbindEvents = function() {
+    this.tooltip.hide();
+    this.bar.unbind("mousemove");
+    this.bar.unbind("mouseenter");
+    this.bar.unbind("mouseleave");
+    this.bar.unbind("click");
+}
+
+Seekbar.prototype.bindEvents = function() {
     var self = this;
 
     this.bar.mousemove(function(event) {
@@ -162,8 +91,7 @@ Seekbar.prototype.bindListeners = function() {
         var videoPos = self.progress.metaData.duration * 
                        (event.clientX / window.innerWidth);
         $.getJSON("api/player/jumpTo?" + Math.floor(videoPos), function() {
-            self.page.setPauseDisplay("unPaused");
-            self.progress.update(videoPos);
+            self.progress.set(videoPos);
         });
     });
 }
@@ -180,17 +108,19 @@ Seekbar.prototype.createNodes = function() {
     this.bar.append(this.progressBar);
     
     var self = this;
-    this.progress = new Progress(this.page, function(second, maximum) {
-        self.progressBar.style.width = ((second/maximum)*100) + "%";
+    this.progress = new Progress(function(second, duration) {
+        self.progressBar.style.width = ((second/duration)*100) + "%";
     });
-    this.progress.onResetCallback = function() {
+    this.progress.onReady(function() {
+        self.start();
+    });
+    
+    this.progress.onReset(function() {
         self.reset();
-    }
-    this.progress.fetchMetaData(function() {
-        self.bindListeners();
     });
 }
 
 Seekbar.prototype.destroy = function() {
-    this.progress.clearIntervals();
+    this.unbindEvents();
+    this.progress.unbindEvents();
 }

@@ -54,11 +54,11 @@ public:
     VideoProgress getNowPlaying() const;
 
 signals:
-    void playbackStarted();
     void paused();
     void unpaused();
     void jumped(int second);
 
+    void playbackStarted();
     void playbackEnded();
     void playbackEndedNormally();
     void playbackCanceled();

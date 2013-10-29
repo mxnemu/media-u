@@ -59,7 +59,7 @@ PlayerPage.prototype.createNodes = function() {
     });
     */
     
-    this.seekbar = new Seekbar(this);
+    this.seekbar = new Seekbar();
     
     page.append(this.seekbar.tooltip);
     

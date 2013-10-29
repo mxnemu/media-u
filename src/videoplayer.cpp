@@ -36,8 +36,10 @@ bool VideoPlayer::playFile(QString filepath) {
 void VideoPlayer::togglePause() {
     if (pauseStatus) {
         unPause();
+        emit unpaused();
     } else {
         pause();
+        emit paused();
     }
 }
 
@@ -237,6 +239,9 @@ QString VideoProgress::toJson() {
     nw::JsonWriter jw(ss);
     NwUtils::describe(jw, "seconds", seconds);
     NwUtils::describe(jw, "path", path);
+    jw.push("metaData");
+    metaData.describe(&jw);
+    jw.pop();
     jw.close();
     return ss.str().c_str();
 }
