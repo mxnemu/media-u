@@ -43,7 +43,8 @@ Progress.prototype.startUp = function() {
 }
 
 Progress.prototype.initMetaData = function(metaData) {
-    this.metaData = metaData;    
+    this.metaData = metaData;
+    this.isReady = true;
     for (var i in this.onReadyCallbacks) {
         this.onReadyCallbacks[i]();
     }
@@ -72,6 +73,9 @@ Progress.prototype.set = function(second) {
 Progress.prototype.reset = function() {
     this.isReady = false;
     window.clearInterval(this.progressUpdateIntervalId);
+    if (this.metaData) {
+        this.set(0);
+    }
     this.metaData = null;
     this.seconds = 0;
     for (var i in this.onResetCallbacks) {
@@ -106,7 +110,7 @@ Progress.prototype.bindEvents = function() {
     
     this.onJumpedListener = function(event) {
         var data = JSON.parse(event.data);
-        if (this.isReady) {
+        if (self.isReady) {
             self.set(data.seconds);
         }
     }
