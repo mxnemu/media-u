@@ -74,6 +74,10 @@ PlayerPage.prototype.removeNodes = function() {
 
 PlayerPage.prototype.bindEvents = function() {
     var self = this;
+    this.onPlaybackStartedListener = function(event) {
+        self.setPauseDisplay("unpaused");
+    }    
+    
     this.onPausedListener = function(event) {
         self.setPauseDisplay("paused");
     }
@@ -82,11 +86,13 @@ PlayerPage.prototype.bindEvents = function() {
         self.setPauseDisplay("unpaused");
     }
     
+    G.app.serverEvents.addEventListener("playbackStarted", this.onPlaybackStartedListener);
     G.app.serverEvents.addEventListener("paused", this.onPausedListener);
     G.app.serverEvents.addEventListener("unpaused", this.onUnpausedListener);
 }
 
 PlayerPage.prototype.unbindEvents = function() {
+    G.app.serverEvents.removeEventListener("playbackStarted", this.onPlaybackStartedListener);
     G.app.serverEvents.removeEventListener("paused", this.onPausedListener);
     G.app.serverEvents.removeEventListener("unpaused", this.onUnpausedListener);
 }

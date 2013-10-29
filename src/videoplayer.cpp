@@ -36,21 +36,21 @@ bool VideoPlayer::playFile(QString filepath) {
 void VideoPlayer::togglePause() {
     if (pauseStatus) {
         unPause();
-        emit unpaused();
     } else {
         pause();
-        emit paused();
     }
 }
 
 void VideoPlayer::pause() {
     pauseImpl();
     this->pauseStatus = true;
+    emit paused();
 }
 
 void VideoPlayer::unPause() {
     unPauseImpl();
     this->pauseStatus = false;
+    emit unpaused();
 }
 
 void VideoPlayer::jumpTo(int second) {
