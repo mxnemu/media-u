@@ -16,7 +16,7 @@ PlayerPage.prototype.createNodes = function() {
     this.setPauseDisplay("paused")
     
     this.togglePauseButton.click(function() {
-        if (self.togglePauseButton.attr("data-status") == "unPaused") {
+        if (self.togglePauseButton.attr("data-status") == "unpaused") {
             $.getJSON("api/player/togglePause", function(data) {
                 self.setPauseDisplay(data.status);
             });
@@ -73,15 +73,37 @@ PlayerPage.prototype.createNodes = function() {
     playerControls.append(stopButton);
     page.append(backButton);
     page.append(playerControls);
+    
+    this.bindEvents();
 }
 
 PlayerPage.prototype.removeNodes = function() {
     this.seekbar.destroy();
+    this.unbindEvents();
+}
+
+PlayerPage.prototype.bindEvents = function() {
+    var self = this;
+    this.onPausedListener = function(event) {
+        self.setPauseDisplay("paused");
+    }
+    
+    this.onUnpausedListener = function(event) {
+        self.setPauseDisplay("unpaused");
+    }
+    
+    G.app.serverEvents.addEventListener("paused", this.onPausedListener);
+    G.app.serverEvents.addEventListener("unpaused", this.onUnpausedListener);
+}
+
+PlayerPage.prototype.unbindEvents = function() {
+    G.app.serverEvents.removeEventListener("paused", this.onPausedListener);
+    G.app.serverEvents.removeEventListener("unpaused", this.onUnpausedListener);
 }
 
 PlayerPage.prototype.setPauseDisplay = function(status) {
     this.togglePauseButton.attr("data-status", status);
-    if (status != "unPaused") {
+    if (status != "unpaused") {
         this.togglePauseButton.text("▶");
     } else {
         this.togglePauseButton.text("II");

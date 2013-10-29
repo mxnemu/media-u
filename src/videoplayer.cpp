@@ -108,11 +108,11 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}", mime::json);
     } else if (req->path() == "/api/player/togglePause") {
         this->togglePause();
-        QString status = pauseStatus ? "paused" : "unPaused";
+        QString status = pauseStatus ? "paused" : "unpaused";
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status), mime::json);
     } else if (req->path() == "/api/player/unPause") {
         this->unPause();
-        Server::simpleWrite(resp, 200, "{\"status\":\"unPaused\"}", mime::json);
+        Server::simpleWrite(resp, 200, "{\"status\":\"unpaused\"}", mime::json);
     } else if (req->path() == "/api/player/pause") {
         this->pause();
         Server::simpleWrite(resp, 200, "{\"status\":\"paused\"}", mime::json);
@@ -139,7 +139,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         float volume = this->decrementVolume();
         Server::simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"volume\":%1}").arg(volume), mime::json);
     } else if (req->path() == "/api/player/pauseStatus") {
-        QString status = pauseStatus ? "paused" : "unPaused";
+        QString status = pauseStatus ? "paused" : "unpaused";
         Server::simpleWrite(resp, 200, QString("{\"status\":\"%1\"}").arg(status), mime::json);
     } else if (req->path() == "/api/player/metaData") {
         Server::simpleWrite(resp, 200, nowPlaying.metaData.toJson(), mime::json);

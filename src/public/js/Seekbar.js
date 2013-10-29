@@ -41,6 +41,7 @@ Seekbar.prototype.unbindEvents = function() {
     this.bar.unbind("mouseenter");
     this.bar.unbind("mouseleave");
     this.bar.unbind("click");
+    
 }
 
 Seekbar.prototype.bindEvents = function() {
