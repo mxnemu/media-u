@@ -20,6 +20,12 @@ Episode::Episode(const MovieFile *path, QObject *parent) :
     addPath(path);
 }
 
+Episode::~Episode() {
+    foreach (const MovieFile* m, files) {
+        delete m;
+    }
+}
+
 void Episode::describe(nw::Describer *de) {
     NwUtils::describe(*de, "watchedDate", watchedDate);
 

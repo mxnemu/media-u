@@ -17,6 +17,7 @@ public:
     explicit Episode(nw::Describer *jw, QObject *parent = 0);
     explicit Episode(QString path, QObject *parent = 0);
     explicit Episode(const MovieFile* path, QObject* parent = 0);
+    virtual ~Episode();
     
     void addPath(QString path);
     void addPath(const MovieFile* movieFile);
