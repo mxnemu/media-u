@@ -1,9 +1,10 @@
 Roadmap:
+-fix specials listing on TVShowPage
+-choose fansubber Ui on TVShowPage
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
 -use serversent events to tell pause, and other videoplayer events
 -add shows to correct lists when received as serversent event
--move moviefile stuff into an Episode class that can hold paths to many files of different fansubbers
 -try konachan and yande.re before getting pics from gelbooru
 -continue watching random show button for html StartPage
 -search nyaa for new episodes of favourite fansubber
