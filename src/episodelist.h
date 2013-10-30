@@ -4,7 +4,7 @@
 #include <QList>
 #include <N0Slib.h>
 #include <QDir>
-#include "moviefile.h"
+#include "episode.h"
 
 class EpisodeList : public QObject
 {
@@ -18,22 +18,24 @@ public:
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);
 
-    void addEpisode(MovieFile *file); ///< this takes ownage
-    void addEpisode(const MovieFile& file);
-    void addEpisode(QString file);
+    void addMovieFile(const MovieFile *movieFile); ///< this takes ownage
+    void addEpisode(Episode* episode); ///< this takes ownage
+
+    Episode* getEpisodeForNumber(int number);
+
     QString name() const;
     int numberOfEpisodes() const;
     int numberOfWatchedEpisodes() const;
     int highestWatchedEpisodeNumber() const;
 
-    MovieFile* getEpisodeForPath(const QString &path);
+    Episode* getEpisodeForPath(const QString &path);
     QString mostDownloadedReleaseGroup() const;
     QString favouriteReleaseGroup() const;
     int highestDownloadedEpisodeNumber() const;
 
     // TODO
     // This class will be removed soon, so I just made this public for some last sloppy uses
-    QList<MovieFile*> episodes;
+    QList<Episode*> episodes;
 signals:
     void watchCountChanged(int oldCount, int newCount);
 

@@ -1,37 +1,18 @@
 #include "moviefile.h"
 #include <QFileInfo>
-#include <iostream>
-#include <stdlib.h>
 #include <QDebug>
-#include "nwutils.h"
 
-MovieFile::MovieFile(nw::Describer *jw, QObject* parent) :
-    QObject(parent)
-{
-    this->describe(jw);
-}
-
-MovieFile::MovieFile(QString path, QObject *parent) :
-    QObject(parent)
-{
-    setPath(path);
-}
-
-QString MovieFile::path() const {
-    return mPath;
-}
-
-void MovieFile::setPath(QString path) {
+MovieFile::MovieFile(QString path) {
     // set the path and resolve links
-    mPath = QFileInfo(path).canonicalFilePath();
+    this->path = QFileInfo(path).canonicalFilePath();
     // if the resolved filepath does not exist just take the given path
     // and assume the drive will be mounted later
-    if (mPath.isEmpty()) {
-        mPath = path;
+    if (this->path.isEmpty()) {
+        this->path = path;
     }
 
     // start processing
-    path = QFileInfo(mPath).completeBaseName();
+    path = QFileInfo(this->path).completeBaseName();
 
 
     int spaces = path.count(' ');
@@ -50,7 +31,7 @@ void MovieFile::setPath(QString path) {
         regexGroup.setMinimal(true);
         groupIndex = regexGroup.indexIn(path);
         if (groupIndex != -1) {
-            mReleaseGroup.append(regexGroup.cap(1));
+            this->releaseGroup.append(regexGroup.cap(1));
             path.remove(0, regexGroup.cap(1).length());
         }
     }
@@ -58,7 +39,7 @@ void MovieFile::setPath(QString path) {
     QRegExp regexHashId("(\\[[A-F0-9]{8}\\])");
     int hashIdIndex = regexHashId.indexIn(path);
     if (hashIdIndex != -1) {
-        mHashId = regexHashId.cap(1);
+        this->hashId = regexHashId.cap(1);
         path.remove(hashIdIndex, regexHashId.cap(1).length());
     }
 
@@ -92,9 +73,9 @@ void MovieFile::setPath(QString path) {
                           ")");
         regexName.setMinimal(true);
         int nameIndex = regexName.indexIn(path);
-        mShowName = regexName.cap(1).trimmed();
+        this->showName = regexName.cap(1).trimmed();
 
-        if (nameIndex != -1 || mShowName.length() <= 0) {
+        if (nameIndex != -1 || this->showName.length() <= 0) {
             path.remove(nameIndex, regexName.cap(1).length());
         } else {
             qDebug() << "could not parse name out of " << path;
@@ -104,7 +85,7 @@ void MovieFile::setPath(QString path) {
     } else if (groupIndex > 0) {
         QRegExp regexName("^(.+)\\[");
 
-    // [Group] showname - 01v2 (techtags)[12345ABC].webm    
+    // [Group] showname - 01v2 (techtags)[12345ABC].webm
     } else {
         QRegExp regexName("^(.+)\\[");
     }
@@ -131,7 +112,7 @@ void MovieFile::setPath(QString path) {
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);
-    mEpisodeNumber = regexEpisode.cap(1).trimmed();
+    this->episodeNumber = regexEpisode.cap(1).trimmed();
 
     path.remove(episodeIndex, regexEpisode.cap(1).length());
 
@@ -139,34 +120,34 @@ void MovieFile::setPath(QString path) {
     regexSeason.setMinimal(true);
     int seasonIndex = regexSeason.indexIn(path);
     if (seasonIndex != -1) {
-        mSeasonName = regexSeason.cap(1);
+        this->seasonName = regexSeason.cap(1);
         path.remove(seasonIndex, regexSeason.cap(1).length());
     }
 
     // TODO check for shows with a [0-9]+ ending and just 1 episode to avoid some false positives
 
     // check epNum after epName
-    if (mEpisodeNumber.isEmpty() || mEpisodeNumber.isNull()) {
+    if (this->episodeNumber.isEmpty() || this->episodeNumber.isNull()) {
         //QRegExp regexNumberAfterShowName("(\\s[0-9]+\\s?)$");
         //int epIndex = regexNumberAfterShowName.indexIn(mShowName);
-        int epIndex = regexEpisode.indexIn(mShowName);
+        int epIndex = regexEpisode.indexIn(this->showName);
         // TODO check all caps for the longest
         if (epIndex != -1) {
-            mEpisodeNumber = regexEpisode.cap(1).trimmed();
-            mShowName.remove(epIndex, regexEpisode.cap(1).length());
+            this->episodeNumber = regexEpisode.cap(1).trimmed();
+            this->showName.remove(epIndex, regexEpisode.cap(1).length());
 
             QRegExp regexEpName("(.*)");
-            int epNameIndex = regexEpName.indexIn(mShowName, epIndex);
+            int epNameIndex = regexEpName.indexIn(this->showName, epIndex);
             if (epNameIndex != -1) {
-                mEpisodeName = regexEpName.cap(1).trimmed();
-                mShowName.remove(epIndex, regexEpName.cap(1).length());
+                this->episodeName = regexEpName.cap(1).trimmed();
+                this->showName.remove(epIndex, regexEpName.cap(1).length());
             }
-            mShowName = mShowName.trimmed();
+            this->showName = this->showName.trimmed();
         }
     }
 
     // release group at the end (last word)
-    if (mReleaseGroup.isEmpty()) {
+    if (this->releaseGroup.isEmpty()) {
         QRegExp releaseGroupAtEnd("([^\\s]+)($|\\s)");
         int occurance = path.indexOf(releaseGroupAtEnd);
         int latestOccurance = occurance;
@@ -181,46 +162,38 @@ void MovieFile::setPath(QString path) {
 
         if (latestOccurance != -1) {
             path.indexOf(releaseGroupAtEnd, latestOccurance);
-            mReleaseGroup = releaseGroupAtEnd.cap(1);
+            this->releaseGroup = releaseGroupAtEnd.cap(1);
         }
     }
-}
-
-void MovieFile::describe(nw::Describer *de) {
-    NwUtils::describe(*de, "path", mPath);
-    NwUtils::describe(*de, "watchedDate", watchedDate);
-    if (de->isInReadMode()) {
-        this->setPath(mPath);
-
-        bool watched = false;
-        de->describe("watched", watched);
-        if (watched) {
-            watchedDate = QDateTime::currentDateTime();
-        }
-    }
-}
-
-void MovieFile::writeDetailed(nw::JsonWriter &jw) {
-    NwUtils::describe(jw, "episodeNumber", mEpisodeNumber);
-    NwUtils::describe(jw, "path", mPath);
-    NwUtils::describe(jw, "releaseGroup", mReleaseGroup);
-    NwUtils::describe(jw, "showName", mShowName);
-    NwUtils::describe(jw, "episodeName", mEpisodeName);
-    //NwUtils::describe(jw, "tech", mTechTags);
-    NwUtils::describe(jw, "seasonName", mSeasonName);
-    NwUtils::describe(jw, "hashId", mHashId);
-    bool watched = getWatched();
-    NwUtils::describe(jw, "watched", watched);
-    NwUtils::describe(jw, "watchedDate", watchedDate);
-    int num = numericEpisodeNumber();
-    NwUtils::describe(jw, "numericEpisodeNumber", num);
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$", Qt::CaseInsensitive));
 }
 
-// TODO specialsRegex into a separate function to avoid redundance
+QString MovieFile::xbmcEpisodeNumber() const {
+    int num = numericEpisodeNumber();
+    if (num == -2) {
+        return QString("0x%1").arg(episodeNumber);
+    }
+    if (num != -1) {
+        return QString::number(num);
+    }
+    return episodeNumber;
+}
+
+
+QString MovieFile::fileExtension() const {
+    return QFileInfo(path).completeSuffix();
+}
+
+QString MovieFile::xbmcEpisodeName() const {
+    if (episodeName.length() > 0) {
+        return episodeName;
+    }
+    return "Episode";
+}
+
 bool MovieFile::isSpecial() const {
     QRegExp specialRegex("("
         "\\sED(\\s|$)|"
@@ -233,24 +206,9 @@ bool MovieFile::isSpecial() const {
         "Opening(\\s?[0-9]+)?|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
-    bool is = -1 != specialRegex.indexIn(this->episodeNumber());
+    bool is = -1 != specialRegex.indexIn(this->episodeNumber);
     //qDebug() << specialRegex.cap(1);
     return is;
-}
-
-QString MovieFile::releaseGroup() const {
-    return mReleaseGroup;
-}
-
-QString MovieFile::xbmcEpisodeNumber() const {
-    int num = numericEpisodeNumber();
-    if (num == -2) {
-        return QString("0x%1").arg(episodeNumber());
-    }
-    if (num != -1) {
-        return QString::number(num);
-    }
-    return episodeNumber();
 }
 
 int MovieFile::numericEpisodeNumber() const {
@@ -258,63 +216,11 @@ int MovieFile::numericEpisodeNumber() const {
         return -2;
     }
     QRegExp pureNumber("([0-9]+x)?([0-9]+)", Qt::CaseInsensitive);
-    int index = pureNumber.indexIn(mEpisodeNumber);
+    int index = pureNumber.indexIn(episodeNumber);
     if (index != -1) {
         return pureNumber.cap(2).toInt();
     }
     return -1;
 }
 
-QString MovieFile::fileExtension() const {
-    return QFileInfo(mPath).completeSuffix();
-}
-
-QString MovieFile::xbmcEpisodeName() const {
-    if (episodeName().length() > 0) {
-        return episodeName();
-    }
-    return "Episode";
-}
-
-QString MovieFile::episodeName() const {
-    return mEpisodeName;
-}
-
-QString MovieFile::showName() const {
-    return mShowName;
-}
-
-QString MovieFile::seasonName() const {
-    return mSeasonName;
-}
-
-QString MovieFile::episodeNumber() const {
-    return mEpisodeNumber;
-}
-
-QStringList MovieFile::techTags() const {
-    return mTechTags;
-}
-QString MovieFile::hashId() const {
-    return mHashId;
-}
-
-bool MovieFile::getWatched() const
-{
-    return !watchedDate.isNull();
-}
-
-void MovieFile::setWatched(bool value) {
-    bool oldValue = this->getWatched();
-    if (value) {
-        watchedDate = QDateTime::currentDateTime();
-    } else {
-        watchedDate = QDateTime();
-    }
-    emit watchedChanged(oldValue, value);
-}
-
-QDateTime MovieFile::getWatchedDate() const
-{
-    return watchedDate;
-}
+//int MovieFile::SPECIAL = -2;

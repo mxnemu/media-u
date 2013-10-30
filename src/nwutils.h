@@ -44,12 +44,17 @@ public:
         }
     }
     template<class T> static void describe(T& d, const nw::String key, QString& value) {
+        d.describeName(key);
+        describeValue(d, value);
+    }
+
+    template<class T> static void describeValue(T& d, QString& value) {
         if (d.isInWriteMode()) {
             std::string str = value.toStdString();
-            d.describe(key, str);
+            d.describeValue(str);
         } else {
             std::string str;
-            d.describe(key, str);
+            d.describeValue(str);
             value = QString(str.data());
         }
     }

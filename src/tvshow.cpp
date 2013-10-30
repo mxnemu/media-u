@@ -100,8 +100,8 @@ void TvShow::write(nw::JsonWriter& jw) {
     jw.close();
 }
 
-void TvShow::importEpisode(MovieFile *episode) {
-    episodes.addEpisode(episode);
+void TvShow::importMovieFile(const MovieFile *episode) {
+    episodes.addMovieFile(episode);
 }
 
 void TvShow::downloadImage(const QString url, QDir libraryDirectory) {
@@ -401,7 +401,7 @@ void TvShow::addSynonyms(const QStringList &values) {
 // TODO move to episodelist
 QDateTime TvShow::lastWatchedDate() const {
     QDateTime latest;
-    foreach(MovieFile* m, episodes.episodes) {
+    foreach(Episode* m, episodes.episodes) {
         if (m->getWatchedDate() > latest) {
             latest = m->getWatchedDate();
         }
@@ -437,7 +437,7 @@ bool TvShow::isCompleted() const {
 }
 
 bool TvShow::startedWatching() const {
-    foreach(MovieFile* m, episodes.episodes) {
+    foreach(Episode* m, episodes.episodes) {
         if (!m->getWatchedDate().isNull()) {
             return true;
         }

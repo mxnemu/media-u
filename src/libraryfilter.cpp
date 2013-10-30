@@ -99,9 +99,9 @@ void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QLis
     Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
 }
 
-MovieFile *LibraryFilter::getEpisodeForPath(const QString &path) {
+Episode *LibraryFilter::getEpisodeForPath(const QString &path) {
     for (int i=0; i < tvShows.length(); ++i) {
-        MovieFile* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
+        Episode* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
         if (episode) {
             return episode;
         }

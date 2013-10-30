@@ -53,7 +53,7 @@ public:
     void read(QDir &dir);
     void write(nw::JsonWriter &jw);
 
-    void importEpisode(MovieFile *episode);
+    void importMovieFile(const MovieFile *episode);
     void downloadImage(const QString url, QDir libraryDirectory);
 
     bool isAiring() const;
@@ -96,7 +96,7 @@ public:
     QStringList wallpapers(QDir libraryDirectory) const;
     QString favouriteReleaseGroup();
 
-    MovieFile* getEpisodeForPath(const QString &path);
+    Episode* getEpisodeForPath(const QString &path);
 
     TvShowPlayerSettings playerSettings;
     QDateTime lastWatchedDate() const;

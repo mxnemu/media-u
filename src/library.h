@@ -6,7 +6,6 @@
 #include <QDir>
 #include <qhttpconnection.h>
 #include "tvshow.h"
-#include "moviefile.h"
 #include "malclient.h"
 #include "malapidotcomclient.h"
 #include "moebooruclient.h"

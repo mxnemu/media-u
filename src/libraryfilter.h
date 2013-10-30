@@ -17,7 +17,7 @@ public:
     QList<TvShow*> recentlyWatched();
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
-    MovieFile* getEpisodeForPath(const QString& path);
+    Episode* getEpisodeForPath(const QString& path);
     TvShow* getShowForRemoteId(int remoteId);
     TvShow* getRandomShow();
     QString getRandomWallpaper();

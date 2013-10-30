@@ -1,6 +1,5 @@
 SOURCES += main.cpp\
     library.cpp \
-    moviefile.cpp \
     config.cpp \
     directoryscanner.cpp \
     mediascanner.cpp \
@@ -24,11 +23,12 @@ SOURCES += main.cpp\
     server.cpp \
     apipushevents.cpp \
     franchise.cpp \
-    episodelist.cpp
+    episodelist.cpp \
+    episode.cpp \
+    moviefile.cpp
 
 
 HEADERS  += library.h \
-    moviefile.h \
     config.h \
     directoryscanner.h \
     mediascanner.h \
@@ -52,5 +52,7 @@ HEADERS  += library.h \
     server.h \
     apipushevents.h \
     franchise.h \
-    episodelist.h
+    episodelist.h \
+    episode.h \
+    moviefile.h
 

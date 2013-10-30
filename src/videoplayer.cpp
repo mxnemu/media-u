@@ -20,10 +20,10 @@ bool VideoPlayer::playFile(QString filepath) {
     this->nowPlaying.seconds = 0;
     this->nowPlaying.path = filepath;
     this->nowPlaying.metaData = this->metaDataParser->parse(filepath);
-    MovieFile* episode = library.filter().getEpisodeForPath(filepath);
+    Episode* episode = library.filter().getEpisodeForPath(filepath);
     bool succeeded = false;
     if (episode) {
-        succeeded = this->playFileImpl(filepath, library.existingTvShow(episode->showName())->playerSettings);
+        succeeded = this->playFileImpl(filepath, library.existingTvShow(episode->getShowName())->playerSettings);
     }
     if (!succeeded) {
         resetPlayingStatus();
@@ -190,7 +190,7 @@ void VideoPlayer::onThumbnailCreated(const QByteArray img) {
 
 void VideoPlayer::onPlaybackEndedNormally() {
 
-    MovieFile* episode = this->library.filter().getEpisodeForPath(nowPlaying.path);
+    Episode* episode = this->library.filter().getEpisodeForPath(nowPlaying.path);
     if (episode) {
         episode->setWatched(true);
     }

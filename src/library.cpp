@@ -5,6 +5,7 @@
 #include "directoryscanner.h"
 #include "tvshowscanner.h"
 #include <QStandardPaths>
+#include "moviefile.h"
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
@@ -42,7 +43,7 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         // TODO change abs img path to server url
         Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(filter().getRandomWallpaper()), mime::json);
     } else if(req->path().startsWith("/api/library/toggleWatched")) {
-        MovieFile* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
+        Episode* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
         if (episode) {
             episode->setWatched(!episode->getWatched());
             Server::simpleWrite(resp, 200, QString("{\"watched\":%1}").arg(episode->getWatched() ? "true" : "false"), mime::json);
@@ -82,13 +83,13 @@ LibraryFilter &Library::filter()
 }
 
 void Library::importTvShowEpisode(QString episodePath) {
-    MovieFile* episode = new MovieFile(episodePath);
-    if (!episode->showName().isEmpty()) {
-        TvShow& show = this->tvShow(episode->showName());
-        show.importEpisode(episode); // takes ownage
+    const MovieFile* movieFile = new MovieFile(episodePath);
+    if (!movieFile->showName.isEmpty()) {
+        TvShow& show = this->tvShow(movieFile->showName);
+        show.importMovieFile(movieFile); // takes ownage
     } else {
-        qDebug() << "could not import (no show name parsed):" << episode->path();
-        delete episode;
+        qDebug() << "could not import (no show name parsed):" << movieFile->showName;
+        delete movieFile;
     }
 }
 
