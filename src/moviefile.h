@@ -27,7 +27,10 @@ public:
     QString episodeNumber;
     QString hashId;
 
-    //static const int SPECIAL;
+    static const int UNKNOWN = -1;
+    static const int SPECIAL = -2;
+    static const int INVALID = -3;
+
 };
 
 #endif // MOVIEFILE_H

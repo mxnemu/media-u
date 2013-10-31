@@ -3,19 +3,22 @@
 #include <QDebug>
 
 Episode::Episode(nw::Describer *jw, QObject* parent) :
-    QObject(parent)
+    QObject(parent),
+    episodeNumber(MovieFile::INVALID)
 {
     this->describe(jw);
 }
 
 Episode::Episode(QString path, QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    episodeNumber(MovieFile::INVALID)
 {
     addPath(path);
 }
 
 Episode::Episode(const MovieFile *path, QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    episodeNumber(MovieFile::INVALID)
 {
     addPath(path);
 }
@@ -43,7 +46,6 @@ void Episode::describe(nw::Describer *de) {
 }
 
 void Episode::writeDetailed(nw::JsonWriter &jw) {
-    NwUtils::describe(jw, "episodeNumber", episodeNumber);
     NwUtils::describe(jw, "showName", showName);
     bool watched = getWatched();
     NwUtils::describe(jw, "watched", watched);
@@ -55,6 +57,7 @@ void Episode::writeDetailed(nw::JsonWriter &jw) {
     if (best) {
         MovieFile copy = *best;
         NwUtils::describe(jw, "path", copy.path);
+        NwUtils::describe(jw, "episodeNumber", copy.episodeNumber);
         NwUtils::describe(jw, "releaseGroup", copy.releaseGroup);
         NwUtils::describe(jw, "episodeName", copy.episodeName);
         NwUtils::describeValueArray(jw, "tech", copy.techTags);
@@ -105,7 +108,7 @@ QDateTime Episode::getWatchedDate() const
 }
 
 bool Episode::isSpecial() const {
-    return episodeNumber == -2; //MovieFile::SPECIAL;
+    return episodeNumber == MovieFile::SPECIAL;
 }
 
 

@@ -173,10 +173,10 @@ bool MovieFile::hasMovieExtension(QString filename) {
 
 QString MovieFile::xbmcEpisodeNumber() const {
     int num = numericEpisodeNumber();
-    if (num == -2) {
+    if (num == SPECIAL) {
         return QString("0x%1").arg(episodeNumber);
     }
-    if (num != -1) {
+    if (num != UNKNOWN) {
         return QString::number(num);
     }
     return episodeNumber;
@@ -213,14 +213,12 @@ bool MovieFile::isSpecial() const {
 
 int MovieFile::numericEpisodeNumber() const {
     if (isSpecial()) {
-        return -2;
+        return SPECIAL;
     }
     QRegExp pureNumber("([0-9]+x)?([0-9]+)", Qt::CaseInsensitive);
     int index = pureNumber.indexIn(episodeNumber);
     if (index != -1) {
         return pureNumber.cap(2).toInt();
     }
-    return -1;
+    return UNKNOWN;
 }
-
-//int MovieFile::SPECIAL = -2;

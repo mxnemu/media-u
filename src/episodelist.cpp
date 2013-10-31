@@ -50,7 +50,7 @@ void EpisodeList::writeDetailed(nw::JsonWriter &jw) {
 }
 
 void EpisodeList::addMovieFile(const MovieFile* movieFile) {
-    if (movieFile->path.isEmpty()) {
+    if (movieFile->path.isEmpty() || NULL != getEpisodeForPath(movieFile->path)) {
         delete movieFile;
         return;
     }
@@ -74,6 +74,10 @@ void EpisodeList::addEpisode(Episode *episode) {
 }
 
 Episode *EpisodeList::getEpisodeForNumber(int number) {
+    if (number < 0) {
+        return NULL; // specials don't have a number
+    }
+
     foreach (Episode* ep, episodes) {
         if (ep->getEpisodeNumber() == number) {
             return ep;
