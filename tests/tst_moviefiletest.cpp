@@ -13,141 +13,183 @@ public:
     MovieFileTest();
     
 private Q_SLOTS:
-    void testEpisodeNumberParsing_data();
-    void testEpisodeNumberParsing();
-    void testReleaseGroup_data();
-    void testReleaseGroup();
-    void testShowName_data();
-    void testShowName();
-    void qstringEcodingSize();
+    void testPathParsing_data();
+    void testPathParsing();
 
     // TODO figure out how I can use multiple test files in qt
     void testCommandExists();
     void testCommonSliceInStrings_data();
     void testCommonSliceInStrings();
+    void qstringEcodingSize();
 };
 
 MovieFileTest::MovieFileTest()
 {
 }
 
-void MovieFileTest::testEpisodeNumberParsing_data()
+void MovieFileTest::testPathParsing_data()
 {
     QTest::addColumn<QString>("path");
+    QTest::addColumn<QString>("releaseGroup");
+    QTest::addColumn<QString>("showName");
     QTest::addColumn<QString>("episodeNumber");
     QTest::addColumn<int>("numericEpisodeNumber");
+    QTest::addColumn<QString>("episodeName");
 
-    QTest::newRow("simple number") <<
+    QTest::newRow("Number: simple number") <<
         "/mnt/fields1/torrents/[Mazui]_Hyouka_[720p]/[Mazui]_Hyouka_-_02_[356D9C93].mkv" <<
+                                              "[Mazui]" <<
+                                              "Hyouka" <<
         "02" <<
-        2;
+        2 <<
+                                              "";
 
-    QTest::newRow("SeasonXEpisode") <<
+    QTest::newRow("Number: SeasonXEpisode") <<
         "/mnt/fields2/torrents/When They Cry - Higurashi [Hi10]/Season1/Higurashi no Naku Koro ni 1x04.mkv" <<
+                                               "" <<
+                                               "Higurashi no Naku Koro ni" <<
         "1x04" <<
-        4;
+        4 <<
+                                               "";
 
-    QTest::newRow("versionedEpisode") <<
+    QTest::newRow("Number: versionedEpisode") <<
         "/t/[Mazui]_Hyouka_[720p]/[Mazui]_Hyouka_-_13v2_[BE011245].mkv" <<
+                                                 "[Mazui]" <<
+                                                 "Hyouka" <<
         "13v2" <<
-        13;
+        13 <<
+                                                 "";
 
-    QTest::newRow("decimalEpisode") <<
+    QTest::newRow("Number: decimalEpisode") <<
         "/mnt/fields1/torrents/[Mazui]_Hyouka_[720p]/[Mazui]_Hyouka_-_11.5_[3C10E2F9].mkv" <<
+                                               "[Mazui]" <<
+                                               "Hyouka" <<
         "11.5" <<
-        11;
+        11 <<
+                                               "";
 
-    QTest::newRow("'Episode' prefix") <<
+    QTest::newRow("Number: 'Episode' prefix") <<
         "/home/nehmulos/Downloads/Spice and Wolf Complete Series/Season 01/Spice and Wolf Episode 01.mkv" <<
+                                                 "" <<
+                                                 "Spice and Wolf" <<
         "Episode 01" <<
-        1;
+        1 <<
+                                                 "";
 
-    QTest::newRow("Ep prefix") <<
+    QTest::newRow("Number: Ep prefix") <<
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
+                                       "THORA" <<
+                                       "K-ON!" <<
         "Ep02" <<
-        2;
+        2 <<
+                                          "Instruments!";
 
-    /*
-    QTest::newRow("ed is the end of the title (Elfen lied 03)") <<
+    QTest::newRow("Number: ed is the end of the title (Elfen lied 03)") <<
         "/tmp/Elfen lied 03.ogg" <<
+                                                                           "" <<
+                                                                           "Elfen lied" <<
         "03" <<
-        3;
-    */
-}
+        3 <<
+                                                                           "";
 
-
-void MovieFileTest::testEpisodeNumberParsing() {
-    QFETCH(QString, path);
-    QFETCH(QString, episodeNumber);
-    QFETCH(int, numericEpisodeNumber);
-
-    const MovieFile m(path);
-    QCOMPARE(m.episodeNumber, episodeNumber);
-    QCOMPARE(m.numericEpisodeNumber(), numericEpisodeNumber);
-}
-
-void MovieFileTest::testReleaseGroup_data() {
-    QTest::addColumn<QString>("path");
-    QTest::addColumn<QString>("releaseGroup");
-
-    QTest::newRow("in front with [techtags] behind") <<
-        "/mnt/fields1/torrents/[DeadFish] Nisemonogatari - Batch [BD][720p][MP4][AAC]/[DeadFish] Nisemonogatari - 01 [BD][720p][AAC].mp4" <<
-        "[DeadFish]";
-
-    QTest::newRow("at the end") <<
+    QTest::newRow("Name: after obvious Ep number") <<
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
-        "THORA";
+                                                      "THORA" <<
+                                                      "K-ON!" <<
+                                                      "Ep02" <<
+                                                      2 <<
+        "Instruments!";
 
-    QTest::newRow("at the end with version behind") <<
+    QTest::newRow("Name: Without Ep name") <<
+        "/t/[Coalgirls]_The_Melancholy_of_Haruhi_Suzumiya_(1280x720_Blu-Ray_FLAC)/Season I/[Coalgirls]_The_Melancholy_of_Haruhi_Suzumiya_-_Remote_Island_Syndrome_I_(1280x720_Blu-Ray_FLAC)_[10DBFB45].mkv" <<
+                                              "[Coalgirls]" <<
+                                              "The Melancholy of Haruhi Suzumiya" <<
+                                              "" <<
+                                              -1 <<
+        "Remote Island Syndrome I";
+
+    QTest::newRow("Group: in front with [techtags] behind") <<
+        "/mnt/fields1/torrents/[DeadFish] Nisemonogatari - Batch [BD][720p][MP4][AAC]/[DeadFish] Nisemonogatari - 01 [BD][720p][AAC].mp4" <<
+        "[DeadFish]" <<
+                                                               "Nisemonogatari" <<
+                                                               "01" <<
+                                                               1 <<
+                                                               "";
+
+
+    QTest::newRow("Group: at the end") <<
+        "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_Ep02_Instruments!_[1080p,BluRay,x264]_-_THORA.mkv" <<
+        "THORA" <<
+                                          "K-ON!" <<
+                                          "Ep02" <<
+                                          2 <<
+                                          "Instruments!";
+
+    QTest::newRow("Group: at the end with version behind") <<
         "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_ED_[1080p,BluRay,x264]_-_THORA v2.mkv" <<
-        "THORA";
+        "THORA" <<
+                                                              "K-ON!" <<
+                                                              "ED" <<
+                                                              -2 <<
+                                                              "";
 
 
-    QTest::newRow("no goup") <<
+    QTest::newRow("Group: no goup") <<
         "/home/nehmulos/Downloads/Spice and Wolf Complete Series/Season 01/Spice and Wolf Episode 02.mkv" <<
-        "";
+        ""<<
+                                       "Spice and Wolf" <<
+                                       "Episode 02" <<
+                                       2 <<
+                                       "";
 
-    QTest::newRow("no group2") <<
+    QTest::newRow("Group: no group2") <<
         "/mnt/fields2/torrents/When They Cry - Higurashi [Hi10]/Season1/Higurashi no Naku Koro ni 1x01.mkv" <<
-        "";
+        "" <<
+                                         "Higurashi no Naku Koro ni" <<
+                                         "1x01" <<
+                                         1 <<
+                                         "";
 
+    QTest::newRow("ShowName: [group] name - num [tech][tags].vid") <<
+        "/home/nehmulos/Downloads/[DeadFish] Bakemonogatari [BD][1080p][MP4][AAC]/[DeadFish] Bakemonogatari - 01 [BD][1080p][AAC].mp4" <<
+                                                                   "[DeadFish]" <<
+        "Bakemonogatari" <<
+                                                                      "01" <<
+                                                                      1 <<
+                                                                      "";
+
+    QTest::newRow("ShowName: name Ep.num[tech][tags].vid") <<
+        "/home/nehmulos/Downloads/[SSP-Corp] Noir [Dual-Audio]/Noir_Ep.01[h.264-AAC][SSP-Corp][E5A84450].mkv" <<
+                                                              "" <<
+                                                              "Noir" <<
+                                                              "Ep 01" <<
+                                                              1 <<
+                                                              "";
+
+    QTest::newRow("ShowName: ed is the end of the title (Elfen lied 03)") <<
+        "/mnt/fields2/torrents/[Coalgirls]_Elfen_Lied_(1280x720_Blu-ray_FLAC)/[Coalgirls]_Elfen_Lied_01_(1280x720_Blu-ray_FLAC)_[5BC74BC6].mkv" <<
+                                                                             "[Coalgirls]" <<
+        "Elfen Lied" <<
+                                                                             "01" <<
+                                                                             1 <<
+                                                                             "";
 }
 
-void MovieFileTest::testReleaseGroup() {
+
+void MovieFileTest::testPathParsing() {
     QFETCH(QString, path);
     QFETCH(QString, releaseGroup);
-
-    MovieFile m(path);
-    QCOMPARE(m.releaseGroup, releaseGroup);
-}
-
-void MovieFileTest::testShowName_data() {
-    QTest::addColumn<QString>("path");
-    QTest::addColumn<QString>("showName");
-
-    QTest::newRow("[group] name - num [tech][tags].vid") <<
-        "/home/nehmulos/Downloads/[DeadFish] Bakemonogatari [BD][1080p][MP4][AAC]/[DeadFish] Bakemonogatari - 01 [BD][1080p][AAC].mp4" <<
-        "Bakemonogatari";
-
-    QTest::newRow("name Ep.num[tech][tags].vid") <<
-        "/home/nehmulos/Downloads/[SSP-Corp] Noir [Dual-Audio]/Noir_Ep.01[h.264-AAC][SSP-Corp][E5A84450].mkv" <<
-        "Noir";
-
-    QTest::newRow("mind the stupid space before v2") <<
-        "/home/nehmulos/Downloads/K-ON!_(2009)_[1080p,BluRay,x264]_-_THORA/K-ON!_ED_[1080p,BluRay,x264]_-_THORA v2.mkv" <<
-        "K-ON!";
-
-    QTest::newRow("ed is the end of the title (Elfen lied 03)") <<
-        "/mnt/fields2/torrents/[Coalgirls]_Elfen_Lied_(1280x720_Blu-ray_FLAC)/[Coalgirls]_Elfen_Lied_01_(1280x720_Blu-ray_FLAC)_[5BC74BC6].mkv" <<
-        "Elfen Lied";
-}
-
-void MovieFileTest::testShowName() {
-    QFETCH(QString, path);
     QFETCH(QString, showName);
+    QFETCH(QString, episodeNumber);
+    QFETCH(int, numericEpisodeNumber);
+    QFETCH(QString, episodeName);
 
-    MovieFile m(path);
+    const MovieFile m(path);
+    QCOMPARE(m.releaseGroup, releaseGroup);
     QCOMPARE(m.showName, showName);
+    QCOMPARE(m.episodeNumber, episodeNumber);
+    QCOMPARE(m.numericEpisodeNumber(), numericEpisodeNumber);
+    QCOMPARE(m.episodeName, episodeName);
 }
 
 void MovieFileTest::testCommandExists() {
