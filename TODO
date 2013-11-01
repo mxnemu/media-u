@@ -1,5 +1,5 @@
 Roadmap:
--fix specials listing on TVShowPage
+-listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
 -choose fansubber Ui on TVShowPage
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
