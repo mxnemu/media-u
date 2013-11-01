@@ -2,8 +2,9 @@
 #include <QFileInfo>
 #include <QDebug>
 
-MovieFile::MovieFile(QString path) {
+MovieFile::MovieFile(QString p) {
     // set the path and resolve links
+    QString path = p;
     this->path = QFileInfo(path).canonicalFilePath();
     // if the resolved filepath does not exist just take the given path
     // and assume the drive will be mounted later
@@ -165,6 +166,7 @@ MovieFile::MovieFile(QString path) {
             this->releaseGroup = releaseGroupAtEnd.cap(1);
         }
     }
+    // TODO check for haruhi style ep name here
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
@@ -196,8 +198,8 @@ QString MovieFile::xbmcEpisodeName() const {
 
 bool MovieFile::isSpecial() const {
     QRegExp specialRegex("("
-        "\\sED(\\s|$)|"
-        "\\sOP(\\s|$)|"
+        "\\s?ED(\\s|$)|"
+        "\\s?OP(\\s|$)|"
         "ED[0-9]+|"
         "OP[0-9]+[a-z]?|"
         "SP[0-9]+|"
