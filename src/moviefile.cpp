@@ -213,14 +213,14 @@ bool MovieFile::isSpecial() const {
     return is;
 }
 
-int MovieFile::numericEpisodeNumber() const {
+float MovieFile::numericEpisodeNumber() const {
     if (isSpecial()) {
         return SPECIAL;
     }
-    QRegExp pureNumber("([0-9]+x)?([0-9]+)", Qt::CaseInsensitive);
+    QRegExp pureNumber("([0-9\\.]+x)?([0-9\\.]+)", Qt::CaseInsensitive);
     int index = pureNumber.indexIn(episodeNumber);
     if (index != -1) {
-        return pureNumber.cap(2).toInt();
+        return pureNumber.cap(2).toFloat();
     }
     return UNKNOWN;
 }

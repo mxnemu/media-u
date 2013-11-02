@@ -33,7 +33,7 @@ void MovieFileTest::testPathParsing_data()
     QTest::addColumn<QString>("releaseGroup");
     QTest::addColumn<QString>("showName");
     QTest::addColumn<QString>("episodeNumber");
-    QTest::addColumn<int>("numericEpisodeNumber");
+    QTest::addColumn<float>("numericEpisodeNumber");
     QTest::addColumn<QString>("episodeName");
 
     QTest::newRow("Number: simple number") <<
@@ -41,7 +41,7 @@ void MovieFileTest::testPathParsing_data()
                                               "[Mazui]" <<
                                               "Hyouka" <<
         "02" <<
-        2 <<
+        2.f <<
                                               "";
 
     QTest::newRow("Number: SeasonXEpisode") <<
@@ -49,7 +49,7 @@ void MovieFileTest::testPathParsing_data()
                                                "" <<
                                                "Higurashi no Naku Koro ni" <<
         "1x04" <<
-        4 <<
+        4.f <<
                                                "";
 
     QTest::newRow("Number: versionedEpisode") <<
@@ -57,7 +57,7 @@ void MovieFileTest::testPathParsing_data()
                                                  "[Mazui]" <<
                                                  "Hyouka" <<
         "13v2" <<
-        13 <<
+        13.f <<
                                                  "";
 
     QTest::newRow("Number: decimalEpisode") <<
@@ -65,7 +65,7 @@ void MovieFileTest::testPathParsing_data()
                                                "[Mazui]" <<
                                                "Hyouka" <<
         "11.5" <<
-        11 <<
+        11.5f <<
                                                "";
 
     QTest::newRow("Number: 'Episode' prefix") <<
@@ -73,7 +73,7 @@ void MovieFileTest::testPathParsing_data()
                                                  "" <<
                                                  "Spice and Wolf" <<
         "Episode 01" <<
-        1 <<
+        1.f <<
                                                  "";
 
     QTest::newRow("Number: Ep prefix") <<
@@ -81,7 +81,7 @@ void MovieFileTest::testPathParsing_data()
                                        "THORA" <<
                                        "K-ON!" <<
         "Ep02" <<
-        2 <<
+        2.f <<
                                           "Instruments!";
 
     QTest::newRow("Number: ed is the end of the title (Elfen lied 03)") <<
@@ -89,7 +89,7 @@ void MovieFileTest::testPathParsing_data()
                                                                            "" <<
                                                                            "Elfen lied" <<
         "03" <<
-        3 <<
+        3.f <<
                                                                            "";
 
     QTest::newRow("Name: after obvious Ep number") <<
@@ -97,7 +97,7 @@ void MovieFileTest::testPathParsing_data()
                                                       "THORA" <<
                                                       "K-ON!" <<
                                                       "Ep02" <<
-                                                      2 <<
+                                                      2.f <<
         "Instruments!";
 
     QTest::newRow("Name: Without Ep name") <<
@@ -105,7 +105,7 @@ void MovieFileTest::testPathParsing_data()
                                               "[Coalgirls]" <<
                                               "The Melancholy of Haruhi Suzumiya" <<
                                               "" <<
-                                              -1 <<
+                                              -1.f <<
         "Remote Island Syndrome I";
 
     QTest::newRow("Group: in front with [techtags] behind") <<
@@ -113,7 +113,7 @@ void MovieFileTest::testPathParsing_data()
         "[DeadFish]" <<
                                                                "Nisemonogatari" <<
                                                                "01" <<
-                                                               1 <<
+                                                               1.f <<
                                                                "";
 
 
@@ -122,7 +122,7 @@ void MovieFileTest::testPathParsing_data()
         "THORA" <<
                                           "K-ON!" <<
                                           "Ep02" <<
-                                          2 <<
+                                          2.f <<
                                           "Instruments!";
 
     QTest::newRow("Group: at the end with version behind") <<
@@ -130,7 +130,7 @@ void MovieFileTest::testPathParsing_data()
         "THORA" <<
                                                               "K-ON!" <<
                                                               "ED" <<
-                                                              -2 <<
+                                                              -2.f <<
                                                               "";
 
 
@@ -139,7 +139,7 @@ void MovieFileTest::testPathParsing_data()
         ""<<
                                        "Spice and Wolf" <<
                                        "Episode 02" <<
-                                       2 <<
+                                       2.f <<
                                        "";
 
     QTest::newRow("Group: no group2") <<
@@ -147,7 +147,7 @@ void MovieFileTest::testPathParsing_data()
         "" <<
                                          "Higurashi no Naku Koro ni" <<
                                          "1x01" <<
-                                         1 <<
+                                         1.f <<
                                          "";
 
     QTest::newRow("ShowName: [group] name - num [tech][tags].vid") <<
@@ -155,7 +155,7 @@ void MovieFileTest::testPathParsing_data()
                                                                    "[DeadFish]" <<
         "Bakemonogatari" <<
                                                                       "01" <<
-                                                                      1 <<
+                                                                      1.f <<
                                                                       "";
 
     QTest::newRow("ShowName: name Ep.num[tech][tags].vid") <<
@@ -163,7 +163,7 @@ void MovieFileTest::testPathParsing_data()
                                                               "" <<
                                                               "Noir" <<
                                                               "Ep 01" <<
-                                                              1 <<
+                                                              1.f <<
                                                               "";
 
     QTest::newRow("ShowName: ed is the end of the title (Elfen lied 03)") <<
@@ -171,7 +171,7 @@ void MovieFileTest::testPathParsing_data()
                                                                              "[Coalgirls]" <<
         "Elfen Lied" <<
                                                                              "01" <<
-                                                                             1 <<
+                                                                             1.f <<
                                                                              "";
 }
 
@@ -181,7 +181,7 @@ void MovieFileTest::testPathParsing() {
     QFETCH(QString, releaseGroup);
     QFETCH(QString, showName);
     QFETCH(QString, episodeNumber);
-    QFETCH(int, numericEpisodeNumber);
+    QFETCH(float, numericEpisodeNumber);
     QFETCH(QString, episodeName);
 
     const MovieFile m(path);

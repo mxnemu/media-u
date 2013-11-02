@@ -11,7 +11,7 @@ public:
     static bool hasMovieExtension(QString filename);
 
     bool isSpecial() const;
-    int numericEpisodeNumber() const;
+    float numericEpisodeNumber() const;
 
     QString xbmcEpisodeNumber() const;
     QString xbmcEpisodeName() const;

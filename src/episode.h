@@ -32,7 +32,7 @@ public:
     bool getWatched() const;
     void setWatched(bool value);
 
-    int getEpisodeNumber() const;
+    float getEpisodeNumber() const;
     QDateTime getWatchedDate() const;
 
     bool isSpecial() const;
@@ -45,7 +45,7 @@ private:
     QList<const MovieFile*> files;
     QString showName;
     QDateTime watchedDate;
-    int episodeNumber;
+    float episodeNumber;
 
     void pushFile(const MovieFile*);
 };

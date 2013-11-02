@@ -98,7 +98,7 @@ void Episode::setWatched(bool value) {
     emit watchedChanged(oldValue, value);
 }
 
-int Episode::getEpisodeNumber() const {
+float Episode::getEpisodeNumber() const {
     return this->episodeNumber;
 }
 
