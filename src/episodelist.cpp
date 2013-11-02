@@ -73,7 +73,7 @@ void EpisodeList::addEpisode(Episode *episode) {
     connect(episodes.back(), SIGNAL(watchedChanged(bool,bool)), this, SLOT(watchedChanged(bool,bool)));
 }
 
-Episode *EpisodeList::getEpisodeForNumber(int number) {
+Episode *EpisodeList::getEpisodeForNumber(float number) {
     if (number < 0) {
         return NULL; // specials don't have a number
     }
@@ -113,22 +113,22 @@ int EpisodeList::numberOfWatchedEpisodes() const
 }
 
 
-int EpisodeList::highestDownloadedEpisodeNumber() const
+float EpisodeList::highestDownloadedEpisodeNumber() const
 {
-    int highest = -1;
+    float highest = -1;
     for (int i=0; i < episodes.length(); ++i) {
-        int num = episodes.at(i)->getEpisodeNumber();
+        float num = episodes.at(i)->getEpisodeNumber();
         highest = num > highest ? num : highest;
     }
     return highest;
 }
 
-int EpisodeList::highestWatchedEpisodeNumber() const
+float EpisodeList::highestWatchedEpisodeNumber() const
 {
-    int highest = -1;
+    float highest = -1;
     for (int i=0; i < episodes.length(); ++i) {
         if (episodes.at(i)->getWatched()) {
-            int num = episodes.at(i)->getEpisodeNumber();
+            float num = episodes.at(i)->getEpisodeNumber();
             highest = num > highest ? num : highest;
         }
     }

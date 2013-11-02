@@ -411,7 +411,7 @@ QDateTime TvShow::lastWatchedDate() const {
 
 TvShow::WatchStatus TvShow::getStatus() const {
     int eps = episodes.numberOfEpisodes();
-    int total = std::max(totalEpisodes, episodes.highestDownloadedEpisodeNumber());
+    int total = std::max(totalEpisodes, episodes.numberOfEpisodes());
     total = std::max(total, eps);
     bool unknownAiring = totalEpisodes <= 0 && isAiring();
     if (unknownAiring || episodes.numberOfWatchedEpisodes() < total) {
@@ -432,7 +432,7 @@ TvShow::WatchStatus TvShow::getStatus() const {
 }
 
 bool TvShow::isCompleted() const {
-    int total = std::max(totalEpisodes, episodes.highestDownloadedEpisodeNumber());
+    int total = std::max(totalEpisodes, episodes.numberOfEpisodes());
     return !isAiring() && episodes.numberOfWatchedEpisodes() >= total;
 }
 

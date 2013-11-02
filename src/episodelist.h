@@ -21,17 +21,17 @@ public:
     void addMovieFile(const MovieFile *movieFile); ///< this takes ownage
     void addEpisode(Episode* episode); ///< this takes ownage
 
-    Episode* getEpisodeForNumber(int number);
+    Episode* getEpisodeForNumber(float number);
 
     QString name() const;
     int numberOfEpisodes() const;
     int numberOfWatchedEpisodes() const;
-    int highestWatchedEpisodeNumber() const;
+    float highestWatchedEpisodeNumber() const;
 
     Episode* getEpisodeForPath(const QString &path);
     QString mostDownloadedReleaseGroup() const;
     QString favouriteReleaseGroup() const;
-    int highestDownloadedEpisodeNumber() const;
+    float highestDownloadedEpisodeNumber() const;
 
     // TODO
     // This class will be removed soon, so I just made this public for some last sloppy uses
