@@ -105,7 +105,16 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
     seasonEl.addClass("season");
     
     episodes = episodes.sort(function(a,b) {
-        return a.episodeNumber < b.episodeNumber ? -1 : 1;
+        if (a.numericEpisodeNumber != b.numericEpisodeNumber) {
+            return a.numericEpisodeNumber < b.numericEpisodeNumber ? -1 : 1;
+        }
+        if (a.episodeNumber != b.episodeNumber) {
+            return a.episodeNumber < b.episodeNumber ? -1 : 1;
+        }
+        if (a.episodeName == b.episodeName) {
+            return 0;
+        }
+        return a.episodeName < b.episodeName ? -1 : 1;
     })
     
     $.each(episodes, function() {
