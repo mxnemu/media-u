@@ -154,9 +154,11 @@ MovieFile::MovieFile(QString p) {
         int latestOccurance = occurance;
         while (occurance != -1) {
             // ignore file version at the end like: " - THORA 1.0v2.1.vid"
-            QRegExp releaseVersionRegex("([0-9\\.]+)?v[0-9\\.]");
+            QRegExp releaseVersionRegex("([0-9\\.]+)?(v[0-9\\.])");
             if (-1 == releaseVersionRegex.indexIn(releaseGroupAtEnd.cap(1))) {
                 latestOccurance = occurance;
+            } else {
+                path.remove(releaseVersionRegex);
             }
             occurance = path.indexOf(releaseGroupAtEnd, occurance + releaseGroupAtEnd.cap(0).length());
         }
@@ -164,9 +166,16 @@ MovieFile::MovieFile(QString p) {
         if (latestOccurance != -1) {
             path.indexOf(releaseGroupAtEnd, latestOccurance);
             this->releaseGroup = releaseGroupAtEnd.cap(1);
+            path.remove(latestOccurance, releaseGroupAtEnd.cap(1).length());
         }
     }
     // TODO check for haruhi style ep name here
+
+    QRegExp epNameRegex("-\\s?(.*)$");
+    if (episodeName.isEmpty() && -1 != epNameRegex.indexIn(path)) {
+        episodeName = epNameRegex.cap(1);
+        episodeName = episodeName.trimmed();
+    }
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
