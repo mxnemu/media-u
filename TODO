@@ -1,17 +1,16 @@
 Roadmap:
+-When status == waiting for new episodes add an NyaaRssListener to the show
 -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
+-add new episodes to transmission-cli
 -choose fansubber Ui on TVShowPage
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
--use serversent events to tell pause, and other videoplayer events
 -add shows to correct lists when received as serversent event
--try konachan and yande.re before getting pics from gelbooru
 -continue watching random show button for html StartPage
--search nyaa for new episodes of favourite fansubber
--add new episodes to transmission-cli
 
 Optional:
 -generate thumbnails for each episode
+-try konachan and yande.re before getting pics from gelbooru
 
 Probably won't fix:
 -make mplayer use the gpu of the raspberry pi
