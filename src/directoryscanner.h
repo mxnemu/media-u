@@ -28,7 +28,7 @@ private:
 class DirectoryScannerThread : public QThread {
     Q_OBJECT
 public:
-    DirectoryScannerThread(DirectoryScanner* scanner, const QList<SearchDirectory>& dirs, QObject* parent);
+    DirectoryScannerThread(DirectoryScanner* scanner, const QList<SearchDirectory> dirs, QObject* parent);
     virtual ~DirectoryScannerThread();
     void run();
 signals:
@@ -36,7 +36,7 @@ signals:
     void done();
 private:
     DirectoryScanner* scanner;
-    const QList<SearchDirectory>& dirs;
+    const QList<SearchDirectory> dirs;
 };
 
 #endif // MOVIESCANNER_H

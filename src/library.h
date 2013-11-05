@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QDir>
 #include <qhttpconnection.h>
+#include <QFileSystemWatcher>
 #include "tvshow.h"
 #include "malclient.h"
 #include "malapidotcomclient.h"
@@ -43,6 +44,7 @@ public:
     QDir getDirectory() const;
 
     void startSearch();
+    void startSearch(const QList<SearchDirectory> dirs);
     Library::searchStatus getSearchStatus();
     bool getWallpaperDownloadRunning();
 
@@ -65,6 +67,8 @@ public slots:
     void fetchMetaData();
     void generateFrenchises();
 
+    void fileChangedInSearchDirectory(QString);
+
 private slots:
     void fetchingFinished();
     void wallpaperDownloaderFinished();
@@ -82,6 +86,7 @@ private:
     QList<WallpaperDownload::Client*> wallpaperDownloaders;
     QList<WallpaperDownload::FetchThread*> runningWallpaperDownloaders;
     DirectoryScannerThread* searchThread;
+    QFileSystemWatcher* fileSystemWatcher;
 };
 
 #endif // LIBRARY_H

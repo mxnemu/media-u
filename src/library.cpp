@@ -27,6 +27,10 @@ Library::Library(QString path, QObject *parent) :
 
     connect(&malapiClient, SIGNAL(updateFinished()),
             this, SLOT(fetchingFinished()));
+
+    fileSystemWatcher = new QFileSystemWatcher(this);
+    connect(fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedInSearchDirectory(QString)));
+    connect(fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fileChangedInSearchDirectory(QString)));
 }
 
 void Library::initMalClient(QString malConfigFilepath) {
@@ -126,6 +130,10 @@ void Library::startWallpaperDownloaders() {
 }
 
 void Library::startSearch() {
+    startSearch(searchDirectories);
+}
+
+void Library::startSearch(const QList<SearchDirectory> dirs) {
     if (this->searchThread) {
         if (this->searchThread->isFinished()) {
             QThread* t = this->searchThread;
@@ -137,7 +145,7 @@ void Library::startSearch() {
     }
     DirectoryScanner* scanner = new DirectoryScanner();
     scanner->addScanner(new TvShowScanner(*this));
-    this->searchThread = new DirectoryScannerThread(scanner, searchDirectories, this);
+    this->searchThread = new DirectoryScannerThread(scanner, dirs, this);
     connect(searchThread, SIGNAL(done()), this, SIGNAL(searchFinished()));
     connect(searchThread, SIGNAL(machingFile(QString)), this, SLOT(importTvShowEpisode(QString)));
     connect(searchThread, SIGNAL(done()), this, SLOT(startWallpaperDownloaders()));
@@ -163,6 +171,8 @@ const QList<SearchDirectory>& Library::getSearchDirectories() const {
 bool Library::addSearchDirectory(SearchDirectory dir) {
     if (getSearchDirectory(dir.dir.absolutePath()) == NULL) {
         searchDirectories.append(dir);
+        fileSystemWatcher->addPath(dir.dir.absolutePath());
+        qDebug() << fileSystemWatcher->directories();
         return true;
     }
     return false;
@@ -196,6 +206,13 @@ void Library::generateFrenchises() {
     }
     foreach (Franchise* franchise, franchises) {
         franchise->generateName();
+    }
+}
+
+void Library::fileChangedInSearchDirectory(QString path) {
+    SearchDirectory* sd = getSearchDirectory(path);
+    if (sd) {
+        startSearch(QList<SearchDirectory>() << SearchDirectory(sd->dir));
     }
 }
 
@@ -241,7 +258,7 @@ void Library::readAll() {
             bool enabled = false;
             NwUtils::describe(jr, "path", dirpath);
             NwUtils::describe(jr, "enabled", enabled);
-            searchDirectories.append(SearchDirectory(dirpath, enabled));
+            addSearchDirectory(SearchDirectory(dirpath, enabled));
         }
 
         jr.describeValueArray("tvShows", tvShows.length());
