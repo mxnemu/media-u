@@ -5,7 +5,8 @@
 TvShowPage::TvShowPage(Library& library, QWidget *parent) :
     Page(parent),
     ui(new Ui::TvShowPage),
-    library(library)
+    library(library),
+    tvShow(NULL)
 {
     ui->setupUi(this);
 }
@@ -17,13 +18,16 @@ TvShowPage::~TvShowPage()
 
 void TvShowPage::initFromQuery(const QString &initString) {
     TvShow* show = library.existingTvShow(initString);
-    if (show) {
-        this->setTvShow(show);
-    }
+    this->setTvShow(show);
 }
 
 void TvShowPage::setTvShow(TvShow* show) {
     this->tvShow = show;
+
+    if (!show) {
+        return;
+    }
+
     connect(&tvShow->episodeListMutable(), SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
 
     ui->title->setText(show->name());
@@ -56,6 +60,10 @@ void TvShowPage::updateWatched(int,  int) {
 }
 
 void TvShowPage::receivedPlayerSettings(QHttpResponse *resp, const QByteArray& body) {
+    if (!tvShow) {
+        return;
+    }
+
     std::stringstream ss;
     ss << body.data();
     nw::JsonReader jr(ss);
@@ -72,6 +80,10 @@ void TvShowPage::receivedPlayerSettings(QHttpResponse *resp, const QByteArray& b
 
 bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 {
+    if (!tvShow) {
+        return false;
+    }
+
     if (req->path() == "/api/page/showDetails") {
         std::stringstream ss;
         nw::JsonWriter jw(ss);
