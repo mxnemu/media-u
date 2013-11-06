@@ -38,7 +38,7 @@ void ApiPushEvents::listenerTerminated() {
 void ApiPushEvents::onShowAdded(TvShow *show) {
     std::stringstream ss;
     nw::JsonWriter jw(ss);
-    show->write(jw);
+    show->writeAsListingItem(&jw);
     jw.close();
     this->sendToListeners(ss.str().data(), "showAdded");
 }

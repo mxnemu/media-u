@@ -11,6 +11,11 @@ body, html {
     margin-bottom: 1em;
 }
 
+.showList .watchCount {
+    float:right;
+    padding-right: 1em
+}
+
 .showList .headline{
     font-size: 1.1em;
 }

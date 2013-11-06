@@ -106,6 +106,8 @@ public:
     bool startedWatching() const;
     const EpisodeList& episodeList() const;
     EpisodeList &episodeListMutable();
+    QString watchStatusToString(TvShow::WatchStatus status) const;
+    void writeAsListingItem(nw::Describer *de) const;
 signals:
 
 private:

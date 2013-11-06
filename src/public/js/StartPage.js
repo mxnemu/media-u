@@ -95,7 +95,19 @@ StartPage.prototype.liForShow = function(show) {
     item.on("focus", function() {
         $(this).mousemove();
     });
-    item.text(show.name);
+    
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = show.name;
+    
+    var watchCount = document.createElement("span");
+    watchCount.className = "watchCount";
+    watchCount.textContent = show.watchedEpisodes + "/" +
+                             show.downloadedEpisodes + "/" + 
+                             show.totalEpisodes;
+    
+    item.append(name);
+    item.append(watchCount);
     item.mousemove(function() {
         if (self.updateFocus && !$(this).hasClass("focused")) {
             $("li.focused").removeClass("focused");

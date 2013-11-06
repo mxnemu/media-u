@@ -89,8 +89,7 @@ void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QLis
         jw.describeArray(l.first.toStdString(), "show", l.second.length());
         for (int i=0; jw.enterNextElement(i); ++i) {
             const TvShow* show = l.second.at(i);
-            std::string name = show->name().toStdString();
-            jw.describe("name", name);
+            show->writeAsListingItem(&jw);
         }
     }
 

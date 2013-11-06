@@ -100,6 +100,22 @@ void TvShow::write(nw::JsonWriter& jw) {
     jw.close();
 }
 
+void TvShow::writeAsListingItem(nw::Describer* de) const {
+    int watched = this->episodes.numberOfWatchedEpisodes();
+    int downloaded = this->episodes.numberOfEpisodes();
+    int total = this->totalEpisodes;
+    QString statusStr = watchStatusToString(this->getStatus());
+    QString nameStr = this->name();
+
+    NwUtils::describe(*de, "name", nameStr);
+    de->describe("watchedEpisodes", watched);
+    de->describe("downloadedEpisodes", downloaded);
+    de->describe("totalEpisodes", total);
+    NwUtils::describe(*de, "status", statusStr);
+}
+
+
+
 void TvShow::importMovieFile(const MovieFile *episode) {
     episodes.addMovieFile(episode);
 }
@@ -407,6 +423,16 @@ QDateTime TvShow::lastWatchedDate() const {
         }
     }
     return latest;
+}
+
+QString TvShow::watchStatusToString(TvShow::WatchStatus status) const {
+    if (status == completed) return "completed";
+    if (status == watching) return "watching";
+    if (status == waitingForNewEpisodes) return "waitingForNewEpisodes";
+    if (status == onHold) return "onHold";
+    if (status == dropped) return "dropped";
+    if (status == planToWatch) return "planToWatch";
+    return "";
 }
 
 TvShow::WatchStatus TvShow::getStatus() const {
