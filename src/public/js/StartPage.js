@@ -119,7 +119,7 @@ StartPage.prototype.liForShow = function(show) {
         self.updateFocus = false;
         // todo don't send when the active page is already correct,
         // because this causes a new background img to be shown.
-        $.getJSON("api/setPage/TvShowPage?" + $(this).text(), function() {
+        $.getJSON("api/setPage/TvShowPage?" + show.name, function() {
             window.location.hash = "#!/TvShowPage"
         });
         //G.app.setPage(new TvShowPage());
