@@ -60,11 +60,12 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         sendLists(resp,
                   QList<std::pair<QString, QList<TvShow*> > >() <<
                   std::pair<QString, QList<TvShow*> >("airing", airing()) <<
-                  std::pair<QString, QList<TvShow*> >("watching", statusWatching()) <<
-                  std::pair<QString, QList<TvShow*> >("waiting-for-new-episodes", statusWaitingForNewEpisodes()) <<
-                  std::pair<QString, QList<TvShow*> >("plan-to-watch", statusPlanToWatch()) <<
-                  std::pair<QString, QList<TvShow*> >("dropped", statusDropped()) <<
-                  std::pair<QString, QList<TvShow*> >("completed", statusCompleted())
+                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::watching), statusWatching()) <<
+                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), statusWaitingForNewEpisodes()) <<
+                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::planToWatch), statusPlanToWatch()) <<
+                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::onHold), statusOnHold()) <<
+                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::dropped), statusDropped()) <<
+                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::completed), statusCompleted())
         );
     } else if (req->path().startsWith("/api/library/filter/oldLists")) {
         sendLists(resp,

@@ -425,7 +425,7 @@ QDateTime TvShow::lastWatchedDate() const {
     return latest;
 }
 
-QString TvShow::watchStatusToString(TvShow::WatchStatus status) const {
+QString TvShow::watchStatusToString(TvShow::WatchStatus status) {
     if (status == completed) return "completed";
     if (status == watching) return "watching";
     if (status == waitingForNewEpisodes) return "waitingForNewEpisodes";

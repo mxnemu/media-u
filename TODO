@@ -5,7 +5,6 @@ Roadmap:
 -choose fansubber Ui on TVShowPage
 -observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
--add shows to correct lists when received as serversent event
 -continue watching random show button for html StartPage
 
 Optional:

@@ -134,6 +134,8 @@ StartPage.prototype.listsForShow = function(show) {
             lists.push(this.lists[listName]);
         } else if (listName === "all") {
             lists.push(this.lists[listName]);
+        } else if (listName === show.status) {
+            lists.push(this.lists[listName]);
         }
     }
     if (lists.length === 0) {
