@@ -3,7 +3,6 @@ Roadmap:
 -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
 -add new episodes to transmission-cli
 -choose fansubber Ui on TVShowPage
--observe the filesystem using QFileSystemWatcher or whatever is new in qt5
 -list subtitleTracks & audiotrack names
 -continue watching random show button for html StartPage
 
