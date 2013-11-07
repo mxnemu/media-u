@@ -23,19 +23,8 @@ TvShowPage.prototype.createNodes = function() {
         window.location.hash = "#!/";
     });
     
-    var playButton = $("<input class='playButton' type='button'/>");
-    playButton.attr("value", "play");
-    playButton.attr("disabled", "disabled");
-    
-    playButton.click(function() {
-        var first = $("li .toggleWatchedButton:not(.watched):first").parent();
-        var files = [];
-        files.push(first.attr("data-filename"));
-        first.nextAll("li").each(function() {
-            files.push(this.getAttribute("data-filename"));
-        });
-        self.play(files);
-    });
+    this.playButton = PlayButton.create();
+    this.playButton.attr("disabled", "disabled");
     
     var completeButton = document.createElement("input");
     completeButton.type = "button";
@@ -73,24 +62,24 @@ TvShowPage.prototype.createNodes = function() {
         audioTrackField.on("input", setFn("audioTrack"));
     });
     
-    var seasonsEl = $(document.createElement("div"));
-    seasonsEl.addClass("seasons");
+    var episodesEl = $(document.createElement("div"));
+    episodesEl.addClass("seasons");
     
     $.getJSON("api/page/showDetails", function(data) {
         console.log(data);
         self.tvShow = data;
-        playButton.removeAttr("disabled");
+        self.playButton.removeAttr("disabled");
         completeButton.removeAttribute("disabled");
-        self.createSeasonList(data.episodes, seasonsEl);
+        self.createEpisodeList(data.episodes, episodesEl);
     });
 
     page.append(backButton);
-    page.append(playButton);
+    page.append(this.playButton);
     page.append("<span> sub: </span>");
     page.append(subtitleTrackField);
     page.append("<span> audio: </span>");
     page.append(audioTrackField);
-    page.append(seasonsEl);
+    page.append(episodesEl);
     page.append(completeButton);
     this.bindEvents();
 }
@@ -99,31 +88,15 @@ TvShowPage.prototype.removeNodes = function() {
     this.unbindEvents();
 }
 
-TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
+TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
     var self = this;
     var seasonEl = $(document.createElement("ul"));
     seasonEl.addClass("season");
     
-    episodes = episodes.sort(function(a,b) {
-        if (a.numericEpisodeNumber < -1 && b.numericEpisodeNumber >= 0) {
-            return 1
-        }
-        if (b.numericEpisodeNumber < -1 && a.numericEpisodeNumber >= 0) {
-            return -1
-        }
-        if (a.numericEpisodeNumber != b.numericEpisodeNumber) {
-            return a.numericEpisodeNumber < b.numericEpisodeNumber ? -1 : 1;
-        }
-        if (a.episodeNumber != b.episodeNumber) {
-            return a.episodeNumber < b.episodeNumber ? -1 : 1;
-        }
-        if (a.episodeName == b.episodeName) {
-            return 0;
-        }
-        return a.episodeName < b.episodeName ? -1 : 1;
-    })
-    
-    $.each(episodes, function() {
+    this.episodeList = new EpisodeList(episodes);
+    PlayButton.initOnClick(this.playButton, this.episodeList);
+     
+    $.each(this.episodeList.episodes, function() {
         var ep = this;
         var episodeEl = $(document.createElement("li"));
         var text = $(document.createElement("span"));
@@ -179,7 +152,7 @@ TvShowPage.prototype.createSeasonList = function(episodes, seasonsEl) {
         
         seasonEl.append(episodeEl);
     });
-    seasonsEl.append(seasonEl);
+    episodesEl.append(seasonEl);
 }
 
 TvShowPage.prototype.play = function(episode) {
