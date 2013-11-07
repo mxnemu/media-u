@@ -61,7 +61,24 @@ StartPage.prototype.createLists = function(page) {
         var listHead = $("<div class='headline'></div>");
         list.node = listNode;
         
-        listHead.text(listName);
+        var name = document.createElement("span");
+        name.textContent = listName;
+        
+        (function(listNode) {
+            var playButton = PlayButton.create();
+            playButton.click(function() {
+                var shows = listNode.find("li .name");
+                var randomShow = shows.get(Math.floor(Math.random() * shows.length));
+                if (randomShow) {
+                    var randomShowName = randomShow.getAttribute("data-name");
+                    PlayButton.ajaxClickCallback(randomShowName)();
+                }
+            });
+            
+            listHead.append(name);
+            listHead.append(playButton);
+        })(listNode);
+        
         listNode.append(listHead);
         
         list.sort(function(a, b) {
@@ -99,6 +116,7 @@ StartPage.prototype.liForShow = function(show) {
     var name = document.createElement("span");
     name.className = "name";
     name.textContent = show.name;
+    name.setAttribute("data-name", show.name);
     
     var watchCount = document.createElement("span");
     watchCount.className = "watchCount";

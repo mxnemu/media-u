@@ -43,16 +43,28 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 {
     if (req->path().startsWith("/api/library/filter")) {
         return filter().handleApiRequest(req, resp);
-    } else if(req->path().startsWith("/api/library/randomWallpaper")) {
+    } else if (req->path().startsWith("/api/library/randomWallpaper")) {
         // TODO change abs img path to server url
         Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(filter().getRandomWallpaper()), mime::json);
-    } else if(req->path().startsWith("/api/library/toggleWatched")) {
+    } else if (req->path().startsWith("/api/library/toggleWatched")) {
         Episode* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
         if (episode) {
             episode->setWatched(!episode->getWatched());
             Server::simpleWrite(resp, 200, QString("{\"watched\":%1}").arg(episode->getWatched() ? "true" : "false"), mime::json);
         } else {
             Server::simpleWrite(resp, 400, QString("{\"error\":\"Episode not found\"}"), mime::json);
+        }
+    } else if (req->path().startsWith("/api/library/tvShowDetails")) {
+        TvShow* tvShow = existingTvShow(req->url().query(QUrl::FullyDecoded));
+        if (tvShow) {
+            std::stringstream ss;
+            nw::JsonWriter jw(ss);
+            jw.setState("detailed", true);
+            tvShow->write(jw);
+            jw.close();
+            Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
+        } else {
+            Server::simpleWrite(resp, 400, QString("{\"error\":\"TvShow not found\"}"), mime::json);
         }
     } else {
         return false;
