@@ -34,3 +34,14 @@ EpisodeList.prototype.unwatchedArray = function() {
     }
     return files;
 }
+
+EpisodeList.prototype.watchedArray = function() {
+    var files = [];
+    for (var i in this.episodes) {
+        var ep = this.episodes[i];
+        if (ep.watched) {
+            files.push(ep.path);
+        }
+    }
+    return files;
+}

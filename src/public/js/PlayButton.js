@@ -27,7 +27,12 @@ PlayButton = {
     
     episodeListClickCallback: function(episodeList) {
         return function() {
-            PlayButton.play(episodeList.unwatchedArray());
+            var files = episodeList.unwatchedArray();
+            if (files.length) {
+                PlayButton.play(files);
+            } else {
+                PlayButton.play(episodeList.watchedArray());
+            }
         }
     },
     
