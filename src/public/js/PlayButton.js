@@ -38,7 +38,6 @@ PlayButton = {
     
     ajaxClickCallback: function(tvShow) {
         return function() {
-            // TODO make page independent version
             $.getJSON("/api/library/tvShowDetails?" + tvShow, function(data) {
                 var episodeList = new EpisodeList(data.episodes);
                 PlayButton.episodeListClickCallback(episodeList)();
