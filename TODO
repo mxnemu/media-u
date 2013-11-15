@@ -1,4 +1,5 @@
 Roadmap:
+-http://myanimelist.net/forum/?topicid=682709
 -When status == waiting for new episodes add an NyaaRssListener to the show
 -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
 -add new episodes to transmission-cli

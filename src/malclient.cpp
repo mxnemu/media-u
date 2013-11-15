@@ -115,6 +115,7 @@ CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
     curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1);
+    curl_easy_setopt(handle, CURLOPT_USERAGENT, "nemu-malapiclient");
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
 }
