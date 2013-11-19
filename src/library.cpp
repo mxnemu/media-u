@@ -66,6 +66,14 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         } else {
             Server::simpleWrite(resp, 400, QString("{\"error\":\"TvShow not found\"}"), mime::json);
         }
+    } else if (req->path().startsWith("/api/library/movieFileMetaData")) {
+        QString path = req->url().query(QUrl::FullyDecoded);
+        Episode* ep = filter().getEpisodeForPath(path);
+        if (ep) {
+            MetaData data = metaDataParser->parse(path);
+            Server::simpleWrite(resp, 200, data.toJson(), mime::json);
+        }
+        Server::simpleWrite(resp, 404, "File for path does not exist, or is not in Library" "text/plain");
     } else {
         return false;
     }
@@ -328,6 +336,17 @@ void Library::write() {
         }
         jw.close();
     }
+}
+
+
+MetaDataParser *Library::getMetaDataParser() const
+{
+    return metaDataParser;
+}
+
+void Library::setMetaDataParser(MetaDataParser *value)
+{
+    metaDataParser = value;
 }
 
 QDir Library::getDirectory() const

@@ -11,6 +11,7 @@
 #include "malapidotcomclient.h"
 #include "moebooruclient.h"
 #include "gelbooruclient.h"
+#include "metadataparser.h"
 #include "libraryfilter.h"
 #include "searchdirectory.h"
 #include "franchise.h"
@@ -55,6 +56,9 @@ public:
 
     void addToFrenchise(const TvShow *show);
 
+    MetaDataParser *getMetaDataParser() const;
+    void setMetaDataParser(MetaDataParser *value);
+
 signals:
     void showAdded(TvShow* show);
     void searchFinished();
@@ -82,7 +86,8 @@ private:
     MalClient malClient;
     MalApiDotCom::Client malapiClient;
     LibraryFilter mFilter;
-    // TODO put into an array
+    MetaDataParser* metaDataParser;
+
     QList<WallpaperDownload::Client*> wallpaperDownloaders;
     QList<WallpaperDownload::FetchThread*> runningWallpaperDownloaders;
     DirectoryScannerThread* searchThread;

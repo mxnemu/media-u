@@ -126,11 +126,46 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
             ep.watched = !ep.watched;
             watchButtonSetDisplay();
             $.getJSON("api/library/toggleWatched?" + ep.path);
+       });
+       
+        var chapterList = document.createElement("div");
+        chapterList.className = "chapterList";
+        
+        $(chapterList).hover(function() {
+            if (ep.metaData) {
+                return;
+            }
+            ep.metaData = {};
+            $.getJSON("api/library/movieFileMetaData?" + ep.path, function(data) {
+                ep.metaData = data;
+                
+                $.each(data.chapters, function() {
+                    var chapter = this;
+                    
+                    var chapterLink = document.createElement("span");
+                    chapterLink.className = "chapterLink";
+                    chapterLink.textContent = chapter.title;
+                    chapterList.appendChild(chapterLink);
+                    
+                    chapterLink.onclick = function(event) {
+                        var json = {
+                            filename: ep.path
+                        };
+                        var start = Math.floor(chapter.start);
+                        $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
+                            $.getJSON("api/player/jumpTo?" + start, function(data) {
+                                window.location.hash = "#!/PlayerPage";
+                            });
+                        });
+                    }
+                });
+                console.log(ep.metaData);
+            });
         });
         
         episodeEl.append(toggleWatchedButton);
         episodeEl.append(text);
-        
+        episodeEl.append(chapterList);
         episodeEl.attr("data-fileName", this.path);
         
         episodeEl.click(function(event) {

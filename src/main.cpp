@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
     ThumbnailCreatorAvconv thumbnailCreator;
     player->setMetaDataParser(&metaDataParser);
     player->setThumbnailCreator(&thumbnailCreator);
+    library.setMetaDataParser(&metaDataParser);
 
     QDir publicDir = QDir::current();
     publicDir.cd("public");
