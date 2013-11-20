@@ -51,10 +51,9 @@ li.focused {
 
 .season li .chapterList {
     display: inline-block;
-    min-width: 25px;
     max-height: 1em;
     height: 1em;
-    width: 35%;
+    min-width: 35%;
     float: right;
     padding-right: 0.5em;
     overflow: hidden;

@@ -130,6 +130,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
        
         var chapterList = document.createElement("div");
         chapterList.className = "chapterList";
+        chapterList.textContent = "-> chapters"
         
         $(chapterList).hover(function() {
             if (ep.metaData) {
@@ -137,6 +138,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
             }
             ep.metaData = {};
             $.getJSON("api/library/movieFileMetaData?" + ep.path, function(data) {
+                chapterList.innerHTML = "";
                 ep.metaData = data;
                 
                 $.each(data.chapters, function() {
