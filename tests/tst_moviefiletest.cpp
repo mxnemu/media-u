@@ -84,6 +84,14 @@ void MovieFileTest::testPathParsing_data()
                                           2.f <<
                                           "Instruments!";
 
+    QTest::newRow("Number: 0 prefixes & dot spaces") <<
+                                           "/tmp/Legend.of.the.Galactic.Heroes.001.[x264.720p.10bit.AAC].mkv" <<
+                                           "" <<
+                                           "Legend of the Galactic Heroes" <<
+                                           "001" <<
+                                           1.f <<
+                                           "";
+
     QTest::newRow("Number: ed is the end of the title (Elfen lied 03)") <<
                                                                            "/tmp/Elfen lied 03.ogg" <<
                                                                            "" <<
