@@ -4,6 +4,7 @@
 #include "videoplayer.h"
 #include <QObject>
 #include "config.h"
+#include <QFileSystemWatcher>
 
 class Mplayer : public VideoPlayer
 {
@@ -20,7 +21,8 @@ public:
     virtual float incrementVolume();
     virtual float decrementVolume();
 
-    void convertSnapshot(QString snapshotName);
+    QString snapshotOutputName(QString snapshotPath);
+    bool convertSnapshot(QString snapshotPath, QString outputPath);
 protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &settings);
     virtual void pauseImpl();
@@ -31,6 +33,12 @@ protected:
 private slots:
     void onProcessFinished(int exitCode);
     void onProcessOutput();
+    void onSnapshotDirFileAdded(QString directory);
+    void onSnapshotReadyForConversion(QString file);
+
+private:
+    QFileSystemWatcher fileSystemWatcher;
+    QMap<QString, QString> unhandledSnapshots;
 };
 
 #endif // MPLAYER_H

@@ -10,6 +10,9 @@ Mplayer::Mplayer(Library& library, const MplayerConfig &config) :
 {
     connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(onProcessOutput()));
+
+    connect(&fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onSnapshotReadyForConversion(QString)));
+    connect(&fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(onSnapshotDirFileAdded(QString)));
 }
 
 Mplayer::~Mplayer() {
@@ -17,6 +20,7 @@ Mplayer::~Mplayer() {
 }
 
 bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
+    fileSystemWatcher.removePaths(fileSystemWatcher.directories());
     process.setWorkingDirectory(config.snapshotDir);
     process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
@@ -35,6 +39,7 @@ bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& setting
         if (settings.subtileTrack != 0) {
             process.write(QString("sub_select %1\n").arg(settings.subtileTrack).toUtf8());
         }
+        fileSystemWatcher.addPath(config.snapshotDir);
         return true;
     }
     return false;
@@ -99,30 +104,50 @@ void Mplayer::onProcessOutput() {
         QRegExp snapshotRegex("screenshot '(.*)'");
         if (-1 != output.indexOf(snapshotRegex)) {
             QString snapshotName = snapshotRegex.cap(1);
+            QString snapshotPath = QDir(config.snapshotDir).absoluteFilePath(snapshotName);
             if (config.snapshotFormat != QFileInfo(snapshotName).completeSuffix()) {
-                // TODO install filesystem watcher that checks when the snapshot is ready
-                // remove filesystem watcher when the conversion is done
-                //this->convertSnapshot(snapshotName);
+                unhandledSnapshots[snapshotPath] = snapshotOutputName(snapshotPath);
             }
+        } else {
+            qDebug() << output;
         }
     }
-    qDebug() << output;
 }
 
-
-void Mplayer::convertSnapshot(QString snapshotName) {
-    QString snapshotPath = QDir(config.snapshotDir).absoluteFilePath(snapshotName);
-    QString outputPath = QString("%1.%2").arg(QDir(config.snapshotDir).absoluteFilePath(QFileInfo(snapshotPath).baseName()), config.snapshotFormat);
-    QPixmap p;
-    bool opened = p.load(snapshotPath);
-    if (!opened) {
-        qDebug() << "failed to open snapshot for conversion" << snapshotPath;
+void Mplayer::onSnapshotDirFileAdded(QString directory) {
+    QStringList keys = unhandledSnapshots.keys();
+    foreach (QString key, keys) {
+        if (!convertSnapshot(key, unhandledSnapshots[key])) {
+            fileSystemWatcher.addPath(key);
+        } else {
+            unhandledSnapshots.remove(key);
+        }
     }
-    if (opened && p.save(outputPath)) {
+}
+
+void Mplayer::onSnapshotReadyForConversion(QString file) {
+    fileSystemWatcher.removePath(file);
+    if (convertSnapshot(file, unhandledSnapshots[file])) {
+        unhandledSnapshots.remove(file);
+    }
+}
+
+// TODO put system time into the name to avoid overwriting
+QString Mplayer::snapshotOutputName(QString snapshotPath) {
+    return QString("%1.%2").arg(QDir(config.snapshotDir).absoluteFilePath(QFileInfo(snapshotPath).baseName()), config.snapshotFormat);
+}
+
+bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
+    QPixmap p;
+    if (!p.load(snapshotPath)) {
+        return false;
+    }
+    if (p.save(outputPath)) {
         if (!QFile(snapshotPath).remove()) {
             qDebug() << "failed to delete original snapshot" << snapshotPath;
         }
-    } else if (opened) {
+    } else {
         qDebug() << "failed to convert snapshot" << snapshotPath << "to" << outputPath;
     }
+    return true;
 }
