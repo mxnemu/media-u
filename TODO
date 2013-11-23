@@ -1,7 +1,5 @@
 Roadmap:
--list chapters when hovering an episode,
-    rightclick chapter to only play this chapter,
-    leftclick to start from there
+-convert mplayer snapshots to jpg, rename mplayer snapshots to include the show name
 -When status == waiting for new episodes add an NyaaRssListener to the show
 -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
 -add new episodes to transmission-cli
