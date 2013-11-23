@@ -10,6 +10,7 @@ public:
     void describe(nw::Describer*de);
     QString path;
     QStringList arguments;
+    QString snapshotDir;
 private:
     void initDefaultValues(); ///< init uninitialized values
 };

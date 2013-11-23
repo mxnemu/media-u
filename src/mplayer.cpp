@@ -17,6 +17,7 @@ Mplayer::~Mplayer() {
 }
 
 bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
+    process.setWorkingDirectory(config.snapshotDir);
     process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
         "-slave" <<

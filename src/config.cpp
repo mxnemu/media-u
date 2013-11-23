@@ -3,6 +3,7 @@
 #include <QDir>
 #include <iostream>
 #include <QDebug>
+#include <QStandardPaths>
 #include "systemutils.h"
 
 
@@ -120,6 +121,7 @@ void MplayerConfig::describe(nw::Describer *de) {
     }
     NwUtils::describe(*de, "path", path);
     NwUtils::describe(*de, "arguments", arguments, ' ');
+    NwUtils::describe(*de, "snapshotDir", snapshotDir);
     if (de->isInReadMode()) {
         this->initDefaultValues();
     }
@@ -128,6 +130,18 @@ void MplayerConfig::describe(nw::Describer *de) {
 void MplayerConfig::initDefaultValues() {
     if (this->path.isEmpty()) {
         this->path = "mplayer";
+
+        QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+
+        if (!imageDirs.isEmpty()) {
+            QDir dir = QDir(imageDirs.first());
+            dir.mkpath("snapshots");
+            dir.cd("snapshots");
+            if (dir.exists()) {
+                this->snapshotDir = dir.absolutePath();
+            }
+        }
+
         this->arguments = QStringList() <<
              "-fs" <<
              "-ass" <<
