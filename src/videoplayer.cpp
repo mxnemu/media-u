@@ -20,6 +20,7 @@ bool VideoPlayer::playFile(QString filepath) {
     this->nowPlaying.seconds = 0;
     this->nowPlaying.path = filepath;
     this->nowPlaying.metaData = this->metaDataParser->parse(filepath);
+    this->nowPlaying.tvShow = library.filter().getTvShowForPath(filepath);
     Episode* episode = library.filter().getEpisodeForPath(filepath);
     bool succeeded = false;
     if (episode) {
@@ -213,6 +214,7 @@ void VideoPlayer::resetPlayingStatus() {
     this->nowPlaying.seconds = -1;
     this->nowPlaying.path = QString();
     this->nowPlaying.metaData = MetaData();
+    this->nowPlaying.tvShow = NULL;
     this->pauseStatus = true;
 }
 

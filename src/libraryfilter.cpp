@@ -109,6 +109,16 @@ Episode *LibraryFilter::getEpisodeForPath(const QString &path) {
     return NULL;
 }
 
+TvShow* LibraryFilter::getTvShowForPath(const QString &path) {
+    for (int i=0; i < tvShows.length(); ++i) {
+        Episode* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
+        if (episode) {
+            return tvShows[i];
+        }
+    }
+    return NULL;
+}
+
 TvShow *LibraryFilter::getShowForRemoteId(int remoteId) {
     foreach (TvShow* show, tvShows) {
         if (show->getRemoteId() == remoteId) {

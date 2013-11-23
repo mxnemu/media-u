@@ -18,6 +18,7 @@ public:
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
     Episode* getEpisodeForPath(const QString& path);
+    TvShow* getTvShowForPath(const QString& path);
     TvShow* getShowForRemoteId(int remoteId);
     TvShow* getRandomShow();
     QString getRandomWallpaper();

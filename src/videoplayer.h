@@ -12,6 +12,7 @@ class VideoProgress {
 public:
     int seconds;
     MetaData metaData;
+    TvShow* tvShow;
     QString path;
 
     QString toSecondsAndPathJson();

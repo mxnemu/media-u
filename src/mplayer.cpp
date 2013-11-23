@@ -114,7 +114,7 @@ void Mplayer::onProcessOutput() {
     }
 }
 
-void Mplayer::onSnapshotDirFileAdded(QString directory) {
+void Mplayer::onSnapshotDirFileAdded(QString) {
     QStringList keys = unhandledSnapshots.keys();
     foreach (QString key, keys) {
         if (!convertSnapshot(key, unhandledSnapshots[key])) {
@@ -132,9 +132,32 @@ void Mplayer::onSnapshotReadyForConversion(QString file) {
     }
 }
 
-// TODO put system time into the name to avoid overwriting
-QString Mplayer::snapshotOutputName(QString snapshotPath) {
-    return QString("%1.%2").arg(QDir(config.snapshotDir).absoluteFilePath(QFileInfo(snapshotPath).baseName()), config.snapshotFormat);
+QString Mplayer::snapshotOutputName(QString) {
+    //$(tvShow)/$(file) - at: $(progressM):$(progressS).$(ext)
+
+    QString name = config.snapshotName;
+
+    static const QString tvShowReplaceText("$(tvShow)");
+    static const QString fileReplaceText("$(file)");
+    static const QString progressMReplaceText("$(progressM)");
+    static const QString progressSReplaceText("$(progressS)");
+    static const QString nowDateReplaceText("$(nowDate)");
+    static const QString extReplaceText("$(ext)");
+
+    QString tvShowName = nowPlaying.tvShow ? nowPlaying.tvShow->name() : QString();
+    QString minuteString = QString::number(nowPlaying.seconds / 60);
+    QString secondString = QString::number(nowPlaying.seconds % 60);
+    QString nowDateString = QString::number(QDateTime::currentMSecsSinceEpoch());
+
+    name = name.replace(tvShowReplaceText, tvShowName);
+    name = name.replace(fileReplaceText, QFileInfo(nowPlaying.path).fileName());
+    name = name.replace(progressMReplaceText, minuteString);
+    name = name.replace(progressSReplaceText, secondString);
+    name = name.replace(nowDateReplaceText, nowDateString);
+    name = name.replace(extReplaceText, config.snapshotFormat);
+
+    QDir baseDir = QDir(config.snapshotDir);
+    return baseDir.absoluteFilePath(name);
 }
 
 bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
@@ -142,6 +165,8 @@ bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
     if (!p.load(snapshotPath)) {
         return false;
     }
+    QDir dir = QFileInfo(outputPath).dir();
+    dir.mkpath(".");
     if (p.save(outputPath)) {
         if (!QFile(snapshotPath).remove()) {
             qDebug() << "failed to delete original snapshot" << snapshotPath;

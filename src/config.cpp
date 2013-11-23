@@ -123,6 +123,7 @@ void MplayerConfig::describe(nw::Describer *de) {
     NwUtils::describe(*de, "arguments", arguments, ' ');
     NwUtils::describe(*de, "snapshotDir", snapshotDir);
     NwUtils::describe(*de, "snapshotFormat", snapshotFormat);
+    NwUtils::describe(*de, "snapshotName", snapshotName);
     if (de->isInReadMode()) {
         this->initDefaultValues();
     }
@@ -132,6 +133,7 @@ void MplayerConfig::initDefaultValues() {
     if (this->path.isEmpty()) {
         this->path = "mplayer";
         this->snapshotFormat = "jpg";
+        this->snapshotName = "$(tvShow)/$(file) - $(progressM)m$(progressS)s - $(nowDate).$(ext)";
 
         QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
 
