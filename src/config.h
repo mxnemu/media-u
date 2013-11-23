@@ -11,6 +11,7 @@ public:
     QString path;
     QStringList arguments;
     QString snapshotDir;
+    QString snapshotFormat;
 private:
     void initDefaultValues(); ///< init uninitialized values
 };

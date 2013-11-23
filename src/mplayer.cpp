@@ -95,6 +95,34 @@ void Mplayer::onProcessOutput() {
         if (diff > 2.f) {
             emit jumped(newTime);
         }
+    } else {
+        QRegExp snapshotRegex("screenshot '(.*)'");
+        if (-1 != output.indexOf(snapshotRegex)) {
+            QString snapshotName = snapshotRegex.cap(1);
+            if (config.snapshotFormat != QFileInfo(snapshotName).completeSuffix()) {
+                // TODO install filesystem watcher that checks when the snapshot is ready
+                // remove filesystem watcher when the conversion is done
+                //this->convertSnapshot(snapshotName);
+            }
+        }
     }
     qDebug() << output;
+}
+
+
+void Mplayer::convertSnapshot(QString snapshotName) {
+    QString snapshotPath = QDir(config.snapshotDir).absoluteFilePath(snapshotName);
+    QString outputPath = QString("%1.%2").arg(QDir(config.snapshotDir).absoluteFilePath(QFileInfo(snapshotPath).baseName()), config.snapshotFormat);
+    QPixmap p;
+    bool opened = p.load(snapshotPath);
+    if (!opened) {
+        qDebug() << "failed to open snapshot for conversion" << snapshotPath;
+    }
+    if (opened && p.save(outputPath)) {
+        if (!QFile(snapshotPath).remove()) {
+            qDebug() << "failed to delete original snapshot" << snapshotPath;
+        }
+    } else if (opened) {
+        qDebug() << "failed to convert snapshot" << snapshotPath << "to" << outputPath;
+    }
 }

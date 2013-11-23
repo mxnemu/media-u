@@ -122,6 +122,7 @@ void MplayerConfig::describe(nw::Describer *de) {
     NwUtils::describe(*de, "path", path);
     NwUtils::describe(*de, "arguments", arguments, ' ');
     NwUtils::describe(*de, "snapshotDir", snapshotDir);
+    NwUtils::describe(*de, "snapshotFormat", snapshotFormat);
     if (de->isInReadMode()) {
         this->initDefaultValues();
     }
@@ -130,6 +131,7 @@ void MplayerConfig::describe(nw::Describer *de) {
 void MplayerConfig::initDefaultValues() {
     if (this->path.isEmpty()) {
         this->path = "mplayer";
+        this->snapshotFormat = "jpg";
 
         QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
 

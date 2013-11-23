@@ -20,6 +20,7 @@ public:
     virtual float incrementVolume();
     virtual float decrementVolume();
 
+    void convertSnapshot(QString snapshotName);
 protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &settings);
     virtual void pauseImpl();
