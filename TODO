@@ -2,12 +2,12 @@ Roadmap:
 -list chapters when hovering an episode,
     rightclick chapter to only play this chapter,
     leftclick to start from there
--http://myanimelist.net/forum/?topicid=682709
 -When status == waiting for new episodes add an NyaaRssListener to the show
 -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
 -add new episodes to transmission-cli
 -choose fansubber Ui on TVShowPage
 -list subtitleTracks & audiotrack names
+-alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
 
 Optional:
 -generate thumbnails for each episode
