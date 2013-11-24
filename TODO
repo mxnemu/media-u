@@ -1,15 +1,15 @@
 Roadmap:
--convert mplayer snapshots to jpg, rename mplayer snapshots to include the show name
 -When status == waiting for new episodes add an NyaaRssListener to the show
--listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
--add new episodes to transmission-cli
+    -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
+    -add new episodes to transmission-cli
 -choose fansubber Ui on TVShowPage
--list subtitleTracks & audiotrack names
 -alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
 
 Optional:
 -generate thumbnails for each episode
 -try konachan and yande.re before getting pics from gelbooru
+-get percise metadata (not based on bytesize guesses) and save it for each moviefile
+-list subtitleTracks & audiotrack names
 
 Probably won't fix:
 -make mplayer use the gpu of the raspberry pi
