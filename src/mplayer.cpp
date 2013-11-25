@@ -10,9 +10,6 @@ Mplayer::Mplayer(Library& library, const MplayerConfig &config) :
 {
     connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(onProcessOutput()));
-
-    connect(&fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onSnapshotReadyForConversion(QString)));
-    connect(&fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(onSnapshotDirFileAdded(QString)));
 }
 
 Mplayer::~Mplayer() {
@@ -20,7 +17,6 @@ Mplayer::~Mplayer() {
 }
 
 bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
-    fileSystemWatcher.removePaths(fileSystemWatcher.directories());
     process.setWorkingDirectory(config.snapshotDir);
     process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
@@ -39,7 +35,6 @@ bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& setting
         if (settings.subtileTrack != 0) {
             process.write(QString("sub_select %1\n").arg(settings.subtileTrack).toUtf8());
         }
-        fileSystemWatcher.addPath(config.snapshotDir);
         return true;
     }
     return false;
@@ -83,6 +78,7 @@ float Mplayer::decrementVolume() {
 }
 
 void Mplayer::onProcessFinished(int exitCode) {
+    convertSnapshots();
     if (exitCode == 0) {
         emit playbackEndedNormally();
     }
@@ -114,21 +110,10 @@ void Mplayer::onProcessOutput() {
     }
 }
 
-void Mplayer::onSnapshotDirFileAdded(QString) {
+void Mplayer::convertSnapshots() {
     QStringList keys = unhandledSnapshots.keys();
     foreach (QString key, keys) {
-        if (!convertSnapshot(key, unhandledSnapshots[key])) {
-            fileSystemWatcher.addPath(key);
-        } else {
-            unhandledSnapshots.remove(key);
-        }
-    }
-}
-
-void Mplayer::onSnapshotReadyForConversion(QString file) {
-    fileSystemWatcher.removePath(file);
-    if (convertSnapshot(file, unhandledSnapshots[file])) {
-        unhandledSnapshots.remove(file);
+        convertSnapshot(key, unhandledSnapshots.take(key));
     }
 }
 

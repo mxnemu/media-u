@@ -21,6 +21,7 @@ public:
     virtual float incrementVolume();
     virtual float decrementVolume();
 
+    void convertSnapshots();
     QString snapshotOutputName(QString);
     bool convertSnapshot(QString snapshotPath, QString outputPath);
 protected:
@@ -33,11 +34,8 @@ protected:
 private slots:
     void onProcessFinished(int exitCode);
     void onProcessOutput();
-    void onSnapshotDirFileAdded(QString);
-    void onSnapshotReadyForConversion(QString file);
 
 private:
-    QFileSystemWatcher fileSystemWatcher;
     QMap<QString, QString> unhandledSnapshots;
 };
 
