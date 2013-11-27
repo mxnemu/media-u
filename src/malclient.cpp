@@ -158,9 +158,15 @@ MalClientThread::MalClientThread(MalClient &client, QList<TvShow*> &shows, QDir 
 }
 
 void MalClientThread::run() {
+    QTime loginTimer;
+    loginTimer.start();
     if (!malClient.hasValidCredentials() && !malClient.verifyCredentials()) {
         qDebug() << "can't fetch data, no valid login credentials";
         return;
+    }
+    int loginSleep = 3000 - loginTimer.elapsed();
+    if (loginSleep > 0) {
+        msleep(loginSleep);
     }
 
     for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
@@ -173,7 +179,7 @@ void MalClientThread::run() {
 
             int sleepTime = 3000 - timer.elapsed();
             if (sleepTime > 0) {
-                this->msleep(sleepTime);
+                msleep(sleepTime);
             }
         }
     }
