@@ -51,6 +51,7 @@ private:
     bool mHasValidCredentials;
     QString username;
     QString password;
+    QString userAgent;
     MalClientThread* activeThread;
 };
 

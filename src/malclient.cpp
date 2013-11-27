@@ -10,6 +10,7 @@
 
 MalClient::MalClient(QObject *parent) :
     QObject(parent),
+    userAgent("nemu-malapiclient"),
     activeThread(NULL)
 {
     mHasValidCredentials = false;
@@ -22,6 +23,7 @@ void MalClient::init(QString configFilePath) {
         nw::JsonReader jr(configFilePath.toStdString());
         jr.describe("user", user);
         jr.describe("password", password);
+        NwUtils::describe(jr, "userAgent", userAgent);
         jr.close();
 
         if (user.length() > 0 && password.length() > 0) {
@@ -115,7 +117,7 @@ CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
     curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1);
-    curl_easy_setopt(handle, CURLOPT_USERAGENT, "nemu-malapiclient");
+    curl_easy_setopt(handle, CURLOPT_USERAGENT, userAgent.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
 }
