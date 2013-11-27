@@ -166,7 +166,15 @@ void MalClientThread::run() {
     for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = *(it.i->t());
         if (show.getRemoteId() == -1) {
+            QTime timer;
+            timer.start();
+
             malClient.fetchShowBlocking(show, libraryDir);
+
+            int sleepTime = 3000 - timer.elapsed();
+            if (sleepTime > 0) {
+                this->msleep(sleepTime);
+            }
         }
     }
 }
