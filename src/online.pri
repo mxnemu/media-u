@@ -5,7 +5,8 @@ SOURCES += filedownloadthread.cpp \
     moebooruclient.cpp \
     gelbooruclient.cpp \
     malapidotcomclient.cpp \
-    onlinetvshowdatabase.cpp
+    onlinetvshowdatabase.cpp \
+    torrentrss.cpp
 
 HEADERS += filedownloadthread.h \
     curlresult.h \
@@ -14,4 +15,5 @@ HEADERS += filedownloadthread.h \
     moebooruclient.h \
     gelbooruclient.h \
     malapidotcomclient.h \
-    onlinetvshowdatabase.h
+    onlinetvshowdatabase.h \
+    torrentrss.h
