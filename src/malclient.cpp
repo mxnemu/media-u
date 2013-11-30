@@ -272,9 +272,14 @@ void MalSearchResult::parse(CurlResult &result) {
     nw::XmlReader xr(result.data);
     xr.push("anime");
     xr.describeArray("", "entry", 0);
+    bool hasEntries = false;
     for (int i=0; xr.enterNextElement(i); ++i) {
         entries.append(MalEntry(xr));
         entries.back().calculateQuerySimiliarity(query);
+        hasEntries = true;
+    }
+    if (!hasEntries) {
+        qDebug() << "no results for mal search >" << query;
     }
     xr.close();
 }
