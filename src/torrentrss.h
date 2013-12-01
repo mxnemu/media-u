@@ -3,8 +3,10 @@
 
 #include <QObject>
 #include <QThread>
-#include "curlresult.h"
 #include <QDateTime>
+#include "curlresult.h"
+#include "library.h"
+#include "torrentclient.h"
 
 namespace TorrentRss {
 
@@ -25,9 +27,8 @@ public:
 
 class Feed {
 public:
-    Feed();
+    Feed(QString url);
     virtual ~Feed();
-    QString url;
     virtual void fetch();
 
 protected:
@@ -37,22 +38,25 @@ protected:
     void setResult(FeedResult* result);
 
 private:
+    QString url;
     FeedResult* result;
 };
 
 class Client : public QObject {
     Q_OBJECT
 public:
-    explicit Client(QObject *parent = 0);
+    explicit Client(TorrentClient& torrentClient, Library& library, QObject *parent = 0);
     virtual ~Client();
 
     void refetch();
 
     void addFeed(Feed* feed);
+    virtual void addFeed(TvShow* show) = 0;
 signals:
     void torrentAvailable(Entry url);
-public slots:
 
+private slots:
+    void tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus oldStatus);
 protected:
     QList<Feed*> feeds;
 };
@@ -60,11 +64,11 @@ protected:
 class Thread : public QThread {
     Q_OBJECT
 public:
-    Thread(QObject* parent = 0);
+    Thread(Client& client, QObject* parent = 0);
     void run();
 
 private:
-    Client client;
+    Client& client;
     bool toldToStop;
     int refetchInterval;
     int sleeped;

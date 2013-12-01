@@ -3,9 +3,10 @@
 
 namespace TorrentRss {
 
-Client::Client(QObject *parent) :
+Client::Client(TorrentClient& torrentClient, Library& library, QObject *parent) :
     QObject(parent)
 {
+    //connect(*library, )
 }
 
 Client::~Client() {
@@ -24,8 +25,9 @@ void Client::addFeed(Feed* feed) {
     this->feeds.push_back(feed);
 }
 
-Thread::Thread(QObject* parent) :
-    QThread(parent)
+Thread::Thread(Client& client, QObject* parent) :
+    QThread(parent),
+    client(client)
 {
     this->toldToStop = false;
     this->refetchInterval = 5000 * 60;
@@ -44,7 +46,14 @@ void Thread::run() {
     }
 }
 
-Feed::Feed() : result(NULL) {
+void Client::tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus oldStatus) {
+    if (newStatus == TvShow::waitingForNewEpisodes) {
+        this->addFeed(show);
+    }
+}
+
+Feed::Feed(QString url) : result(NULL) {
+    this->url = url;
 }
 
 Feed::~Feed() {

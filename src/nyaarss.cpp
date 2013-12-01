@@ -1,7 +1,10 @@
 #include "nyaarss.h"
-#include "nwutils.h"
 
 namespace NyaaRss {
+
+Feed::Feed(QString url) : TorrentRss::Feed(url)
+{
+}
 
 TorrentRss::FeedResult* Feed::createFeedResult() {
     return new FeedResult();
@@ -13,16 +16,36 @@ void FeedResult::parse(CurlResult& result) {
     xr.push("channel");
     xr.describeArray("", "item", -1);
     for (int i=0; xr.enterNextElement(i); ++i) {
-        TorrentRss::Entry* entry = new TorrentRss::Entry();
-        QString dateString;
-        NwUtils::describe(xr, "title", entry->name);
-        NwUtils::describe(xr, "link", entry->url);
-        NwUtils::describe(xr, "pubDate", dateString);
-        entry->date = parseDate(dateString);
+        Entry* entry = new Entry();
+        entry->parse(&xr);
         this->entires.push_back(entry);
     }
     xr.close();
 }
+
+
+
+void Entry::parse(nw::Describer* de) {
+    QString dateString;
+    QString typeStr;
+    NwUtils::describe(*de, "title", this->name);
+    NwUtils::describe(*de, "link", this->url);
+    NwUtils::describe(*de, "pubDate", dateString);
+    NwUtils::describe(*de, "category", typeStr);
+
+    if (typeStr == Entry::rawAnimeStr) type = rawAnime;
+    else if (typeStr == Entry::nonEnglishAnimeStr) type = nonEnglishAnime;
+    else if (typeStr == Entry::englishAnimeStr) type = englishAnime;
+    else type = other;
+
+    this->date = parseDate(dateString);
+}
+
+ const QString Entry::rawAnimeStr = "Raw Anime";
+ const QString Entry::nonEnglishAnimeStr = "Non-English-translated Anime";
+ const QString Entry::englishAnimeStr = "English-translated Anime";
+
+
 
 // I could not find a way to solve this with the default format
 QDateTime parseDate(QString string) {
@@ -46,4 +69,16 @@ QDateTime parseDate(QString string) {
     return QDateTime();
 }
 
+Client::Client(TorrentClient& torrentClient, Library& library, QObject* parent) :
+    TorrentRss::Client(torrentClient, library, parent)
+{
 }
+
+void Client::addFeed(TvShow* tvShow) {
+    int nextEpisode = tvShow->episodeList().highestDownloadedEpisodeNumber() + 1;
+    QString query = QString("%1 %2").arg(QString::number(nextEpisode), tvShow->name());
+    QString url = QString("http://www.nyaa.se/?page=rss&term=%1").arg(query);
+    this->feeds.push_back(new Feed(url));
+}
+
+} // < namespace

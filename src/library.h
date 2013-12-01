@@ -21,7 +21,7 @@ class DirectoryScannerThread;
 class Library : public QObject
 {
     Q_OBJECT
-public:  
+public:
 
     enum searchStatus {
         notStarted,

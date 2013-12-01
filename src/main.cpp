@@ -10,6 +10,8 @@
 #include "omxplayer.h"
 #include "metadataparseravconv.h"
 #include "thumbnailcreatoravconv.h"
+#include "transmissionclient.h"
+#include "nyaarss.h"
 
 #include <string.h>
 #include <curl/curl.h>
@@ -86,6 +88,10 @@ int main(int argc, char *argv[]) {
     player->setMetaDataParser(&metaDataParser);
     player->setThumbnailCreator(&thumbnailCreator);
     library.setMetaDataParser(&metaDataParser);
+
+    TransmissionClient transmission;
+    NyaaRss::Client nyaaClient(transmission, library);
+
 
     QDir publicDir = QDir::current();
     publicDir.cd("public");
