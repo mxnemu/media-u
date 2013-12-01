@@ -63,7 +63,7 @@ void MalClient::fetchShowBlocking(TvShow& show, QDir libraryDir) {
 
     QString url = "http://myanimelist.net/api/anime/search.xml?q=";
     //url.append(QUrl::toPercentEncoding(name));
-    url.append(name);
+    url.append(name.replace(' ', '+'));
 
     CurlResult userData(this);
     CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
@@ -117,7 +117,7 @@ CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
     curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1);
-    curl_easy_setopt(handle, CURLOPT_USERAGENT, userAgent.toUtf8().data());
+    curl_easy_setopt(handle, CURLOPT_USERAGENT, userAgent.toLatin1().data());
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
 }
