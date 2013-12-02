@@ -59,38 +59,31 @@ MovieFile::MovieFile(QString p) {
     // space separated [720p AAC]
 
     // [Group] showname - 01v2 (techtags)[12345ABC].webm
-    if (groupIndex >= -1 && groupIndex <= 1) {
-        QRegExp regexName("(.*)"
-                          "("
-                          "( -)|"
-                          "\\[|"
-                          "\\(|"
-                          "(\\sOP[0-9])|"
-                          "(\\sED[0-9])|"
-                          "(\\sEP[0-9])|"
-                          "(\\sSP[0-9])|"
-                          "(\\sEpisode\\s?[0-9])|"
-                          "$"
-                          ")");
-        regexName.setMinimal(true);
-        int nameIndex = regexName.indexIn(path);
-        this->showName = regexName.cap(1).trimmed();
+    // figure out when the name stops and something else (ep name / techtags) begins
+    QRegExp regexName("(.*)"
+                      "("
+                      "( -)|"
+                      "\\[|"
+                      "\\(|"
+                      "(\\sOP[0-9])|"
+                      "(\\sED[0-9])|"
+                      "(\\sEP[0-9])|"
+                      "(\\sSP[0-9])|"
+                      "(\\sEpisode\\s?[0-9])|"
+                      "(\\sPlay All)|"
+                      "$"
+                      ")");
+    regexName.setMinimal(true);
+    int nameIndex = regexName.indexIn(path);
+    this->showName = regexName.cap(1).trimmed();
 
-        if (nameIndex != -1 || this->showName.length() <= 0) {
-            path.remove(nameIndex, regexName.cap(1).length());
-        } else {
-            qDebug() << "could not parse name out of " << path;
-        }
-
-    // showname[Group] - 01v2 (techtags)[12345ABC].webm
-    } else if (groupIndex > 0) {
-        QRegExp regexName("^(.+)\\[");
-
-    // [Group] showname - 01v2 (techtags)[12345ABC].webm
+    if (nameIndex != -1 || this->showName.length() <= 0) {
+        path.remove(nameIndex, regexName.cap(1).length());
     } else {
-        QRegExp regexName("^(.+)\\[");
+        qDebug() << "could not parse name out of " << path;
     }
 
+    // TODO detect Play All files as special file
     QRegExp regexEpisode("("
         // number only with separator
         "\\s[0-9]+((v|\\.)[0-9]+)?(\\s|$)|"
@@ -124,8 +117,6 @@ MovieFile::MovieFile(QString p) {
         this->seasonName = regexSeason.cap(1);
         path.remove(seasonIndex, regexSeason.cap(1).length());
     }
-
-    // TODO check for shows with a [0-9]+ ending and just 1 episode to avoid some false positives
 
     // check epNum after epName
     if (this->episodeNumber.isEmpty() || this->episodeNumber.isNull()) {
@@ -169,7 +160,6 @@ MovieFile::MovieFile(QString p) {
             path.remove(latestOccurance, releaseGroupAtEnd.cap(1).length());
         }
     }
-    // TODO check for haruhi style ep name here
 
     QRegExp epNameRegex("-\\s?(.*)$");
     if (episodeName.isEmpty() && -1 != epNameRegex.indexIn(path)) {

@@ -181,6 +181,31 @@ void MovieFileTest::testPathParsing_data()
                                                                              "01" <<
                                                                              1.f <<
                                                                              "";
+
+    QTest::newRow("ShowName: Number in Show name") <<
+                                                      "/mnt/[gg]_Kimi_ni_Todoke_2nd_Season_-_00_[BF735BC4].mkv" <<
+                                                      "[gg]" <<
+                                                      "Kimi ni Todoke 2nd Season" <<
+                                                      "00" <<
+                                                      0.f <<
+                                                      "";
+    // TODO detect play all files as special file
+    QTest::newRow("ShowName: Play All file") <<
+                                                "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<
+                                                "[Coalgirls]" <<
+                                                "Toradora" <<
+                                                "1" <<
+                                                1.f <<
+                                                "";
+/* TODO figure out how to handle this
+    QTest::newRow("ShowName: Number in Show name") <<
+                                                      "/tmp/Evangelion_1.0_You_Are_[Not]_Alone_(1080p)_[@Home]" <<
+                                                      "[@Home]" <<
+                                                      "Evangelion 1.0 You Are [Not] Alone" <<
+                                                      "" <<
+                                                      -1.f <<
+                                                      "";
+*/
 }
 
 
