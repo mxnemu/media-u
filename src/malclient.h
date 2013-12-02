@@ -34,7 +34,6 @@ public:
     void setCredentials(const QString name, const QString password);
     bool verifyCredentials();
     
-    //CurlXmlResult curlPerform(const char *url);
     bool hasValidCredentials() const;
 
     void fetchShows(QList<TvShow *> &showList, QDir libraryDir);

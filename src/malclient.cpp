@@ -37,7 +37,6 @@ void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
         return;
     }
     activeThread = new MalClientThread(*this, showList, libraryDir, this);
-    //connect(this, SIGNAL(destroyed()), activeThread, SLOT(terminate()));
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
 
@@ -62,7 +61,6 @@ void MalClient::fetchShowBlocking(TvShow& show, QDir libraryDir) {
     }
 
     QString url = "http://myanimelist.net/api/anime/search.xml?q=";
-    //url.append(QUrl::toPercentEncoding(name));
     url.append(name.replace(' ', '+'));
 
     CurlResult userData(this);
@@ -121,20 +119,6 @@ CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &userdata);
     return handle;
 }
-
-/*
-CurlXmlResult MalClient::curlPerform(const char* url) {
-    CurlXmlResult userData(this);
-    CURL* handle = curl_easy_init();
-    curl_easy_setopt(handle, CURLOPT_URL, url);
-    curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
-    curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
-    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, MalClient::write_data);
-    curl_easy_setopt(handle, CURLOPT_WRITEDATA, userData);
-    userData.curlError = curl_easy_perform(handle);
-    return userData;
-}
-*/
 
 bool MalClient::hasValidCredentials() const {
     return mHasValidCredentials;
@@ -229,8 +213,6 @@ void MalEntry::parse(nw::XmlReader &xr) {
     image = QUrl::fromPercentEncoding(image.toLatin1());
     synopsis = QUrl::fromPercentEncoding(synopsis.toLatin1());
 }
-
-
 
 void MalEntry::parseSynonyms(nw::XmlReader &reader) {
     QString synonyms;
