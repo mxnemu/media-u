@@ -5,13 +5,19 @@ function EpisodeList(episodes) {
 
 EpisodeList.prototype.sort = function() {
     this.episodes = this.episodes.sort(function(a,b) {
-        if (a.numericEpisodeNumber < -1 && b.numericEpisodeNumber >= 0) {
+        if (a.numericEpisodeNumber < 0 && b.numericEpisodeNumber >= 0) {
             return 1
         }
-        if (b.numericEpisodeNumber < -1 && a.numericEpisodeNumber >= 0) {
+        if (b.numericEpisodeNumber < 0 && a.numericEpisodeNumber >= 0) {
             return -1
         }
         if (a.numericEpisodeNumber != b.numericEpisodeNumber) {
+            if (a.numericEpisodeNumber < -1 && b.numericEpisodeNumber >= -1) {
+                return 1;
+            }
+            if (b.numericEpisodeNumber < -1 && a.numericEpisodeNumber >= -1) {
+                return -1;
+            }
             return a.numericEpisodeNumber < b.numericEpisodeNumber ? -1 : 1;
         }
         if (a.episodeNumber != b.episodeNumber) {
