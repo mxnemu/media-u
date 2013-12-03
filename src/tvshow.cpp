@@ -10,7 +10,7 @@ TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     remoteId = -1;
 }
 
-EpisodeList& TvShow::season() {
+EpisodeList& TvShow::episodeList() {
     return episodes;
 }
 

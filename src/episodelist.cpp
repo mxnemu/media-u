@@ -193,3 +193,15 @@ void EpisodeList::watchedChanged(bool oldValue, bool newValue) {
         emit watchCountChanged(count, count);
     }
 }
+
+
+void EpisodeList::beforeWatchedChanged(bool newValue, bool oldValue) {
+    Episode* ep = dynamic_cast<Episode*>(sender());
+    if (!ep) throw ("fuck up ep casting" + std::string(__func__));
+
+    if (oldValue != newValue && !ep->isSpecial()) {
+        int count = numberOfWatchedEpisodes();
+        int diff = oldValue ? -1 : +1;
+        emit beforeWatchCountChanged(count+diff, count);
+    }
+}

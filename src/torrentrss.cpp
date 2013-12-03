@@ -23,6 +23,7 @@ void Client::refetch() {
 
 void Client::addFeed(Feed* feed) {
     this->feeds.push_back(feed);
+    feed->fetch();
 }
 
 Thread::Thread(Client& client, QObject* parent) :
@@ -36,6 +37,7 @@ Thread::Thread(Client& client, QObject* parent) :
 }
 
 void Thread::run() {
+    // TODO use wait condition and store refetch time for each feed separated
     while (!this->toldToStop) {
         if (this->sleeped >= this->refetchInterval) {
             this->client.refetch();

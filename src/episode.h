@@ -37,7 +37,8 @@ public:
 
     bool isSpecial() const;
 signals:
-    void watchedChanged(bool oldValue, bool newValue);
+    void beforeWatchedChanged(bool newValue, bool oldValue);
+    void watchedChanged(bool oldValue, bool newValue); // TODO change to old, new
     
 public slots:
     

@@ -89,6 +89,7 @@ TvShow& Library::tvShow(const QString name) {
     this->tvShows.push_back(new TvShow(name, this));
     TvShow* show = this->tvShows.back();
     emit showAdded(show);
+    connect(&show->episodeList(), SIGNAL(beforeWatchCountChanged(int,int)), this, SIGNAL(beforeWatchCountChanged(int,int)));
     return *show;
 }
 

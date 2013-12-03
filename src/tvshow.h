@@ -48,7 +48,7 @@ public:
 
     TvShow(QString name, QObject* parent = NULL);
 
-    EpisodeList &season();
+    EpisodeList &episodeList();
 
     void read(QDir &dir);
     void write(nw::JsonWriter &jw);

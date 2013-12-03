@@ -37,10 +37,12 @@ public:
     // This class will be removed soon, so I just made this public for some last sloppy uses
     QList<Episode*> episodes;
 signals:
-    void watchCountChanged(int oldCount, int newCount);
+    void beforeWatchCountChanged(int newCount, int oldCount);
+    void watchCountChanged(int oldCount, int newCount); // TODO new, old
 
 private slots:
-    void watchedChanged(bool oldValue, bool newValue);
+    void beforeWatchedChanged(bool newValue, bool oldValue);
+    void watchedChanged(bool oldValue, bool newValue); // TODO new, old
 
 private:
 
