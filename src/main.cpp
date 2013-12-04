@@ -89,8 +89,11 @@ int main(int argc, char *argv[]) {
     player->setThumbnailCreator(&thumbnailCreator);
     library.setMetaDataParser(&metaDataParser);
 
+    // TODO move into the thread
     TransmissionClient transmission;
     NyaaRss::Client nyaaClient(transmission, library);
+    TorrentRss::Thread rssThread(nyaaClient);
+    rssThread.start(QThread::LowestPriority);
 
 
     QDir publicDir = QDir::current();

@@ -4,9 +4,11 @@
 namespace TorrentRss {
 
 Client::Client(TorrentClient& torrentClient, Library& library, QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    library(library),
+    torrentClient(torrentClient)
 {
-    //connect(*library, )
+    connect(&library, SIGNAL(searchFinished()), this, SLOT(addFeedsForWaitingShows()));
 }
 
 Client::~Client() {
@@ -23,7 +25,29 @@ void Client::refetch() {
 
 void Client::addFeed(Feed* feed) {
     this->feeds.push_back(feed);
+    connect(feed, SIGNAL(foundCandidateForAutoDownload(Entry)), this, SLOT(autoDownloadEntry(Entry)));
     feed->fetch();
+}
+
+void Client::addFeedsForWaitingShows() {
+    QList<TvShow *> shows = library.filter().statusWaitingForNewEpisodes();
+    foreach (TvShow* show, shows) {
+        addFeed(show);
+    }
+}
+
+void Client::autoDownloadEntry(Entry entry) {
+    Feed* feed = dynamic_cast<Feed*>(sender());
+    this->removeFeed(feed);
+
+    torrentClient.addTorrent(entry.url);
+}
+
+void Client::removeFeed(Feed* feed) {
+    feeds.removeOne(feed);
+    if (feed) {
+        feed->deleteLater();
+    }
 }
 
 Thread::Thread(Client& client, QObject* parent) :
@@ -54,8 +78,12 @@ void Client::tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, Tv
     }
 }
 
-Feed::Feed(QString url) : result(NULL) {
-    this->url = url;
+Feed::Feed(QString url, TvShow* tvShow) :
+    QObject(NULL),
+    result(NULL),
+    url(url),
+    tvShow(tvShow)
+{
 }
 
 Feed::~Feed() {
@@ -75,6 +103,24 @@ void Feed::fetch() {
     this->setResult(newResult);
 }
 
+TvShow*Feed::getTvShow() {
+    return this->tvShow;
+}
+
+Entry*Feed::candidateForAutoDownload() {
+    if (!this->getTvShow()) {
+        return NULL;
+    }
+    QString name = tvShow->name();
+    QString releaseGroup = tvShow->episodeList().favouriteReleaseGroup();
+    foreach(Entry* entry, result->entires) {
+        if (entry->isCandidateForAutoDownload(name, releaseGroup)) {
+            return entry;
+        }
+    }
+    return NULL;
+}
+
 CURL* Feed::defaultCurlClient(QString url, CurlResult& userdata) {
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, url.toUtf8().data());
@@ -90,7 +136,12 @@ void Feed::setResult(FeedResult* result) {
         delete this->result;
     }
     this->result = result;
+    Entry* torrent = candidateForAutoDownload();
+    if (torrent) {
+        emit foundCandidateForAutoDownload(Entry(*torrent));
+    }
 }
+
 
 FeedResult::~FeedResult() {
     foreach (Entry* entry, this->entires) {

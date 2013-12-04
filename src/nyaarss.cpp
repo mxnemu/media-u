@@ -1,8 +1,9 @@
 #include "nyaarss.h"
+#include "QTextDocument"
 
 namespace NyaaRss {
 
-Feed::Feed(QString url) : TorrentRss::Feed(url)
+Feed::Feed(QString url, TvShow* tvShow) : TorrentRss::Feed(url, tvShow)
 {
 }
 
@@ -33,12 +34,30 @@ void Entry::parse(nw::Describer* de) {
     NwUtils::describe(*de, "pubDate", dateString);
     NwUtils::describe(*de, "category", typeStr);
 
+    this->url = QUrl(this->url).toString(QUrl::FormattingOptions(QUrl::FullyDecoded));
+
+    // TODO remove decode workaround and do it properly
+    QTextDocument text;
+    text.setHtml(this->url);
+    this->url = text.toPlainText();
+
     if (typeStr == Entry::rawAnimeStr) type = rawAnime;
     else if (typeStr == Entry::nonEnglishAnimeStr) type = nonEnglishAnime;
     else if (typeStr == Entry::englishAnimeStr) type = englishAnime;
     else type = other;
 
     this->date = parseDate(dateString);
+}
+
+
+bool Entry::isCandidateForAutoDownload(QString query, QString subgroup) {
+    // TODO make this shit less static
+    if (this->name.contains(query) &&
+        this->name.contains(subgroup) &&
+        this->type == englishAnime) {
+        return true;
+    }
+    return false;
 }
 
  const QString Entry::rawAnimeStr = "Raw Anime";
@@ -76,9 +95,11 @@ Client::Client(TorrentClient& torrentClient, Library& library, QObject* parent) 
 
 void Client::addFeed(TvShow* tvShow) {
     int nextEpisode = tvShow->episodeList().highestDownloadedEpisodeNumber() + 1;
-    QString query = QString("%1 %2").arg(QString::number(nextEpisode), tvShow->name());
+    // TODO properly prefix the number (2, 3) otherwise nyaa won't find it
+    QString number = QString("%1").arg(nextEpisode, 2, 10, QChar('0'));
+    QString query = QString("%1 %2").arg(tvShow->name(), number);
     QString url = QString("http://www.nyaa.se/?page=rss&term=%1").arg(query);
-    this->feeds.push_back(new Feed(url));
+    TorrentRss::Client::addFeed(new Feed(url, tvShow));
 }
 
 } // < namespace

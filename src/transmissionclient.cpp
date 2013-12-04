@@ -5,20 +5,22 @@
 TransmissionClient::TransmissionClient(QObject *parent) :
     TorrentClient(parent)
 {
+    this->findCommand();
 }
 
 bool TransmissionClient::addTorrent(QString filePath) {
-    if (!command.isNull()) {
+    if (command.isNull()) {
         return false;
     }
 
     process.start(command, QStringList() << filePath);
 
     process.waitForStarted();
-    process.waitForFinished();
+    //process.waitForFinished();
     return true;
 }
 
+// TODO properly control the process
 void TransmissionClient::findCommand() {
     if (SystemUtils::commandExists("transmission-cli")) {
         command = "transmission-cli";

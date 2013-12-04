@@ -12,9 +12,12 @@ namespace TorrentRss {
 
 class Entry {
 public:
+    virtual ~Entry() {};
     QString name;
     QString url;
     QDateTime date;
+
+    virtual bool isCandidateForAutoDownload(QString,QString) { return false;};
 };
 
 class FeedResult {
@@ -25,12 +28,18 @@ public:
     virtual void parse(CurlResult& result) = 0;
 };
 
-class Feed {
+class Feed : public QObject {
+    Q_OBJECT
 public:
-    Feed(QString url);
+    Feed(QString url, TvShow* tvShow = NULL);
     virtual ~Feed();
     virtual void fetch();
+    TvShow* getTvShow();
 
+    Entry* candidateForAutoDownload();
+
+signals:
+    void foundCandidateForAutoDownload(Entry entry);
 protected:
     virtual FeedResult* createFeedResult() = 0;
     CURL* defaultCurlClient(QString url, CurlResult& userdata);
@@ -38,8 +47,9 @@ protected:
     void setResult(FeedResult* result);
 
 private:
-    QString url;
     FeedResult* result;
+    QString url;
+    TvShow* tvShow;
 };
 
 class Client : public QObject {
@@ -52,13 +62,21 @@ public:
 
     void addFeed(Feed* feed);
     virtual void addFeed(TvShow* show) = 0;
+    void removeFeed(Feed* feed);
 signals:
     void torrentAvailable(Entry url);
+
+public slots:
+    void addFeedsForWaitingShows();
+    void autoDownloadEntry(Entry entry);
 
 private slots:
     void tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus oldStatus);
 protected:
     QList<Feed*> feeds;
+private:
+    Library& library;
+    TorrentClient& torrentClient;
 };
 
 class Thread : public QThread {
