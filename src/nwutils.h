@@ -82,7 +82,7 @@ public:
             value.clear();
         }
 
-        d.describeValueArray(arrayName, 0);
+        d.describeValueArray(arrayName, value.length());
         for (int i=0; d.enterNextElement(i); ++i) {
             nw::String str;
             if (d.isInWriteMode()) {

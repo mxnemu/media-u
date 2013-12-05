@@ -108,6 +108,9 @@ public:
     EpisodeList &episodeListMutable();
     static QString watchStatusToString(TvShow::WatchStatus status);
     void writeAsListingItem(nw::Describer *de) const;
+    QStringList getReleaseGroupPreference();
+    void setReleaseGroupPreference(QStringList value);
+
 signals:
 
 private:
@@ -118,6 +121,7 @@ private:
     QList<RelatedTvShow> prequels;
     QList<RelatedTvShow> sideStories;
     QList<RelatedTvShow> sequels;
+    QStringList releaseGroupPreference;
 
     int remoteId;
     QStringList synonyms;

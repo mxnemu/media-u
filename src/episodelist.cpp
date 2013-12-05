@@ -24,7 +24,7 @@ void EpisodeList::exportXbmcLinks(QDir dir) {
 }
 
 void EpisodeList::readAsElement(nw::JsonReader &jr) {
-    NwUtils::describe(jr, "name", mName);
+    //NwUtils::describe(jr, "name", mName);
     jr.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jr.enterNextElement(i); ++i) {
         Episode* episode = new Episode(&jr, this);
@@ -40,12 +40,12 @@ void EpisodeList::writeAsElement(nw::JsonWriter &jw) {
     }
 }
 
-void EpisodeList::writeDetailed(nw::JsonWriter &jw) {
-    NwUtils::describe(jw, "name", mName);
+void EpisodeList::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupPreference) {
+    //NwUtils::describe(jw, "name", mName);
     jw.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
         Episode* episode = episodes[i];
-        episode->writeDetailed(jw);
+        episode->writeDetailed(jw, releaseGroupPreference);
     }
 }
 
@@ -121,6 +121,19 @@ float EpisodeList::highestDownloadedEpisodeNumber() const
         highest = num > highest ? num : highest;
     }
     return highest;
+}
+
+QStringList EpisodeList::releaseGroups() const {
+    QStringList groups;
+    foreach (const Episode* ep, episodes) {
+        QStringList epGroups = ep->releaseGroups();
+        foreach (QString group, epGroups) {
+            if (!groups.contains(group)) {
+                groups.push_back(group);
+            }
+        }
+    }
+    return groups;
 }
 
 float EpisodeList::highestWatchedEpisodeNumber() const

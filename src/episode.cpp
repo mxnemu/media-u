@@ -45,7 +45,7 @@ void Episode::describe(nw::Describer *de) {
     }
 }
 
-void Episode::writeDetailed(nw::JsonWriter &jw) {
+void Episode::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupPreference) {
     NwUtils::describe(jw, "showName", showName);
     bool watched = getWatched();
     NwUtils::describe(jw, "watched", watched);
@@ -53,7 +53,7 @@ void Episode::writeDetailed(nw::JsonWriter &jw) {
     NwUtils::describe(jw, "numericEpisodeNumber", episodeNumber);
 
     // TODO don't rely on an abs path for TVSHOWPAGE
-    const MovieFile* best = this->bestFile();
+    const MovieFile* best = this->bestFile(releaseGroupPreference);
     if (best) {
         MovieFile copy = *best;
         NwUtils::describe(jw, "path", copy.path);
@@ -75,9 +75,19 @@ const MovieFile *Episode::getMovieFileForPath(QString path) {
     return NULL;
 }
 
-// TODO implement by checking fansubbers
-const MovieFile *Episode::bestFile() const {
-    return this->files.empty() ? NULL : this->files.front();
+const MovieFile *Episode::bestFile(const QStringList& releaseGroupPreference) const {
+    std::pair<const MovieFile*, int> best = std::pair<const MovieFile*, int>(NULL,-1);
+    foreach (const MovieFile* file, files) {
+        if (!file) {
+            continue;
+        }
+        const int score = releaseGroupPreference.indexOf(file->releaseGroup);
+        if (best.second == -1 || score < best.second) {
+            best.first = file;
+            best.second = score;
+        }
+    }
+    return best.first;
 }
 
 QString Episode::getShowName() const {
@@ -106,6 +116,16 @@ float Episode::getEpisodeNumber() const {
 QDateTime Episode::getWatchedDate() const
 {
     return watchedDate;
+}
+
+QStringList Episode::releaseGroups() const {
+    QStringList groups;
+    foreach (const MovieFile* mf, files) {
+        if (!groups.contains(mf->releaseGroup)) {
+            groups.push_back(mf->releaseGroup);
+        }
+    }
+    return groups;
 }
 
 bool Episode::isSpecial() const {

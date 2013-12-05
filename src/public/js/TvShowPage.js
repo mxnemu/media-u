@@ -26,12 +26,12 @@ TvShowPage.prototype.createNodes = function() {
     this.playButton = PlayButton.create();
     this.playButton.attr("disabled", "disabled");
     
-    var completeButton = document.createElement("input");
-    completeButton.type = "button";
-    completeButton.value = "set completed";
-    completeButton.setAttribute("disabled", "disabled");
+    this.completeButton = document.createElement("input");
+    this.completeButton.type = "button";
+    this.completeButton.value = "set completed";
+    this.completeButton.setAttribute("disabled", "disabled");
     
-    completeButton.onclick = function() {
+    this.completeButton.onclick = function() {
         $("li .toggleWatchedButton:not(.watched)").each(function() {
             this.click();
         });
@@ -62,15 +62,16 @@ TvShowPage.prototype.createNodes = function() {
         audioTrackField.on("input", setFn("audioTrack"));
     });
     
-    var episodesEl = $(document.createElement("div"));
-    episodesEl.addClass("seasons");
+    this.episodesEl = $(document.createElement("div"));
+    this.episodesEl.addClass("seasons");
     
     $.getJSON("api/page/showDetails", function(data) {
         console.log(data);
         self.tvShow = data;
         self.playButton.removeAttr("disabled");
-        completeButton.removeAttribute("disabled");
-        self.createEpisodeList(data.episodes, episodesEl);
+        self.completeButton.removeAttribute("disabled");
+        self.createReleaseGroupPreference(data.releaseGroupPreference);
+        self.createEpisodeList(data.episodes, self.episodesEl);
     });
 
     page.append(backButton);
@@ -79,8 +80,8 @@ TvShowPage.prototype.createNodes = function() {
     page.append(subtitleTrackField);
     page.append("<span> audio: </span>");
     page.append(audioTrackField);
-    page.append(episodesEl);
-    page.append(completeButton);
+    page.append(this.episodesEl);
+    page.append(this.completeButton);
     this.bindEvents();
 }
 
@@ -190,6 +191,57 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
         seasonEl.append(episodeEl);
     });
     episodesEl.append(seasonEl);
+}
+
+TvShowPage.prototype.createReleaseGroupPreference = function(array) {
+    var rgp = document.createElement("div");
+    rgp.className = "releaseGroupPreference";
+    for (var i=0; i < array.length; ++i) {
+        var group = array[i];
+        var el = document.createElement("span");
+        (function() {
+            var fromIndex = i;
+            el.onclick = function() {
+                var toIndex = fromIndex -1;
+                if (toIndex >= 0) {
+                    var element = array.splice(fromIndex, 1)[0];
+                    array.splice(toIndex, 0, element);
+                    set(array);
+                }
+            }
+        })();
+        var caption = group;
+        if (i+1 < array.length) {
+            caption += " > ";
+        }
+        el.textContent = caption;
+        rgp.appendChild(el);
+    }
+    
+    var self = this;
+    function set(newArray) {
+        var json = JSON.stringify(newArray);
+        // TODO move page independent
+        $.ajax({
+            url:"api/page/releaseGroupPreference",
+            type: "PUT",
+            data: json
+        }).complete(function() {
+            console.log("set releaseGroupPreference to ", newArray);
+            
+            $.getJSON("api/page/showDetails", function(data) {
+                self.tvShow = data;
+                self.episodesEl.empty();
+                self.createEpisodeList(data.episodes, self.episodesEl);
+                $(self.releaseGroupPreference).remove();
+                self.createReleaseGroupPreference(data.releaseGroupPreference);
+            });
+        });
+    }
+    
+    var page = $(".page");
+    page.append(rgp);
+    this.releaseGroupPreference = rgp;
 }
 
 TvShowPage.prototype.play = function(episode) {

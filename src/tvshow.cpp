@@ -29,6 +29,7 @@ void TvShow::read(QDir &dir) {
     jr.push("playerSettings");
     this->playerSettings.describe(&jr);
     jr.pop();
+    NwUtils::describeValueArray(jr, "releaseGroupPreference", releaseGroupPreference);
 
     NwUtils::describe(jr, "remoteId", remoteId);
     jr.describe("totalEpisodes", totalEpisodes);
@@ -63,9 +64,14 @@ void TvShow::read(QDir &dir) {
 void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "name", mName);
     if (jw.hasState("detailed")) {
-        episodes.writeDetailed(jw);
+        QStringList groups = getReleaseGroupPreference();
+        episodes.writeDetailed(jw, groups);
+        //QStringList oldGroups = releaseGroupPreference;
+        NwUtils::describeValueArray(jw, "releaseGroupPreference", groups);
+        //releaseGroupPreference = oldGroups;
     } else {
         episodes.writeAsElement(jw);
+        NwUtils::describeValueArray(jw, "releaseGroupPreference", releaseGroupPreference);
     }
 
     jw.describeValueArray("synonymes", synonyms.length());
@@ -477,4 +483,19 @@ EpisodeList &TvShow::episodeListMutable() {
 
 const EpisodeList &TvShow::episodeList() const {
     return episodes;
+}
+
+QStringList TvShow::getReleaseGroupPreference() {
+    QStringList allGroups = episodeList().releaseGroups();
+    foreach (QString group, allGroups) {
+        if (!releaseGroupPreference.contains(group)) {
+            releaseGroupPreference.push_front(group);
+        }
+    }
+
+    return releaseGroupPreference;
+}
+
+void TvShow::setReleaseGroupPreference(QStringList value) {
+    releaseGroupPreference = value;
 }

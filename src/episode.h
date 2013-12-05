@@ -23,10 +23,10 @@ public:
     void addPath(const MovieFile* movieFile);
 
     void describe(nw::Describer *jw);
-    void writeDetailed(nw::JsonWriter& jw);
+    void writeDetailed(nw::JsonWriter& jw, const QStringList& releaseGroupPreference);
 
     const MovieFile* getMovieFileForPath(QString path);
-    const MovieFile* bestFile() const;
+    const MovieFile* bestFile(const QStringList& releaseGroupPreference) const;
 
     QString getShowName() const;
     bool getWatched() const;
@@ -34,6 +34,7 @@ public:
 
     float getEpisodeNumber() const;
     QDateTime getWatchedDate() const;
+    QStringList releaseGroups() const;
 
     bool isSpecial() const;
 signals:

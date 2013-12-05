@@ -14,7 +14,7 @@ public:
     virtual ~EpisodeList();
 
     void exportXbmcLinks(QDir dir);
-    void writeDetailed(nw::JsonWriter &jw);
+    void writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupPreference);
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);
 
@@ -32,6 +32,7 @@ public:
     QString mostDownloadedReleaseGroup() const;
     QString favouriteReleaseGroup() const;
     float highestDownloadedEpisodeNumber() const;
+    QStringList releaseGroups() const;
 
     // TODO
     // This class will be removed soon, so I just made this public for some last sloppy uses
