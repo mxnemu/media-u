@@ -142,13 +142,15 @@ float EpisodeList::highestWatchedEpisodeNumber() const
 }
 
 QString EpisodeList::mostDownloadedReleaseGroup() const {
-    QMap<QString, int> groups;
+    QMap<QString, int> scores;
     for (int i=0; i < episodes.length(); ++i) {
-        //QString group = episodes.at(i)->releaseGroups();
-        //groups[group]++;
+        QStringList groups = episodes.at(i)->releaseGroups();
+        foreach (QString group, groups) {
+            scores[group]++;
+        }
     }
     std::pair<QString, int> highest;
-    for (QMap<QString, int>::iterator it=groups.begin(); it != groups.end(); ++it) {
+    for (QMap<QString, int>::iterator it=scores.begin(); it != scores.end(); ++it) {
         int num = it.value();
         if (num > highest.second) {
             highest.second = num;
