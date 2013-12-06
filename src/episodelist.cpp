@@ -2,8 +2,7 @@
 #include <QDebug>
 #include "nwutils.h"
 
-EpisodeList::EpisodeList(QString name, QObject* parent) : QObject(parent) {
-    mName = name;
+EpisodeList::EpisodeList(QObject* parent) : QObject(parent) {
 }
 
 EpisodeList::~EpisodeList() {
@@ -24,7 +23,6 @@ void EpisodeList::exportXbmcLinks(QDir dir) {
 }
 
 void EpisodeList::readAsElement(nw::JsonReader &jr) {
-    //NwUtils::describe(jr, "name", mName);
     jr.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jr.enterNextElement(i); ++i) {
         Episode* episode = new Episode(&jr, this);
@@ -41,7 +39,6 @@ void EpisodeList::writeAsElement(nw::JsonWriter &jw) {
 }
 
 void EpisodeList::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupPreference) {
-    //NwUtils::describe(jw, "name", mName);
     jw.describeArray("episodes", "episode", episodes.length());
     for (int i=0; jw.enterNextElement(i); ++i) {
         Episode* episode = episodes[i];
@@ -84,10 +81,6 @@ Episode *EpisodeList::getEpisodeForNumber(float number) {
         }
     }
     return NULL;
-}
-
-QString EpisodeList::name() const {
-    return mName;
 }
 
 int EpisodeList::numberOfEpisodes() const

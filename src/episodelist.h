@@ -10,7 +10,7 @@ class EpisodeList : public QObject
 {
     Q_OBJECT
 public:
-    EpisodeList(QString name = QString(), QObject *parent = NULL);
+    EpisodeList(QObject *parent = NULL);
     virtual ~EpisodeList();
 
     void exportXbmcLinks(QDir dir);
@@ -46,8 +46,6 @@ private slots:
     void watchedChanged(bool oldValue, bool newValue); // TODO new, old
 
 private:
-
-    QString mName;
 };
 
 #endif // SEASON_H
