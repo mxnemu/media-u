@@ -23,7 +23,6 @@ public:
 
     Episode* getEpisodeForNumber(float number);
 
-    QString name() const;
     int numberOfEpisodes() const;
     int numberOfWatchedEpisodes() const;
     float highestWatchedEpisodeNumber() const;
@@ -35,7 +34,7 @@ public:
     QStringList releaseGroups() const;
 
     // TODO
-    // This class will be removed soon, so I just made this public for some last sloppy uses
+    // move stuff that uses this into this class
     QList<Episode*> episodes;
 signals:
     void beforeWatchCountChanged(int newCount, int oldCount);
