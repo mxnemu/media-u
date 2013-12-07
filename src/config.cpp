@@ -7,11 +7,65 @@
 #include "systemutils.h"
 
 
+Config::Config(int argc, char* argv[]) {
+    setDefaults();
+    this->fromArgs(argc, argv);
+}
+
 Config::Config(QString initPath)
 {
+    this->setDefaults();
+    this->init(initPath);
+}
+
+void Config::setDefaults() {
     mServerPort = -1;
     initialized = false;
-    this->init(initPath);
+    noGui = false;
+    fullScreen = false;
+}
+
+void Config::fromArgs(int argc, char* argv[]) {
+    QString configPath;
+
+    for (int i=0; i < argc; ++i) {
+
+        if (strcmp(argv[i], "--configdir") == 0) {
+            ++i;
+            if (i < argc) {
+                configPath = (QString(argv[i]));
+
+                QDir dir(configPath);
+                if (!dir.exists() && !QDir::root().mkpath(QString(argv[i]))) {
+                    configPath = QString();
+                    qDebug() << "config dir does not exist and couldn't be created";
+                }
+            }
+        } else if (strcmp(argv[i], "--fullscreen") == 0) {
+            fullScreen = true;
+        } else if (strcmp(argv[i], "--nogui") == 0) {
+            noGui = true;
+        } else if (strcmp(argv[i], "--help") == 0) {
+            std::cout << "A Qt Application to manage and play your media library.\n\n";
+            std::cout << "available Arguments:\n";
+            std::cout << "--fullscreen\n";
+            std::cout << "    launch qt gui in fullscreen.\n";
+            std::cout << "--nogui\n";
+            std::cout << "    launch without showing a window. The Api and mplayer should still work.\n";
+            std::cout << "--configdir %dir\n";
+            std::cout << "    %dir path to a directory where configs shall be written/read\n";
+            std::cout << "    if %dir does not exist it will be created. If it can't be created\n";
+            std::cout << "    .media-u in the home directory will be the default configdir.\n";
+            std::cout.flush();
+            exit(0);
+        } else if (i > 0) {
+            std::cout << "unknown parameter " << i << ": " << argv[i] << '\n';
+            std::cout << "use --help for a parameter list." << std::endl;
+            exit(0);
+        }
+    }
+
+    init(configPath);
 }
 
 bool Config::init(QString path) {
@@ -47,6 +101,8 @@ bool Config::parse(const QString& jsonData)
 
 void Config::describe(nw::Describer* de) {
     de->describe("port", mServerPort);
+    de->describe("noGui", noGui);
+    de->describe("fullScreen", fullScreen);
 
     de->push("library");
     NwUtils::describe(*de, "path", mLibraryPath);
@@ -161,4 +217,12 @@ void MplayerConfig::initDefaultValues() {
 const MplayerConfig& Config::getMplayerConfigConstRef() const
 {
     return mplayerConfig;
+}
+
+bool Config::getFullScreen() const{
+    return fullScreen;
+}
+
+bool Config::getNoGui() const {
+    return noGui;
 }

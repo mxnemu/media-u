@@ -20,7 +20,9 @@ private:
 class Config
 {
 public:
+    Config(int argc, char* argv[]);
     Config(QString initPath);
+    void fromArgs(int argc, char* argv[]);
 
     bool init(QString path = QString());
     bool parse(const QString &jsonData);
@@ -41,13 +43,21 @@ public:
 
     const MplayerConfig& getMplayerConfigConstRef() const;
 
+    bool getNoGui() const;
+    bool getFullScreen() const;
+
 private:
     QString mConfigPath;
     QString mLibraryPath;
     int mServerPort;
+    bool noGui;
+    bool fullScreen;
+
     bool initialized;
 
     MplayerConfig mplayerConfig;
+
+    void setDefaults();
 };
 
 #endif // CONFIG_H
