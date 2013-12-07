@@ -104,6 +104,7 @@ void Config::describe(nw::Describer* de) {
     de->describe("port", mServerPort);
     de->describe("noGui", noGui);
     de->describe("fullScreen", fullScreen);
+    de->describe("autoOpenBrowser", autoOpenBrowser);
 
     de->push("library");
     NwUtils::describe(*de, "path", mLibraryPath);
