@@ -101,8 +101,9 @@ void Mplayer::onProcessOutput() {
         if (-1 != output.indexOf(snapshotRegex)) {
             QString snapshotName = snapshotRegex.cap(1);
             QString snapshotPath = QDir(config.snapshotDir).absoluteFilePath(snapshotName);
-            if (config.snapshotFormat != QFileInfo(snapshotName).completeSuffix()) {
-                unhandledSnapshots[snapshotPath] = snapshotOutputName(snapshotPath);
+            QString outputName = snapshotOutputName(snapshotPath);
+            if (snapshotPath != outputName) {
+                unhandledSnapshots[snapshotPath] = outputName;
             }
         } else {
             qDebug() << output;
@@ -146,12 +147,18 @@ QString Mplayer::snapshotOutputName(QString) {
 }
 
 bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
+    QFileInfo outputInfo(outputPath);
+    QDir dir = outputInfo.dir();
+    dir.mkpath(".");
+
+    if (config.snapshotFormat == outputInfo.suffix()) {
+        return QFile::rename(snapshotPath, outputPath);
+    }
+
     QPixmap p;
     if (!p.load(snapshotPath)) {
         return false;
     }
-    QDir dir = QFileInfo(outputPath).dir();
-    dir.mkpath(".");
     if (p.save(outputPath)) {
         if (!QFile(snapshotPath).remove()) {
             qDebug() << "failed to delete original snapshot" << snapshotPath;
