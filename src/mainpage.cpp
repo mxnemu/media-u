@@ -22,10 +22,8 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
         this->setRandomWallpaper();
     }
 
-    this->airingShows = library.filter().airing();
-    this->allShows = library.filter().all();
-    this->ui->currentlyAiringShows->set(airingShows, QString("Airing Shows"));
-    this->ui->allShows->set(allShows, QString("All Shows"));
+    this->ui->currentlyAiringShows->set(library.filter().airing(), QString("Airing Shows"));
+    this->ui->allShows->set(library.filter().all(), QString("All Shows"));
     connect(&library, SIGNAL(showAdded(TvShow*)), this, SLOT(onShowAdded(TvShow*)));
 }
 

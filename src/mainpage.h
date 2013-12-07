@@ -28,8 +28,6 @@ private slots:
 private:
     Ui::MainPage *ui;
     Library& library;
-    QList<TvShow*> airingShows;
-    QList<TvShow*> allShows;
     MainWindow* mainwindow;
 };
 
