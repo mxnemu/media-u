@@ -1,8 +1,11 @@
 Roadmap:
--When status == waiting for new episodes add an NyaaRssListener to the show
-    -listen to nyaa rss feeds download torrents with `curl '(url)' --compressed`
-    -add new episodes to transmission-cli
--choose fansubber Ui on TVShowPage
+-opimize auto rss:
+    -setting to list torrents in the web-ui before downloading them
+    -fix the thread waiting condition and let the thread own all the objects
+    -customizable filters to detect download candidates
+    -fix feeing of Feeds
+    -auto-add feeds when watchstatus changes
+-update MAL watch status
 -alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
 
 Optional:
