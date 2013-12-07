@@ -45,6 +45,7 @@ public:
 
     bool getNoGui() const;
     bool getFullScreen() const;
+    bool getAutoOpenBrowser() const;
 
 private:
     QString mConfigPath;
@@ -52,6 +53,7 @@ private:
     int mServerPort;
     bool noGui;
     bool fullScreen;
+    bool autoOpenBrowser;
 
     bool initialized;
 

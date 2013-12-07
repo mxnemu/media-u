@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QDir>
+#include <QDesktopServices>
 #include "config.h"
 #include "server.h"
 #include "library.h"
@@ -60,6 +61,11 @@ int main(int argc, char *argv[]) {
     publicDir.cd("public");
     Server s(publicDir.path(), w, library, player);
     int port = s.start(config.serverPort());
+
+    if (config.getAutoOpenBrowser()) {
+        QString url(QString("http://localhost:%1").arg(port));
+        QDesktopServices::openUrl(url);
+    }
 
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");

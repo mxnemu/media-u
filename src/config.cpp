@@ -23,6 +23,7 @@ void Config::setDefaults() {
     initialized = false;
     noGui = false;
     fullScreen = false;
+    autoOpenBrowser = false;
 }
 
 void Config::fromArgs(int argc, char* argv[]) {
@@ -225,4 +226,8 @@ bool Config::getFullScreen() const{
 
 bool Config::getNoGui() const {
     return noGui;
+}
+
+bool Config::getAutoOpenBrowser() const {
+    return autoOpenBrowser;
 }
