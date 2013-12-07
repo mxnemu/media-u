@@ -6,6 +6,10 @@ Roadmap:
     -fix feeing of Feeds
     -auto-add feeds when watchstatus changes
 -update MAL watch status
+-library improvements:
+    -start searches for specific directories and not just for all
+    -start mal searches for specific shows and not just for all
+    -start wallpaper searches for specific shows and not just for all
 -alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
 
 Optional:
