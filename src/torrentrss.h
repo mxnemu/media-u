@@ -83,6 +83,7 @@ class Thread : public QThread {
     Q_OBJECT
 public:
     Thread(Client& client, QObject* parent = 0);
+    ~Thread();
     void run();
 
 private:

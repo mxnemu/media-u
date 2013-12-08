@@ -60,6 +60,10 @@ Thread::Thread(Client& client, QObject* parent) :
     this->sleepStep = 1000;
 }
 
+Thread::~Thread() {
+    toldToStop = true;
+}
+
 void Thread::run() {
     // TODO use wait condition and store refetch time for each feed separated
     while (!this->toldToStop) {
