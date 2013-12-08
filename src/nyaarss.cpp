@@ -50,10 +50,12 @@ void Entry::parse(nw::Describer* de) {
 }
 
 
-bool Entry::isCandidateForAutoDownload(QString query, QString subgroup) {
+bool Entry::isCandidateForAutoDownload(QString query, int episode, QString subgroup) {
     // TODO make this shit less static
-    if (this->name.contains(query) &&
-        this->name.contains(subgroup) &&
+    const MovieFile parsed = this->name;
+    if (0 == parsed.showName.compare(query, Qt::CaseInsensitive) &&
+        parsed.releaseGroup.contains(subgroup) &&
+        parsed.numericEpisodeNumber() ==  episode &&
         this->type == englishAnime) {
         return true;
     }

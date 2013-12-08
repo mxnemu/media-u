@@ -17,7 +17,7 @@ public:
     QString url;
     QDateTime date;
 
-    virtual bool isCandidateForAutoDownload(QString,QString) { return false;};
+    virtual bool isCandidateForAutoDownload(QString,int,QString) { return false;};
 };
 
 class FeedResult {

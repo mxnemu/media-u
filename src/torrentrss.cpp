@@ -113,8 +113,9 @@ Entry*Feed::candidateForAutoDownload() {
     }
     QString name = tvShow->name();
     QString releaseGroup = tvShow->episodeList().favouriteReleaseGroup();
+    int nextEpisode = tvShow->episodeList().highestDownloadedEpisodeNumber() + 1;
     foreach(Entry* entry, result->entires) {
-        if (entry->isCandidateForAutoDownload(name, releaseGroup)) {
+        if (entry->isCandidateForAutoDownload(name, nextEpisode, releaseGroup)) {
             return entry;
         }
     }

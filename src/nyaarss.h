@@ -24,7 +24,7 @@ public:
     static const QString nonEnglishAnimeStr;
     static const QString englishAnimeStr;
 
-    bool isCandidateForAutoDownload(QString query, QString subgroup);
+    bool isCandidateForAutoDownload(QString query, int episode, QString subgroup);
 protected:
     Type type;
 };
