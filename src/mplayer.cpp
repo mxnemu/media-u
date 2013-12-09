@@ -147,11 +147,10 @@ QString Mplayer::snapshotOutputName(QString) {
 }
 
 bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
-    QFileInfo outputInfo(outputPath);
-    QDir dir = outputInfo.dir();
+    QDir dir = QFileInfo(outputPath).dir();
     dir.mkpath(".");
 
-    if (config.snapshotFormat == outputInfo.suffix()) {
+    if (config.snapshotFormat == QFileInfo(snapshotPath).suffix()) {
         return QFile::rename(snapshotPath, outputPath);
     }
 
