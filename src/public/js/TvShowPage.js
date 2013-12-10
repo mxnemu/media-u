@@ -233,6 +233,8 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
                 self.tvShow = data;
                 self.episodesEl.empty();
                 self.createEpisodeList(data.episodes, self.episodesEl);
+                self.playButton.unbind("click");
+                PlayButton.initOnClick(self.playButton, self.episodeList);
                 $(self.releaseGroupPreference).remove();
                 self.createReleaseGroupPreference(data.releaseGroupPreference);
             });
