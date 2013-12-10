@@ -93,9 +93,18 @@ void Mplayer::onProcessOutput() {
         float newTime = progressRegex.cap(2).toFloat();
         float diff = std::abs((int)this->nowPlaying.seconds - (int)newTime);
         this->nowPlaying.seconds = newTime;
+        if (pauseStatus) {
+            process.write(QString("get_property pause\n").toUtf8());
+        }
         if (diff > 2.f) {
             emit jumped(newTime);
         }
+    } else if (!pauseStatus && (output.contains("PAUSE") || output.contains("ANS_pause=yes"))) {
+        pauseStatus = true;
+        emit paused();
+    } else if (output.contains("ANS_pause=no")) {
+        pauseStatus = false;
+        emit unpaused();
     } else {
         QRegExp snapshotRegex("screenshot '(.*)'");
         if (-1 != output.indexOf(snapshotRegex)) {
