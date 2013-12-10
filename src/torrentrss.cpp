@@ -55,7 +55,7 @@ Thread::Thread(Client& client, QObject* parent) :
     client(client)
 {
     this->toldToStop = false;
-    this->refetchInterval = 5000 * 60;
+    this->refetchInterval = 15000 * 60;
     this->sleeped = this->refetchInterval;
     this->sleepStep = 1000;
     client.moveToThread(this);
@@ -73,7 +73,7 @@ void Thread::run() {
             this->sleeped = 0;
         }
         msleep(this->sleepStep);
-        this->sleeped = this->sleepStep;
+        this->sleeped += this->sleepStep;
     }
 }
 
