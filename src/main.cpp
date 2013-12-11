@@ -55,6 +55,8 @@ int main(int argc, char *argv[]) {
     NyaaRss::Client nyaaClient(transmission, library);
     TorrentRss::Thread rssThread(nyaaClient);
     rssThread.start(QThread::LowestPriority);
+    //nyaaClient.moveToThread(&rssThread);
+    nyaaClient.connectLibrary();
 
 
     QDir publicDir = QDir::current();

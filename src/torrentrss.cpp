@@ -8,7 +8,6 @@ Client::Client(TorrentClient& torrentClient, Library& library, QObject *parent) 
     library(library),
     torrentClient(torrentClient)
 {
-    connect(&library, SIGNAL(searchFinished()), this, SLOT(addFeedsForWaitingShows()));
 }
 
 Client::~Client() {
@@ -21,6 +20,10 @@ void Client::refetch() {
     foreach (Feed* feed, this->feeds) {
         feed->fetch();
     }
+}
+
+void Client::connectLibrary() {
+    connect(&library, SIGNAL(searchFinished()), this, SLOT(addFeedsForWaitingShows()));
 }
 
 void Client::addFeed(Feed* feed) {
@@ -58,7 +61,6 @@ Thread::Thread(Client& client, QObject* parent) :
     this->refetchInterval = 15000 * 60;
     this->sleeped = this->refetchInterval;
     this->sleepStep = 1000;
-    client.moveToThread(this);
 }
 
 Thread::~Thread() {

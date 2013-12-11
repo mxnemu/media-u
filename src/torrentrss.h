@@ -63,6 +63,7 @@ public:
     void addFeed(Feed* feed);
     virtual void addFeed(TvShow* show) = 0;
     void removeFeed(Feed* feed);
+    void connectLibrary();
 signals:
     void torrentAvailable(Entry url);
 
