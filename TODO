@@ -1,9 +1,9 @@
 Roadmap:
 -opimize auto rss:
     -setting to list torrents in the web-ui before downloading them
-    -fix the thread waiting condition and let the thread own all the objects
+    -use QWaitConditions and QEventLoops for the rss thread
     -customizable filters to detect download candidates
-    -fix feeing of Feeds
+    -fix freeing of Feeds
     -auto-add feeds when watchstatus changes
 -update MAL watch status
 -library improvements:
