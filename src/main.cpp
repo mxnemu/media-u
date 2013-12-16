@@ -77,5 +77,9 @@ int main(int argc, char *argv[]) {
 
     int returnCode = a.exec();
     library.write(); // write before exit
+
+    rssThread.toldToStop = true;
+    rssThread.wait();
+
     return returnCode;
 }

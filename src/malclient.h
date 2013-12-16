@@ -38,6 +38,8 @@ public:
 
     void fetchShows(QList<TvShow *> &showList, QDir libraryDir);
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
+    MalClientThread* getActiveThread() const;
+
 signals:
     void fetchingFinished();
     

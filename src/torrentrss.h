@@ -87,9 +87,9 @@ public:
     ~Thread();
     void run();
 
+    bool toldToStop;
 private:
     Client& client;
-    bool toldToStop;
     int refetchInterval;
     int sleeped;
     int sleepStep;

@@ -333,3 +333,8 @@ MalUpdaterWatchStatus MalUpdaterAnimeData::calculateWatchStatus(int episodesWatc
     }
     return onhold;
 }
+
+MalClientThread* MalClient::getActiveThread() const
+{
+    return activeThread;
+}

@@ -33,6 +33,22 @@ Library::Library(QString path, QObject *parent) :
     connect(fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fileChangedInSearchDirectory(QString)));
 }
 
+Library::~Library() {
+    MalClientThread* malThread = malClient.getActiveThread();
+    foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
+        t->terminate();
+    }
+    searchThread->terminate();
+    if (malThread) malThread->terminate();
+
+    foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
+        t->wait();
+    }
+    searchThread->wait();
+    if (malThread) malThread->wait();
+
+}
+
 void Library::initMalClient(QString malConfigFilepath) {
     malClient.init(malConfigFilepath);
     connect(&malClient, SIGNAL(fetchingFinished()),

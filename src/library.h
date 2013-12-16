@@ -30,6 +30,7 @@ public:
     };
 
     explicit Library(QString path, QObject *parent = 0);
+    virtual ~Library();
     void initMalClient(QString malConfigFilepath);
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
