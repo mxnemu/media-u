@@ -7,12 +7,11 @@
 #include <QFile>
 #include "nwutils.h"
 #include "utils.h"
-#include "onlinetvshowdatabase.h"
 
 namespace Mal {
 
 Client::Client(QObject *parent) :
-    QObject(parent),
+    OnlineTvShowDatabase::Client(parent),
     userAgent("nemu-malapiclient"),
     activeThread(NULL)
 {
@@ -57,10 +56,10 @@ void Client::fetchThreadFinished() {
     emit fetchingFinished();
 }
 
-void Client::fetchShowBlocking(TvShow& show, QDir libraryDir) {
-    QString name = show.name();
+OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
+    QString name = anime;
     if (name.isEmpty() || name.isNull()) {
-        return;
+        return NULL;
     }
 
     QString url = "http://myanimelist.net/api/anime/search.xml?q=";
@@ -74,9 +73,9 @@ void Client::fetchShowBlocking(TvShow& show, QDir libraryDir) {
         qDebug() << "received error" << error << "for query '" << url << "'' with this message:\n";
         userData.print();
     } else {
-        SearchResult result(userData, name);
-        result.updateShowFromBestEntry(show, libraryDir);
+        return new SearchResult(userData, name);
     }
+    return NULL;
 }
 
 
@@ -136,10 +135,7 @@ bool Client::hasValidCredentials() const {
 //////////////////////////////////////////////////////////////////
 
 Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
-    QThread(parent),
-    malClient(client),
-    tvShows(shows),
-    libraryDir(libraryDir)
+    OnlineTvShowDatabase::Thread(client, shows, libraryDir, parent)
 {
 
 }
@@ -147,6 +143,7 @@ Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *
 void Thread::run() {
     QTime loginTimer;
     loginTimer.start();
+    Mal::Client& malClient = (Mal::Client&)this->client; // <- if I fuck this up debugging hell is here
     if (!malClient.hasValidCredentials() && !malClient.verifyCredentials()) {
         qDebug() << "can't fetch data, no valid login credentials";
         return;
@@ -155,14 +152,22 @@ void Thread::run() {
     if (loginSleep > 0) {
         msleep(loginSleep);
     }
-
+    // TODO reuse code from OnlineTvShowDatabase
     for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = *(it.i->t());
         if (show.getRemoteId() == -1) {
             QTime timer;
             timer.start();
 
-            malClient.fetchShowBlocking(show, libraryDir);
+            SearchResult* searchResult = dynamic_cast<SearchResult*>(malClient.search(show.name()));
+            if (!searchResult) {
+                continue;
+            }
+            const Entry* entry = dynamic_cast<const Entry*>(malClient.bestResult(*searchResult));
+            if (!entry) {
+                continue;
+            }
+            entry->updateShow(show, libraryDir);
 
             int sleepTime = 3000 - timer.elapsed();
             if (sleepTime > 0) {
@@ -192,6 +197,39 @@ void Entry::calculateQuerySimiliarity(const QString query) {
         }
     }
     querySimiliarityScore = bestResult;
+}
+
+void Entry::updateSynopsis(TvShow& show) const {
+    show.setSynopsis(synopsis);
+}
+
+void Entry::updateTitle(TvShow&) const {
+    //show.setName();
+//    show.setLongTitle(title);
+}
+
+void Entry::updateRemoteId(TvShow& show) const {
+    show.setRemoteId(id.toInt());
+}
+
+void Entry::updateRelations(TvShow& ) const {
+
+}
+
+void Entry::updateAiringDates(TvShow& show) const {
+    show.setTotalEpisodes(episodes);
+    show.setShowType(type);
+    show.setAiringStatus(status);
+    show.setStartDate(QDate::fromString(startDate, Entry::dateFormat));
+    show.setEndDate(QDate::fromString(endDate, Entry::dateFormat));
+}
+
+void Entry::updateSynonyms(TvShow& show) const {
+    show.setSynonyms(synonyms);
+}
+
+void Entry::updateImage(TvShow& show, QDir libraryDir) const {
+    show.downloadImage(image, libraryDir);
 }
 
 Entry::Entry(nw::XmlReader& reader) {
@@ -226,19 +264,6 @@ void Entry::parseSynonyms(nw::XmlReader &reader) {
 
 QString Entry::dateFormat = "yyyy-MM-dd";
 
-void Entry::updateShowFromEntry(TvShow &show, QDir libraryDir) const {
-    //show.setName();
-//    show.setLongTitle(title);
-    show.setTotalEpisodes(episodes);
-    show.setShowType(type);
-    show.setAiringStatus(status);
-    show.setStartDate(QDate::fromString(startDate, Entry::dateFormat));
-    show.setEndDate(QDate::fromString(endDate, Entry::dateFormat));
-    show.setSynopsis(synopsis);
-    show.setRemoteId(id.toInt());
-
-    show.downloadImage(image, libraryDir);
-}
 
 ///////////////////////////////////////////////////////////////////
 //
@@ -303,7 +328,7 @@ void SearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const 
     const Entry* entry = bestResult();
 
     if (entry) {
-        entry->updateShowFromEntry(show, libraryDir);
+        entry->updateShow(show, libraryDir);
         qDebug() << "updated " << show.getShowType() << show.name();
     }
 }

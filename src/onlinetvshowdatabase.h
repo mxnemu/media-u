@@ -57,7 +57,7 @@ public:
 
     void startUpdate(QList<TvShow *> &showList, QDir libraryDir);
     bool updateShow(TvShow& show, QDir &libraryDir);
-    virtual SearchResult search(QString anime) = 0;
+    virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
 
 signals:
@@ -76,7 +76,7 @@ public:
 
     void run();
 
-private:
+protected:
     Client &client;
     QList<TvShow*> &tvShows;
     QDir libraryDir;

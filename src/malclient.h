@@ -11,23 +11,20 @@
 #include <tvshow.h>
 #include "filedownloadthread.h"
 #include "nwutils.h"
+#include "onlinetvshowdatabase.h"
 
 namespace Mal {
 
 class Client;
-class Thread : public QThread {
+class Thread : public OnlineTvShowDatabase::Thread {
 public:
     Thread(Client& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
 
-    void run();
-private:
-    Client& malClient;
-    QList<TvShow*>& tvShows;
-    QDir libraryDir;
+    void run(); // TODO most code from base run function
 };
 
 
-class Client : public QObject
+class Client : public OnlineTvShowDatabase::Client
 {
     Q_OBJECT
 public:
@@ -40,6 +37,10 @@ public:
 
     void fetchShows(QList<TvShow *> &showList, QDir libraryDir);
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
+
+    virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
+    virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&) const {return NULL;}
+
     Thread* getActiveThread() const;
 
 signals:
@@ -58,16 +59,24 @@ private:
     Thread* activeThread;
 };
 
-class Entry {
+class Entry : public OnlineTvShowDatabase::Entry {
 public:
     friend class SearchResult;
 
     int querySimiliarityScore; // TODO not here
     void calculateQuerySimiliarity(const QString query);
+
+    virtual void updateSynopsis(TvShow& show) const;
+    virtual void updateTitle(TvShow&) const;
+    virtual void updateRemoteId(TvShow& show) const;
+    virtual void updateRelations(TvShow&) const;
+    virtual void updateAiringDates(TvShow& show) const;
+    virtual void updateSynonyms(TvShow& show) const;
+    virtual void updateImage(TvShow& show, QDir libraryDir) const;
+
 private:
     Entry(nw::XmlReader& reader);
     void parse(nw::XmlReader& xr);
-    void updateShowFromEntry(TvShow& show, QDir libraryDir) const;
     void parseSynonyms(nw::XmlReader &reader);
 
     QString id;
@@ -85,7 +94,7 @@ private:
     static QString dateFormat;
 };
 
-class SearchResult {
+class SearchResult : public OnlineTvShowDatabase::SearchResult {
 public:
     SearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);

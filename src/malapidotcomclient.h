@@ -61,12 +61,12 @@ class Client : public OnlineTvShowDatabase::Client {
 public:
     Client(QObject* parent = NULL);
 
-    virtual SearchResult search(QString anime);
+    virtual SearchResult* search(QString anime);
     virtual const Entry* bestResult(const SearchResult& result) const;
 
 
 protected:
-    SearchResult parseSearch(CurlResult& response, QString searchedAnime);
+    SearchResult* parseSearch(CurlResult& response, QString searchedAnime);
     static CURL *curlClient(const char *url, CurlResult &userdata);
 };
 

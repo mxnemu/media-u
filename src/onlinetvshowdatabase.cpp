@@ -21,8 +21,11 @@ void Client::startUpdate(QList<TvShow*> &showList, QDir libraryDir) {
 
 bool Client::updateShow(TvShow& show, QDir &libraryDir) {
     QString name = show.name();
-    SearchResult result = this->search(name);
-    const Entry* entry = this->bestResult(result);
+    SearchResult* result = this->search(name);
+    if (!result) {
+        return false;
+    }
+    const Entry* entry = this->bestResult(*result);
     if (entry) {
         entry->updateShow(show, libraryDir);
         return true;

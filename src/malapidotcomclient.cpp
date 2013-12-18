@@ -9,7 +9,7 @@ Client::Client(QObject* parent) :
 {
 }
 
-SearchResult Client::search(QString anime) {
+SearchResult* Client::search(QString anime) {
     CurlResult userData;
     QString url = QString("http://mal-api.com/anime/search?q=%1").arg(anime);
     CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
@@ -20,10 +20,9 @@ SearchResult Client::search(QString anime) {
         qDebug() << "received error" << error << "for query '" << url << "'' with this message:\n";
         userData.print();
     } else {
-        SearchResult result = parseSearch(userData, anime);
-        return result;
+        return parseSearch(userData, anime);
     }
-    return SearchResult();
+    return NULL;
 }
 
 CURL* Client::curlClient(const char* url, CurlResult& userdata) {
@@ -62,12 +61,12 @@ const Entry* Client::bestResult(const SearchResult &sr) const {
     return best.second;
 }
 
-SearchResult Client::parseSearch(CurlResult &response, QString searchedAnime) {
+SearchResult* Client::parseSearch(CurlResult &response, QString searchedAnime) {
     nw::JsonReader jr(response.data);
-    SearchResult result(searchedAnime);
+    SearchResult* result = new SearchResult(searchedAnime);
     jr.describeArray("", "entry", 0);
     for (int i=0; jr.enterNextElement(i); ++i) {
-        result.entries.push_back(new Entry(&jr));
+        result->entries.push_back(new Entry(&jr));
     }
     jr.close();
     return result;
