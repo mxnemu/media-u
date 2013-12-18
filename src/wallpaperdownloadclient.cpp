@@ -42,6 +42,14 @@ void FetchThread::run()
     }
 }
 
+void FetchThread::append(QList<TvShow*> tvShows) {
+    foreach (TvShow* t, tvShows) {
+        if (!this->tvShows.contains(t)) {
+            this->tvShows.append(t);
+        }
+    }
+}
+
 ///////////////////////////////////////////////////////
 // SearchResult
 ///////////////////////////////////////////////////////

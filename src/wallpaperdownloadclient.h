@@ -89,6 +89,7 @@ class FetchThread : public QThread {
 public:
     FetchThread(Client& client, QList<TvShow*> tvShows, QDir libraryDirectory, QObject* parent);
     void run();
+    void append(QList<TvShow*> tvShows);
 
 signals:
     void noEntriesFound(const TvShow* show);

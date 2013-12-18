@@ -153,6 +153,9 @@ void Library::fetchMetaData() {
 
 void Library::startWallpaperDownloaders() {
     if (getWallpaperDownloadRunning()) {
+        foreach (WallpaperDownload::FetchThread* ft, runningWallpaperDownloaders) {
+            ft->append(filter().all());
+        }
         return;
     }
     for (int i=0; i < wallpaperDownloaders.size(); ++i) {
