@@ -34,7 +34,7 @@ Library::Library(QString path, QObject *parent) :
 }
 
 Library::~Library() {
-    MalClientThread* malThread = malClient.getActiveThread();
+    Mal::Thread* malThread = malClient.getActiveThread();
     foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
         t->terminate();
     }

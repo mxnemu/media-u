@@ -12,24 +12,26 @@
 #include "filedownloadthread.h"
 #include "nwutils.h"
 
-class MalClient;
-class MalClientThread : public QThread {
+namespace Mal {
+
+class Client;
+class Thread : public QThread {
 public:
-    MalClientThread(MalClient& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
+    Thread(Client& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
 
     void run();
 private:
-    MalClient& malClient;
+    Client& malClient;
     QList<TvShow*>& tvShows;
     QDir libraryDir;
 };
 
 
-class MalClient : public QObject
+class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit MalClient(QObject *parent = 0);
+    explicit Client(QObject *parent = 0);
     void init(QString configFilePath);
     void setCredentials(const QString name, const QString password);
     bool verifyCredentials();
@@ -38,7 +40,7 @@ public:
 
     void fetchShows(QList<TvShow *> &showList, QDir libraryDir);
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
-    MalClientThread* getActiveThread() const;
+    Thread* getActiveThread() const;
 
 signals:
     void fetchingFinished();
@@ -53,17 +55,17 @@ private:
     QString username;
     QString password;
     QString userAgent;
-    MalClientThread* activeThread;
+    Thread* activeThread;
 };
 
-class MalEntry {
+class Entry {
 public:
-    friend class MalSearchResult;
+    friend class SearchResult;
 
     int querySimiliarityScore; // TODO not here
     void calculateQuerySimiliarity(const QString query);
 private:
-    MalEntry(nw::XmlReader& reader);
+    Entry(nw::XmlReader& reader);
     void parse(nw::XmlReader& xr);
     void updateShowFromEntry(TvShow& show, QDir libraryDir) const;
     void parseSynonyms(nw::XmlReader &reader);
@@ -83,18 +85,18 @@ private:
     static QString dateFormat;
 };
 
-class MalSearchResult {
+class SearchResult {
 public:
-    MalSearchResult(CurlResult& result, QString query);
+    SearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);
     void updateShowFromBestEntry(TvShow& show, QDir libraryDir) const;
-    const MalEntry*bestResult() const;
+    const Entry*bestResult() const;
 private:
-    QList<MalEntry> entries;
+    QList<Entry> entries;
     QString query;
 };
 
-enum MalUpdaterWatchStatus {
+enum UpdateWatchStatus {
     watching = 1,
     completed = 2,
     onhold = 3,
@@ -102,13 +104,13 @@ enum MalUpdaterWatchStatus {
     plantowatch = 6
 };
 
-class MalUpdaterAnimeData {
+class AnimeUpdateData {
 public:
-    MalUpdaterAnimeData(TvShow*);
-    static MalUpdaterWatchStatus calculateWatchStatus(int watched, int total);
+    AnimeUpdateData(TvShow*);
+    static UpdateWatchStatus calculateWatchStatus(int watched, int total);
 private:
     int episode;
-    MalUpdaterWatchStatus status; // int OR string. 1/watching, 2/completed, 3/onhold, 4/dropped, 6/plantowatch
+    UpdateWatchStatus status; // int OR string. 1/watching, 2/completed, 3/onhold, 4/dropped, 6/plantowatch
     short score; // 0 - 10
     int downloaded_episodes;
     int storage_type; // int (will be updated to accomodate strings soon) // yeah sure soon...
@@ -125,5 +127,6 @@ private:
     QStringList tags; // string. tags separated by commas
 };
 
+} // namespace
 
 #endif // MALCLIENT_H

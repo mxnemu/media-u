@@ -7,8 +7,11 @@
 #include <QFile>
 #include "nwutils.h"
 #include "utils.h"
+#include "onlinetvshowdatabase.h"
 
-MalClient::MalClient(QObject *parent) :
+namespace Mal {
+
+Client::Client(QObject *parent) :
     QObject(parent),
     userAgent("nemu-malapiclient"),
     activeThread(NULL)
@@ -16,7 +19,7 @@ MalClient::MalClient(QObject *parent) :
     mHasValidCredentials = false;
 }
 
-void MalClient::init(QString configFilePath) {
+void Client::init(QString configFilePath) {
     if (QFile(configFilePath).exists()) {
         std::string user, password;
 
@@ -32,11 +35,11 @@ void MalClient::init(QString configFilePath) {
     }
 }
 
-void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
+void Client::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
     if (activeThread) {
         return;
     }
-    activeThread = new MalClientThread(*this, showList, libraryDir, this);
+    activeThread = new Thread(*this, showList, libraryDir, this);
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
 
@@ -44,7 +47,7 @@ void MalClient::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
             this, SLOT(fetchThreadFinished()));
 }
 
-void MalClient::fetchThreadFinished() {
+void Client::fetchThreadFinished() {
     if (activeThread == sender()) {
         delete activeThread;
         this->activeThread = NULL;
@@ -54,7 +57,7 @@ void MalClient::fetchThreadFinished() {
     emit fetchingFinished();
 }
 
-void MalClient::fetchShowBlocking(TvShow& show, QDir libraryDir) {
+void Client::fetchShowBlocking(TvShow& show, QDir libraryDir) {
     QString name = show.name();
     if (name.isEmpty() || name.isNull()) {
         return;
@@ -71,19 +74,19 @@ void MalClient::fetchShowBlocking(TvShow& show, QDir libraryDir) {
         qDebug() << "received error" << error << "for query '" << url << "'' with this message:\n";
         userData.print();
     } else {
-        MalSearchResult result(userData, name);
+        SearchResult result(userData, name);
         result.updateShowFromBestEntry(show, libraryDir);
     }
 }
 
 
 
-void MalClient::setCredentials(const QString name, const QString password) {
+void Client::setCredentials(const QString name, const QString password) {
     this->username = name;
     this->password = password;
 }
 
-bool MalClient::verifyCredentials() {
+bool Client::verifyCredentials() {
     if (username.length() <= 0 || password.length() <= 0) {
         return false;
     }
@@ -107,7 +110,7 @@ bool MalClient::verifyCredentials() {
     return mHasValidCredentials;
 }
 
-CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
+CURL* Client::curlClient(const char* url, CurlResult& userdata) {
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, url);
     curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
@@ -120,7 +123,7 @@ CURL* MalClient::curlClient(const char* url, CurlResult& userdata) {
     return handle;
 }
 
-bool MalClient::hasValidCredentials() const {
+bool Client::hasValidCredentials() const {
     return mHasValidCredentials;
 }
 
@@ -132,7 +135,7 @@ bool MalClient::hasValidCredentials() const {
 //
 //////////////////////////////////////////////////////////////////
 
-MalClientThread::MalClientThread(MalClient &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
+Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
     QThread(parent),
     malClient(client),
     tvShows(shows),
@@ -141,7 +144,7 @@ MalClientThread::MalClientThread(MalClient &client, QList<TvShow*> &shows, QDir 
 
 }
 
-void MalClientThread::run() {
+void Thread::run() {
     QTime loginTimer;
     loginTimer.start();
     if (!malClient.hasValidCredentials() && !malClient.verifyCredentials()) {
@@ -175,7 +178,7 @@ void MalClientThread::run() {
 //
 //////////////////////////////////////////////////////////////////
 
-void MalEntry::calculateQuerySimiliarity(const QString query) {
+void Entry::calculateQuerySimiliarity(const QString query) {
     int titleResult = Utils::querySimiliarity(query, title);
     int englishTitleResult = Utils::querySimiliarity(query, englishTitle);
 
@@ -191,12 +194,12 @@ void MalEntry::calculateQuerySimiliarity(const QString query) {
     querySimiliarityScore = bestResult;
 }
 
-MalEntry::MalEntry(nw::XmlReader& reader) {
+Entry::Entry(nw::XmlReader& reader) {
     parse(reader);
     querySimiliarityScore = 0;
 }
 
-void MalEntry::parse(nw::XmlReader &xr) {
+void Entry::parse(nw::XmlReader &xr) {
     NwUtils::describe(xr, "id", id);
     NwUtils::describe(xr, "title", title);
     NwUtils::describe(xr, "englishTitle", englishTitle);
@@ -214,23 +217,23 @@ void MalEntry::parse(nw::XmlReader &xr) {
     synopsis = QUrl::fromPercentEncoding(synopsis.toLatin1());
 }
 
-void MalEntry::parseSynonyms(nw::XmlReader &reader) {
+void Entry::parseSynonyms(nw::XmlReader &reader) {
     QString synonyms;
     NwUtils::describe(reader, "synonyms", synonyms);
     synonyms = QUrl::fromPercentEncoding(synonyms.toLatin1());
     this->synonyms = synonyms.split(QRegExp("; "));
 }
 
-QString MalEntry::dateFormat = "yyyy-MM-dd";
+QString Entry::dateFormat = "yyyy-MM-dd";
 
-void MalEntry::updateShowFromEntry(TvShow &show, QDir libraryDir) const {
+void Entry::updateShowFromEntry(TvShow &show, QDir libraryDir) const {
     //show.setName();
 //    show.setLongTitle(title);
     show.setTotalEpisodes(episodes);
     show.setShowType(type);
     show.setAiringStatus(status);
-    show.setStartDate(QDate::fromString(startDate, MalEntry::dateFormat));
-    show.setEndDate(QDate::fromString(endDate, MalEntry::dateFormat));
+    show.setStartDate(QDate::fromString(startDate, Entry::dateFormat));
+    show.setEndDate(QDate::fromString(endDate, Entry::dateFormat));
     show.setSynopsis(synopsis);
     show.setRemoteId(id.toInt());
 
@@ -243,20 +246,20 @@ void MalEntry::updateShowFromEntry(TvShow &show, QDir libraryDir) const {
 //
 //////////////////////////////////////////////////////////////////
 
-MalSearchResult::MalSearchResult(CurlResult &result, QString query) :
+SearchResult::SearchResult(CurlResult &result, QString query) :
     query(query)
 {
     parse(result);
 }
 
-void MalSearchResult::parse(CurlResult &result) {
+void SearchResult::parse(CurlResult &result) {
     std::cout.flush();
     nw::XmlReader xr(result.data);
     xr.push("anime");
     xr.describeArray("", "entry", 0);
     bool hasEntries = false;
     for (int i=0; xr.enterNextElement(i); ++i) {
-        entries.append(MalEntry(xr));
+        entries.append(Entry(xr));
         entries.back().calculateQuerySimiliarity(query);
         hasEntries = true;
     }
@@ -266,10 +269,10 @@ void MalSearchResult::parse(CurlResult &result) {
     xr.close();
 }
 
-const MalEntry* MalSearchResult::bestResult() const {
-    std::pair<int, const MalEntry*> best(-1, NULL);
+const Entry* SearchResult::bestResult() const {
+    std::pair<int, const Entry*> best(-1, NULL);
     for (int i=0; i < entries.length(); ++i) {
-        const MalEntry* entry = &entries.at(i);
+        const Entry* entry = &entries.at(i);
 
         int score = Utils::querySimiliarity(this->query, entry->title);
         /*
@@ -296,8 +299,8 @@ const MalEntry* MalSearchResult::bestResult() const {
     return best.second;
 }
 
-void MalSearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const {
-    const MalEntry* entry = bestResult();
+void SearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const {
+    const Entry* entry = bestResult();
 
     if (entry) {
         entry->updateShowFromEntry(show, libraryDir);
@@ -306,7 +309,7 @@ void MalSearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) con
 }
 
 
-MalUpdaterAnimeData::MalUpdaterAnimeData(TvShow *show) {
+AnimeUpdateData::AnimeUpdateData(TvShow *show) {
     this->episode = show->episodeList().highestWatchedEpisodeNumber();
     this->status = calculateWatchStatus(this->episode, show->getTotalEpisodes());
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();
@@ -323,7 +326,7 @@ MalUpdaterAnimeData::MalUpdaterAnimeData(TvShow *show) {
     QStringList tags; // string. tags separated by commas
 }
 
-MalUpdaterWatchStatus MalUpdaterAnimeData::calculateWatchStatus(int episodesWatched, int total) {
+UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(int episodesWatched, int total) {
     if (episodesWatched == 0) {
         return plantowatch;
     } else if (episodesWatched == total) {
@@ -334,7 +337,9 @@ MalUpdaterWatchStatus MalUpdaterAnimeData::calculateWatchStatus(int episodesWatc
     return onhold;
 }
 
-MalClientThread* MalClient::getActiveThread() const
+Thread* Client::getActiveThread() const
 {
     return activeThread;
 }
+
+} // namespace

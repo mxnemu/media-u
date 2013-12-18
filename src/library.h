@@ -85,7 +85,7 @@ private:
     QList<Franchise*> franchises;
     QList<SearchDirectory> searchDirectories;
 
-    MalClient malClient;
+    Mal::Client malClient;
     MalApiDotCom::Client malapiClient;
     LibraryFilter mFilter;
     MetaDataParser* metaDataParser;
