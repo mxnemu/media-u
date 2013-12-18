@@ -34,7 +34,7 @@ void Entry::parse(nw::Describer* de) {
     NwUtils::describe(*de, "pubDate", dateString);
     NwUtils::describe(*de, "category", typeStr);
 
-    this->url = QUrl(this->url).toString(QUrl::FormattingOptions(QUrl::FullyDecoded));
+    this->url = QUrl(this->url).toString(QUrl::FormattingOptions(QUrl::PrettyDecoded));
 
     // TODO remove decode workaround and do it properly
     QTextDocument text;
