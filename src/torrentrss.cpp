@@ -27,6 +27,13 @@ void Client::connectLibrary() {
 }
 
 void Client::addFeed(Feed* feed) {
+    foreach (Feed* f, feeds) {
+        if (f->getTvShow() == feed->getTvShow()) {
+            delete feed;
+            return;
+        }
+    }
+
     this->feeds.push_back(feed);
     connect(feed, SIGNAL(foundCandidateForAutoDownload(Entry)), this, SLOT(autoDownloadEntry(Entry)));
     feed->fetch();
@@ -36,6 +43,13 @@ void Client::addFeedsForWaitingShows() {
     QList<TvShow *> shows = library.filter().statusWaitingForNewEpisodes();
     foreach (TvShow* show, shows) {
         addFeed(show);
+    }
+
+    QList<TvShow *> airing = library.filter().airing();
+    foreach (TvShow* show, airing) {
+        if (!show->completed) {
+            addFeed(show);
+        }
     }
 }
 
