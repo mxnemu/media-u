@@ -78,6 +78,10 @@ OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
     return NULL;
 }
 
+const OnlineTvShowDatabase::Entry*Client::bestResult(const OnlineTvShowDatabase::SearchResult& result) const {
+    return ((SearchResult&)result).bestResult(); // not a good cast use pointers
+}
+
 
 
 void Client::setCredentials(const QString name, const QString password) {

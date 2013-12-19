@@ -39,7 +39,7 @@ public:
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
 
     virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
-    virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&) const {return NULL;}
+    virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&result) const;
 
     Thread* getActiveThread() const;
 
