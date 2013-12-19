@@ -155,7 +155,9 @@ void Thread::run() {
     // TODO reuse code from OnlineTvShowDatabase
     for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
         TvShow& show = *(it.i->t());
-        if (show.getRemoteId() == -1) {
+        if (show.getRemoteId() == -1 ||
+            show.getTotalEpisodes() == 0 ||
+            (show.isAiring() && show.getStatus() == TvShow::completed)) {
             QTime timer;
             timer.start();
 
