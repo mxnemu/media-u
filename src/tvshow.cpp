@@ -19,12 +19,7 @@ void TvShow::read(QDir &dir) {
     nw::JsonReader jr(dir.absoluteFilePath("tvShow.json").toStdString());
     episodes.readAsElement(jr);
 
-    // TODO remove copy pasta code
-    jr.describeValueArray("synonymes", synonyms.length());
-    for (int i=0; jr.enterNextElement(i); ++i) {
-        std::string s = synonyms.at(i).toStdString();
-        jr.describeValue(s);
-    }
+    NwUtils::describeValueArray(jr, "synonymes", synonyms);
 
     jr.push("playerSettings");
     this->playerSettings.describe(&jr);
