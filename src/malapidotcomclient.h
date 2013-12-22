@@ -61,6 +61,7 @@ class Client : public OnlineTvShowDatabase::Client {
 public:
     Client(QObject* parent = NULL);
 
+    virtual inline bool login() { return true; }
     virtual SearchResult* search(QString anime);
     virtual const Entry* bestResult(const SearchResult& result) const;
 

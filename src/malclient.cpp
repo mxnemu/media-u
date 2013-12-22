@@ -15,7 +15,7 @@ Client::Client(QObject *parent) :
     userAgent("nemu-malapiclient"),
     activeThread(NULL)
 {
-    mHasValidCredentials = false;
+    mHasVerifiedCredentials = false;
 }
 
 void Client::init(QString configFilePath) {
@@ -102,15 +102,15 @@ bool Client::verifyCredentials() {
         userData.print();
     } else {
         if (userData.data.str() == "Invalid credentials") {
-            mHasValidCredentials = false;
+            mHasVerifiedCredentials = false;
         } else {
-            mHasValidCredentials = true;
+            mHasVerifiedCredentials = true;
         }
     }
 
-    qDebug() << "mal connection is " << mHasValidCredentials;
+    qDebug() << "mal connection is " << mHasVerifiedCredentials;
     curl_easy_cleanup(handle);
-    return mHasValidCredentials;
+    return mHasVerifiedCredentials;
 }
 
 CURL* Client::curlClient(const char* url, CurlResult& userdata) {
@@ -126,61 +126,12 @@ CURL* Client::curlClient(const char* url, CurlResult& userdata) {
     return handle;
 }
 
-bool Client::hasValidCredentials() const {
-    return mHasValidCredentials;
+bool Client::hasVerifiedCredentials() const {
+    return mHasVerifiedCredentials;
 }
 
-
-
-///////////////////////////////////////////////////////////////////
-//
-// MAL Thread
-//
-//////////////////////////////////////////////////////////////////
-
-Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
-    OnlineTvShowDatabase::Thread(client, shows, libraryDir, parent)
-{
-
-}
-
-void Thread::run() {
-    QTime loginTimer;
-    loginTimer.start();
-    Mal::Client& malClient = (Mal::Client&)this->client; // <- if I fuck this up debugging hell is here
-    if (!malClient.hasValidCredentials() && !malClient.verifyCredentials()) {
-        qDebug() << "can't fetch data, no valid login credentials";
-        return;
-    }
-    int loginSleep = 3000 - loginTimer.elapsed();
-    if (loginSleep > 0) {
-        msleep(loginSleep);
-    }
-    // TODO reuse code from OnlineTvShowDatabase
-    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        TvShow& show = *(it.i->t());
-        if (show.getRemoteId() == -1 ||
-            show.getTotalEpisodes() == 0 ||
-            (show.isAiring() && show.getStatus() == TvShow::completed)) {
-            QTime timer;
-            timer.start();
-
-            SearchResult* searchResult = dynamic_cast<SearchResult*>(malClient.search(show.name()));
-            if (!searchResult) {
-                continue;
-            }
-            const Entry* entry = dynamic_cast<const Entry*>(malClient.bestResult(*searchResult));
-            if (!entry) {
-                continue;
-            }
-            entry->updateShow(show, libraryDir);
-
-            int sleepTime = 3000 - timer.elapsed();
-            if (sleepTime > 0) {
-                msleep(sleepTime);
-            }
-        }
-    }
+bool Client::login() {
+    return this->hasVerifiedCredentials() || this->verifyCredentials();
 }
 
 ///////////////////////////////////////////////////////////////////

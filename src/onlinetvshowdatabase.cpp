@@ -82,14 +82,43 @@ Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *
     QThread(parent),
     client(client),
     tvShows(shows),
-    libraryDir(libraryDir)
+    libraryDir(libraryDir),
+    requestSleepPadding(3000)
 {
 }
 
 void Thread::run() {
+
+    QTime loginTimer;
+    loginTimer.start();
+
+    if (!client.login()) {
+        qDebug() << "can't fetch data, no valid login credentials";
+        return;
+    }
+    int loginSleep = requestSleepPadding - loginTimer.elapsed();
+    if (loginSleep > 0) {
+        msleep(loginSleep);
+    }
+
     foreach (TvShow* show, tvShows) {
-        if (show) {
+        if (!show) {
+            continue;
+        }
+
+        if (show->getRemoteId() == -1 ||
+            show->getTotalEpisodes() == 0 ||
+            (show->isAiring() && show->getStatus() == TvShow::completed)) {
+
+            QTime timer;
+            timer.start();
+
             client.updateShow(*show, libraryDir);
+
+            int sleepTime = this->requestSleepPadding - timer.elapsed();
+            if (sleepTime > 0) {
+                msleep(sleepTime);
+            }
         }
     }
 }

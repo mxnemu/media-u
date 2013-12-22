@@ -14,15 +14,7 @@
 #include "onlinetvshowdatabase.h"
 
 namespace Mal {
-
-class Client;
-class Thread : public OnlineTvShowDatabase::Thread {
-public:
-    Thread(Client& client, QList<TvShow*>& shows, QDir libraryDir, QObject* parent);
-
-    void run(); // TODO most code from base run function
-};
-
+using OnlineTvShowDatabase::Thread;
 
 class Client : public OnlineTvShowDatabase::Client
 {
@@ -33,7 +25,7 @@ public:
     void setCredentials(const QString name, const QString password);
     bool verifyCredentials();
     
-    bool hasValidCredentials() const;
+    bool hasVerifiedCredentials() const;
 
     void fetchShows(QList<TvShow *> &showList, QDir libraryDir);
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
@@ -43,6 +35,7 @@ public:
 
     Thread* getActiveThread() const;
 
+    bool login();
 signals:
     void fetchingFinished();
     
@@ -52,7 +45,7 @@ private slots:
 private:
     CURL *curlClient(const char* url, CurlResult &userdata);
 
-    bool mHasValidCredentials;
+    bool mHasVerifiedCredentials;
     QString username;
     QString password;
     QString userAgent;

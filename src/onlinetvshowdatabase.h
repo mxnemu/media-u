@@ -57,6 +57,8 @@ public:
 
     void startUpdate(QList<TvShow *> &showList, QDir libraryDir);
     bool updateShow(TvShow& show, QDir &libraryDir);
+
+    virtual bool login() = 0;
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
 
@@ -80,6 +82,7 @@ protected:
     Client &client;
     QList<TvShow*> &tvShows;
     QDir libraryDir;
+    int requestSleepPadding;
 };
 
 
