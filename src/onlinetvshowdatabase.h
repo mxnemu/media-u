@@ -82,7 +82,7 @@ protected:
     Client &client;
     QList<TvShow*> &tvShows;
     QDir libraryDir;
-    int requestSleepPadding;
+    const int requestSleepPadding;
 };
 
 
