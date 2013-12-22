@@ -16,6 +16,7 @@
 namespace Mal {
 using OnlineTvShowDatabase::Thread;
 
+class AnimeUpdateData;
 class Client : public OnlineTvShowDatabase::Client
 {
     Q_OBJECT
@@ -32,10 +33,11 @@ public:
 
     virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
     virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&result) const;
+    bool login();
+
+    bool updateInOnlineTracker(TvShow* show);
 
     Thread* getActiveThread() const;
-
-    bool login();
 signals:
     void fetchingFinished();
     
@@ -43,7 +45,8 @@ private slots:
     void fetchThreadFinished();
 
 private:
-    CURL *curlClient(const char* url, CurlResult &userdata);
+    CURL* curlClient(const char* url, CurlResult &userdata);
+    CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data);
 
     bool mHasVerifiedCredentials;
     QString username;
@@ -109,7 +112,10 @@ enum UpdateWatchStatus {
 class AnimeUpdateData {
 public:
     AnimeUpdateData(TvShow*);
-    static UpdateWatchStatus calculateWatchStatus(int watched, int total);
+    static UpdateWatchStatus calculateWatchStatus(const TvShow& show);
+
+    void describe(nw::Describer& de);
+    QString toXml();
 private:
     int episode;
     UpdateWatchStatus status; // int OR string. 1/watching, 2/completed, 3/onhold, 4/dropped, 6/plantowatch

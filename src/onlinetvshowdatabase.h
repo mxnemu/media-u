@@ -56,11 +56,12 @@ public:
     Client(QObject* parent = NULL);
 
     void startUpdate(QList<TvShow *> &showList, QDir libraryDir);
-    bool updateShow(TvShow& show, QDir &libraryDir);
+    bool findShow(TvShow& show, QDir &libraryDir);
 
     virtual bool login() = 0;
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
+    virtual bool updateInOnlineTracker(TvShow* show) = 0;
 
 signals:
     void updateFinished();

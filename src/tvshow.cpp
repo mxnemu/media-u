@@ -167,6 +167,13 @@ QStringList TvShow::wallpapers(QDir libraryDirectory) const {
     return ffs->getMatchedFiles();
 }
 
+QString TvShow::favouriteReleaseGroup() {
+    if (releaseGroupPreference.isEmpty()) {
+        return this->episodeList().mostDownloadedReleaseGroup();
+    }
+    return releaseGroupPreference.front();
+}
+
 QString TvShow::coverPath(QDir libaryPath) const {
     return this->directory(libaryPath).absoluteFilePath("cover");
 }

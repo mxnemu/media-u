@@ -93,7 +93,7 @@ void Thread::run() {
     }
 }
 
-void Client::tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus oldStatus) {
+void Client::tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus) {
     if (newStatus == TvShow::waitingForNewEpisodes) {
         this->addFeed(show);
     }
@@ -133,7 +133,7 @@ Entry*Feed::candidateForAutoDownload() {
         return NULL;
     }
     QString name = tvShow->name();
-    QString releaseGroup = tvShow->episodeList().favouriteReleaseGroup();
+    QString releaseGroup = tvShow->favouriteReleaseGroup();
     int nextEpisode = tvShow->episodeList().highestDownloadedEpisodeNumber() + 1;
     foreach(Entry* entry, result->entires) {
         if (entry->isCandidateForAutoDownload(name, nextEpisode, releaseGroup)) {

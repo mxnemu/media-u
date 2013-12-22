@@ -126,12 +126,44 @@ CURL* Client::curlClient(const char* url, CurlResult& userdata) {
     return handle;
 }
 
+CURL* Client::curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) {
+    CURL* handle = curlClient(url, userdata);
+    //curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "POST");
+    QString xml = QString("data=\"%1\"").arg(data.toXml().remove('\t').remove('\n').remove("<?xml version=\"1.0\"?>")).toUtf8();
+    qDebug() << "gonna update with" << xml;
+    curl_easy_setopt(handle, CURLOPT_POSTFIELDS, xml.data());
+    //curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, xml.size());
+    return handle;
+}
+
 bool Client::hasVerifiedCredentials() const {
     return mHasVerifiedCredentials;
 }
 
 bool Client::login() {
     return this->hasVerifiedCredentials() || this->verifyCredentials();
+}
+
+bool Client::updateInOnlineTracker(TvShow* show) {
+    int id = show->getRemoteId();
+    if (id <= 0) return false;
+
+    QString url = QString("http://myanimelist.net/api/animelist/update/%1.xml").arg(id);
+    CurlResult userData(this);
+    AnimeUpdateData updateData(show);
+
+    CURL* handle = curlTrackerUpdateClient(url.toUtf8().data(), userData, updateData);
+    CURLcode error = curl_easy_perform(handle);
+    curl_easy_cleanup(handle);
+    if (error || userData.data.str().size() < 2) {
+        qDebug() << "received error" << error << "for MAL Online Tracker Update '" << url << "'' with this message:\n";
+        userData.print();
+    } else {
+        qDebug() << "MAL TRACKER UPDATE success with message:\n";
+        userData.print();
+        return true;
+    }
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -293,7 +325,7 @@ void SearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const 
 
 AnimeUpdateData::AnimeUpdateData(TvShow *show) {
     this->episode = show->episodeList().highestWatchedEpisodeNumber();
-    this->status = calculateWatchStatus(this->episode, show->getTotalEpisodes());
+    this->status = calculateWatchStatus(*show);
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();
 
     score = -1;
@@ -304,19 +336,56 @@ AnimeUpdateData::AnimeUpdateData(TvShow *show) {
     priority = -1; // 0 - 10 ? dont know didn't check
     enable_discussion = 0; // int. 1=enable, 0=disable
     enable_rewatching = -1; // int. 1=enable, 0=disable
-    fansub_group = show->episodeList().mostDownloadedReleaseGroup();
+    fansub_group = show->favouriteReleaseGroup();
     QStringList tags; // string. tags separated by commas
 }
 
-UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(int episodesWatched, int total) {
-    if (episodesWatched == 0) {
-        return plantowatch;
-    } else if (episodesWatched == total) {
-        return completed;
-    } else if (episodesWatched > 0) {
+UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(const TvShow& show) {
+    TvShow::WatchStatus status = show.getStatus();
+    switch (status) {
+    case TvShow::waitingForNewEpisodes:
+    case TvShow::watching:
         return watching;
+    case TvShow::completed: return completed;
+    case TvShow::onHold: return onhold;
+    case TvShow::dropped: return dropped;
+    case TvShow::planToWatch:
+    default:
+        return plantowatch;
     }
-    return onhold;
+}
+
+void AnimeUpdateData::describe(nw::Describer& de) {
+    int statusInt = status;
+    nw::String empty = "";
+    NwUtils::describe(de, "episode", episode);
+    NwUtils::describe(de, "status", statusInt);
+    NwUtils::describe(de, "score", empty);
+    NwUtils::describe(de, "downloaded_episodes", downloaded_episodes);
+    NwUtils::describe(de, "storage_type", empty);
+    NwUtils::describe(de, "storage_value", empty);
+    NwUtils::describe(de, "times_rewatched", empty);
+    NwUtils::describe(de, "rewatch_value", empty);
+    NwUtils::describe(de, "date_start", empty);
+    NwUtils::describe(de, "date_finish", empty);
+    NwUtils::describe(de, "priority", empty);
+    NwUtils::describe(de, "enable_discussion", enable_discussion);
+    NwUtils::describe(de, "enable_rewatching", empty);
+    NwUtils::describe(de, "comments", empty);
+    NwUtils::describe(de, "fansub_group", fansub_group);
+    NwUtils::describe(de, "tags", tags, ',');
+}
+
+QString AnimeUpdateData::toXml() {
+    std::stringstream ss;
+    nw::MarkupWriter::motherTagName = "entry"; // FIXME no global state
+    nw::Tag::useAttribute = false; // FIXME don't use global state in Tag, use state in XmlWriter
+    nw::XmlWriter xw(ss);
+
+    this->describe(xw);
+    xw.close();
+    nw::Tag::useAttribute = true;
+    return QString(ss.str().data());
 }
 
 Thread* Client::getActiveThread() const

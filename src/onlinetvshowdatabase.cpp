@@ -19,7 +19,7 @@ void Client::startUpdate(QList<TvShow*> &showList, QDir libraryDir) {
     this->activeThread->start();
 }
 
-bool Client::updateShow(TvShow& show, QDir &libraryDir) {
+bool Client::findShow(TvShow& show, QDir &libraryDir) {
     QString name = show.name();
     SearchResult* result = this->search(name);
     if (!result) {
@@ -113,14 +113,18 @@ void Thread::run() {
             QTime timer;
             timer.start();
 
-            client.updateShow(*show, libraryDir);
+            client.findShow(*show, libraryDir);
 
             int sleepTime = this->requestSleepPadding - timer.elapsed();
             if (sleepTime > 0) {
                 msleep(sleepTime);
             }
         }
+
+        //client.updateInOnlineTracker(show);
     }
+
+
 }
 
 }

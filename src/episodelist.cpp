@@ -164,22 +164,6 @@ bool epNumLess(const Episode* a, const Episode* b) {
     return a->getEpisodeNumber() < b->getEpisodeNumber();
 }
 
-QString EpisodeList::favouriteReleaseGroup() const {
-    /*
-    QList<Episode* > episodesByNumber = episodes;
-    qSort(episodesByNumber.begin(), episodesByNumber.end(), epNumLess);
-
-    if (episodesByNumber.at(0)->releaseGroup().compare(
-            episodesByNumber.at(1)->releaseGroup(),
-            Qt::CaseInsensitive
-        )
-    ) {
-        return episodesByNumber.at(0)->releaseGroup();
-    }
-    */
-    return mostDownloadedReleaseGroup();
-}
-
 Episode* EpisodeList::getEpisodeForPath(const QString& path) {
     for (int i=0; i < episodes.length(); ++i) {
         Episode* f = episodes[i];
