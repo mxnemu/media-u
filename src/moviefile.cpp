@@ -169,7 +169,7 @@ MovieFile::MovieFile(QString p) {
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
-    return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$", Qt::CaseInsensitive));
+    return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$|\\.mp5$", Qt::CaseInsensitive));
 }
 
 QString MovieFile::xbmcEpisodeNumber() const {
