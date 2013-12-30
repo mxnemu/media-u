@@ -3,7 +3,6 @@ Roadmap:
     -setting to list torrents in the web-ui before downloading them
     -use QWaitConditions and QEventLoops for the rss thread
     -customizable filters to detect download candidates
-    -fix freeing of Feeds
     -auto-add feeds when watchstatus changes
 -update MAL watch status
 -library improvements:
@@ -11,6 +10,8 @@ Roadmap:
     -start mal searches for specific shows and not just for all
     -start wallpaper searches for specific shows and not just for all
 -alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
+-option to list/unlist missing files
+-page that lists missing files with the possebillity to delete them
 
 Optional:
 -generate thumbnails for each episode
