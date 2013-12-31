@@ -13,6 +13,7 @@ public:
     QString snapshotDir;
     QString snapshotFormat;
     QString snapshotName;
+    qint8 snapshotQuality;
 private:
     void initDefaultValues(); ///< init uninitialized values
 };

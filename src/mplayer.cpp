@@ -167,7 +167,7 @@ bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
     if (!p.load(snapshotPath)) {
         return false;
     }
-    if (p.save(outputPath)) {
+    if (p.save(outputPath, NULL, config.snapshotQuality)) {
         if (!QFile(snapshotPath).remove()) {
             qDebug() << "failed to delete original snapshot" << snapshotPath;
         }

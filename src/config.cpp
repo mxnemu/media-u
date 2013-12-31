@@ -175,15 +175,20 @@ int Config::serverPort() {
 
 void MplayerConfig::describe(nw::Describer *de) {
     if (de->isInWriteMode()) {
-        this->initDefaultValues();
+        this->initDefaultValues(); // TODO get the init order logical
     }
     NwUtils::describe(*de, "path", path);
     NwUtils::describe(*de, "arguments", arguments, ' ');
     NwUtils::describe(*de, "snapshotDir", snapshotDir);
     NwUtils::describe(*de, "snapshotFormat", snapshotFormat);
+    NwUtils::describe(*de, "snapshotQuality", snapshotQuality);
     NwUtils::describe(*de, "snapshotName", snapshotName);
+
+    this->snapshotQuality = std::min(this->snapshotQuality, (qint8)100);
+    this->snapshotQuality = std::max(this->snapshotQuality, (qint8)-1);
+
     if (de->isInReadMode()) {
-        this->initDefaultValues();
+        this->initDefaultValues(); // TODO get the init order logical
     }
 }
 
@@ -192,6 +197,7 @@ void MplayerConfig::initDefaultValues() {
         this->path = "mplayer";
         this->snapshotFormat = "jpg";
         this->snapshotName = "$(tvShow)/$(file) - $(progressM)m$(progressS)s - $(nowDate).$(ext)";
+        this->snapshotQuality = 100;
 
         QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
 
