@@ -101,6 +101,7 @@ Seekbar.prototype.createNodes = function() {
     
     this.tooltip = $(document.createElement("div"));
     this.tooltip.addClass("seekbartooltip");
+    this.tooltip.hide();
     
     this.progressBar = document.createElement("div");
     this.progressBar.className = "progressBar";
