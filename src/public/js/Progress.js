@@ -99,6 +99,7 @@ Progress.prototype.bindEvents = function() {
         var data = JSON.parse(event.data);
         self.initMetaData(data.metaData);
         self.initProgress(data.seconds);
+        self.isPaused = false;
     }
     
     this.onPlaybackEndedListener = function(event) {
