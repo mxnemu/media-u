@@ -9,10 +9,15 @@ function Progress(onUpdateCallback) {
     
     this.progressUpdateIntervalId = null;
     this.bindEvents();
+    this.startUp();
     
     if (G.app.serverEvents.readyState == EventSource.OPEN) {
         this.startUp();
     }
+}
+
+Progress.prototype.isPlaying = function() {
+    return this.metaData && this.metaData.duration !== -1;
 }
 
 Progress.prototype.onReady = function(callback) {
@@ -27,19 +32,23 @@ Progress.prototype.onReset = function(callback) {
     this.onResetCallbacks.push(callback);
 }
 
+
 Progress.prototype.startUp = function() {
     var self = this;
     
+    function logError(a,b,c,d,e) {
+        console.log("error",a,b,c,d,e);
+    }
+    
     $.getJSON("api/player/metaData", function(metaData) {
         self.initMetaData(metaData);
-        $.getJSON("api/player/progress", function(data) {
-            self.initProgress(data.seconds);
-        }).error(function(a,b,c,d,e) {
-            console.log("error",a,b,c,d,e);
-        });
-    }).error(function(a,b,c,d,e) {
-        console.log("error",a,b,c,d,e);
-    });
+        $.getJSON("api/player/pauseStatus", function(data) {
+            self.isPaused = data.status === "paused";
+            $.getJSON("api/player/progress", function(data) {
+                self.initProgress(data.seconds);
+            }).error(logError);
+        }).error(logError);
+    }).error(logError);
 }
 
 Progress.prototype.initMetaData = function(metaData) {
@@ -86,10 +95,6 @@ Progress.prototype.reset = function() {
 Progress.prototype.bindEvents = function() {
     var self = this;
     
-    this.onConnectListener = function(event) {
-        self.startUp();
-    }
-    
     this.onPlaybackStartedListener = function(event) {
         var data = JSON.parse(event.data);
         self.initMetaData(data.metaData);
@@ -115,7 +120,6 @@ Progress.prototype.bindEvents = function() {
         }
     }
     
-    G.app.serverEvents.addEventListener("open", this.onConnectListener);
     G.app.serverEvents.addEventListener("playbackStarted", this.onPlaybackStartedListener);
     G.app.serverEvents.addEventListener("playbackEnded", this.onPlaybackEndedListener);
     G.app.serverEvents.addEventListener("paused", this.onPausedListener);
@@ -126,7 +130,6 @@ Progress.prototype.bindEvents = function() {
 Progress.prototype.unbindEvents = function() {
     window.clearInterval(this.progressUpdateIntervalId);
 
-    G.app.serverEvents.removeEventListener("open", this.onConnectListener);
     G.app.serverEvents.removeEventListener("playbackStarted", this.onPlaybackStartedListener);
     G.app.serverEvents.removeEventListener("playbackEnded", this.onPlaybackEndedListener);
     G.app.serverEvents.removeEventListener("paused", this.onPausedListener);
