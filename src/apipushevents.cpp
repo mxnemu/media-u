@@ -66,13 +66,13 @@ void ApiPushEvents::jumped(int seconds) {
 void ApiPushEvents::sendToListeners(const QString& message, const QString& event) {
     for (int i=0; i < listeners.length(); ++i) {
         if (!event.isNull()) {
-            this->listeners[i]->write(QString("event: "));
-            this->listeners[i]->write(event);
-            this->listeners[i]->write(QString("\n"));
+            this->listeners[i]->write(QString("event: ").toUtf8());
+            this->listeners[i]->write(event.toUtf8());
+            this->listeners[i]->write(QString("\n").toUtf8());
         }
-        this->listeners[i]->write(QString("data: "));
-        this->listeners[i]->write(QString(message).replace("\n", "\ndata: "));
-        this->listeners[i]->write(QString("\n\n"));
+        this->listeners[i]->write(QString("data: ").toUtf8());
+        this->listeners[i]->write(QString(message).replace("\n", "\ndata: ").toUtf8());
+        this->listeners[i]->write(QString("\n\n").toUtf8());
         this->listeners[i]->flush();
     }
 }
