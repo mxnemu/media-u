@@ -1,16 +1,10 @@
-function PlayerPage() {
+function PlayerUi() {
     this.tvShow = null;
 }
 
-PlayerPage.prototype.createNodes = function() {
+PlayerUi.prototype.createNodes = function() {
     var self = this;
-    var page = $(".page");
-    
-    var backButton = $("<input class='backButton' type='button'/>");
-    backButton.attr("value", "back");
-    backButton.click(function() {
-        window.location.hash = "#!/TvShowPage"; // TODO get active page via api
-    });
+    var page = $(".playerFooter");
     
     this.togglePauseButton = $(document.createElement("span"));
     this.setPauseDisplay("paused")
@@ -61,18 +55,25 @@ PlayerPage.prototype.createNodes = function() {
     playerControls.append(this.togglePauseButton);
     playerControls.append(forwardsButton);
     playerControls.append(stopButton);
-    page.append(backButton);
     page.append(playerControls);
     
     this.bindEvents();
+    this.addBodyPadding();    
 }
 
-PlayerPage.prototype.removeNodes = function() {
+PlayerUi.prototype.removeNodes = function() {
     this.seekbar.destroy();
     this.unbindEvents();
 }
 
-PlayerPage.prototype.bindEvents = function() {
+PlayerUi.prototype.addBodyPadding = function() {
+    var self = this;
+    window.setTimeout(function() {
+        $(".page").css("padding-bottom", $(".playerControls").outerHeight() + "px");
+    }, 100)
+}
+
+PlayerUi.prototype.bindEvents = function() {
     var self = this;
     this.onPlaybackStartedListener = function(event) {
         self.setPauseDisplay("unpaused");
@@ -91,13 +92,13 @@ PlayerPage.prototype.bindEvents = function() {
     G.app.serverEvents.addEventListener("unpaused", this.onUnpausedListener);
 }
 
-PlayerPage.prototype.unbindEvents = function() {
+PlayerUi.prototype.unbindEvents = function() {
     G.app.serverEvents.removeEventListener("playbackStarted", this.onPlaybackStartedListener);
     G.app.serverEvents.removeEventListener("paused", this.onPausedListener);
     G.app.serverEvents.removeEventListener("unpaused", this.onUnpausedListener);
 }
 
-PlayerPage.prototype.setPauseDisplay = function(status) {
+PlayerUi.prototype.setPauseDisplay = function(status) {
     this.togglePauseButton.attr("data-status", status);
     if (status != "unpaused") {
         this.togglePauseButton.text("▶");

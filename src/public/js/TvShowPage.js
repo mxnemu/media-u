@@ -286,7 +286,7 @@ TvShowPage.prototype.play = function(episode) {
         
             $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
                 if (!data.error) {
-                    window.location.hash = "#!/PlayerPage";
+                    //window.location.hash = "#!/PlayerPage";
                 }
             });
         }

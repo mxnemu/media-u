@@ -3,6 +3,8 @@ function Application() {
     this.page = null;
     this.addServerEventListener();
     this.setScreenFromLocationHash();
+    this.playerUi = new PlayerUi();
+    this.playerUi.createNodes();
 }
 
 Application.prototype.setScreenFromLocationHash = function()
@@ -50,7 +52,6 @@ Application.prototype.addServerEventListener = function() {
 Application.prototype.pageList = {
     "StartPage": StartPage,
     "TvShowPage": TvShowPage,
-    "PlayerPage": PlayerPage,
     "StreamPlayerPage": StreamPlayerPage
 };
 

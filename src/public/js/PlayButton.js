@@ -53,7 +53,7 @@ PlayButton = {
         
         $.getJSON("api/player/setPlaylist?" + JSON.stringify(json), function(data) {
             if (!data.error) {
-                window.location.hash = "#!/PlayerPage";
+                //window.location.hash = "#!/PlayerPage";
             }
         });
     }

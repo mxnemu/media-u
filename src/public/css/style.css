@@ -100,7 +100,7 @@ li.focused {
 }
 
 .playerControls {
-    position:absolute;
+    position:fixed;
     bottom:0px;
     width: 100%;
     text-align:center;
