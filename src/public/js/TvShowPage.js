@@ -157,7 +157,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
                         var start = Math.floor(chapter.start);
                         $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
                             $.getJSON("api/player/jumpTo?" + start, function(data) {
-                                window.location.hash = "#!/PlayerPage";
+                                //window.location.hash = "#!/PlayerPage";
                             });
                         });
                     }
@@ -260,7 +260,7 @@ TvShowPage.prototype.play = function(episode) {
             
             $.getJSON("api/player/setPlaylist?" + JSON.stringify(json), function(data) {
                 if (!data.error) {
-                    window.location.hash = "#!/PlayerPage";
+                    //window.location.hash = "#!/PlayerPage";
                 }
             });
         
