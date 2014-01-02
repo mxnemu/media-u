@@ -100,8 +100,11 @@ MovieFile::MovieFile(QString p) {
         "\\sNC.?OP\\s?([0-9]+)?|"
         "\\sNC.?ED\\s?([0-9]+)?|"
         "\\sEX\\s?([0-9]+)?|"
+        "\\sPV\\s?([0-9]+)?|"
         "\\sEpisode\\s?[0-9]+|"
         "\\sOpening(\\s?[0-9]+)?|"
+        "\\sPreview\\s?([0-9]+)?|"
+        "\\sSpecial(\\s?[0-9])?+|"
         "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
@@ -196,6 +199,7 @@ QString MovieFile::xbmcEpisodeName() const {
 }
 
 bool MovieFile::isSpecial() const {
+    // TODO define specials regegxstr in constant
     QRegExp specialRegex("("
         "\\s?ED(\\s|$)|"
         "\\s?OP(\\s|$)|"
@@ -204,6 +208,8 @@ bool MovieFile::isSpecial() const {
         "SP[0-9]+|"
         "NC.?OP([0-9]+)?|"
         "NC.?ED([0-9]+)?|"
+        "Preview(\\s?[0-9]+)?|"
+        "Special(\\s?[0-9]+)?|"
         "Opening(\\s?[0-9]+)?|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
