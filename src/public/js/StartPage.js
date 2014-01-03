@@ -26,13 +26,14 @@ StartPage.prototype.fetchInfos = function(callback) {
 
 StartPage.prototype.createNodes = function() {
     var self = this;
+    this.page = $(document.createElement("div"));
     this.fetchInfos(function() {
-        var p = $(".page");
-        p.append("<h1>StartPage</h1>");
-        self.createLists(p);
+        self.page.append("<h1>StartPage</h1>");
+        self.createLists(self.page);
     });
     
     this.bindEvents();
+    return this.page;
 }
 
 StartPage.prototype.removeNodes = function() {

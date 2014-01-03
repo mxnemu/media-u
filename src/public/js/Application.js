@@ -59,20 +59,27 @@ Application.prototype.setPage = function(page) {
     if (this.page && this.page.removeNodes) {
         this.page.removeNodes();
     }
-    $(".page").empty();
     
     this.page = page;
+    var node = null;
     if (page) {
-        page.createNodes();
+        node = page.createNodes();
     }
-}
+    
+    $(function() {
+        $(".page").empty();
+        if (node) {
+            $(".page").append(node);
+        }
+    });
+};
 
-$(function() {
+(function() {
     G.app = new Application();
     G.playerType = "remote";
-    
+
     $(window).bind("hashchange", function()
     {
         G.app.setScreenFromLocationHash();
     });
-});
+})();

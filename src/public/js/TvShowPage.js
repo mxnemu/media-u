@@ -15,7 +15,7 @@ TvShowPage.prototype.unbindEvents = function() {
 
 TvShowPage.prototype.createNodes = function() {
     var self = this;
-    var page = $(".page");
+    this.page = $(document.createElement("div"));
     
     var backButton = $("<input class='backButton' type='button'/>");
     backButton.attr("value", "back");
@@ -74,15 +74,16 @@ TvShowPage.prototype.createNodes = function() {
         self.createEpisodeList(data.episodes, self.episodesEl);
     });
 
-    page.append(backButton);
-    page.append(this.playButton);
-    page.append("<span> sub: </span>");
-    page.append(subtitleTrackField);
-    page.append("<span> audio: </span>");
-    page.append(audioTrackField);
-    page.append(this.episodesEl);
-    page.append(this.completeButton);
+    this.page.append(backButton);
+    this.page.append(this.playButton);
+    this.page.append("<span> sub: </span>");
+    this.page.append(subtitleTrackField);
+    this.page.append("<span> audio: </span>");
+    this.page.append(audioTrackField);
+    this.page.append(this.episodesEl);
+    this.page.append(this.completeButton);
     this.bindEvents();
+    return this.page;
 }
 
 TvShowPage.prototype.removeNodes = function() {
@@ -241,8 +242,7 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
         });
     }
     
-    var page = $(".page");
-    page.append(rgp);
+    this.page.append(rgp);
     this.releaseGroupPreference = rgp;
 }
 
