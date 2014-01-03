@@ -49,11 +49,13 @@ PlayerUi.prototype.createNodes = function() {
     
     this.seekbar.progress.onReady(function() {
         if (self.seekbar.progress.isPlaying()) {
+            $(".playerFooter").stop(true, true);
             $(".playerFooter").show("slow");
         }
     });
     
     this.seekbar.progress.onReset(function() {
+        $(".playerFooter").stop(true, true);
         $(".playerFooter").hide("slow");
     });
     
