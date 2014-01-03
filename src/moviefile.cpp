@@ -104,7 +104,7 @@ MovieFile::MovieFile(QString p) {
         "\\sEpisode\\s?[0-9]+|"
         "\\sOpening(\\s?[0-9]+)?|"
         "\\sPreview\\s?([0-9]+)?|"
-        "\\sSpecial(\\s?[0-9])?+|"
+        "\\sSpecial(\\s?[0-9]+)?|"
         "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
