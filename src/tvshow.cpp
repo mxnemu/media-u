@@ -132,7 +132,13 @@ void TvShow::downloadImage(const QString url, QDir libraryDirectory) {
 }
 
 bool TvShow::isAiring() const {
-    return !airingStatus.isEmpty() && airingStatus.startsWith("Currently", Qt::CaseInsensitive);
+    // WORKAROUND call things did not air yet 'airing'
+    // this works okay for all current scenarios, but doesn't fit the function name
+    // TODO rename function and create another fn with a good name that checks for both states
+    return !airingStatus.isEmpty() && (
+                airingStatus.startsWith("Currently", Qt::CaseInsensitive) ||
+                airingStatus.startsWith("Not yet", Qt::CaseInsensitive)
+            );
 }
 
 QDir TvShow::directory(QDir libraryDirectory) const {
