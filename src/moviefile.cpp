@@ -89,23 +89,24 @@ MovieFile::MovieFile(QString p) {
         "\\s[0-9]+((v|\\.)[0-9]+)?(\\s|$)|"
         "\\s[0-9]+(\\[v[0-9]+\\])(\\s|$)|"
         "\\s[0-9]+x[0-9]+|"
-        // numberless ed / op
-        "\\sED(\\s|$)|"
-        "\\sOP(\\s|$)|"
-        // numbered special
-        "\\sED\\s?[0-9]+|"
-        "\\sOP\\s?[0-9]+[a-z]?|"
-        "\\sSP\\s?[0-9]+|"
         "\\sEP\\s?[0-9]+|"
-        "\\sNC.?OP\\s?([0-9]+)?|"
-        "\\sNC.?ED\\s?([0-9]+)?|"
-        "\\sEX\\s?([0-9]+)?|"
-        "\\sPV\\s?([0-9]+)?|"
         "\\sEpisode\\s?[0-9]+|"
-        "\\sOpening(\\s?[0-9]+)?|"
-        "\\sPreview\\s?([0-9]+)?|"
-        "\\sSpecial(\\s?[0-9]+)?|"
-        "\\sEnding(\\s?[0-9]+)?"
+
+         "\\sED(\\s|$)|"
+         "\\sOP(\\s|$)|"
+
+         "\\sED\\s?[0-9]+|"
+         "\\sOP\\s?[0-9]+[a-z]?|"
+         "\\sSP\\s?[0-9]+|"
+         "\\sNC.?OP\\s?([0-9]+)?|"
+         "\\sNC.?ED\\s?([0-9]+)?|"
+         "\\sEX\\s?([0-9]+)?|"
+         "\\sPV\\s?([0-9]+)?|"
+
+         "\\sOpening(\\s?[0-9]+)?|"
+         "\\sPreview\\s?([0-9]+)?|"
+         "\\sSpecial(\\s?[0-9]+)?|"
+         "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);
@@ -199,18 +200,21 @@ QString MovieFile::xbmcEpisodeName() const {
 }
 
 bool MovieFile::isSpecial() const {
-    // TODO define specials regegxstr in constant
     QRegExp specialRegex("("
-        "\\s?ED(\\s|$)|"
-        "\\s?OP(\\s|$)|"
-        "ED[0-9]+|"
-        "OP[0-9]+[a-z]?|"
-        "SP[0-9]+|"
-        "NC.?OP([0-9]+)?|"
-        "NC.?ED([0-9]+)?|"
-        "Preview(\\s?[0-9]+)?|"
-        "Special(\\s?[0-9]+)?|"
+        "ED(\\s|$)|"
+        "OP(\\s|$)|"
+
+        "ED\\s?[0-9]+|"
+        "OP\\s?[0-9]+[a-z]?|"
+        "SP\\s?[0-9]+|"
+        "NC.?OP\\s?([0-9]+)?|"
+        "NC.?ED\\s?([0-9]+)?|"
+        "EX\\s?([0-9]+)?|"
+        "PV\\s?([0-9]+)?|"
+
         "Opening(\\s?[0-9]+)?|"
+        "Preview\\s?([0-9]+)?|"
+        "Special(\\s?[0-9]+)?|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     bool is = -1 != specialRegex.indexIn(this->episodeNumber);

@@ -189,6 +189,23 @@ void MovieFileTest::testPathParsing_data()
                                                       "00" <<
                                                       0.f <<
                                                       "";
+
+    QTest::newRow("EpNum: Preview without num") <<
+                                                      "/torrents/[Kaylith] Sakura Trick - PV [720p][4723E085].mkv" <<
+                                                      "[Kaylith]" <<
+                                                      "Sakura Trick" <<
+                                                      "PV" <<
+                                                      -2.f <<
+                                                      "";
+
+    QTest::newRow("EpNum: Preview with num") <<
+                                                      "/torrents/[Kaylith] Sakura Trick - PV2(v0) (C85 Version) [360p][6A4B418C].mkv" <<
+                                                      "[Kaylith]" <<
+                                                      "Sakura Trick" <<
+                                                      "PV2" << // TODO also check for v0
+                                                      -2.f <<
+                                                      "";
+
     // TODO detect play all files as special file
     QTest::newRow("ShowName: Play All file") <<
                                                 "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<
