@@ -6,6 +6,7 @@
 #include <qhttpconnection.h>
 #include <utility>
 
+// TODO get const correctness right I think it was fucked somewhere
 class LibraryFilter
 {
 public:
@@ -32,8 +33,12 @@ public:
     QList<TvShow *> statusDropped();
     QList<TvShow *> statusPlanToWatch();
     void sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow *> > > lists);
+
+    QList<std::pair<QString, QList<TvShow*> > > genLists();
 private:
-    QList<TvShow*> filter(bool (*filterFunc)(const TvShow &, const LibraryFilter &, const void *), const void* userData = NULL);
+    typedef bool (*FilterFunction)(const TvShow &, const LibraryFilter&, const void*);
+
+    QList<TvShow*> filter(FilterFunction, const void* userData = NULL);
 
     static bool filterAll(const TvShow&, const LibraryFilter&, const void *userData);
     static bool filterAiring(const TvShow & show, const LibraryFilter&, const void* userData);
@@ -45,6 +50,7 @@ private:
 
     QList<TvShow*>& tvShows;
     QDir libraryDir;
+
 };
 
 #endif // LIBRARYFILTER_H

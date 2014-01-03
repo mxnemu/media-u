@@ -57,6 +57,9 @@ QList<TvShow *> LibraryFilter::statusPlanToWatch() {
 
 bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/library/filter/lists")) {
+        sendLists(resp,genLists());
+
+    } else if (req->path().startsWith("/api/library/filter/slowLists")) {
         sendLists(resp,
                   QList<std::pair<QString, QList<TvShow*> > >() <<
                   std::pair<QString, QList<TvShow*> >("airing", airing()) <<
@@ -78,6 +81,40 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         return false;
     }
     return true;
+}
+
+QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() {
+    QList<TvShow*> airing;
+    QList<TvShow*> watching;
+    QList<TvShow*> waitingForNewEpisodes;
+    QList<TvShow*> planToWatch;
+    QList<TvShow*> onHold;
+    QList<TvShow*> dropped;
+    QList<TvShow*> completed;
+
+    for (int i=0; i < tvShows.length(); ++i) {
+        TvShow* show = tvShows[i];
+        TvShow::WatchStatus status = show->getStatus();
+
+        if (show->isAiring()) airing.push_back(show);
+        switch (status) {
+        case TvShow::watching: watching.push_back(show); break;
+        case TvShow::waitingForNewEpisodes: waitingForNewEpisodes.push_back(show); break;
+        case TvShow::planToWatch: planToWatch.push_back(show); break;
+        case TvShow::onHold: onHold.push_back(show); break;
+        case TvShow::dropped: dropped.push_back(show); break;
+        case TvShow::completed: completed.push_back(show); break;
+        default: break;
+        }
+    }
+    return QList<std::pair<QString, QList<TvShow*> > >() <<
+            std::pair<QString, QList<TvShow*> >("airing", airing) <<
+            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::watching), watching) <<
+            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), waitingForNewEpisodes) <<
+            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::planToWatch), planToWatch) <<
+            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::onHold), onHold) <<
+            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::dropped), dropped) <<
+            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::completed), completed);
 }
 
 void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow*> > > lists) {
@@ -151,7 +188,7 @@ QString LibraryFilter::getRandomWallpaper() {
     return QString();
 }
 
-QList<TvShow *> LibraryFilter::filter(bool (*filterFunc)(const TvShow &, const LibraryFilter&, const void* userData), const void* userData)
+QList<TvShow *> LibraryFilter::filter(FilterFunction filterFunc, const void* userData)
 {
     QList<TvShow*> filteredList;
     for (int i=0; i < tvShows.length(); ++i) {
