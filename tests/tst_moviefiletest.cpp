@@ -206,6 +206,15 @@ void MovieFileTest::testPathParsing_data()
                                                       -2.f <<
                                                       "";
 
+    QTest::newRow("EpNum: Special with num") <<
+                                                "/[Asenshi] Jinrui wa Suitai Shimashita - Special 01 [BD 720p AAC] [FF698165].mkv" <<
+                                                "[Asenshi]" <<
+                                                "Jinrui wa Suitai Shimashita" <<
+                                                "Special 01" <<
+                                                -2.f <<
+                                                "";
+
+
     // TODO detect play all files as special file
     QTest::newRow("ShowName: Play All file") <<
                                                 "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<
