@@ -1,11 +1,14 @@
 #include "transmissionclient.h"
 #include "systemutils.h"
+#include <QDir>
 #include <QDebug>
 
 TransmissionClient::TransmissionClient(QObject *parent) :
     TorrentClient(parent)
 {
     this->findCommand();
+
+    process.setWorkingDirectory(QDir::temp().absolutePath());
 }
 
 bool TransmissionClient::addTorrent(QString filePath) {
