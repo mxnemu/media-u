@@ -16,6 +16,7 @@ public:
     QString xbmcEpisodeNumber() const;
     QString xbmcEpisodeName() const;
     QString fileExtension() const;
+    bool exists() const;
 
     // keep public and only create const instances of this
     QString path;

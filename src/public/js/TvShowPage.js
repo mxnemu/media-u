@@ -100,9 +100,14 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
      
     $.each(this.episodeList.episodes, function() {
         var ep = this;
+        
+        if (!ep.exists) {
+            return;
+        }
+        
         var episodeEl = $(document.createElement("li"));
         var text = $(document.createElement("span"));
-        
+
         var title = 
             ep.episodeNumber + " " +
             ep.showName + " " +

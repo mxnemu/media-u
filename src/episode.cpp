@@ -56,6 +56,7 @@ void Episode::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupP
     const MovieFile* best = this->bestFile(releaseGroupPreference);
     if (best) {
         MovieFile copy = *best;
+        bool exists = copy.exists();
         NwUtils::describe(jw, "path", copy.path);
         NwUtils::describe(jw, "episodeNumber", copy.episodeNumber);
         NwUtils::describe(jw, "releaseGroup", copy.releaseGroup);
@@ -63,6 +64,7 @@ void Episode::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupP
         NwUtils::describeValueArray(jw, "tech", copy.techTags);
         NwUtils::describe(jw, "seasonName", copy.seasonName);
         NwUtils::describe(jw, "hashId", copy.hashId);
+        NwUtils::describe(jw, "exists", exists);
     }
 }
 
@@ -81,7 +83,8 @@ const MovieFile *Episode::bestFile(const QStringList& releaseGroupPreference) co
         if (!file) {
             continue;
         }
-        const int score = releaseGroupPreference.indexOf(file->releaseGroup);
+        int score = releaseGroupPreference.indexOf(file->releaseGroup);
+        score += releaseGroupPreference.length() * !file->exists();
         if (best.second == -1 || score < best.second) {
             best.first = file;
             best.second = score;

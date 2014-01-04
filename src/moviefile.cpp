@@ -192,6 +192,10 @@ QString MovieFile::fileExtension() const {
     return QFileInfo(path).completeSuffix();
 }
 
+bool MovieFile::exists() const {
+    QFile::exists(path);
+}
+
 QString MovieFile::xbmcEpisodeName() const {
     if (episodeName.length() > 0) {
         return episodeName;
