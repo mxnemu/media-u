@@ -27,10 +27,14 @@ void MainBackgroundWidget::paintEvent(QPaintEvent *e) {
             p.drawPixmap(QRect(QPoint(-w*2,0), QPoint(-w, height())), backgroundImage);
             p.scale(-1,1);
 
+            qreal gradientEnd = ((float)(width()-w)/(float)w);
+            gradientEnd = std::min((qreal)1.f, gradientEnd);
+            gradientEnd = std::max((qreal)0.f, gradientEnd);
+
             QRect grect(QPoint(w,0), QPoint(width(), h));
             QLinearGradient gradient(QPoint(grect.left(), 0), QPoint(grect.left() + w, 0));
             gradient.setColorAt(0, QColor(255,255,255,0));
-            gradient.setColorAt(1, QColor(Qt::white));
+            gradient.setColorAt(gradientEnd, QColor(Qt::white));
             p.setCompositionMode(QPainter::CompositionMode_SourceOver);
             p.fillRect(grect, gradient);
         }
