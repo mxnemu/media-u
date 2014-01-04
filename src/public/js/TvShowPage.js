@@ -251,49 +251,22 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
     this.releaseGroupPreference = rgp;
 }
 
-TvShowPage.prototype.play = function(episode) {
-    if (G.playerType == "stream") {
-        alert("gu")
-        G.video = "/video/" + episode; // TODO DON'T SAVE IT HERE
-        window.location.hash = "#!/StreamPlayerPage/";
-    } else {
-        if (episode instanceof Array) {
-            var json = {
-                tvShow: this.tvShow.name,
-                episodes: episode
-            }
-            
-            $.getJSON("api/player/setPlaylist?" + JSON.stringify(json), function(data) {
-                if (!data.error) {
-                    //window.location.hash = "#!/PlayerPage";
-                }
-            });
-        
-            /*
-            $.ajax({
-                url: "api/player/setPlaylist",
-                type:"POST",
-                data:JSON.stringify(json),
-                processData: false
-            }).done(function(data) {
-                console.log("set playlist got response:", data)
-                if (!data.error) {
-                    window.location.hash = "#!/PlayerPage";
-                }
-            });
-            */
-            
-        } else {
-            var json = {
-                tvShow: this.tvShow.name,
-                filename: episode
-            }
-        
-            $.getJSON("api/player/play?" + JSON.stringify(json), function(data) {
-                if (!data.error) {
-                    //window.location.hash = "#!/PlayerPage";
-                }
-            });
-        }
+TvShowPage.prototype.play = function(episodes) {
+    if (!(episodes instanceof Array)) {
+        episodes = [episode];
     }
+    var json = {
+        tvShow: this.tvShow.name,
+        episodes: episodes
+    }
+    
+    $.ajax({
+        url: "api/player/setPlaylist",
+        type: "POST",
+        data: JSON.stringify(json)
+    }).done(function(data) {
+        if (data.error) {
+            alert(data.error);
+        }
+    });
 }

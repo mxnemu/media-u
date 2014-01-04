@@ -63,6 +63,34 @@ void VideoPlayer::jumpTo(int second) {
     }
 }
 
+void VideoPlayer::receivedPlaylist(QHttpResponse *resp, const QByteArray& body) {
+    std::stringstream ss;
+    ss << body.data();
+    nw::JsonReader jr(ss);
+    jr.describeValueArray("episodes", -1);
+    QStringList episodes;
+    for (int i=0; jr.enterNextElement(i); ++i) {
+        std::string ep;
+        jr.describeValue(ep);
+        episodes.append(ep.c_str());
+    }
+    jr.close();
+
+    this->setPlaylist(episodes);
+
+    if (!episodes.isEmpty()) {
+        QString firstEpisode = this->playlist.takeFirst();
+        const bool success = this->playFile(firstEpisode);
+        if (success) {
+            Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"), mime::json);
+        } else {
+            Server::simpleWrite(resp, 500, QString("{\"error\":\"could not start playback\"}"), mime::json);
+        }
+    } else {
+        Server::simpleWrite(resp, 500, QString("{\"error\":\"playlist is empty\"}"), mime::json);
+    }
+}
+
 bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/player/play") && !req->url().query().isEmpty()) {
         std::stringstream ss;
@@ -79,31 +107,9 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error));
         }
     } else if (req->path() == "/api/player/setPlaylist") {
-        std::stringstream ss;
-        ss << req->url().query(QUrl::FullyDecoded).toStdString();
-        nw::JsonReader jr(ss);
-        jr.describeValueArray("episodes", -1);
-        QStringList episodes;
-        for (int i=0; jr.enterNextElement(i); ++i) {
-            std::string ep;
-            jr.describeValue(ep);
-            episodes.append(ep.c_str());
-        }
-        jr.close();
-
-        this->setPlaylist(episodes);
-
-        if (!episodes.isEmpty()) {
-            QString firstEpisode = this->playlist.takeFirst();
-            int error = this->playFile(firstEpisode);
-            if (this->process.state() == QProcess::Running) {
-                Server::simpleWrite(resp, 200, QString("{\"status\":\"playback started\"}"), mime::json);
-            } else {
-                Server::simpleWrite(resp, 500, QString("{\"status\":\"could not start playback\", \"error\":%1}").arg(error), mime::json);
-            }
-        } else {
-            Server::simpleWrite(resp, 500, QString("{\"status\":\"playlist is empty\", \"error\":-1}"), mime::json);
-        }
+        RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
+        connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
+        connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(receivedPlaylist(QHttpResponse*,const QByteArray&)));
     } else if (req->path() == "/api/player/stop") {
         this->stop();
         Server::simpleWrite(resp, 200, "{\"status\":\"stopped\"}", mime::json);

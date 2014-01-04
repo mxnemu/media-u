@@ -47,13 +47,16 @@ PlayButton = {
     
     play: function(files) {
         var json = {
-            //tvShow: this.tvShow.name,
             episodes: files
         }
         
-        $.getJSON("api/player/setPlaylist?" + JSON.stringify(json), function(data) {
-            if (!data.error) {
-                //window.location.hash = "#!/PlayerPage";
+        $.ajax({
+            url: "api/player/setPlaylist",
+            type: "POST",
+            data: JSON.stringify(json)
+        }).done(function(data) {
+            if (data.error) {
+                alert(data.error)
             }
         });
     }

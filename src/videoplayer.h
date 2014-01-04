@@ -81,6 +81,7 @@ protected:
 
 public slots:
     void onThumbnailCreated(const QByteArray img);
+    void receivedPlaylist(QHttpResponse* resp, const QByteArray& body);
 
 private slots:
     void onPlaybackEndedNormally();
