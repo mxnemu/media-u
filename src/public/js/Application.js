@@ -4,7 +4,11 @@ function Application() {
     this.addServerEventListener();
     this.setScreenFromLocationHash();
     this.playerUi = new PlayerUi();
-    this.playerUi.createNodes();
+    
+    var playerNode = this.playerUi.createNodes();
+    $(function() {
+        $(".playerFooter").append(playerNode);
+    });
 }
 
 Application.prototype.setScreenFromLocationHash = function()

@@ -4,8 +4,8 @@ function PlayerUi() {
 
 PlayerUi.prototype.createNodes = function() {
     var self = this;
-    var footer = $(".playerFooter");
-    footer.hide();
+    this.node = $(document.createElement("div"));
+    this.node.hide();
     
     this.togglePauseButton = $(document.createElement("span"));
     this.setPauseDisplay("paused")
@@ -45,18 +45,18 @@ PlayerUi.prototype.createNodes = function() {
     */
     
     this.seekbar = new Seekbar();
-    footer.append(this.seekbar.tooltip);
+    this.node.append(this.seekbar.tooltip);
     
     this.seekbar.progress.onReady(function() {
         if (self.seekbar.progress.isPlaying()) {
-            $(".playerFooter").stop(true, true);
-            $(".playerFooter").show("slow");
+            self.node.stop(true, true);
+            self.node.show("slow");
         }
     });
     
     this.seekbar.progress.onReset(function() {
-        $(".playerFooter").stop(true, true);
-        $(".playerFooter").hide("slow");
+        self.node.stop(true, true);
+        self.node.hide("slow");
     });
     
     var playerControls = $(document.createElement("div"));
@@ -67,10 +67,11 @@ PlayerUi.prototype.createNodes = function() {
     playerControls.append(this.togglePauseButton);
     playerControls.append(forwardsButton);
     playerControls.append(stopButton);
-    footer.append(playerControls);
+    this.node.append(playerControls);
     
     this.bindEvents();
-    this.addBodyPadding();    
+    this.addBodyPadding();
+    return this.node;
 }
 
 PlayerUi.prototype.removeNodes = function() {
