@@ -63,6 +63,11 @@ background-color: rgba(255,255,255, 0.5);
         </property>
         <item row="2" column="0">
          <widget class="QLabel" name="label_status">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Status:</string>
           </property>
@@ -70,6 +75,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="label_medium">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Aired on:</string>
           </property>
@@ -77,6 +87,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="6" column="0">
          <widget class="QLabel" name="label_episodes">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="toolTip">
            <string>(watched / downloaded / completed)</string>
           </property>
@@ -87,6 +102,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="8" column="0">
          <widget class="QLabel" name="label_startDate">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Start date:</string>
           </property>
@@ -94,6 +114,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="10" column="0">
          <widget class="QLabel" name="label_endDate">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>End date:</string>
           </property>
@@ -104,6 +129,11 @@ background-color: rgba(255,255,255, 0.5);
           <property name="enabled">
            <bool>true</bool>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Synopsis:</string>
           </property>
@@ -113,6 +143,11 @@ background-color: rgba(255,255,255, 0.5);
          <widget class="QLabel" name="synopsis">
           <property name="enabled">
            <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
           </property>
           <property name="text">
            <string/>
@@ -129,7 +164,7 @@ background-color: rgba(255,255,255, 0.5);
          <widget class="QLabel" name="title">
           <property name="font">
            <font>
-            <pointsize>18</pointsize>
+            <pointsize>24</pointsize>
             <weight>75</weight>
             <italic>true</italic>
             <bold>true</bold>
@@ -142,6 +177,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="2" column="1">
          <widget class="QLabel" name="status">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -149,6 +189,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="8" column="1">
          <widget class="QLabel" name="startDate">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -156,6 +201,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="4" column="1">
          <widget class="QLabel" name="medium">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -163,6 +213,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="6" column="1">
          <widget class="QLabel" name="episodes">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -170,6 +225,11 @@ background-color: rgba(255,255,255, 0.5);
         </item>
         <item row="10" column="1">
          <widget class="QLabel" name="endDate">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string/>
           </property>
