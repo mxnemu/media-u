@@ -10,6 +10,10 @@ MainBackgroundWidget::MainBackgroundWidget(QWidget *parent) :
 void MainBackgroundWidget::paintEvent(QPaintEvent *e) {
     QPainter p(this);
     if (!backgroundImage.isNull()) {
+        p.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        p.setRenderHint(QPainter::Antialiasing, true);
+        p.setRenderHint(QPainter::HighQualityAntialiasing, true);
+
         int w = backgroundImage.width();
         int h = height();
         float scale = ((float)h) / (float)backgroundImage.height();
@@ -41,9 +45,9 @@ void MainBackgroundWidget::setBackground(QString backgroundUrl) {
     }
     this->backgroundUrl = backgroundUrl;
     this->backgroundImage.load(backgroundUrl);
-    QPainter tinter(&this->backgroundImage);
-    QColor tintColor = QColor(255, 255, 255, 230);
-    //tinter.setCompositionMode(QPainter::CompositionMode_Overlay);
-    tinter.fillRect(this->backgroundImage.rect(), tintColor);
-    tinter.end();
+    //QPainter tinter(&this->backgroundImage);
+    //QColor tintColor = QColor(255, 255, 255, 230);
+    ////tinter.setCompositionMode(QPainter::CompositionMode_Overlay);
+    //tinter.fillRect(this->backgroundImage.rect(), tintColor);
+    //tinter.end();
 }

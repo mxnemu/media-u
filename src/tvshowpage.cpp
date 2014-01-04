@@ -9,6 +9,9 @@ TvShowPage::TvShowPage(Library& library, QWidget *parent) :
     tvShow(NULL)
 {
     ui->setupUi(this);
+
+    ui->synopsis->hide();
+    ui->label_synopsis->hide();
 }
 
 TvShowPage::~TvShowPage()
