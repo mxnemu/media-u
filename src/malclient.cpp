@@ -128,11 +128,12 @@ CURL* Client::curlClient(const char* url, CurlResult& userdata) {
 
 CURL* Client::curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) {
     CURL* handle = curlClient(url, userdata);
-    //curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "POST");
-    QString xml = QString("data=\"%1\"").arg(data.toXml().remove('\t').remove('\n').remove("<?xml version=\"1.0\"?>")).toUtf8();
-    qDebug() << "gonna update with" << xml;
-    curl_easy_setopt(handle, CURLOPT_POSTFIELDS, xml.data());
-    //curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, xml.size());
+    curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
+    QString dataStr = QUrl(data.toXml()).toEncoded();
+    QByteArray xml = QString("data=%1").arg(dataStr).toUtf8();
+    curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, xml.size());
+    curl_easy_setopt(handle, CURLOPT_COPYPOSTFIELDS, xml.data());
+
     return handle;
 }
 
@@ -159,9 +160,14 @@ bool Client::updateInOnlineTracker(TvShow* show) {
         qDebug() << "received error" << error << "for MAL Online Tracker Update '" << url << "'' with this message:\n";
         userData.print();
     } else {
-        qDebug() << "MAL TRACKER UPDATE success with message:\n";
-        userData.print();
-        return true;
+        std::string message = userData.data.str();
+        if (message == "Updated") {
+            qDebug() << "MAL TRACKER UPDATE success" << show->name();
+            return true;
+        } else {
+            qDebug() << "Could not update MAL tracker:\n";
+            userData.print();
+        }
     }
     return false;
 }
