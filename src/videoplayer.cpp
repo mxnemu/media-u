@@ -156,6 +156,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         if (ok) {
             ThumbCreationCallback* tcc = thumbnailCreator->generateJpeg(nowPlaying.path, second, 100, 70, resp);
             connect(tcc, SIGNAL(jpegGenerated(QByteArray)), this, SLOT(onThumbnailCreated(QByteArray)));
+            tcc->start();
         } else {
             QByteArray errorData;
             Server::simpleWriteBytes(resp, 404, errorData);

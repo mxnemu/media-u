@@ -52,6 +52,7 @@ public:
 
     const QList<SearchDirectory>& getSearchDirectories() const;
     bool addSearchDirectory(SearchDirectory dir);
+    void addWallpaperDownloader(WallpaperDownload::Client* client);
     SearchDirectory* getSearchDirectory(QString path);
     bool removeSearchDirectory(QString path);
 

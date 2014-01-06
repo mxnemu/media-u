@@ -25,7 +25,7 @@ void FetchThread::run()
         bool noEntriesLeft = false;
         SearchResult allResults(client.getLimit());
         for (int page=1; show->numberOfWallpapers(libraryDirectory) < client.getLimit() && !noEntriesLeft; ++page)  {
-            SearchResult result = client.fetchPostsBlocking(show->name(), page);
+            SearchResult result = client.fetchPostsBlocking(show, page);
             result.sortEntries();
             client.downloadResults(show->wallpaperDirectory(libraryDirectory), result.entries, true);
             noEntriesLeft = result.entries.empty();
@@ -131,7 +131,8 @@ int Client::getLimit() const
     return limit;
 }
 
-SearchResult Client::fetchPostsBlocking(QString tagName, int page) {
+SearchResult Client::fetchPostsBlocking(const TvShow* show, int page) {
+    QString tagName = show->name();
     if (tagName.isEmpty() || tagName.isNull()) {
         return SearchResult();
     }
@@ -186,6 +187,6 @@ void Client::onWallpaperDownloadSucceeded(QString path)  {
 }
 
 
-};
+}
 
 

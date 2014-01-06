@@ -493,15 +493,15 @@ const EpisodeList &TvShow::episodeList() const {
     return episodes;
 }
 
-QStringList TvShow::getReleaseGroupPreference() {
+QStringList TvShow::getReleaseGroupPreference() const {
+    QStringList copy = releaseGroupPreference;
     QStringList allGroups = episodeList().releaseGroups();
     foreach (QString group, allGroups) {
-        if (!releaseGroupPreference.contains(group)) {
-            releaseGroupPreference.push_front(group);
+        if (!copy.contains(group)) {
+            copy.push_front(group);
         }
     }
-
-    return releaseGroupPreference;
+    return copy;
 }
 
 void TvShow::setReleaseGroupPreference(QStringList value) {

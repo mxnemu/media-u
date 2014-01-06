@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     franchise.cpp \
     episodelist.cpp \
     episode.cpp \
-    moviefile.cpp
+    moviefile.cpp \
+    snapshotwallpapergenerator.cpp
 
 
 HEADERS  += library.h \
@@ -54,5 +55,6 @@ HEADERS  += library.h \
     franchise.h \
     episodelist.h \
     episode.h \
-    moviefile.h
+    moviefile.h \
+    snapshotwallpapergenerator.h
 

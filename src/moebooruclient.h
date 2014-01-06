@@ -22,8 +22,6 @@ class Client : public WallpaperDownload::Client
 {
 public:
     Client(QString baseUrl, int limit = 10, Rating ratingFilter = WallpaperDownload::ratingSafe);
-
-    SearchResult fetchPostsBlocking(QString tagName, int page = 1);
 protected:
     Entry parseEntry(nw::Describer *de);
     SearchResult parseSearchResult(std::stringstream &, int limit);

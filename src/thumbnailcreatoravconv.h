@@ -8,7 +8,11 @@ class ThumbCreationCallbackAvconv : public ThumbCreationCallback {
     Q_OBJECT
 public:
     ThumbCreationCallbackAvconv(void* data);
+
+    void start();
+
     QProcess process;
+    QStringList args;
 
 public slots:
     void processFinished(int);

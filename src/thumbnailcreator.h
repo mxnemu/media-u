@@ -10,6 +10,7 @@ public:
     ThumbCreationCallback(void* data = NULL);
     void* data;
 
+    virtual void start() = 0;
 signals:
     void jpegGenerated(const QByteArray img);
 };

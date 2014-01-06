@@ -108,7 +108,7 @@ public:
     EpisodeList &episodeListMutable();
     static QString watchStatusToString(TvShow::WatchStatus status);
     void writeAsListingItem(nw::Describer *de) const;
-    QStringList getReleaseGroupPreference();
+    QStringList getReleaseGroupPreference() const;
     void setReleaseGroupPreference(QStringList value);
 
 signals:

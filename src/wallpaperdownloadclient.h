@@ -52,18 +52,19 @@ private:
     int limit;
 };
 
+
 class Client : public QObject
 {
     Q_OBJECT
 public:
     Client(QString baseUrl, int limit = 10, Rating ratingFilter = ratingSafe);
 
-    SearchResult fetchPostsBlocking(QString tagName, int page = 1);
+    virtual SearchResult fetchPostsBlocking(const TvShow* show, int page = 1);
 
     Rating getRatingFilter() const;
     int getLimit() const;
 
-    void downloadResults(QDir directory, const QList<Entry> &entries, bool onlyTheBest);
+    virtual void downloadResults(QDir directory, const QList<Entry> &entries, bool onlyTheBest);
 
 signals:
     void wallpaperDownloaded(QString path);

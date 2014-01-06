@@ -12,6 +12,7 @@
 #include "metadataparseravconv.h"
 #include "thumbnailcreatoravconv.h"
 #include "transmissionclient.h"
+#include "snapshotwallpapergenerator.h"
 #include "nyaarss.h"
 
 #include <string.h>
@@ -49,6 +50,8 @@ int main(int argc, char *argv[]) {
     player->setMetaDataParser(&metaDataParser);
     player->setThumbnailCreator(&thumbnailCreator);
     library.setMetaDataParser(&metaDataParser);
+
+    library.addWallpaperDownloader(new SnapshotWallpaperGenerator::Client(metaDataParser, thumbnailCreator));
 
     // TODO move into the thread
     TransmissionClient transmission;

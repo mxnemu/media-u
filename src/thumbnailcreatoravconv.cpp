@@ -1,5 +1,6 @@
 #include "thumbnailcreatoravconv.h"
 #include <QProcess>
+#include <QDebug>
 
 
 ThumbnailCreatorAvconv::ThumbnailCreatorAvconv()
@@ -14,21 +15,25 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int se
 
     ThumbCreationCallbackAvconv* tcc = new ThumbCreationCallbackAvconv(callbackData);
 
-    tcc->process.start("avconv", QStringList() <<
-        "-ss" <<
-        QString("%1:%2:%3").arg(QString::number(hour), QString::number(minute), QString::number(formattedSecond)) <<
-        "-t" <<
-        "1" <<
-        "-i" <<
-        file <<
-        "-s" <<
-        QString("%1x%2").arg(QString::number(width), QString::number(height)) <<
-        "-vframes" <<
-        "1" <<
-        "-f" <<
-        "image2" <<
-        "-"
-    );
+    QStringList& args = tcc->args;
+    args.append("-ss");
+    args.append(QString("%1:%2:%3").arg(QString::number(hour), QString::number(minute), QString::number(formattedSecond)));
+    args.append("-t");
+    args.append("1");
+    args.append("-i");
+    args.append(file);
+
+    if (width != -1 && height != -1) {
+        args.append("-s");
+        args.append(QString("%1x%2").arg(QString::number(width), QString::number(height)));
+    }
+    args.append("-vframes");
+    args.append("1");
+    args.append("-f");
+    args.append("image2");
+    args.append("-");
+
+    //tcc->process.start("avconv", args);
 
     QObject::connect(&tcc->process, SIGNAL(finished(int)), tcc, SLOT(processFinished(int)));
     return tcc;
@@ -37,6 +42,11 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int se
 
 
 ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data) : ThumbCreationCallback(data) {
+}
+
+void ThumbCreationCallbackAvconv::start() {
+    this->process.start("avconv", args);
+    this->process.waitForFinished();
 }
 
 void ThumbCreationCallbackAvconv::processFinished(int) {

@@ -16,14 +16,9 @@ Library::Library(QString path, QObject *parent) :
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
     }
-    wallpaperDownloaders.push_back(new Moebooru::Client(("http://konachan.com")));
-    wallpaperDownloaders.push_back(new Moebooru::Client(("https://yande.re")));
-    wallpaperDownloaders.push_back(new Gelbooru::Client());
-
-    for (int i=0; i < wallpaperDownloaders.length(); ++i) {
-        wallpaperDownloaders[i]->setParent(this);
-        connect(wallpaperDownloaders[i], SIGNAL(wallpaperDownloaded(QString)), this, SIGNAL(wallpaperDownloaded(QString)));
-    }
+    addWallpaperDownloader(new Moebooru::Client(("http://konachan.com")));
+    addWallpaperDownloader(new Moebooru::Client(("https://yande.re")));
+    addWallpaperDownloader(new Gelbooru::Client());
 
     connect(&malapiClient, SIGNAL(updateFinished()),
             this, SLOT(fetchingFinished()));
@@ -216,6 +211,12 @@ bool Library::addSearchDirectory(SearchDirectory dir) {
         return true;
     }
     return false;
+}
+
+void Library::addWallpaperDownloader(WallpaperDownload::Client* client) {
+    wallpaperDownloaders.push_back(client);
+    client->setParent(this);
+    connect(client, SIGNAL(wallpaperDownloaded(QString)), this, SIGNAL(wallpaperDownloaded(QString)));
 }
 
 SearchDirectory *Library::getSearchDirectory(const QString path) {
