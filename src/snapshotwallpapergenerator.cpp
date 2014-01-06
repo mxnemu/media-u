@@ -41,6 +41,8 @@ SearchResult Client::fetchPostsBlocking(const TvShow* show, int page) {
 
 void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool onlyTheBest) {
     int generated = 0;
+    directory.mkpath(".");
+
     foreach (const Entry& entry, entries) {
         // TODO check if this is a good wallpaper source
         //if (onlyTheBest && !entry.isGoodWallpaper()) {
@@ -49,12 +51,19 @@ void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool o
         if (generated >= limit) {
             break;
         }
+        int s = QString(entry.fileUrl).toInt();
+
+        QString fileName = QString("%1 %2.jpg").arg(QFileInfo(entry.id).fileName(), QString::number(s));
+        QString filePath = directory.absoluteFilePath(fileName);
+
+        if (QFile::exists(filePath)) {
+            continue;
+        }
+
         ++generated;
         ++outstandingWallpapers;
-        int s = QString(entry.fileUrl).toInt();
         ThumbnailCreationData* data = new ThumbnailCreationData();
-        data->dir = directory;
-        data->filename = QString("%1 %2.jpg").arg(QFileInfo(entry.id).fileName(), QString::number(s));
+        data->filePath = filePath;
         data->client = this;
         ThumbCreationCallback* tcc = thumbnailCreator.generateJpeg(entry.id, s, -1, -1, data);
         connect(tcc, SIGNAL(jpegGenerated(QByteArray)), this, SLOT(wallpaperReady(QByteArray)));
@@ -77,8 +86,7 @@ void Client::wallpaperReady(QByteArray data) {
         return;
     }
     ThumbnailCreationData* userData = static_cast<ThumbnailCreationData*>(self->data);
-    QString path = userData->dir.absoluteFilePath(userData->filename);
-    userData->dir.mkpath(".");
+    QString path = userData->filePath;
     QFile file(path);
     file.open(QFile::WriteOnly);
     file.write(data);

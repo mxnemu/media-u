@@ -35,8 +35,7 @@ private:
 
 class ThumbnailCreationData {
 public:
-    QDir dir;
-    QString filename;
+    QString filePath;
     Client* client;
 };
 
