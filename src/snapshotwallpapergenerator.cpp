@@ -9,8 +9,12 @@ Client::Client(MetaDataParser& mp, ThumbnailCreator& tc) :
     outstandingWallpapers = 0;
 }
 
-SearchResult Client::fetchPostsBlocking(const TvShow* show, int) {
+SearchResult Client::fetchPostsBlocking(const TvShow* show, int page) {
     SearchResult result;
+    if (page != 1) {
+        return result;
+    }
+
     const QList<Episode*>& eps = show->episodeList().episodes;
     foreach (const Episode* ep, eps) {
         const MovieFile* mf = ep->bestFile(show->getReleaseGroupPreference());
@@ -57,9 +61,9 @@ void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool o
         tcc->start();
     }
 
-    while (outstandingWallpapers) {
-        QThread::msleep(10);
-    }
+    //while (outstandingWallpapers) {
+    //    QThread::msleep(10);
+    //}
 }
 
 void Client::generated(QString file) {

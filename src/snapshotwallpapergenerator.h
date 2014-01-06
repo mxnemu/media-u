@@ -14,7 +14,7 @@ class Client : public WallpaperDownload::Client {
 public:
     Client(MetaDataParser& mp, ThumbnailCreator& tc);
 
-    virtual SearchResult fetchPostsBlocking(const TvShow* show, int = 1);
+    virtual SearchResult fetchPostsBlocking(const TvShow* show, int page = 1);
     virtual void downloadResults(QDir directory, const QList<Entry> &entries, bool onlyTheBest);
 
     void generated(QString file); ///< fires the signal
