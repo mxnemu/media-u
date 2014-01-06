@@ -53,7 +53,7 @@ void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool o
         }
         int s = QString(entry.fileUrl).toInt();
 
-        QString fileName = QString("%1 %2.jpg").arg(QFileInfo(entry.id).fileName(), QString::number(s));
+        QString fileName = QString("snapshot_%1 %2.jpg").arg(QFileInfo(entry.id).fileName(), QString::number(s));
         QString filePath = directory.absoluteFilePath(fileName);
 
         if (QFile::exists(filePath)) {
