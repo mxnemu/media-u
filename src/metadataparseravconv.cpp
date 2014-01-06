@@ -76,7 +76,7 @@ QList<MetaDataTrack> MetaDataParserAvconv::parseTracks(QString outputString) con
 
         if (typeString == "Video") {
             t.type = video;
-            qDebug() << detailsString;
+            //qDebug() << detailsString;
             QRegExp videoDetailsRegex("([0-9]+)x([0-9]+).");
 
             if (-1 != detailsString.indexOf(videoDetailsRegex)) {
@@ -118,7 +118,7 @@ QList<MetaDataChapter> MetaDataParserAvconv::parseChapters(QString outputString)
         float second = chapterTitleRegex.cap(5).toFloat();
         */
 
-        qDebug() << outputString;
+        //qDebug() << outputString;
         QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([^\n]*)\n");
         int chapterTitle = outputString.indexOf(chapterTitleRegex, chapterHead);
         if (-1 != chapterTitle && (nextIndex == -1 || chapterTitle < nextIndex)) {
