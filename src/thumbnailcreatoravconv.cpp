@@ -7,8 +7,18 @@ ThumbnailCreatorAvconv::ThumbnailCreatorAvconv()
 {
 }
 
-ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int second, int width, int height, void* callbackData) const
-{
+ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int second, int width, int height, void* callbackData) const {
+    return this->generate(file, Jpeg, second, width, height, callbackData);
+}
+
+ThumbCreationCallback* ThumbnailCreatorAvconv::generatePng(QString file, int second, int width, int height, void* callbackData) const {
+    return this->generate(file, Png, second, width, height, callbackData);
+}
+
+const QString ThumbnailCreatorAvconv::Jpeg = "image2";
+const QString ThumbnailCreatorAvconv::Png = "image2";
+
+ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, QString format, int second, int width, int height, void* callbackData) const {
     int formattedSecond = second % 60;
     int minute = (second / 60) % 60;
     int hour = (second / 60 / 60);
@@ -31,6 +41,10 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generateJpeg(QString file, int se
     args.append("1");
     args.append("-f");
     args.append("image2");
+    if (format == Png) {
+        args.append("-c");
+        args.append("png");
+    }
     args.append("-");
 
     //tcc->process.start("avconv", args);

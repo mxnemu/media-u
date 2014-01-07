@@ -53,7 +53,7 @@ void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool o
         }
         int s = QString(entry.fileUrl).toInt();
 
-        QString fileName = QString("snapshot_%1 %2.jpg").arg(QFileInfo(entry.id).fileName(), QString::number(s));
+        QString fileName = QString("snapshot_%1 %2.png").arg(QFileInfo(entry.id).fileName(), QString::number(s));
         QString filePath = directory.absoluteFilePath(fileName);
 
         if (QFile::exists(filePath)) {
@@ -65,7 +65,7 @@ void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool o
         ThumbnailCreationData* data = new ThumbnailCreationData();
         data->filePath = filePath;
         data->client = this;
-        ThumbCreationCallback* tcc = thumbnailCreator.generateJpeg(entry.id, s, -1, -1, data);
+        ThumbCreationCallback* tcc = thumbnailCreator.generatePng(entry.id, s, -1, -1, data);
         connect(tcc, SIGNAL(jpegGenerated(QByteArray)), this, SLOT(wallpaperReady(QByteArray)));
         tcc->start();
     }

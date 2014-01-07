@@ -23,6 +23,12 @@ public:
     ThumbnailCreatorAvconv();
 
     ThumbCreationCallback* generateJpeg(QString file, int second, int width, int height, void *callbackData) const;
+    ThumbCreationCallback* generatePng(QString file, int second, int width, int height, void *callbackData) const;
+
+private:
+    ThumbCreationCallback* generate(QString file, QString format, int second, int width, int height, void *callbackData) const;
+    static const QString Png;
+    static const QString Jpeg;
 };
 
 #endif // THUMBNAILCREATORAVCONV_H

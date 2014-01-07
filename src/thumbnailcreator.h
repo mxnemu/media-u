@@ -22,6 +22,7 @@ public:
 
     //virtual QPixmap generate(QString file, int second, int width, int height) const;
     virtual ThumbCreationCallback* generateJpeg(QString file, int second, int width, int height, void *callbackData) const = 0;
+    virtual ThumbCreationCallback* generatePng(QString file, int second, int width, int height, void *callbackData) const = 0;
 };
 
 #endif // THUMBNAILCREATOR_H
