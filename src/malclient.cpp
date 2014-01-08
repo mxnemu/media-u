@@ -114,10 +114,15 @@ bool Client::verifyCredentials() {
 }
 
 CURL* Client::curlClient(const char* url, CurlResult& userdata) {
-    CURL* handle = curl_easy_init();
-    curl_easy_setopt(handle, CURLOPT_URL, url);
+    CURL* handle = curlNoAuthClient(url, userdata);
     curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
+    return handle;
+}
+
+CURL*Client::curlNoAuthClient(const char* url, CurlResult& userdata) {
+    CURL* handle = curl_easy_init();
+    curl_easy_setopt(handle, CURLOPT_URL, url);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
     curl_easy_setopt(handle, CURLOPT_TIMEOUT, 15);
     curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1);
@@ -133,9 +138,10 @@ CURL* Client::curlTrackerUpdateClient(const char* url, CurlResult& userdata, Ani
     QByteArray xml = QString("data=%1").arg(dataStr).toUtf8();
     curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, xml.size());
     curl_easy_setopt(handle, CURLOPT_COPYPOSTFIELDS, xml.data());
-
     return handle;
 }
+
+
 
 bool Client::hasVerifiedCredentials() const {
     return mHasVerifiedCredentials;
@@ -143,6 +149,30 @@ bool Client::hasVerifiedCredentials() const {
 
 bool Client::login() {
     return this->hasVerifiedCredentials() || this->verifyCredentials();
+}
+
+bool Client::fetchOnlineTrackerList(QList<TvShow*> shows) {
+
+    QString url = QString("http://myanimelist.net/malappinfo.php?u=%1&status=all&type=anime").arg(username);
+    CurlResult userData(this);
+
+    CURL* handle = curlNoAuthClient(url.toUtf8().data(), userData);
+    CURLcode error = curl_easy_perform(handle);
+    curl_easy_cleanup(handle);
+    if (error || userData.data.str().size() < 2) {
+        qDebug() << "received error" << error << "for MAL Online Tracker Update '" << url << "'' with this message:\n";
+        userData.print();
+    } else {
+        nw::XmlReader xr(userData.data);
+        AnimeListData listData(xr);
+        if (!listData.error.isEmpty()) {
+            qDebug() << "got error from mal status list fetching:" << listData.error;
+            return false;
+        }
+        // TODO update the watch status of the each show
+        return true;
+    }
+    return false;
 }
 
 bool Client::updateInOnlineTracker(TvShow* show) {
@@ -397,6 +427,22 @@ QString AnimeUpdateData::toXml() {
 Thread* Client::getActiveThread() const
 {
     return activeThread;
+}
+
+AnimeListData::AnimeListData(nw::Describer& de) {
+    describe(de);
+}
+
+void AnimeListData::describe(nw::Describer& de) {
+    NwUtils::describe(de, "error", error);
+    if (!error.isEmpty()) {
+        return;
+    }
+    // TODO impl
+}
+
+void AnimeItemData::describe(nw::Describer& de) {
+    // TODO impl
 }
 
 } // namespace

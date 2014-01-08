@@ -36,6 +36,7 @@ public:
     bool login();
 
     bool updateInOnlineTracker(TvShow* show);
+    bool fetchOnlineTrackerList(QList<TvShow*> show);
 
     Thread* getActiveThread() const;
 signals:
@@ -47,6 +48,7 @@ private slots:
 private:
     CURL* curlClient(const char* url, CurlResult &userdata);
     CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data);
+    CURL* curlNoAuthClient(const char* url, CurlResult& userdata);
 
     bool mHasVerifiedCredentials;
     QString username;
@@ -133,6 +135,41 @@ private:
     QString comments; // free text field?
     QString fansub_group;
     QStringList tags; // string. tags separated by commas
+};
+
+class AnimeItemData {
+public:
+    QString series_animedb_id;
+    QString series_title;
+    QString series_synonyms;
+    int series_type;
+    int series_episodes;
+    int series_status;
+    QDate series_start; //2004-10-05
+    QDate series_end;
+    QString series_image;
+    QString my_id; // always 0 no idea what it does
+    int my_watched_episodes;
+    QDate my_start_date; // 0000-00-00
+    QDate my_finish_date; // 0000-00-00
+    int my_score;
+    int my_status;
+    int my_rewatching;
+    int my_rewatching_ep;
+    int my_last_updated; // maybe date? example: 1388944557
+    QStringList my_tags; // separated by ", "
+
+    void describe(nw::Describer& de);
+};
+
+class AnimeListData {
+public:
+    AnimeListData(nw::Describer& de);
+
+    QList<AnimeItemData> anime;
+    QString error; // should be empty
+
+    void describe(nw::Describer& de);
 };
 
 } // namespace
