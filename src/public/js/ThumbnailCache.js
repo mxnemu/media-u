@@ -38,6 +38,12 @@ ThumbnailCache.prototype.loadAll = function(duration) {
     }
 }
 
+ThumbnailCache.prototype.isLoading = function() {
+    for (var key in this.openRequests) {
+        return true;
+    }
+    return false;
+}
 
 ThumbnailCache.prototype.secondToSpacing = function(second) {
     return second - (second % this.spacing);

@@ -1,6 +1,7 @@
-function Seekbar() {
+function Seekbar(container) {
     this.progress = null;
     this.tooltip = null;
+    this.container = container;
     this.createNodes();
 }
 
@@ -46,14 +47,23 @@ Seekbar.prototype.unbindEvents = function() {
 
 Seekbar.prototype.bindEvents = function() {
     var self = this;
+    
+    function jump(clientX) {
+        var videoPos = self.progress.metaData.duration * 
+                       (clientX / window.innerWidth);
+        $.getJSON("api/player/jumpTo?" + Math.floor(videoPos));
+    }
 
-    this.bar.mousemove(function(event) {
-        var x = Math.max(event.clientX, 50);
+    var getThumbTimeout = null;
+    function previewMove(clientX, loadThumb) {
+        window.clearTimeout(getThumbTimeout);
+    
+        var x = Math.max(clientX, 50);
         x = Math.min(x, window.innerWidth - 50);
         var y = self.bar.offset().top;
         
         var videoPos = self.progress.metaData.duration * 
-                       (event.clientX / window.innerWidth);
+                       (clientX / window.innerWidth);
         var minute = (videoPos / 60);
         var second = videoPos % 60;
         
@@ -79,19 +89,68 @@ Seekbar.prototype.bindEvents = function() {
             );
         }
         setTooltip();
-        self.thumbnailCache.get(videoPos, setTooltip);
+        
+        var delay = self.thumbnailCache.isLoading() ? 60 : 0;
+        getThumbTimeout = window.setTimeout(function() {
+            self.thumbnailCache.get(videoPos, setTooltip);
+        }, delay);
+    }
+
+    //touch seek
+    var doTouchSeek = false;
+    this.container.on("touchstart", function(event) {
+        if ($(event.originalEvent.target).hasClass("button")) {
+            doTouchSeek = false;
+        } else {
+            doTouchSeek = true;
+        }
+        self.tooltip.show();
+    });
+    this.container.on("touchcanel", function() {
+        self.tooltip.hide();
+        touchMoved = false;
+        doTouchSeek = false;
+    });
+    this.container.on("touchleave", function() {
+        self.tooltip.hide();
+        touchMoved = false;
+        doTouchSeek = false;
+        console.log("leave", touchMoved);
+    });
+    var touchMoved = false;    
+    this.container.on("touchend", function(event) {
+        if (touchMoved) {
+            jump(event.originalEvent.changedTouches[0].clientX);
+            touchMoved = false;
+            doTouchSeek = false;
+        }
+        self.tooltip.hide();
+    });
+    var touchMoveHappenedDelay = null;
+    this.container.on("touchmove", function(event) {
+        if (doTouchSeek) {
+            previewMove(event.originalEvent.touches[0].clientX);
+            touchMoved = true;
+            console.log("move", touchMoved);
+        }
+    });
+    
+    // seek
+    this.bar.mousemove(function(event) {
+        previewMove(event.clientX);
     });
     this.bar.mouseenter(function(event) {
         self.tooltip.show();
     });
     this.bar.mouseleave(function(event) {
         self.tooltip.hide();
+        touchMoved = false;
+        doTouchSeek = false;
     });
+    
         
     this.bar.click(function(event) {
-        var videoPos = self.progress.metaData.duration * 
-                       (event.clientX / window.innerWidth);
-        $.getJSON("api/player/jumpTo?" + Math.floor(videoPos));
+        jump(event.clientX);
     });
 }
 

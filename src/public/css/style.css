@@ -95,6 +95,13 @@ li.focused {
     margin-left: -50px;
     margin-top: -90px;
     background-color: black;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .playerControls {
@@ -107,6 +114,13 @@ li.focused {
     border-top: 2px solid #333;
     color: #FeFeFe;
     padding-top: 15px;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .playerControls span {

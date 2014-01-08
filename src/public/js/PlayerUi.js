@@ -8,6 +8,7 @@ PlayerUi.prototype.createNodes = function() {
     this.node.hide();
     
     this.togglePauseButton = $(document.createElement("span"));
+    this.togglePauseButton.addClass("button");
     this.setPauseDisplay("paused")
     
     this.togglePauseButton.click(function() {
@@ -16,7 +17,7 @@ PlayerUi.prototype.createNodes = function() {
     
     var stopButton = $(document.createElement("span"));
     stopButton.text("■");
-    stopButton.addClass("stopButton");
+    stopButton.addClass("stopButton button");
     
     stopButton.click(function() {
         $.getJSON("api/player/stop");
@@ -24,12 +25,14 @@ PlayerUi.prototype.createNodes = function() {
     
     var backwardsButton = $(document.createElement("span"));
     backwardsButton.text("<<");
+    backwardsButton.addClass("button");
     backwardsButton.click(function() {
         $.getJSON("api/player/backwards");
     });
     
     var forwardsButton = $(document.createElement("span"));
     forwardsButton.text(">>");
+    forwardsButton.addClass("button");
     forwardsButton.click(function() {
         $.getJSON("api/player/forwards");
     });
@@ -44,7 +47,10 @@ PlayerUi.prototype.createNodes = function() {
     });
     */
     
-    this.seekbar = new Seekbar();
+    var playerControls = $(document.createElement("div"));
+    playerControls.addClass("playerControls");
+    
+    this.seekbar = new Seekbar(playerControls);
     this.node.append(this.seekbar.tooltip);
     
     this.seekbar.progress.onReady(function() {
@@ -59,8 +65,6 @@ PlayerUi.prototype.createNodes = function() {
         self.node.hide("slow");
     });
     
-    var playerControls = $(document.createElement("div"));
-    playerControls.addClass("playerControls");
 
     playerControls.append(this.seekbar.bar);
     playerControls.append(backwardsButton);
