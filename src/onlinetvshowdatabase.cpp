@@ -101,6 +101,8 @@ void Thread::run() {
         msleep(loginSleep);
     }
 
+    client.fetchOnlineTrackerList(tvShows);
+
     foreach (TvShow* show, tvShows) {
         if (!show) {
             continue;

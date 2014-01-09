@@ -64,7 +64,8 @@ public:
     virtual inline bool login() { return true; }
     virtual SearchResult* search(QString anime);
     virtual const Entry* bestResult(const SearchResult& result) const;
-    virtual inline bool updateInOnlineTracker(TvShow*) {return false; }
+    virtual inline bool updateInOnlineTracker(TvShow*) {return false;}
+    virtual inline bool fetchOnlineTrackerList(QList<TvShow*>&) {return false;}
 
 
 protected:

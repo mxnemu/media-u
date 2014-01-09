@@ -36,6 +36,7 @@ public:
     // TODO
     // move stuff that uses this into this class
     QList<Episode*> episodes;
+    void setWatched(int number);
 signals:
     void beforeWatchCountChanged(int newCount, int oldCount);
     void watchCountChanged(int oldCount, int newCount); // TODO new, old

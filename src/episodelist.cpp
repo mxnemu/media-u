@@ -175,6 +175,19 @@ Episode* EpisodeList::getEpisodeForPath(const QString& path) {
     return NULL;
 }
 
+void EpisodeList::setWatched(int number) {
+    // ignore 11.5 style special episodes
+    int subEpisodes = 0;
+    foreach (Episode* ep, episodes) {
+        int epNum = ep->getEpisodeNumber();
+        if (epNum - (int)epNum != 0) {
+            ++subEpisodes;
+        } else if (!ep->isSpecial() && epNum <= (number - subEpisodes)) {
+            ep->setWatched(true);
+        }
+    }
+}
+
 void EpisodeList::watchedChanged(bool oldValue, bool newValue) {
     int count = numberOfWatchedEpisodes();
     if (!oldValue && newValue) {

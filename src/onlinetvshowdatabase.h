@@ -62,6 +62,7 @@ public:
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
     virtual bool updateInOnlineTracker(TvShow* show) = 0;
+    virtual bool fetchOnlineTrackerList(QList<TvShow*>& shows) = 0;
 
 signals:
     void updateFinished();

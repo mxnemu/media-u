@@ -36,7 +36,7 @@ public:
     bool login();
 
     bool updateInOnlineTracker(TvShow* show);
-    bool fetchOnlineTrackerList(QList<TvShow*> show);
+    bool fetchOnlineTrackerList(QList<TvShow*>& show);
 
     Thread* getActiveThread() const;
 signals:
@@ -139,7 +139,8 @@ private:
 
 class AnimeItemData {
 public:
-    QString series_animedb_id;
+    AnimeItemData(nw::Describer &de);
+    int series_animedb_id;
     QString series_title;
     QString series_synonyms;
     int series_type;
@@ -160,16 +161,18 @@ public:
     QStringList my_tags; // separated by ", "
 
     void describe(nw::Describer& de);
+    void updateShow(TvShow* show);
 };
 
 class AnimeListData {
 public:
     AnimeListData(nw::Describer& de);
 
-    QList<AnimeItemData> anime;
+    QList<AnimeItemData> items;
     QString error; // should be empty
 
     void describe(nw::Describer& de);
+    void updateShows(QList<TvShow*> shows);
 };
 
 } // namespace

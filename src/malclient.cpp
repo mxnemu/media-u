@@ -151,7 +151,7 @@ bool Client::login() {
     return this->hasVerifiedCredentials() || this->verifyCredentials();
 }
 
-bool Client::fetchOnlineTrackerList(QList<TvShow*> shows) {
+bool Client::fetchOnlineTrackerList(QList<TvShow*>& shows) {
 
     QString url = QString("http://myanimelist.net/malappinfo.php?u=%1&status=all&type=anime").arg(username);
     CurlResult userData(this);
@@ -169,7 +169,7 @@ bool Client::fetchOnlineTrackerList(QList<TvShow*> shows) {
             qDebug() << "got error from mal status list fetching:" << listData.error;
             return false;
         }
-        // TODO update the watch status of the each show
+        listData.updateShows(shows);
         return true;
     }
     return false;
@@ -433,16 +433,58 @@ AnimeListData::AnimeListData(nw::Describer& de) {
     describe(de);
 }
 
+void AnimeListData::updateShows(QList<TvShow*> shows) {
+    foreach (AnimeItemData item, items) {
+        foreach (TvShow* show, shows) {
+            if (show->getRemoteId() == item.series_animedb_id) {
+                item.updateShow(show);
+                break;
+            }
+        }
+    }
+}
+
 void AnimeListData::describe(nw::Describer& de) {
     NwUtils::describe(de, "error", error);
     if (!error.isEmpty()) {
         return;
     }
-    // TODO impl
+    de.describeArray("", "anime", -1);
+    for (int i=0; de.enterNextElement(i); ++i) {
+        items.push_back(AnimeItemData(de));
+    }
+}
+
+AnimeItemData::AnimeItemData(nw::Describer& de) {
+    describe(de);
 }
 
 void AnimeItemData::describe(nw::Describer& de) {
-    // TODO impl
+    NwUtils::describe(de, "series_animedb_id", series_animedb_id);
+    NwUtils::describe(de, "series_title", series_title);
+    NwUtils::describe(de, "series_synonyms", series_synonyms);
+    NwUtils::describe(de, "series_type", series_type);
+    NwUtils::describe(de, "series_episodes", series_episodes);
+    NwUtils::describe(de, "series_status", series_status);
+    NwUtils::describe(de, "series_start", series_start); //2004-10-05
+    NwUtils::describe(de, "series_end", series_end);
+    NwUtils::describe(de, "series_image", series_image);
+    //QString my_id; // always 0 no idea what it does
+    NwUtils::describe(de, "my_watched_episodes", my_watched_episodes);
+    //QDate my_start_date; // 0000-00-00
+    //QDate my_finish_date; // 0000-00-00
+    NwUtils::describe(de, "my_score", my_score);
+    NwUtils::describe(de, "my_status", my_status);
+    NwUtils::describe(de, "my_rewatching", my_rewatching);
+    NwUtils::describe(de, "my_rewatching_ep", my_rewatching_ep);
+    //int my_last_updated; // maybe date? example: 1388944557
+    //QStringList my_tags; // separated by ", "
+}
+
+void AnimeItemData::updateShow(TvShow* show) {
+    if (show->episodeList().numberOfWatchedEpisodes() < this->my_watched_episodes) {
+        show->episodeList().setWatched(this->my_watched_episodes);
+    }
 }
 
 } // namespace
