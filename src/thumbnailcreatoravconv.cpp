@@ -15,8 +15,8 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generatePng(QString file, int sec
     return this->generate(file, Png, second, width, height, callbackData);
 }
 
-const QString ThumbnailCreatorAvconv::Jpeg = "image2";
-const QString ThumbnailCreatorAvconv::Png = "image2";
+const QString ThumbnailCreatorAvconv::Jpeg = "jpg";
+const QString ThumbnailCreatorAvconv::Png = "png";
 
 ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, QString format, int second, int width, int height, void* callbackData) const {
     int formattedSecond = second % 60;
