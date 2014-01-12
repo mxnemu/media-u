@@ -148,8 +148,10 @@ void Library::fetchMetaData() {
 
 void Library::startWallpaperDownloaders() {
     if (getWallpaperDownloadRunning()) {
-        foreach (WallpaperDownload::FetchThread* ft, runningWallpaperDownloaders) {
-            ft->append(filter().all());
+        foreach (WallpaperDownload::FetchThread* ft, runningWallpaperDownloaders) { 
+            if (ft->isRunning()) {
+                ft->append(filter().all());
+            }
         }
         return;
     }

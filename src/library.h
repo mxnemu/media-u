@@ -92,7 +92,7 @@ private:
     MetaDataParser* metaDataParser;
 
     QList<WallpaperDownload::Client*> wallpaperDownloaders;
-    QList<WallpaperDownload::FetchThread*> runningWallpaperDownloaders;
+    QList<WallpaperDownload::FetchThread*> runningWallpaperDownloaders; // TODO only access the clients
     DirectoryScannerThread* searchThread;
     QFileSystemWatcher* fileSystemWatcher;
 };
