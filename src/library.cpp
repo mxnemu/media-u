@@ -159,8 +159,8 @@ void Library::startWallpaperDownloaders() {
         WallpaperDownload::Client* downloader = wallpaperDownloaders[i];
         WallpaperDownload::FetchThread* ft = new WallpaperDownload::FetchThread(*downloader, filter().all(), directory, this);
         //connect(this, SIGNAL(destroyed()), ft, SLOT(terminate()));
-        connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
         connect(ft, SIGNAL(finished()), this, SLOT(wallpaperDownloaderFinished()));
+        connect(ft, SIGNAL(finished()), ft, SLOT(deleteLater()));
         runningWallpaperDownloaders.push_back(ft);
         ft->start(QThread::LowPriority);
     }
