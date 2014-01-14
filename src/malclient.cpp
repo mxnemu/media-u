@@ -414,13 +414,13 @@ void AnimeUpdateData::describe(nw::Describer& de) {
 
 QString AnimeUpdateData::toXml() {
     std::stringstream ss;
-    nw::MarkupWriter::motherTagName = "entry"; // FIXME no global state
-    nw::Tag::useAttribute = false; // FIXME don't use global state in Tag, use state in XmlWriter
     nw::XmlWriter xw(ss);
-
     this->describe(xw);
+
+    nw::Tag* tag = xw.getMotherTag();
+    tag->setName("entry");
+    tag->setCanBeAttributeRecursive(false);
     xw.close();
-    nw::Tag::useAttribute = true;
     return QString(ss.str().data());
 }
 
