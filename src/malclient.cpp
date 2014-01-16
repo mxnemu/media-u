@@ -164,12 +164,12 @@ bool Client::fetchOnlineTrackerList(QList<TvShow*>& shows) {
         userData.print();
     } else {
         nw::XmlReader xr(userData.data);
-        AnimeListData listData(xr);
-        if (!listData.error.isEmpty()) {
-            qDebug() << "got error from mal status list fetching:" << listData.error;
+        animeListData.describe(xr);
+        if (!animeListData.error.isEmpty()) {
+            qDebug() << "got error from mal status list fetching:" << animeListData.error;
             return false;
         }
-        listData.updateShows(shows);
+        animeListData.updateShows(shows);
         return true;
     }
     return false;
@@ -179,7 +179,19 @@ bool Client::updateInOnlineTracker(TvShow* show) {
     int id = show->getRemoteId();
     if (id <= 0) return false;
 
-    QString url = QString("http://myanimelist.net/api/animelist/update/%1.xml").arg(id);
+    if (!animeListData.error.isEmpty()) {
+        return false;
+    }
+
+    if (animeListData.hasShow(show)) {
+        return this->updateinOnlineTrackerOrAdd(show, "update");
+    } else {
+        return this->updateinOnlineTrackerOrAdd(show, "add");
+    }
+}
+
+bool Client::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
+    QString url = QString("http://myanimelist.net/api/animelist/%2/%1.xml").arg(QString::number(show->getRemoteId()), type);
     CurlResult userData(this);
     AnimeUpdateData updateData(show);
 
@@ -190,15 +202,20 @@ bool Client::updateInOnlineTracker(TvShow* show) {
         qDebug() << "received error" << error << "for MAL Online Tracker Update '" << url << "'' with this message:\n";
         userData.print();
     } else {
-        std::string message = userData.data.str();
-        if (message == "Updated") {
+        if (type == "update" && userData.data.str() == "Updated") {
             qDebug() << "MAL TRACKER UPDATE success" << show->name();
             return true;
-        } else {
-            qDebug() << "Could not update MAL tracker:\n";
-            userData.print();
+        } else if (type == "add") {
+            int rowId = -2; // leave -1 and 0 for mal
+            userData.data >> rowId;
+            if (rowId > 0) {
+                qDebug() << "MAL TRACKER ADD success" << show->name();
+                return true;
+            }
         }
     }
+    qDebug() << "Could not" << type << "MAL tracker:\n";
+    userData.print();
     return false;
 }
 
@@ -429,6 +446,11 @@ Thread* Client::getActiveThread() const
     return activeThread;
 }
 
+AnimeListData::AnimeListData() :
+    error("noinit")
+{
+}
+
 AnimeListData::AnimeListData(nw::Describer& de) {
     describe(de);
 }
@@ -444,7 +466,18 @@ void AnimeListData::updateShows(QList<TvShow*> shows) {
     }
 }
 
+bool AnimeListData::hasShow(const TvShow* show) const {
+    int id = show->getRemoteId();
+    foreach (AnimeItemData item, items) {
+        if (item.series_animedb_id == id) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void AnimeListData::describe(nw::Describer& de) {
+    error.clear();
     NwUtils::describe(de, "error", error);
     if (!error.isEmpty()) {
         return;
