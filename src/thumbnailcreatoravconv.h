@@ -26,9 +26,12 @@ public:
     ThumbCreationCallback* generatePng(QString file, int second, int width, int height, void *callbackData) const;
 
 private:
-    ThumbCreationCallback* generate(QString file, QString format, int second, int width, int height, void *callbackData) const;
-    static const QString Png;
-    static const QString Jpeg;
+    enum Format {
+        invalid = 0,
+        jpg,
+        png
+    };
+    ThumbCreationCallback* generate(QString file, Format format, int second, int width, int height, void* callbackData) const;
 };
 
 #endif // THUMBNAILCREATORAVCONV_H
