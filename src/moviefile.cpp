@@ -106,6 +106,7 @@ MovieFile::MovieFile(QString p) {
          "\\sOpening(\\s?[0-9]+)?|"
          "\\sPreview\\s?([0-9]+)?|"
          "\\sSpecial(\\s?[0-9]+)?|"
+         "\\sPlay All\\s(.+)($|\\(|\\[)?|"
          "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
@@ -219,6 +220,7 @@ bool MovieFile::isSpecial() const {
         "Opening(\\s?[0-9]+)?|"
         "Preview\\s?([0-9]+)?|"
         "Special(\\s?[0-9]+)?|"
+        "Play All|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     bool is = -1 != specialRegex.indexIn(this->episodeNumber);

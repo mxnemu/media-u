@@ -215,13 +215,12 @@ void MovieFileTest::testPathParsing_data()
                                                 "";
 
 
-    // TODO detect play all files as special file
     QTest::newRow("ShowName: Play All file") <<
                                                 "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<
                                                 "[Coalgirls]" <<
                                                 "Toradora" <<
-                                                "1" <<
-                                                1.f <<
+                                                "Play All No OPED Style 1" <<
+                                                -2.f <<
                                                 "";
 /* TODO figure out how to handle this
     QTest::newRow("ShowName: Number in Show name") <<
