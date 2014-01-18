@@ -222,15 +222,14 @@ void MovieFileTest::testPathParsing_data()
                                                 "Play All No OPED Style 1" <<
                                                 -2.f <<
                                                 "";
-/* TODO figure out how to handle this
+
     QTest::newRow("ShowName: Number in Show name") <<
                                                       "/tmp/Evangelion_1.0_You_Are_[Not]_Alone_(1080p)_[@Home]" <<
-                                                      "[@Home]" <<
-                                                      "Evangelion 1.0 You Are [Not] Alone" <<
-                                                      "" <<
-                                                      -1.f <<
-                                                      "";
-*/
+                                                      "" << // TODO take [@Home]
+                                                      "Evangelion" <<
+                                                      "1" <<
+                                                      1.f <<
+                                                      ""; // TODO take You Are [Not] Alone
 }
 
 
