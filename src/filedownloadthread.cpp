@@ -39,7 +39,7 @@ void FileDownloadThread::run() {
         filename = QFileInfo(downloadPath).fileName();
     }
 
-    if (QFile(finalPath).exists() && !overwriteExisting) {
+    if (QFile::exists(finalPath) && !overwriteExisting) {
         return;
     }
 
