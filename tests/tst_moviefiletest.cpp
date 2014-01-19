@@ -214,6 +214,14 @@ void MovieFileTest::testPathParsing_data()
                                                 -2.f <<
                                                 "";
 
+    QTest::newRow("EpNum: Special plural with num and weird doki dashes") <<
+                                                "/Jinrui wa Suitai Shimashita (2012) [Doki][1280x720 Hi10P BD FLAC]/[Doki] Jinrui wa Suitai Shimashita - Specials - 01 (1280x720 Hi10P BD FLAC) [E08C5B5A].mkv" <<
+                                                "[Doki]" <<
+                                                "Jinrui wa Suitai Shimashita" <<
+                                                "Specials - 01" <<
+                                                -2.f <<
+                                                "";
+
 
     QTest::newRow("ShowName: Play All file") <<
                                                 "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<

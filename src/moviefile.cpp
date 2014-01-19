@@ -83,7 +83,6 @@ MovieFile::MovieFile(QString p) {
         qDebug() << "could not parse name out of " << path;
     }
 
-    // TODO detect Play All files as special file
     QRegExp regexEpisode("("
         // number only with separator
         "\\s[0-9]+((v|\\.)[0-9]+)?(\\s|$)|"
@@ -105,7 +104,7 @@ MovieFile::MovieFile(QString p) {
 
          "\\sOpening(\\s?[0-9]+)?|"
          "\\sPreview\\s?([0-9]+)?|"
-         "\\sSpecial(\\s?[0-9]+)?|"
+         "\\sSpecials?\\s?-?\\s?([0-9]+)?|"
          "\\sPlay All\\s(.+)($|\\(|\\[)?|"
          "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
@@ -219,7 +218,7 @@ bool MovieFile::isSpecial() const {
 
         "Opening(\\s?[0-9]+)?|"
         "Preview\\s?([0-9]+)?|"
-        "Special(\\s?[0-9]+)?|"
+        "Specials?|"
         "Play All|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
