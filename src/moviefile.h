@@ -6,11 +6,12 @@
 
 class MovieFile {
 public:
-    MovieFile(QString path);
+    MovieFile(const QString originalPath);
 
     static bool hasMovieExtension(QString filename);
 
     bool isSpecial() const;
+    static bool isSpecial(QString episodeNumberString);
     float numericEpisodeNumber() const;
 
     QString xbmcEpisodeNumber() const;

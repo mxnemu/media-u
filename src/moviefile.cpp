@@ -2,9 +2,9 @@
 #include <QFileInfo>
 #include <QDebug>
 
-MovieFile::MovieFile(QString p) {
+MovieFile::MovieFile(const QString originalPath) {
     // set the path and resolve links
-    QString path = p;
+    QString path = originalPath;
     this->path = QFileInfo(path).canonicalFilePath();
     // if the resolved filepath does not exist just take the given path
     // and assume the drive will be mounted later
@@ -170,6 +170,18 @@ MovieFile::MovieFile(QString p) {
         episodeName = epNameRegex.cap(1);
         episodeName = episodeName.trimmed();
     }
+
+    // TODO less redundant get an isSpecial function with \\s prefixes
+    if (0 == showName.compare("ED", Qt::CaseInsensitive) ||
+        0 == showName.compare("OP", Qt::CaseInsensitive) ||
+        0 == showName.compare("Episode", Qt::CaseInsensitive) ||
+        0 == showName.compare("EP", Qt::CaseInsensitive)) {
+
+        const MovieFile parentDir(QFileInfo(originalPath).absolutePath());
+        this->episodeNumber = this->showName;
+        this->showName = parentDir.showName;
+
+    }
 }
 
 bool MovieFile::hasMovieExtension(QString filename) {
@@ -203,7 +215,7 @@ QString MovieFile::xbmcEpisodeName() const {
     return "Episode";
 }
 
-bool MovieFile::isSpecial() const {
+bool MovieFile::isSpecial(QString episodeNumberString) {
     QRegExp specialRegex("("
         "ED(\\s|$)|"
         "OP(\\s|$)|"
@@ -222,9 +234,13 @@ bool MovieFile::isSpecial() const {
         "Play All|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
-    bool is = -1 != specialRegex.indexIn(this->episodeNumber);
+    bool is = -1 != specialRegex.indexIn(episodeNumberString);
     //qDebug() << specialRegex.cap(1);
     return is;
+}
+
+bool MovieFile::isSpecial() const {
+    return isSpecial(this->episodeNumber);
 }
 
 float MovieFile::numericEpisodeNumber() const {

@@ -238,6 +238,15 @@ void MovieFileTest::testPathParsing_data()
                                                       "1" <<
                                                       1.f <<
                                                       ""; // TODO take You Are [Not] Alone
+
+    QTest::newRow("ShowName: Showname is ED, real name in Parent Directory") <<
+                                                      "/[Kuroi Raws] Higashi no Eden (BD 1920x1080 H264 AC-3 5.1ch)/[Kuroi Raws] ED (BD 1920x1080 H264 AC-3 5.1ch) [533BC43C].mkv" <<
+                                                      "[Kuroi Raws]" <<
+                                                      "Higashi no Eden" <<
+                                                      "ED" <<
+                                                      -2.f <<
+                                                      "";
+
 }
 
 
