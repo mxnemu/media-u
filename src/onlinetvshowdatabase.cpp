@@ -103,6 +103,8 @@ void Thread::run() {
 
     client.fetchOnlineTrackerList(tvShows);
 
+    QDate now = QDate::currentDate();
+
     foreach (TvShow* show, tvShows) {
         if (!show) {
             continue;
@@ -110,7 +112,10 @@ void Thread::run() {
 
         if (show->getRemoteId() == -1 ||
             show->getTotalEpisodes() == 0 ||
-            (show->isAiring() && show->getStatus() == TvShow::completed)) {
+            (show->isAiring() && (
+             (show->episodeList().numberOfEpisodes() >= show->getTotalEpisodes()) ||
+             (show->getEndDate().isValid() && now > show->getEndDate()) ||
+             (show->getStatus() == TvShow::completed)))) {
 
             QTime timer;
             timer.start();
