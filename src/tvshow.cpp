@@ -8,6 +8,7 @@ TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     this->mName = name;
     totalEpisodes = 0;
     remoteId = -1;
+    customStatus = automatic;
 }
 
 EpisodeList& TvShow::episodeList() {
@@ -25,6 +26,10 @@ void TvShow::read(QDir &dir) {
     this->playerSettings.describe(&jr);
     jr.pop();
     NwUtils::describeValueArray(jr, "releaseGroupPreference", releaseGroupPreference);
+
+    QString customStatusString;
+    NwUtils::describe(jr, "customStatus", customStatusString);
+    this->customStatus = watchStatusFromString(customStatusString);
 
     NwUtils::describe(jr, "remoteId", remoteId);
     jr.describe("totalEpisodes", totalEpisodes);
@@ -78,6 +83,9 @@ void TvShow::write(nw::JsonWriter& jw) {
     jw.push("playerSettings");
     this->playerSettings.describe(&jw);
     jw.pop();
+
+    QString customStatusString = watchStatusToString(customStatus);
+    NwUtils::describe(jw, "customStatus", customStatusString);
 
     NwUtils::describe(jw, "remoteId", remoteId);
     jw.describe("totalEpisodes", totalEpisodes);
@@ -440,6 +448,7 @@ QDateTime TvShow::lastWatchedDate() const {
 }
 
 QString TvShow::watchStatusToString(TvShow::WatchStatus status) {
+    if (status == automatic) return "automatic";
     if (status == completed) return "completed";
     if (status == watching) return "watching";
     if (status == waitingForNewEpisodes) return "waitingForNewEpisodes";
@@ -449,7 +458,22 @@ QString TvShow::watchStatusToString(TvShow::WatchStatus status) {
     return "";
 }
 
+TvShow::WatchStatus TvShow::watchStatusFromString(QString status) {
+    if (status == "automatic") return automatic;
+    if (status == "completed") return completed;
+    if (status == "watching") return watching;
+    if (status == "waitingForNewEpisodes") return waitingForNewEpisodes;
+    if (status == "onHold") return onHold;
+    if (status == "dropped") return dropped;
+    if (status == "planToWatch") return planToWatch;
+    return automatic;
+}
+
 TvShow::WatchStatus TvShow::getStatus() const {
+    if (customStatus != automatic) {
+        return customStatus;
+    }
+
     int eps = episodes.numberOfEpisodes();
     int total = std::max(totalEpisodes, episodes.numberOfEpisodes());
     total = std::max(total, eps);
@@ -469,6 +493,18 @@ TvShow::WatchStatus TvShow::getStatus() const {
         return planToWatch;
     }
     return completed;
+}
+
+void TvShow::setStatus(TvShow::WatchStatus status) {
+    if (customStatus != status) {
+        if (status == completed) {
+            this->episodeList().setWatched(this->episodeList().highestDownloadedEpisodeNumber());
+        }
+        if (status == planToWatch) {
+            this->episodeList().setWatched(0);
+        }
+    }
+    this->customStatus = status;
 }
 
 bool TvShow::isCompleted() const {

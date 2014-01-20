@@ -516,7 +516,7 @@ void AnimeItemData::describe(nw::Describer& de) {
 
 void AnimeItemData::updateShow(TvShow* show) {
     if (show->episodeList().numberOfWatchedEpisodes() < this->my_watched_episodes) {
-        show->episodeList().setWatched(this->my_watched_episodes);
+        show->episodeList().setMinimalWatched(this->my_watched_episodes);
     }
 }
 

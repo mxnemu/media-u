@@ -143,6 +143,11 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
             return false;
         }
         return true;
+    } else if (req->path().startsWith("/api/page/setStatus")) {
+        TvShow::WatchStatus status = TvShow::watchStatusFromString(req->url().query(QUrl::FullyDecoded));
+        if (this->tvShow) {
+            this->tvShow->setStatus(status);
+        }
     }
     return false;
 }

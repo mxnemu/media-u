@@ -38,6 +38,7 @@ class TvShow : public QObject
 public:
 
     enum WatchStatus {
+        automatic,
         completed,
         watching,
         waitingForNewEpisodes,
@@ -102,21 +103,24 @@ public:
     QDateTime lastWatchedDate() const;
 
     WatchStatus getStatus() const;
+    void setStatus(TvShow::WatchStatus status);
     bool isCompleted() const;
     bool startedWatching() const;
     const EpisodeList& episodeList() const;
     EpisodeList &episodeListMutable();
     static QString watchStatusToString(TvShow::WatchStatus status);
+    static TvShow::WatchStatus watchStatusFromString(QString statusString);
+
     void writeAsListingItem(nw::Describer *de) const;
     QStringList getReleaseGroupPreference() const;
     void setReleaseGroupPreference(QStringList value);
-
 signals:
 
 private:
 
     QString mName;
     EpisodeList episodes;
+    WatchStatus customStatus;
 
     QList<RelatedTvShow> prequels;
     QList<RelatedTvShow> sideStories;

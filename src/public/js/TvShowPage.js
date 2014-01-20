@@ -26,15 +26,28 @@ TvShowPage.prototype.createNodes = function() {
     this.playButton = PlayButton.create();
     this.playButton.attr("disabled", "disabled");
     
-    this.completeButton = document.createElement("input");
-    this.completeButton.type = "button";
-    this.completeButton.value = "set completed";
-    this.completeButton.setAttribute("disabled", "disabled");
     
-    this.completeButton.onclick = function() {
-        $("li .toggleWatchedButton:not(.watched)").each(function() {
-            this.click();
-        });
+    function addSelectItem(list, value, label) {
+        var item = document.createElement("option");
+        item.value = value;
+        item.textContent = label || value;
+        list.appendChild(item);
+    }
+    this.statusList = document.createElement("select");
+    addSelectItem(this.statusList, "automatic");
+    addSelectItem(this.statusList, "completed");
+    addSelectItem(this.statusList, "watching");
+    addSelectItem(this.statusList, "waitingForNewEpisodes");
+    addSelectItem(this.statusList, "onHold");
+    addSelectItem(this.statusList, "dropped");
+    addSelectItem(this.statusList, "planToWatch");
+
+    this.statusList.setAttribute("disabled", "disabled");
+    this.statusList.className = "statusSelect";
+    
+    this.statusList.onchange = function() {
+        // TODO refresh ep list if complete or planToWatch
+        $.getJSON("api/page/setStatus?" + this.value);
     }
     
     var subtitleTrackField = $("<input type=\"number\"/>");
@@ -66,10 +79,10 @@ TvShowPage.prototype.createNodes = function() {
     this.episodesEl.addClass("seasons");
     
     $.getJSON("api/page/showDetails", function(data) {
-        console.log(data);
         self.tvShow = data;
         self.playButton.removeAttr("disabled");
-        self.completeButton.removeAttribute("disabled");
+        self.statusList.removeAttribute("disabled");
+        self.statusList.value = data.customStatus;
         self.createReleaseGroupPreference(data.releaseGroupPreference);
         self.createEpisodeList(data.episodes, self.episodesEl);
     });
@@ -81,7 +94,7 @@ TvShowPage.prototype.createNodes = function() {
     this.page.append("<span> audio: </span>");
     this.page.append(audioTrackField);
     this.page.append(this.episodesEl);
-    this.page.append(this.completeButton);
+    this.page.append(this.statusList);
     this.bindEvents();
     return this.page;
 }

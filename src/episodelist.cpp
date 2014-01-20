@@ -175,7 +175,8 @@ Episode* EpisodeList::getEpisodeForPath(const QString& path) {
     return NULL;
 }
 
-void EpisodeList::setWatched(int number) {
+// TODO wtf is that with subEpisodes counter? may just remove the counter and ignore sub-eps
+void EpisodeList::setMinimalWatched(int number) {
     // ignore 11.5 style special episodes
     int subEpisodes = 0;
     foreach (Episode* ep, episodes) {
@@ -184,6 +185,21 @@ void EpisodeList::setWatched(int number) {
             ++subEpisodes;
         } else if (!ep->isSpecial() && epNum <= (number - subEpisodes)) {
             ep->setWatched(true);
+        }
+    }
+}
+
+void EpisodeList::setWatched(int number) {
+    foreach (Episode* ep, episodes) {
+        if (ep->isSpecial()) {
+            continue;
+        }
+
+        int epNum = ep->getEpisodeNumber();
+        if (epNum <= number) {
+            ep->setWatched(true);
+        } else {
+            ep->setWatched(false);
         }
     }
 }

@@ -36,6 +36,7 @@ public:
     // TODO
     // move stuff that uses this into this class
     QList<Episode*> episodes;
+    void setMinimalWatched(int number);
     void setWatched(int number);
 signals:
     void beforeWatchCountChanged(int newCount, int oldCount);
