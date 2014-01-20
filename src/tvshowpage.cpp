@@ -147,6 +147,9 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         TvShow::WatchStatus status = TvShow::watchStatusFromString(req->url().query(QUrl::FullyDecoded));
         if (this->tvShow) {
             this->tvShow->setStatus(status);
+            Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+        } else {
+            Server::simpleWrite(resp, 400, "page does not have a show set");
         }
     }
     return false;
