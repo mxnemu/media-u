@@ -96,7 +96,7 @@ QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() {
         TvShow* show = tvShows[i];
         TvShow::WatchStatus status = show->getStatus();
 
-        if (show->isAiring()) airing.push_back(show);
+        if (show->isAiring() && status != TvShow::dropped) airing.push_back(show);
         switch (status) {
         case TvShow::watching: watching.push_back(show); break;
         case TvShow::waitingForNewEpisodes: waitingForNewEpisodes.push_back(show); break;
