@@ -47,7 +47,7 @@ void Client::addFeedsForWaitingShows() {
 
     QList<TvShow *> airing = library.filter().airing();
     foreach (TvShow* show, airing) {
-        if (!show->completed) {
+        if (!show->completed && show->getStatus() != TvShow::dropped) {
             addFeed(show);
         }
     }
