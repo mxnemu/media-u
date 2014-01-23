@@ -222,6 +222,14 @@ void MovieFileTest::testPathParsing_data()
                                                 -2.f <<
                                                 "";
 
+    QTest::newRow("EpNum: no space before dash") <<
+                                       "/torrents/[&]Tesagure!-1 [720p] [137E33FB].mkv" <<
+                                       "[&]" <<
+                                       "Tesagure!" <<
+                                       "-1" <<
+                                       1.f <<
+                                       "";
+
 
     QTest::newRow("ShowName: Play All file") <<
                                                 "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<

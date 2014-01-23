@@ -63,6 +63,7 @@ MovieFile::MovieFile(const QString originalPath) {
     QRegExp regexName("(.*)"
                       "("
                       "( -)|"
+                      "(-\\s?[0-9])|"
                       "\\[|"
                       "\\(|"
                       "(\\sOP[0-9])|"
@@ -77,6 +78,8 @@ MovieFile::MovieFile(const QString originalPath) {
     int nameIndex = regexName.indexIn(path);
     this->showName = regexName.cap(1).trimmed();
 
+    qDebug() << showName;
+
     if (nameIndex != -1 || this->showName.length() <= 0) {
         path.remove(nameIndex, regexName.cap(1).length());
     } else {
@@ -85,6 +88,7 @@ MovieFile::MovieFile(const QString originalPath) {
 
     QRegExp regexEpisode("("
         // number only with separator
+        "-[0-9]|"
         "\\s[0-9]+((v|\\.)[0-9]+)?(\\s|$)|"
         "\\s[0-9]+(\\[v[0-9]+\\])(\\s|$)|"
         "\\s[0-9]+x[0-9]+|"
@@ -250,7 +254,10 @@ float MovieFile::numericEpisodeNumber() const {
     QRegExp pureNumber("([0-9\\.]+x)?([0-9\\.]+)", Qt::CaseInsensitive);
     int index = pureNumber.indexIn(episodeNumber);
     if (index != -1) {
-        return pureNumber.cap(2).toFloat();
+        // this is for files that don't have a space after the "showname -epnum" dash
+        // Maybe I should move specials TO 0xFFFF and allow negative numbers
+        float ep = pureNumber.cap(2).toFloat();
+        return ep >= 0 ? ep : -1.f*ep;
     }
     return UNKNOWN;
 }
