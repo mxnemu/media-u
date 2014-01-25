@@ -24,24 +24,27 @@ public:
     static const QString nonEnglishAnimeStr;
     static const QString englishAnimeStr;
 
-    bool isCandidateForAutoDownload(QString query, int episode, QString subgroup);
+    bool isCandidateForAutoDownload(QString query, int episode, QString subgroup, const RssConfig& rssConfig);
 protected:
     Type type;
 };
 
 class FeedResult : public TorrentRss::FeedResult {
+public:
+    FeedResult(const RssConfig &rssConfig);
+private:
     void parse(CurlResult &result);
 };
 
 class Feed : public TorrentRss::Feed {
 public:
-    Feed(QString url, TvShow* tvShow = NULL);
-    TorrentRss::FeedResult* createFeedResult();
+    Feed(QString url, const RssConfig& rssConfig, TvShow* tvShow = NULL);
+    TorrentRss::FeedResult* createFeedResult(const RssConfig& rssConfig);
 };
 
 class Client : public TorrentRss::Client {
 public:
-    Client(TorrentClient &torrentClient, Library &library, QObject *parent = NULL);
+    Client(TorrentClient &torrentClient, Library &library, const RssConfig& rssConfig, QObject *parent = NULL);
 
     virtual void addFeed(TvShow* show);
 };

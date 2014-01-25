@@ -7,6 +7,7 @@
 #include "curlresult.h"
 #include "library.h"
 #include "torrentclient.h"
+#include "config.h"
 
 namespace TorrentRss {
 
@@ -17,35 +18,39 @@ public:
     QString url;
     QDateTime date;
 
-    virtual bool isCandidateForAutoDownload(QString,int,QString) { return false;};
+    virtual bool isCandidateForAutoDownload(QString,int,QString, const RssConfig&) { return false;};
 };
 
 class FeedResult {
 public:
+    FeedResult(const RssConfig& rssConfig);
     virtual ~FeedResult();
     QList<Entry*> entires;
     void removeSameEntries(const FeedResult& other);
     virtual void parse(CurlResult& result) = 0;
+
+    const RssConfig& rssConfig;
 };
 
 class Feed : public QObject {
     Q_OBJECT
 public:
-    Feed(QString url, TvShow* tvShow = NULL);
+    Feed(QString url,  const RssConfig& rssConfig, TvShow* tvShow = NULL);
     virtual ~Feed();
     virtual void fetch();
     TvShow* getTvShow();
 
-    Entry* candidateForAutoDownload();
+    Entry* candidateForAutoDownload(const RssConfig& rssConfig);
 
 signals:
     void foundCandidateForAutoDownload(Entry entry);
 protected:
-    virtual FeedResult* createFeedResult() = 0;
+    virtual FeedResult* createFeedResult(const RssConfig& rssConfig) = 0;
     CURL* defaultCurlClient(QString url, CurlResult& userdata);
 
     void setResult(FeedResult* result);
 
+    const RssConfig& rssConfig;
 private:
     FeedResult* result;
     QString url;
@@ -55,7 +60,7 @@ private:
 class Client : public QObject {
     Q_OBJECT
 public:
-    explicit Client(TorrentClient& torrentClient, Library& library, QObject *parent = 0);
+    explicit Client(TorrentClient& torrentClient, Library& library, const RssConfig& rssConfig, QObject *parent = 0);
     virtual ~Client();
 
     void refetch();
@@ -75,6 +80,7 @@ private slots:
     void tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus oldStatus);
 protected:
     QList<Feed*> feeds;
+    const RssConfig& rssConfig;
 private:
     Library& library;
     TorrentClient& torrentClient;

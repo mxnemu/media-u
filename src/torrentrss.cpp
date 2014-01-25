@@ -3,8 +3,9 @@
 
 namespace TorrentRss {
 
-Client::Client(TorrentClient& torrentClient, Library& library, QObject *parent) :
+Client::Client(TorrentClient& torrentClient, Library& library, const RssConfig& rssConfig, QObject *parent) :
     QObject(parent),
+    rssConfig(rssConfig),
     library(library),
     torrentClient(torrentClient)
 {
@@ -99,9 +100,10 @@ void Client::tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, Tv
     }
 }
 
-Feed::Feed(QString url, TvShow* tvShow) :
+Feed::Feed(QString url, const RssConfig& rssConfig, TvShow* tvShow) :
     QObject(NULL),
     result(NULL),
+    rssConfig(rssConfig),
     url(url),
     tvShow(tvShow)
 {
@@ -119,7 +121,7 @@ void Feed::fetch() {
         qDebug() << "failed to fetch rss url" << this->url;
         return;
     }
-    FeedResult* newResult = this->createFeedResult();
+    FeedResult* newResult = this->createFeedResult(rssConfig);
     newResult->parse(userdata);
     this->setResult(newResult);
 }
@@ -128,7 +130,7 @@ TvShow*Feed::getTvShow() {
     return this->tvShow;
 }
 
-Entry*Feed::candidateForAutoDownload() {
+Entry*Feed::candidateForAutoDownload(const RssConfig& rssConfig) {
     if (!this->getTvShow()) {
         return NULL;
     }
@@ -136,7 +138,7 @@ Entry*Feed::candidateForAutoDownload() {
     QString releaseGroup = tvShow->favouriteReleaseGroup();
     int nextEpisode = tvShow->episodeList().highestDownloadedEpisodeNumber() + 1;
     foreach(Entry* entry, result->entires) {
-        if (entry->isCandidateForAutoDownload(name, nextEpisode, releaseGroup)) {
+        if (entry->isCandidateForAutoDownload(name, nextEpisode, releaseGroup, rssConfig)) {
             return entry;
         }
     }
@@ -158,12 +160,17 @@ void Feed::setResult(FeedResult* result) {
         delete this->result;
     }
     this->result = result;
-    Entry* torrent = candidateForAutoDownload();
+    Entry* torrent = candidateForAutoDownload(result->rssConfig);
     if (torrent) {
         emit foundCandidateForAutoDownload(Entry(*torrent));
     }
 }
 
+
+FeedResult::FeedResult(const RssConfig& rssConfig) :
+    rssConfig(rssConfig)
+{
+}
 
 FeedResult::~FeedResult() {
     foreach (Entry* entry, this->entires) {

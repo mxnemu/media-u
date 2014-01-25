@@ -54,8 +54,9 @@ int main(int argc, char *argv[]) {
     library.addWallpaperDownloader(new SnapshotWallpaperGenerator::Client(metaDataParser, thumbnailCreator));
 
     // TODO move into the thread
+    const RssConfig& rssConfig = config.getRssConfigConstRef();
     TransmissionClient transmission;
-    NyaaRss::Client nyaaClient(transmission, library);
+    NyaaRss::Client nyaaClient(transmission, library, rssConfig);
     TorrentRss::Thread rssThread(nyaaClient);
     rssThread.start(QThread::LowestPriority);
     //nyaaClient.moveToThread(&rssThread);

@@ -3,12 +3,18 @@
 
 namespace NyaaRss {
 
-Feed::Feed(QString url, TvShow* tvShow) : TorrentRss::Feed(url, tvShow)
+Feed::Feed(QString url,  const RssConfig& rssConfig, TvShow* tvShow) :
+    TorrentRss::Feed(url,  rssConfig, tvShow)
 {
 }
 
-TorrentRss::FeedResult* Feed::createFeedResult() {
-    return new FeedResult();
+TorrentRss::FeedResult* Feed::createFeedResult(const RssConfig& rssConfig) {
+    return new FeedResult(rssConfig);
+}
+
+FeedResult::FeedResult(const RssConfig& rssConfig) :
+    TorrentRss::FeedResult(rssConfig)
+{
 }
 
 void FeedResult::parse(CurlResult& result) {
@@ -50,13 +56,15 @@ void Entry::parse(nw::Describer* de) {
 }
 
 
-bool Entry::isCandidateForAutoDownload(QString query, int episode, QString subgroup) {
-    // TODO make this shit less static
+bool Entry::isCandidateForAutoDownload(QString query, int episode, QString subgroup, const RssConfig& rssConfig) {
     const MovieFile parsed = this->name;
     if (0 == parsed.showName.compare(query, Qt::CaseInsensitive) &&
-        parsed.releaseGroup.contains(subgroup) &&
         parsed.numericEpisodeNumber() ==  episode &&
-        this->type == englishAnime) {
+        (rssConfig.requireFavouriteReleaseGroup ? parsed.releaseGroup.contains(subgroup) : true) &&
+        (
+            (this->type == rawAnime && rssConfig.includeRaw) ||
+            (this->type == englishAnime && rssConfig.includeEnglish)
+        )) {
         return true;
     }
     return false;
@@ -90,8 +98,8 @@ QDateTime parseDate(QString string) {
     return QDateTime();
 }
 
-Client::Client(TorrentClient& torrentClient, Library& library, QObject* parent) :
-    TorrentRss::Client(torrentClient, library, parent)
+Client::Client(TorrentClient& torrentClient, Library& library, const RssConfig& rssConfig, QObject* parent) :
+    TorrentRss::Client(torrentClient, library, rssConfig, parent)
 {
 }
 
@@ -101,7 +109,7 @@ void Client::addFeed(TvShow* tvShow) {
     QString number = QString("%1").arg(nextEpisode, 2, 10, QChar('0'));
     QString query = QString("%1 %2").arg(tvShow->name(), number);
     QString url = QString("http://www.nyaa.se/?page=rss&term=%1").arg(query);
-    TorrentRss::Client::addFeed(new Feed(url, tvShow));
+    TorrentRss::Client::addFeed(new Feed(url, rssConfig, tvShow));
 }
 
 } // < namespace

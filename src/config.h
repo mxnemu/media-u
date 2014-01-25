@@ -18,6 +18,16 @@ private:
     void initDefaultValues(); ///< init uninitialized values
 };
 
+class RssConfig {
+public:
+    RssConfig();
+    void describe(nw::Describer& de);
+    bool autoDownload;
+    bool requireFavouriteReleaseGroup;
+    bool includeEnglish;
+    bool includeRaw;
+};
+
 class Config
 {
 public:
@@ -43,6 +53,7 @@ public:
 
 
     const MplayerConfig& getMplayerConfigConstRef() const;
+    const RssConfig& getRssConfigConstRef() const;
 
     bool getNoGui() const;
     bool getFullScreen() const;
@@ -59,6 +70,7 @@ private:
     bool initialized;
 
     MplayerConfig mplayerConfig;
+    RssConfig rssConfig;
 
     void setDefaults();
 };

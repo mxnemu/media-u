@@ -113,6 +113,10 @@ void Config::describe(nw::Describer* de) {
     de->push("mplayer");
     mplayerConfig.describe(de);
     de->pop();
+
+    de->push("rss");
+    rssConfig.describe(*de);
+    de->pop();
 }
 
 bool Config::createNewConfig(QString filepath)
@@ -227,6 +231,10 @@ const MplayerConfig& Config::getMplayerConfigConstRef() const
     return mplayerConfig;
 }
 
+const RssConfig& Config::getRssConfigConstRef() const {
+    return rssConfig;
+}
+
 bool Config::getFullScreen() const{
     return fullScreen;
 }
@@ -237,4 +245,21 @@ bool Config::getNoGui() const {
 
 bool Config::getAutoOpenBrowser() const {
     return autoOpenBrowser;
+}
+
+
+RssConfig::RssConfig() :
+    autoDownload(true),
+    requireFavouriteReleaseGroup(true),
+    includeEnglish(true),
+    includeRaw(false)
+{
+
+}
+
+void RssConfig::describe(nw::Describer& de) {
+    NwUtils::describe(de, "autoDownload", autoDownload);
+    NwUtils::describe(de, "requireFavouriteReleaseGroup", requireFavouriteReleaseGroup);
+    NwUtils::describe(de, "includeEnglish", includeEnglish);
+    NwUtils::describe(de, "includeRaw", includeRaw);
 }
