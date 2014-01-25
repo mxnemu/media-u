@@ -78,8 +78,6 @@ MovieFile::MovieFile(const QString originalPath) {
     int nameIndex = regexName.indexIn(path);
     this->showName = regexName.cap(1).trimmed();
 
-    qDebug() << showName;
-
     if (nameIndex != -1 || this->showName.length() <= 0) {
         path.remove(nameIndex, regexName.cap(1).length());
     } else {
