@@ -59,7 +59,7 @@ void FileDownloadThread::run() {
             emit downloadSucceeded(finalPath);
         }
 
-
+        QFile::remove(finalPath);
         if (!tmpFile.rename(finalPath)) {
             qDebug() << "could not rename downloaded tmp file to destination file: " << finalPath;
             tmpFile.remove();
