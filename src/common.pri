@@ -26,7 +26,9 @@ SOURCES += main.cpp\
     episodelist.cpp \
     episode.cpp \
     moviefile.cpp \
-    snapshotwallpapergenerator.cpp
+    snapshotwallpapergenerator.cpp \
+    gifcreator.cpp \
+    avconvutil.cpp
 
 
 HEADERS  += library.h \
@@ -56,5 +58,7 @@ HEADERS  += library.h \
     episodelist.h \
     episode.h \
     moviefile.h \
-    snapshotwallpapergenerator.h
+    snapshotwallpapergenerator.h \
+    gifcreator.h \
+    avconvutil.h
 

@@ -1,6 +1,7 @@
 #include "thumbnailcreatoravconv.h"
 #include <QProcess>
 #include <QDebug>
+#include "avconvutil.h"
 
 
 ThumbnailCreatorAvconv::ThumbnailCreatorAvconv()
@@ -16,15 +17,11 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generatePng(QString file, int sec
 }
 
 ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, Format format, int second, int width, int height, void* callbackData) const {
-    int formattedSecond = second % 60;
-    int minute = (second / 60) % 60;
-    int hour = (second / 60 / 60);
-
     ThumbCreationCallbackAvconv* tcc = new ThumbCreationCallbackAvconv(callbackData);
 
     QStringList& args = tcc->args;
     args.append("-ss");
-    args.append(QString("%1:%2:%3").arg(QString::number(hour), QString::number(minute), QString::number(formattedSecond)));
+    args.append(avconfutil::time(second));
     args.append("-t");
     args.append("1");
     args.append("-i");
@@ -32,7 +29,7 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, Format for
 
     if (width != -1 && height != -1) {
         args.append("-s");
-        args.append(QString("%1x%2").arg(QString::number(width), QString::number(height)));
+        args.append(avconfutil::resolution(width, height));
     }
     args.append("-vframes");
     args.append("1");
