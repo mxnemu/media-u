@@ -1,4 +1,7 @@
 #include "gifcreator.h"
+#include "avconvutil.h"
+#include "directoryscanner.h"
+#include "filefilterscanner.h"
 #include <QDir>
 #include <QProcess>
 #include <QDebug>
@@ -8,39 +11,39 @@ GifCreator::GifCreator(QObject *parent) :
 {
 }
 
-void GifCreator::create(QString videoPath, int startSec, int endSec, float resizeFactor, int framesDropped) {
+void GifCreator::create(QString videoPath, int startSec, int endSec, int framesDropped) {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("%p", this));
-
-    if (!QDir(dirPath).mkpath(".")) {
+    QDir dir(dirPath);
+    if (!dir.exists() && !dir.mkpath(".")) {
         qDebug() << "failed to create tmp dir" << dirPath;
         return;
     }
     framesDropped = std::max(framesDropped, 0);
 
-    QProcess ffmpeg;
-    ffmpeg.setWorkingDirectory(dirPath);
-    ffmpeg.start("ffmpeg",
+    QProcess avconv;
+    avconv.setWorkingDirectory(dirPath);
+    avconv.start("avconv",
                  QStringList() <<
                  "-ss" <<
-                 "0:14:55" <<
+                 avconfutil::time(startSec) <<
                  "-i" <<
-                 "video.mkv" <<
+                 videoPath <<
                  "-t" <<
-                 "0:0:5" <<
-                 "-s"
-                 "480x270" <<
+                 avconfutil::time(endSec - startSec) <<
+                 "-s" <<
+                 avconfutil::resolution(480, 270) <<
                  "-f" <<
                  "image2" <<
                  "%03d.png"
                  );
-    ffmpeg.waitForFinished(0);
+    avconv.waitForFinished(-1);
 
-    QStringList tmpframes = QDir(dirPath).nameFiltersFromString("*.png");
+    QList<QFileInfo> tmpFrames = QDir(dirPath).entryInfoList(QStringList() << "*.png", QDir::Files);
     QStringList frames;
     int iMod = 0;
-    foreach (QString file, tmpframes) {
+    foreach (QFileInfo fileinfo, tmpFrames) {
         if (iMod == 0) {
-            frames << file;
+            frames << fileinfo.filePath();
         }
         ++iMod;
         if (iMod >= framesDropped+1) {
@@ -52,6 +55,7 @@ void GifCreator::create(QString videoPath, int startSec, int endSec, float resiz
     QString fpsString = QString("1x%1").arg(fps, 2, 10, QChar('0'));
 
     QProcess imagemagick;
+    imagemagick.setWorkingDirectory(dirPath);
     imagemagick.start("convert",
                       QStringList() <<
                       "+dither" <<
@@ -65,4 +69,7 @@ void GifCreator::create(QString videoPath, int startSec, int endSec, float resiz
                       "OptimizeTransparency" <<
                       "out.gif"
                       );
+    imagemagick.waitForFinished(-1);
+    qDebug() << imagemagick.readAllStandardError();
+    qDebug() << imagemagick.readAllStandardOutput();
 }
