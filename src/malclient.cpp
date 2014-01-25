@@ -66,7 +66,7 @@ OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
     url.append(name.replace(' ', '+').remove('~'));
 
     CurlResult userData(this);
-    CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
+    CURL* handle = curlClient(QUrl(url).toString(QUrl::FullyEncoded).toLocal8Bit().data(), userData);
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {
