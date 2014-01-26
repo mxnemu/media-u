@@ -1,5 +1,6 @@
 function PlayerUi() {
     this.tvShow = null;
+    this.gifData = null;
 }
 
 PlayerUi.prototype.createNodes = function() {
@@ -47,6 +48,16 @@ PlayerUi.prototype.createNodes = function() {
     });
     */
     
+    this.gifButton = $(document.createElement("span"));
+    this.gifButton.text("gif");
+    this.gifButton.addClass("button gifbutton");
+    this.gifButton.click(function() {
+        $.getJSON("api/player/progress", function(data) {
+            self.setGifTime(data.seconds);
+        });
+    });
+    
+    
     var playerControls = $(document.createElement("div"));
     playerControls.addClass("playerControls");
     
@@ -71,11 +82,33 @@ PlayerUi.prototype.createNodes = function() {
     playerControls.append(this.togglePauseButton);
     playerControls.append(forwardsButton);
     playerControls.append(stopButton);
+    playerControls.append(this.gifButton);
     this.node.append(playerControls);
     
     this.bindEvents();
     this.addBodyPadding();
     return this.node;
+}
+
+PlayerUi.prototype.setGifTime = function(seconds) {
+    var self = this;
+    if (!this.gifData) {
+        this.gifData = {
+            start: seconds,
+            end: null
+        }
+        this.gifButton.text("gif_end");
+    } else if (this.gifData.progress != "generating") {
+        this.gifData.end = seconds;
+        var jsonData = JSON.stringify(this.gifData);
+        this.gifData.progress = "generating";
+        this.gifButton.text("gif_gen");
+        $.getJSON("api/player/createGif?" + jsonData, function(data) {
+            self.gifData = null;
+            console.log("gif done", data.status);
+            self.gifButton.text("gif");
+        });
+    }
 }
 
 PlayerUi.prototype.removeNodes = function() {

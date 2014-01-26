@@ -1,4 +1,5 @@
 #include "videoplayer.h"
+#include "gifcreator.h"
 #include <server.h>
 
 VideoPlayer::VideoPlayer(Library& library, QObject* parent) : QObject(parent), library(library)
@@ -161,12 +162,32 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             QByteArray errorData;
             Server::simpleWriteBytes(resp, 404, errorData);
         }
+    } else  if (req->path().startsWith("/api/player/createGif")) {
+        std::stringstream ss;
+        ss << req->url().query(QUrl::FullyDecoded).toStdString();
+
+        int start;
+        int end;
+        nw::JsonReader jr(ss);
+        NwUtils::describe(jr, "start", start);
+        NwUtils::describe(jr, "end", end);
+        jr.close();
+
+        createGif(start, end);
+        Server::simpleWrite(resp, 200, "{\"status\": \"done\"}", mime::json);
     } else if (req->path() == "/api/player/progress") {
         Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson(), mime::json);
     } else {
         return customHandleApiRequest();
     }
     return true;
+}
+
+void VideoPlayer::createGif(int startSecond, int endSecond) {
+    QString outputPath = QString("/tmp/out.gif"); // TODO get from config
+    GifCreator gifc;
+    std::pair<int,int> resolution = gifc.suggestedResolution(nowPlaying.metaData.resolution());
+    gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution, 2);
 }
 
 const MetaDataParser *VideoPlayer::getMetaDataParser() const

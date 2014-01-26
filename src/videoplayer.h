@@ -54,6 +54,7 @@ public:
     void resetPlayingStatus();
     VideoProgress getNowPlaying() const;
 
+    void createGif(int startSecond, int endSecond);
 signals:
     void paused();
     void unpaused();

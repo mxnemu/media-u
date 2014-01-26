@@ -45,6 +45,7 @@ public:
     QList<MetaDataTrack> tracks;
     QList<MetaDataChapter> chapters;
     QString toJson();
+    std::pair<int,int> resolution();
     void describe(nw::Describer *de);
 };
 

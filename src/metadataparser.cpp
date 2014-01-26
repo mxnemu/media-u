@@ -29,3 +29,11 @@ QString MetaData::toJson() {
     jw.close();
     return QString(ss.str().c_str());
 }
+
+std::pair<int, int> MetaData::resolution() {
+    foreach (MetaDataTrack track, this->tracks) {
+        if (track.type == video) {
+            return std::pair<int,int>(track.track.video.resolutionX, track.track.video.resolutionY);
+        }
+    }
+}
