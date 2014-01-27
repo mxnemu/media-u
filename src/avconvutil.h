@@ -5,7 +5,7 @@
 
 namespace avconfutil {
 
-QString time(int second);
+QString time(float second);
 QString resolution(int width, int height);
 
 } // namespace

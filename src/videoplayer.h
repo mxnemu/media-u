@@ -10,7 +10,7 @@
 
 class VideoProgress {
 public:
-    int seconds;
+    float seconds;
     MetaData metaData;
     TvShow* tvShow;
     QString path;
@@ -54,7 +54,7 @@ public:
     void resetPlayingStatus();
     VideoProgress getNowPlaying() const;
 
-    void createGif(int startSecond, int endSecond);
+    void createGif(float startSecond, float endSecond);
 signals:
     void paused();
     void unpaused();

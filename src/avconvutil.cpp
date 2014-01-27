@@ -2,16 +2,26 @@
 
 namespace avconfutil {
 
-QString time(int second) {
-    int formattedSecond = second % 60;
-    int minute = (second / 60) % 60;
-    int hour = (second / 60 / 60);
+QString time(float second) {
+    int baseSecond = second;
+    int formattedSecond = baseSecond % 60;
+    int minute = (baseSecond / 60) % 60;
+    int hour = (baseSecond / 60 / 60);
+    float remains = second - baseSecond;
 
-    return QString("%1:%2:%3").arg(
-                QString::number(hour),
-                QString::number(minute),
-                QString::number(formattedSecond)
-                );
+    if (remains > 0) {
+        return QString("%1:%2:%3").arg(
+                    QString::number(hour),
+                    QString::number(minute),
+                    QString::number((float)formattedSecond + remains)
+                    );
+    } else {
+        return QString("%1:%2:%3").arg(
+                    QString::number(hour),
+                    QString::number(minute),
+                    QString::number(formattedSecond)
+                    );
+    }
 }
 
 QString resolution(int width, int height) {

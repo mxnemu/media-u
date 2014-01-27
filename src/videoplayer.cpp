@@ -166,8 +166,8 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         std::stringstream ss;
         ss << req->url().query(QUrl::FullyDecoded).toStdString();
 
-        int start;
-        int end;
+        float start;
+        float end;
         nw::JsonReader jr(ss);
         NwUtils::describe(jr, "start", start);
         NwUtils::describe(jr, "end", end);
@@ -183,11 +183,11 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
-void VideoPlayer::createGif(int startSecond, int endSecond) {
+void VideoPlayer::createGif(float startSecond, float endSecond) {
     QString outputPath = QString("/tmp/out.gif"); // TODO get from config
     GifCreator gifc;
     std::pair<int,int> resolution = gifc.suggestedResolution(nowPlaying.metaData.resolution());
-    gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution, 2);
+    gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution);
 }
 
 const MetaDataParser *VideoPlayer::getMetaDataParser() const

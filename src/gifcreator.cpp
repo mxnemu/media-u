@@ -22,7 +22,7 @@ std::pair<int, int> GifCreator::suggestedResolution(int originalW, int originalH
     return std::pair<int,int>(targetW, ((float)originalH / (float)originalW) * (float)targetW);
 }
 
-void GifCreator::create(QString videoPath, QString outputPath, int startSec, int endSec, std::pair<int,int> resolution, int maxSizeMib, int framesDropped) {
+void GifCreator::create(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, int maxSizeMib, int framesDropped) {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("gif_%p", this));
     QDir dir(dirPath);
     dir.removeRecursively();
@@ -32,13 +32,13 @@ void GifCreator::create(QString videoPath, QString outputPath, int startSec, int
     }
     framesDropped = std::max(framesDropped, 0);
 
-    int dif = endSec - startSec;
-    if (dif > 20) {
-        qDebug() << "gif longer than canceling creation" << startSec << endSec;
+    float dif = endSec - startSec;
+    if (dif > 120.f) {
+        qDebug() << "gif longer than 120s canceling creation" << startSec << endSec;
         return;
     }
 
-
+    qDebug() << avconfutil::time(startSec) << avconfutil::time(dif);
     QProcess avconv;
     avconv.setWorkingDirectory(dirPath);
     avconv.start("avconv",

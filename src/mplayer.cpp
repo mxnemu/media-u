@@ -140,8 +140,8 @@ QString Mplayer::snapshotOutputName(QString) {
     static const QString extReplaceText("$(ext)");
 
     QString tvShowName = nowPlaying.tvShow ? nowPlaying.tvShow->name() : QString();
-    QString minuteString = QString::number(nowPlaying.seconds / 60);
-    QString secondString = QString::number(nowPlaying.seconds % 60);
+    QString minuteString = QString::number((int)nowPlaying.seconds / 60);
+    QString secondString = QString::number((int)nowPlaying.seconds % 60);
     QString nowDateString = QString::number(QDateTime::currentMSecsSinceEpoch());
 
     name = name.replace(tvShowReplaceText, tvShowName);
