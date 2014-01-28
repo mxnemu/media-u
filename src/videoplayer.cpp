@@ -187,7 +187,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
 }
 
 void VideoPlayer::createGif(float startSecond, float endSecond) {
-    QString outputPath = QString("/tmp/out.gif"); // TODO get from config
+    QString outputPath = gifOutputPath(startSecond, endSecond);
     GifCreator gifc;
     std::pair<int,int> resolution = gifc.suggestedResolution(nowPlaying.metaData.resolution());
     gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution);
@@ -279,7 +279,91 @@ QString VideoProgress::toJson() {
     return ss.str().c_str();
 }
 
-VideoProgress VideoPlayer::getNowPlaying() const
-{
+QString VideoPlayer::imageName(QString name, QString extension) {
+    //$(tvShow)/$(file) - at: $(progressM):$(progressS).$(ext)
+    static const QString tvShowReplaceText("$(tvShow)");
+    static const QString fileReplaceText("$(file)");
+    static const QString progressMReplaceText("$(progressM)");
+    static const QString progressSReplaceText("$(progressS)");
+    static const QString nowDateReplaceText("$(nowDate)");
+    static const QString extReplaceText("$(ext)");
+
+    QString tvShowName = nowPlaying.tvShow ? nowPlaying.tvShow->name() : QString();
+    QString minuteString = QString::number((int)nowPlaying.seconds / 60);
+    QString secondString = QString::number((int)nowPlaying.seconds % 60);
+    QString nowDateString = QString::number(QDateTime::currentMSecsSinceEpoch());
+
+    name = name.replace(tvShowReplaceText, tvShowName);
+    name = name.replace(fileReplaceText, QFileInfo(nowPlaying.path).fileName());
+    name = name.replace(progressMReplaceText, minuteString);
+    name = name.replace(progressSReplaceText, secondString);
+    name = name.replace(nowDateReplaceText, nowDateString);
+    name = name.replace(extReplaceText, extension);
+
+    return name;
+}
+
+QString VideoPlayer::snapshotOutputPath() {
+    QString name = this->imageName(snapshotConfig.snapshotName, snapshotConfig.snapshotFormat);
+    QDir baseDir = QDir(snapshotConfig.snapshotDir);
+    return baseDir.absoluteFilePath(name);
+}
+
+QString VideoPlayer::gifOutputPath(float start, float end) {
+    QString name = snapshotConfig.gifName;
+
+    QString startMinuteString = QString::number((int)start / 60);
+    QString startSecondString = QString::number((int)start % 60);
+    QString endMinuteString = QString::number((int)end / 60);
+    QString endSecondString = QString::number((int)end % 60);
+
+    static const QString startMReplaceText("$(startM)");
+    static const QString startSReplaceText("$(startS)");
+    static const QString endMReplaceText("$(endM)");
+    static const QString endSReplaceText("$(endS)");
+
+    name = name.replace(startMReplaceText, startMinuteString);
+    name = name.replace(startSReplaceText, startSecondString);
+    name = name.replace(endMReplaceText, endMinuteString);
+    name = name.replace(endSReplaceText, endSecondString);
+
+    name = this->imageName(name, "gif");
+
+    QDir baseDir = QDir(snapshotConfig.gifDir);
+    return baseDir.absoluteFilePath(name);
+}
+
+
+void VideoPlayer::convertSnapshots() {
+    QStringList keys = unhandledSnapshots.keys();
+    foreach (QString key, keys) {
+        convertSnapshot(key, unhandledSnapshots.take(key));
+    }
+}
+
+bool VideoPlayer::convertSnapshot(QString snapshotPath, QString outputPath) {
+    QDir dir = QFileInfo(outputPath).dir();
+    dir.mkpath(".");
+
+    if (snapshotConfig.snapshotFormat == QFileInfo(snapshotPath).suffix()) {
+        return QFile::rename(snapshotPath, outputPath);
+    }
+
+    QPixmap p;
+    if (!p.load(snapshotPath)) {
+        return false;
+    }
+    if (p.save(outputPath, NULL, snapshotConfig.snapshotQuality)) {
+        if (!QFile(snapshotPath).remove()) {
+            qDebug() << "failed to delete original snapshot" << snapshotPath;
+        }
+    } else {
+        qDebug() << "failed to convert snapshot" << snapshotPath << "to" << outputPath;
+    }
+    return true;
+}
+
+VideoProgress VideoPlayer::getNowPlaying() const {
     return nowPlaying;
 }
+

@@ -110,7 +110,7 @@ void Mplayer::onProcessOutput() {
         if (-1 != output.indexOf(snapshotRegex)) {
             QString snapshotName = snapshotRegex.cap(1);
             QString snapshotPath = QDir(snapshotConfig.snapshotDir).absoluteFilePath(snapshotName);
-            QString outputName = snapshotOutputName(snapshotPath);
+            QString outputName = snapshotOutputPath();
             if (snapshotPath != outputName) {
                 unhandledSnapshots[snapshotPath] = outputName;
             }
@@ -118,61 +118,4 @@ void Mplayer::onProcessOutput() {
             qDebug() << output;
         }
     }
-}
-
-void Mplayer::convertSnapshots() {
-    QStringList keys = unhandledSnapshots.keys();
-    foreach (QString key, keys) {
-        convertSnapshot(key, unhandledSnapshots.take(key));
-    }
-}
-
-QString Mplayer::snapshotOutputName(QString) {
-    //$(tvShow)/$(file) - at: $(progressM):$(progressS).$(ext)
-
-    QString name = snapshotConfig.snapshotName;
-
-    static const QString tvShowReplaceText("$(tvShow)");
-    static const QString fileReplaceText("$(file)");
-    static const QString progressMReplaceText("$(progressM)");
-    static const QString progressSReplaceText("$(progressS)");
-    static const QString nowDateReplaceText("$(nowDate)");
-    static const QString extReplaceText("$(ext)");
-
-    QString tvShowName = nowPlaying.tvShow ? nowPlaying.tvShow->name() : QString();
-    QString minuteString = QString::number((int)nowPlaying.seconds / 60);
-    QString secondString = QString::number((int)nowPlaying.seconds % 60);
-    QString nowDateString = QString::number(QDateTime::currentMSecsSinceEpoch());
-
-    name = name.replace(tvShowReplaceText, tvShowName);
-    name = name.replace(fileReplaceText, QFileInfo(nowPlaying.path).fileName());
-    name = name.replace(progressMReplaceText, minuteString);
-    name = name.replace(progressSReplaceText, secondString);
-    name = name.replace(nowDateReplaceText, nowDateString);
-    name = name.replace(extReplaceText, snapshotConfig.snapshotFormat);
-
-    QDir baseDir = QDir(snapshotConfig.snapshotDir);
-    return baseDir.absoluteFilePath(name);
-}
-
-bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
-    QDir dir = QFileInfo(outputPath).dir();
-    dir.mkpath(".");
-
-    if (snapshotConfig.snapshotFormat == QFileInfo(snapshotPath).suffix()) {
-        return QFile::rename(snapshotPath, outputPath);
-    }
-
-    QPixmap p;
-    if (!p.load(snapshotPath)) {
-        return false;
-    }
-    if (p.save(outputPath, NULL, snapshotConfig.snapshotQuality)) {
-        if (!QFile(snapshotPath).remove()) {
-            qDebug() << "failed to delete original snapshot" << snapshotPath;
-        }
-    } else {
-        qDebug() << "failed to convert snapshot" << snapshotPath << "to" << outputPath;
-    }
-    return true;
 }

@@ -21,9 +21,6 @@ public:
     virtual float incrementVolume();
     virtual float decrementVolume();
 
-    void convertSnapshots();
-    QString snapshotOutputName(QString);
-    bool convertSnapshot(QString snapshotPath, QString outputPath);
 protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &settings);
     virtual void pauseImpl();
@@ -35,8 +32,6 @@ private slots:
     void onProcessFinished(int exitCode);
     void onProcessOutput();
 
-private:
-    QMap<QString, QString> unhandledSnapshots;
 };
 
 #endif // MPLAYER_H

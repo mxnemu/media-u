@@ -82,6 +82,15 @@ protected:
 
     QStringList playlist;
 
+    // snapshots
+    QMap<QString, QString> unhandledSnapshots;
+
+    QString imageName(QString templateString, QString extension);
+    QString snapshotOutputPath();
+    QString gifOutputPath(float start, float end);
+    void convertSnapshots();
+    bool convertSnapshot(QString snapshotPath, QString outputPath);
+
 public slots:
     void onThumbnailCreated(const QByteArray img);
     void receivedPlaylist(QHttpResponse* resp, const QByteArray& body);
