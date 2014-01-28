@@ -85,11 +85,11 @@ protected:
     // snapshots
     QMap<QString, QString> unhandledSnapshots;
 
-    QString imageName(QString templateString, QString extension);
-    QString snapshotOutputPath();
-    QString gifOutputPath(float start, float end);
+    QString imageName(QString templateString, QString extension) const;
+    QString snapshotOutputPath() const;
+    QString gifOutputPath(float start, float end) const;
     void convertSnapshots();
-    bool convertSnapshot(QString snapshotPath, QString outputPath);
+    bool convertSnapshot(const QString snapshotPath, const QString outputPath);
 
 public slots:
     void onThumbnailCreated(const QByteArray img);

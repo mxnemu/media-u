@@ -279,7 +279,7 @@ QString VideoProgress::toJson() {
     return ss.str().c_str();
 }
 
-QString VideoPlayer::imageName(QString name, QString extension) {
+QString VideoPlayer::imageName(QString name, QString extension) const {
     //$(tvShow)/$(file) - at: $(progressM):$(progressS).$(ext)
     static const QString tvShowReplaceText("$(tvShow)");
     static const QString fileReplaceText("$(file)");
@@ -303,13 +303,13 @@ QString VideoPlayer::imageName(QString name, QString extension) {
     return name;
 }
 
-QString VideoPlayer::snapshotOutputPath() {
+QString VideoPlayer::snapshotOutputPath() const {
     QString name = this->imageName(snapshotConfig.snapshotName, snapshotConfig.snapshotFormat);
     QDir baseDir = QDir(snapshotConfig.snapshotDir);
     return baseDir.absoluteFilePath(name);
 }
 
-QString VideoPlayer::gifOutputPath(float start, float end) {
+QString VideoPlayer::gifOutputPath(float start, float end) const {
     QString name = snapshotConfig.gifName;
 
     QString startMinuteString = QString::number((int)start / 60);
@@ -341,7 +341,7 @@ void VideoPlayer::convertSnapshots() {
     }
 }
 
-bool VideoPlayer::convertSnapshot(QString snapshotPath, QString outputPath) {
+bool VideoPlayer::convertSnapshot(const QString snapshotPath, const QString outputPath) {
     QDir dir = QFileInfo(outputPath).dir();
     dir.mkpath(".");
 
