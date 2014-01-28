@@ -4,8 +4,8 @@
 #include <QDebug>
 #include "systemutils.h"
 
-Mplayer::Mplayer(Library& library, const MplayerConfig &config) :
-    VideoPlayer(library),
+Mplayer::Mplayer(Library& library, const SnapshotConfig& snapshotConfig, const MplayerConfig &config) :
+    VideoPlayer(library, snapshotConfig),
     config(config)
 {
     connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));
@@ -17,7 +17,7 @@ Mplayer::~Mplayer() {
 }
 
 bool Mplayer::playFileImpl(QString filepath, const TvShowPlayerSettings& settings) {
-    process.setWorkingDirectory(config.snapshotDir);
+    process.setWorkingDirectory(snapshotConfig.snapshotDir);
     process.start(config.path, QStringList() <<
         QString("%1").arg(filepath) <<
         "-slave" <<
@@ -109,7 +109,7 @@ void Mplayer::onProcessOutput() {
         QRegExp snapshotRegex("screenshot '(.*)'");
         if (-1 != output.indexOf(snapshotRegex)) {
             QString snapshotName = snapshotRegex.cap(1);
-            QString snapshotPath = QDir(config.snapshotDir).absoluteFilePath(snapshotName);
+            QString snapshotPath = QDir(snapshotConfig.snapshotDir).absoluteFilePath(snapshotName);
             QString outputName = snapshotOutputName(snapshotPath);
             if (snapshotPath != outputName) {
                 unhandledSnapshots[snapshotPath] = outputName;
@@ -130,7 +130,7 @@ void Mplayer::convertSnapshots() {
 QString Mplayer::snapshotOutputName(QString) {
     //$(tvShow)/$(file) - at: $(progressM):$(progressS).$(ext)
 
-    QString name = config.snapshotName;
+    QString name = snapshotConfig.snapshotName;
 
     static const QString tvShowReplaceText("$(tvShow)");
     static const QString fileReplaceText("$(file)");
@@ -149,9 +149,9 @@ QString Mplayer::snapshotOutputName(QString) {
     name = name.replace(progressMReplaceText, minuteString);
     name = name.replace(progressSReplaceText, secondString);
     name = name.replace(nowDateReplaceText, nowDateString);
-    name = name.replace(extReplaceText, config.snapshotFormat);
+    name = name.replace(extReplaceText, snapshotConfig.snapshotFormat);
 
-    QDir baseDir = QDir(config.snapshotDir);
+    QDir baseDir = QDir(snapshotConfig.snapshotDir);
     return baseDir.absoluteFilePath(name);
 }
 
@@ -159,7 +159,7 @@ bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
     QDir dir = QFileInfo(outputPath).dir();
     dir.mkpath(".");
 
-    if (config.snapshotFormat == QFileInfo(snapshotPath).suffix()) {
+    if (snapshotConfig.snapshotFormat == QFileInfo(snapshotPath).suffix()) {
         return QFile::rename(snapshotPath, outputPath);
     }
 
@@ -167,7 +167,7 @@ bool Mplayer::convertSnapshot(QString snapshotPath, QString outputPath) {
     if (!p.load(snapshotPath)) {
         return false;
     }
-    if (p.save(outputPath, NULL, config.snapshotQuality)) {
+    if (p.save(outputPath, NULL, snapshotConfig.snapshotQuality)) {
         if (!QFile(snapshotPath).remove()) {
             qDebug() << "failed to delete original snapshot" << snapshotPath;
         }

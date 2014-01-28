@@ -2,7 +2,10 @@
 #include "gifcreator.h"
 #include <server.h>
 
-VideoPlayer::VideoPlayer(Library& library, QObject* parent) : QObject(parent), library(library)
+VideoPlayer::VideoPlayer(Library& library, const SnapshotConfig& snapshotConfig, QObject* parent) :
+    QObject(parent),
+    library(library),
+    snapshotConfig(snapshotConfig)
 {
     pauseStatus = false;
     connect(this, SIGNAL(playbackEndedNormally()), this, SLOT(onPlaybackEndedNormally()));

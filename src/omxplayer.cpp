@@ -6,7 +6,8 @@
 
 // TODO get rid of all the redunant stuff from mplayer and merge it into 1 base
 
-Omxplayer::Omxplayer(Library& library) : VideoPlayer(library) {
+Omxplayer::Omxplayer(Library& library, const SnapshotConfig& snapshotConfig) :
+    VideoPlayer(library, snapshotConfig) {
 }
 
 bool Omxplayer::playFileImpl(QString filepath, const TvShowPlayerSettings&) {

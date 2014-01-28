@@ -10,7 +10,7 @@ class Mplayer : public VideoPlayer
 {
     Q_OBJECT
 public:
-    Mplayer(Library& library, const MplayerConfig& config);
+    Mplayer(Library& library, const SnapshotConfig& snapshotConfig, const MplayerConfig& config);
     virtual ~Mplayer();
 
     virtual void stop();

@@ -110,6 +110,10 @@ void Config::describe(nw::Describer* de) {
     NwUtils::describe(*de, "path", mLibraryPath);
     de->pop();
 
+    de->push("snapshot");
+    snapshotConfig.describe(*de);
+    de->pop();
+
     de->push("mplayer");
     mplayerConfig.describe(de);
     de->pop();
@@ -167,7 +171,11 @@ bool Config::omxPlayerIsInstalled() {
 }
 
 bool Config::mplayerIsInstalled() {
-     return SystemUtils::commandExists(mplayerLocation());
+    return SystemUtils::commandExists(mplayerLocation());
+}
+
+const SnapshotConfig&Config::getSnapshotConfigConstRef() const {
+    return snapshotConfig;
 }
 
 int Config::serverPort() {
@@ -178,52 +186,32 @@ int Config::serverPort() {
 }
 
 void MplayerConfig::describe(nw::Describer *de) {
-    if (de->isInWriteMode()) {
-        this->initDefaultValues(); // TODO get the init order logical
+    if (de->isInWriteMode() && needsInit()) {
+        this->setDefaultValues();
     }
     NwUtils::describe(*de, "path", path);
     NwUtils::describe(*de, "arguments", arguments, ' ');
-    NwUtils::describe(*de, "snapshotDir", snapshotDir);
-    NwUtils::describe(*de, "snapshotFormat", snapshotFormat);
-    NwUtils::describe(*de, "snapshotQuality", snapshotQuality);
-    NwUtils::describe(*de, "snapshotName", snapshotName);
 
-    this->snapshotQuality = std::min(this->snapshotQuality, (qint8)100);
-    this->snapshotQuality = std::max(this->snapshotQuality, (qint8)-1);
-
-    if (de->isInReadMode()) {
-        this->initDefaultValues(); // TODO get the init order logical
+    if (de->isInReadMode() && needsInit()) {
+        this->setDefaultValues();
     }
 }
 
-void MplayerConfig::initDefaultValues() {
-    if (this->path.isEmpty()) {
+bool MplayerConfig::needsInit() {
+    return this->path.isEmpty();
+}
+
+void MplayerConfig::setDefaultValues() {
         this->path = "mplayer";
-        this->snapshotFormat = "jpg";
-        this->snapshotName = "$(tvShow)/$(file) - $(progressM)m$(progressS)s - $(nowDate).$(ext)";
-        this->snapshotQuality = 100;
-
-        QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-
-        if (!imageDirs.isEmpty()) {
-            QDir dir = QDir(imageDirs.first());
-            dir.mkpath("snapshots");
-            dir.cd("snapshots");
-            if (dir.exists()) {
-                this->snapshotDir = dir.absolutePath();
-            }
-        }
-
-        this->arguments = QStringList() <<
-             "-fs" <<
-             "-ass" <<
+    this->arguments = QStringList() <<
+        "-fs" <<
+        "-ass" <<
 #ifdef __linux__
-             // workaround for a pulse audio bug
-             "-ao" <<
-             "alsa" <<
+        // workaround for a pulse audio bug
+        "-ao" <<
+        "alsa" <<
 #endif
-             "-embeddedfonts";
-    }
+        "-embeddedfonts";
 }
 
 const MplayerConfig& Config::getMplayerConfigConstRef() const
@@ -262,4 +250,60 @@ void RssConfig::describe(nw::Describer& de) {
     NwUtils::describe(de, "requireFavouriteReleaseGroup", requireFavouriteReleaseGroup);
     NwUtils::describe(de, "includeEnglish", includeEnglish);
     NwUtils::describe(de, "includeRaw", includeRaw);
+}
+
+
+void SnapshotConfig::describe(nw::Describer& de) {
+    if (de.isInWriteMode() && needsInit()) {
+        this->setDefaultValues();
+    }
+    NwUtils::describe(de, "snapshotDir", snapshotDir);
+    NwUtils::describe(de, "snapshotFormat", snapshotFormat);
+    NwUtils::describe(de, "snapshotQuality", snapshotQuality);
+    NwUtils::describe(de, "snapshotName", snapshotName);
+
+    NwUtils::describe(de, "gifDir", gifDir);
+    NwUtils::describe(de, "gifResolutionX", gifResolutionX);
+    NwUtils::describe(de, "gifResolutionY", gifResolutionY);
+    NwUtils::describe(de, "gifFramesDropped", gifFramesDropped);
+
+    this->snapshotQuality = std::min(this->snapshotQuality, (qint8)100);
+    this->snapshotQuality = std::max(this->snapshotQuality, (qint8)-1);
+
+    if (de.isInReadMode() && needsInit()) {
+        this->setDefaultValues();
+    }
+}
+
+bool SnapshotConfig::needsInit() {
+    return snapshotName.isEmpty() || snapshotDir.isEmpty() || gifDir.isEmpty() || gifName.isEmpty();
+}
+
+void SnapshotConfig::setDefaultValues() {
+    this->snapshotFormat = "jpg";
+    this->snapshotName = "$(tvShow)/$(file) - $(progressM)m$(progressS)s - $(nowDate).$(ext)";
+    this->snapshotQuality = 100;
+
+    this->gifName = "$(tvShow)/$(file) - $(startM)m$(startS)s:$(endM)m$(endS)s - $(nowDate).$(ext)";
+    this->gifFramesDropped = 2;
+    this->gifResolutionX = 420;
+    this->gifResolutionY = 270;
+
+    QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+
+    if (!imageDirs.isEmpty()) {
+        QString imageDir = imageDirs.first();
+        this->snapshotDir = createSaveDir(imageDir, "snapshots");
+        this->gifDir = createSaveDir(imageDir, "snapshots_gif");
+    }
+}
+
+QString SnapshotConfig::createSaveDir(const QString parentDir, const QString dirname) {
+    QDir dir = QDir(parentDir);
+    dir.mkpath(dirname);
+    dir.cd(dirname);
+    if (dir.exists()) {
+        return dir.absolutePath();
+    }
+    return QString();
 }

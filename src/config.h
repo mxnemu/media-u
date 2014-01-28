@@ -10,12 +10,29 @@ public:
     void describe(nw::Describer*de);
     QString path;
     QStringList arguments;
+private:
+    bool needsInit();
+    void setDefaultValues();
+};
+
+class SnapshotConfig {
+public:
+    void describe(nw::Describer& de);
     QString snapshotDir;
     QString snapshotFormat;
     QString snapshotName;
     qint8 snapshotQuality;
+
+    QString gifDir;
+    QString gifName;
+    int gifResolutionX;
+    int gifResolutionY;
+    int gifFramesDropped;
+
 private:
-    void initDefaultValues(); ///< init uninitialized values
+    bool needsInit();
+    void setDefaultValues();
+    QString createSaveDir(const QString parentDir, const QString dirname);
 };
 
 class RssConfig {
@@ -52,6 +69,7 @@ public:
     bool mplayerIsInstalled();
 
 
+    const SnapshotConfig& getSnapshotConfigConstRef() const;
     const MplayerConfig& getMplayerConfigConstRef() const;
     const RssConfig& getRssConfigConstRef() const;
 
@@ -69,6 +87,7 @@ private:
 
     bool initialized;
 
+    SnapshotConfig snapshotConfig;
     MplayerConfig mplayerConfig;
     RssConfig rssConfig;
 

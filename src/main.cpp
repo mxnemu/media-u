@@ -40,9 +40,9 @@ int main(int argc, char *argv[]) {
 
     VideoPlayer* player;
     if (config.omxPlayerIsInstalled()) {
-        player = new Omxplayer(library);
+        player = new Omxplayer(library, config.getSnapshotConfigConstRef());
     } else {
-        player = new Mplayer(library, config.getMplayerConfigConstRef());
+        player = new Mplayer(library, config.getSnapshotConfigConstRef(), config.getMplayerConfigConstRef());
     }
 
     MetaDataParserAvconv metaDataParser;

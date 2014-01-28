@@ -7,6 +7,7 @@
 #include "metadataparser.h"
 #include "thumbnailcreator.h"
 #include "library.h"
+#include "config.h"
 
 class VideoProgress {
 public:
@@ -23,7 +24,7 @@ class VideoPlayer : public QObject
 {
    Q_OBJECT // TODO build breaks here when trying to inherit qobject
 public:
-    explicit VideoPlayer(Library &library, QObject *parent = NULL);
+    explicit VideoPlayer(Library &library, const SnapshotConfig& snapshotConfig, QObject *parent = NULL);
     virtual ~VideoPlayer();
     bool playFile(QString filepath);
 
@@ -72,6 +73,7 @@ protected:
     virtual bool customHandleApiRequest() { return false; }
 
     Library& library;
+    const SnapshotConfig& snapshotConfig;
     const MetaDataParser* metaDataParser;
     const ThumbnailCreator* thumbnailCreator;
     QProcess process;
