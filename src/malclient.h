@@ -41,6 +41,7 @@ public:
 
     void describe(nw::Describer& de);
     void updateShow(TvShow* show);
+    bool isUpToDate(const TvShow* show) const;
 };
 
 class AnimeListData {
@@ -53,7 +54,7 @@ public:
 
     void describe(nw::Describer& de);
     void updateShows(QList<TvShow*> shows);
-    bool hasShow(const TvShow* show) const;
+    const AnimeItemData* getShow(const TvShow* show) const;
 };
 
 class AnimeUpdateData;

@@ -101,7 +101,7 @@ void Thread::run() {
         msleep(loginSleep);
     }
 
-    client.fetchOnlineTrackerList(tvShows);
+    bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
 
     QDate now = QDate::currentDate();
 
@@ -128,7 +128,9 @@ void Thread::run() {
             }
         }
 
-        //client.updateInOnlineTracker(show);
+        if (fetchingSucess) {
+            client.updateInOnlineTracker(show);
+        }
     }
 
 

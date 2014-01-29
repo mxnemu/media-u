@@ -183,8 +183,13 @@ bool Client::updateInOnlineTracker(TvShow* show) {
         return false;
     }
 
-    if (animeListData.hasShow(show)) {
-        return this->updateinOnlineTrackerOrAdd(show, "update");
+    const AnimeItemData* item = animeListData.getShow(show);
+    if (item) {
+        if (!item->isUpToDate(show)) {
+            return this->updateinOnlineTrackerOrAdd(show, "update");
+        }
+        qDebug() << "MAL TRACKER skip up2date" << show->name();
+        return true;
     } else {
         return this->updateinOnlineTrackerOrAdd(show, "add");
     }
@@ -206,9 +211,8 @@ bool Client::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
             qDebug() << "MAL TRACKER UPDATE success" << show->name();
             return true;
         } else if (type == "add") {
-            int rowId = -2; // leave -1 and 0 for mal
-            userData.data >> rowId;
-            if (rowId > 0) {
+            QString responseString = userData.data.str().c_str();
+            if (responseString.contains("201 Created")) {
                 qDebug() << "MAL TRACKER ADD success" << show->name();
                 return true;
             }
@@ -466,14 +470,14 @@ void AnimeListData::updateShows(QList<TvShow*> shows) {
     }
 }
 
-bool AnimeListData::hasShow(const TvShow* show) const {
+const AnimeItemData* AnimeListData::getShow(const TvShow* show) const {
     int id = show->getRemoteId();
-    foreach (AnimeItemData item, items) {
+    foreach (const AnimeItemData& item, items) {
         if (item.series_animedb_id == id) {
-            return true;
+            return &item;
         }
     }
-    return false;
+    return NULL;
 }
 
 void AnimeListData::describe(nw::Describer& de) {
@@ -515,9 +519,13 @@ void AnimeItemData::describe(nw::Describer& de) {
 }
 
 void AnimeItemData::updateShow(TvShow* show) {
-    if (show->episodeList().numberOfWatchedEpisodes() < this->my_watched_episodes) {
+    if (!isUpToDate(show)) {
         show->episodeList().setMinimalWatched(this->my_watched_episodes);
     }
+}
+
+bool AnimeItemData::isUpToDate(const TvShow* show) const {
+    return show->episodeList().numberOfWatchedEpisodes() >= this->my_watched_episodes;
 }
 
 } // namespace
