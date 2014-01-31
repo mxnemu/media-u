@@ -6,8 +6,6 @@ MetaDataParserAvconv::MetaDataParserAvconv()
 {
 }
 
-// todo getThumb: avconv -ss 00:0:57 -t 1 -i Higurashi\ no\ Naku\ Koro\ ni\ 1x01.mkv -s 50x30 -vframes 1 -f image2 /tmp/test%d.jpg
-
 MetaData MetaDataParserAvconv::parse(QString filename) const {
     QProcess process;
     process.start("avconv", QStringList() << "-i" << filename);
@@ -63,7 +61,6 @@ QList<MetaDataTrack> MetaDataParserAvconv::parseTracks(QString outputString) con
     streamRegex.setMinimal(true);
     QList<MetaDataTrack> l;
     int latestIndex = outputString.indexOf(streamRegex);
-    qDebug() << "found at" << latestIndex;
     while (-1 != latestIndex) {
         int nextIndex = outputString.indexOf(streamRegex, latestIndex+1);
         latestIndex = outputString.indexOf(streamRegex, latestIndex); // stupid repetition to gain back the captures
@@ -90,7 +87,6 @@ QList<MetaDataTrack> MetaDataParserAvconv::parseTracks(QString outputString) con
         } else if (typeString == "Audio") { t.type = audio; }
         else if (typeString == "Subtitle") { t.type = subtitle; }
         else if (typeString == "Attachment") { t.type = attachment; }
-        // TODO parse type specific infos like video resolution
 
         l.append(t);
         latestIndex = nextIndex;
@@ -111,14 +107,6 @@ QList<MetaDataChapter> MetaDataParserAvconv::parseChapters(QString outputString)
         c.start = chapterHeadRegex.cap(4).toFloat();
         c.end = chapterHeadRegex.cap(5).toFloat();
 
-        /* Probably just a bad example I saved up above. gonna leave this since I don't have example files atm
-        QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([0-9]*):([0-9]*):([0-9\\.]*)");
-        int hour = chapterTitleRegex.cap(3).toInt();
-        int minute = chapterTitleRegex.cap(4).toInt();
-        float second = chapterTitleRegex.cap(5).toFloat();
-        */
-
-        //qDebug() << outputString;
         QRegExp chapterTitleRegex("Metadata:\n(\\s*)title(\\s*):\\s([^\n]*)\n");
         int chapterTitle = outputString.indexOf(chapterTitleRegex, chapterHead);
         if (-1 != chapterTitle && (nextIndex == -1 || chapterTitle < nextIndex)) {
