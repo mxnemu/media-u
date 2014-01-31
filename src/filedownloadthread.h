@@ -14,7 +14,6 @@ public:
 
     static int write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp);
 signals:
-    void preparedCurl(CURL*);
     void downloadSucceeded(QString path);
 
 private:
