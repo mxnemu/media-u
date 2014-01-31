@@ -8,7 +8,7 @@ EpisodeList::EpisodeList(QObject* parent) : QObject(parent) {
 EpisodeList::~EpisodeList() {
 }
 
-void EpisodeList::exportXbmcLinks(QDir dir) {
+void EpisodeList::exportXbmcLinks(QDir) {
     /*
     if (!dir.exists()) {
         dir.mkpath(".");

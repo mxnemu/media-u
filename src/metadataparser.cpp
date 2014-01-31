@@ -36,4 +36,5 @@ std::pair<int, int> MetaData::resolution() {
             return std::pair<int,int>(track.track.video.resolutionX, track.track.video.resolutionY);
         }
     }
+    return std::pair<int,int>(-1,-1);
 }

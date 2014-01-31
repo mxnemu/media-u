@@ -13,7 +13,7 @@ public:
     EpisodeList(QObject *parent = NULL);
     virtual ~EpisodeList();
 
-    void exportXbmcLinks(QDir dir);
+    void exportXbmcLinks(QDir);
     void writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupPreference);
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);

@@ -102,8 +102,8 @@ void Client::tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, Tv
 
 Feed::Feed(QString url, const RssConfig& rssConfig, TvShow* tvShow) :
     QObject(NULL),
-    result(NULL),
     rssConfig(rssConfig),
+    result(NULL),
     url(url),
     tvShow(tvShow)
 {
