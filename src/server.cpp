@@ -138,3 +138,10 @@ void RequestBodyListener::onDataReceived(QByteArray bytes) {
     }
     deleteLater();
 }
+
+ServerDataReady::ServerDataReady(QHttpResponse *resp, QObject* parent) :
+    QObject(parent),
+    resp(resp)
+{
+}
+

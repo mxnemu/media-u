@@ -86,6 +86,10 @@ void Mplayer::onProcessFinished(int exitCode) {
     pauseStatus = true;
 }
 
+void Mplayer::getExactProgress() {
+    this->process.write("get_property time_pos\n");
+}
+
 void Mplayer::onProcessOutput() {
     QString output = this->process.readAll();
     QRegExp progressRegex("V:(\\s*)?([0-9\\.]*)\\s");
@@ -105,6 +109,16 @@ void Mplayer::onProcessOutput() {
     } else if (output.contains("ANS_pause=no")) {
         pauseStatus = false;
         emit unpaused();
+    } else  if (output.contains("ANS_time_pos=")) {
+        QRegExp posRegex("ANS_time_pos=([0-9\\.]+)");
+        if (-1 != posRegex.indexIn(output)) {
+            bool ok = false;
+            float second = posRegex.cap(1).toFloat(&ok);
+            if (ok) {
+                this->nowPlaying.seconds = second;
+                emit exactProgressReady(second);
+            }
+        }
     } else {
         QRegExp snapshotRegex("screenshot '(.*)'");
         if (-1 != output.indexOf(snapshotRegex)) {

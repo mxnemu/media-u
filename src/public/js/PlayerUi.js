@@ -52,7 +52,7 @@ PlayerUi.prototype.createNodes = function() {
     this.gifButton.text("gif");
     this.gifButton.addClass("button gifbutton");
     this.gifButton.click(function() {
-        $.getJSON("api/player/progress", function(data) {
+        $.getJSON("api/player/exactProgress", function(data) {
             self.setGifTime(data.seconds);
         });
     });

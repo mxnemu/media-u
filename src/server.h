@@ -32,6 +32,20 @@ private:
     QHttpResponse* resp;
 };
 
+
+class ServerDataReady : public QObject {
+    Q_OBJECT
+public:
+    ServerDataReady(QHttpResponse* resp, QObject* parent = NULL);
+
+signals:
+    // Qt signals doesn't have templates
+    void floatReady(float);
+
+public:
+    QHttpResponse* resp;
+};
+
 class Server : public QObject
 {
     Q_OBJECT

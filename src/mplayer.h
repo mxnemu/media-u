@@ -25,6 +25,7 @@ protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &settings);
     virtual void pauseImpl();
     virtual void unPauseImpl();
+    virtual void getExactProgress();
 
     const MplayerConfig& config;
 

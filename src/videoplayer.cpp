@@ -95,6 +95,16 @@ void VideoPlayer::receivedPlaylist(QHttpResponse *resp, const QByteArray& body) 
     }
 }
 
+void VideoPlayer::onExactProgressReady(float second) {
+    ServerDataReady* sdr = dynamic_cast<ServerDataReady*>(sender());
+    if (sdr) {
+        Server::simpleWrite(sdr->resp, 200, QString("{\"seconds\":%1}").arg(second), mime::json);
+        sdr->deleteLater();
+    } else {
+        qDebug() << "invalid sender to onExactProgressReady is not a ServerDataReady type";
+    }
+}
+
 bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/player/play") && !req->url().query().isEmpty()) {
         std::stringstream ss;
@@ -180,6 +190,11 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         Server::simpleWrite(resp, 200, "{\"status\": \"done\"}", mime::json);
     } else if (req->path() == "/api/player/progress") {
         Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson(), mime::json);
+    } else if (req->path() == "/api/player/exactProgress") {
+        ServerDataReady* sdr = new ServerDataReady(resp, this);
+        connect(this, SIGNAL(exactProgressReady(float)), sdr, SIGNAL(floatReady(float)));
+        connect(sdr, SIGNAL(floatReady(float)), this, SLOT(onExactProgressReady(float)));
+        getExactProgress();
     } else {
         return customHandleApiRequest();
     }
@@ -366,4 +381,3 @@ bool VideoPlayer::convertSnapshot(const QString snapshotPath, const QString outp
 VideoProgress VideoPlayer::getNowPlaying() const {
     return nowPlaying;
 }
-

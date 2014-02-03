@@ -66,11 +66,14 @@ signals:
     void playbackEndedNormally();
     void playbackCanceled();
 
+    void exactProgressReady(float);
+
 protected:
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings& settings) = 0;
     virtual void pauseImpl() = 0;
     virtual void unPauseImpl() = 0;
     virtual bool customHandleApiRequest() { return false; }
+    virtual void getExactProgress() { emit exactProgressReady(nowPlaying.seconds); }
 
     Library& library;
     const SnapshotConfig& snapshotConfig;
@@ -94,6 +97,7 @@ protected:
 public slots:
     void onThumbnailCreated(const QByteArray img);
     void receivedPlaylist(QHttpResponse* resp, const QByteArray& body);
+    void onExactProgressReady(float);
 
 private slots:
     void onPlaybackEndedNormally();
