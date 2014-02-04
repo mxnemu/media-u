@@ -43,10 +43,15 @@ void GifCreator::create(QString videoPath, QString outputPath, float startSec, f
     avconv.setWorkingDirectory(dirPath);
     avconv.start("avconv",
                  QStringList() <<
+                 // fast seek
                  "-ss" <<
-                 avconfutil::time(startSec) <<
+                 avconfutil::time((int)startSec) <<
                  "-i" <<
                  videoPath <<
+                 // accurate seek
+                 "-ss" <<
+                 avconfutil::time(startSec-(float)((int)startSec)) <<
+                 // relative dif
                  "-t" <<
                  avconfutil::time(dif) <<
                  "-s" <<
