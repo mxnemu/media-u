@@ -185,7 +185,7 @@ bool Client::updateInOnlineTracker(TvShow* show) {
 
     const AnimeItemData* item = animeListData.getShow(show);
     if (item) {
-        if (!item->isUpToDate(show)) {
+        if (!item->remoteIsUpToDate(show)) {
             return this->updateinOnlineTrackerOrAdd(show, "update");
         }
         qDebug() << "MAL TRACKER skip up2date" << show->name();
@@ -382,7 +382,7 @@ void SearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const 
 
 AnimeUpdateData::AnimeUpdateData(TvShow *show) {
     this->episode = show->episodeList().highestWatchedEpisodeNumber();
-    this->status = calculateWatchStatus(*show);
+    this->status = calculateWatchStatus(show->getStatus());
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();
 
     score = -1;
@@ -397,8 +397,7 @@ AnimeUpdateData::AnimeUpdateData(TvShow *show) {
     QStringList tags; // string. tags separated by commas
 }
 
-UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(const TvShow& show) {
-    TvShow::WatchStatus status = show.getStatus();
+UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(const TvShow::WatchStatus status) {
     switch (status) {
     case TvShow::waitingForNewEpisodes:
     case TvShow::watching:
@@ -443,6 +442,18 @@ QString AnimeUpdateData::toXml() {
     tag->setCanBeAttributeRecursive(false);
     xw.close();
     return QString(ss.str().data());
+}
+
+TvShow::WatchStatus AnimeItemData::restoreStatus(int malStatusId) {
+    switch(malStatusId) {
+    case 1: return TvShow::watching;
+    case 2: return TvShow::completed;
+    case 3: return TvShow::onHold;
+    case 4: return TvShow::dropped;
+    case 6:
+    default:
+        return TvShow::planToWatch;
+    }
 }
 
 Thread* Client::getActiveThread() const
@@ -497,6 +508,7 @@ AnimeItemData::AnimeItemData(nw::Describer& de) {
 }
 
 void AnimeItemData::describe(nw::Describer& de) {
+    int status = -1;
     NwUtils::describe(de, "series_animedb_id", series_animedb_id);
     NwUtils::describe(de, "series_title", series_title);
     NwUtils::describe(de, "series_synonyms", series_synonyms);
@@ -511,21 +523,31 @@ void AnimeItemData::describe(nw::Describer& de) {
     //QDate my_start_date; // 0000-00-00
     //QDate my_finish_date; // 0000-00-00
     NwUtils::describe(de, "my_score", my_score);
-    NwUtils::describe(de, "my_status", my_status);
+    NwUtils::describe(de, "my_status", status);
     NwUtils::describe(de, "my_rewatching", my_rewatching);
     NwUtils::describe(de, "my_rewatching_ep", my_rewatching_ep);
     //int my_last_updated; // maybe date? example: 1388944557
     //QStringList my_tags; // separated by ", "
+    my_status = AnimeItemData::restoreStatus(status);
 }
 
 void AnimeItemData::updateShow(TvShow* show) {
-    if (!isUpToDate(show)) {
+    if (!localIsUpToDate(show)) {
         show->episodeList().setMinimalWatched(this->my_watched_episodes);
     }
 }
 
-bool AnimeItemData::isUpToDate(const TvShow* show) const {
+bool AnimeItemData::localIsUpToDate(const TvShow* show) const {
     return show->episodeList().numberOfWatchedEpisodes() >= this->my_watched_episodes;
+}
+
+bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
+    TvShow::WatchStatus status = show->getStatus();
+    int statusMalWouldSendIfSynced = restoreStatus(AnimeUpdateData::calculateWatchStatus(status));
+    // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
+    return (statusMalWouldSendIfSynced == this->my_status ||
+            (this->my_status == TvShow::completed && statusMalWouldSendIfSynced == TvShow::watching)) &&
+           this->my_watched_episodes >= show->episodeList().numberOfWatchedEpisodes();
 }
 
 } // namespace

@@ -33,7 +33,7 @@ public:
     QDate my_start_date; // 0000-00-00
     QDate my_finish_date; // 0000-00-00
     int my_score;
-    int my_status;
+    TvShow::WatchStatus my_status;
     int my_rewatching;
     int my_rewatching_ep;
     int my_last_updated; // maybe date? example: 1388944557
@@ -41,7 +41,9 @@ public:
 
     void describe(nw::Describer& de);
     void updateShow(TvShow* show);
-    bool isUpToDate(const TvShow* show) const;
+    bool localIsUpToDate(const TvShow* show) const;
+    bool remoteIsUpToDate(const TvShow* show) const;
+    static TvShow::WatchStatus restoreStatus(int malStatusId);
 };
 
 class AnimeListData {
@@ -158,7 +160,7 @@ enum UpdateWatchStatus {
 class AnimeUpdateData {
 public:
     AnimeUpdateData(TvShow*);
-    static UpdateWatchStatus calculateWatchStatus(const TvShow& show);
+    static UpdateWatchStatus calculateWatchStatus(const TvShow::WatchStatus status);
 
     void describe(nw::Describer& de);
     QString toXml();
