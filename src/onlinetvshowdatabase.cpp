@@ -54,20 +54,30 @@ Entry::~Entry() {}
 
 void Entry::updateShow(TvShow& show, QDir& libraryDir, UpdateFilter filter) const {
 
-    if (filter & OnlineTvShowDatabase::ufSynonyms) {
-        updateSynonyms(show);
+    if (filter & OnlineTvShowDatabase::ufSynopsis) {
+        updateSynopsis(show);
+    }
+
+    if (filter & OnlineTvShowDatabase::ufTitle) {
+        // TODO add title aliases and enable this,
+        // make sure new files will check synonyms list when adding to library
+        //updateTitle(show);
+    }
+
+    if (filter & OnlineTvShowDatabase::ufRelations) {
+        updateRelations(show);
     }
 
     if (filter & OnlineTvShowDatabase::ufAiringDates) {
         updateAiringDates(show);
     }
 
-    if (filter & OnlineTvShowDatabase::ufSynopsis) {
-        updateSynopsis(show);
+    if (filter & OnlineTvShowDatabase::ufSynonyms) {
+        updateSynonyms(show);
     }
 
-    if (filter & OnlineTvShowDatabase::ufRelations) {
-        updateRelations(show);
+    if (filter & OnlineTvShowDatabase::ufRemoteId) {
+        updateRemoteId(show);
     }
 
     if (filter & OnlineTvShowDatabase::ufImage) {
