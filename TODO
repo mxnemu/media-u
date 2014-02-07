@@ -1,17 +1,24 @@
 Roadmap:
 -opimize auto rss:
-    -setting to list torrents in the web-ui before downloading them
+    -list torrents in the web-ui before downloading them
     -use QWaitConditions and QEventLoops for the rss thread
-    -customizable filters to detect download candidates
     -auto-add feeds when watchstatus changes
--update MAL watch status
+    -get prefered resolution for subgroup to download
 -library improvements:
     -start searches for specific directories and not just for all
     -start mal searches for specific shows and not just for all
     -start wallpaper searches for specific shows and not just for all
 -alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
--option to list/unlist missing files
--page that lists missing files with the possebillity to delete them
+
+-some way to switch between different files of the same subgroup
+-isMovie check for TvShow, try episode name on mal-search if isMovie or name + "movie"
+
+-webui: notification & links bar fixed on top
+-webui: options page
+-webui: rss search results overlay
+-webui: create-gif settings & crop
+-webui: option to list/unlist missing files
+-webui: page that lists missing files with the possebillity to delete them
 
 Optional:
 -generate thumbnails for each episode
