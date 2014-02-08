@@ -27,6 +27,7 @@ public:
     QString gifName;
     int gifResolutionX;
     int gifResolutionY;
+    float gifMaxSizeMiB;
     int gifFramesDropped;
 
 private:

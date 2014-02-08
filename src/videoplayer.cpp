@@ -205,7 +205,7 @@ void VideoPlayer::createGif(float startSecond, float endSecond) {
     QString outputPath = gifOutputPath(startSecond, endSecond);
     GifCreator gifc;
     std::pair<int,int> resolution = gifc.suggestedResolution(nowPlaying.metaData.resolution());
-    gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution);
+    gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution, snapshotConfig.gifMaxSizeMiB, snapshotConfig.gifFramesDropped);
 }
 
 const MetaDataParser *VideoPlayer::getMetaDataParser() const

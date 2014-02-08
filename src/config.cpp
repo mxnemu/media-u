@@ -265,6 +265,7 @@ void SnapshotConfig::describe(nw::Describer& de) {
     NwUtils::describe(de, "gifDir", gifDir);
     NwUtils::describe(de, "gifResolutionX", gifResolutionX);
     NwUtils::describe(de, "gifResolutionY", gifResolutionY);
+    NwUtils::describe(de, "gifMaxSizeMiB", gifMaxSizeMiB);
     NwUtils::describe(de, "gifFramesDropped", gifFramesDropped);
 
     this->snapshotQuality = std::min(this->snapshotQuality, (qint8)100);
@@ -285,6 +286,7 @@ void SnapshotConfig::setDefaultValues() {
     this->snapshotQuality = 100;
 
     this->gifName = "$(tvShow)/$(file) - $(startM)m$(startS)s:$(endM)m$(endS)s - $(nowDate).$(ext)";
+    this->gifMaxSizeMiB = 3.f;
     this->gifFramesDropped = 2;
     this->gifResolutionX = 420;
     this->gifResolutionY = 270;

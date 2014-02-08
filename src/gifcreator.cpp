@@ -22,7 +22,7 @@ std::pair<int, int> GifCreator::suggestedResolution(int originalW, int originalH
     return std::pair<int,int>(targetW, ((float)originalH / (float)originalW) * (float)targetW);
 }
 
-void GifCreator::create(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, int maxSizeMib, int framesDropped) {
+void GifCreator::create(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, float maxSizeMib, int framesDropped) {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("gif_%p", this));
     QDir dir(dirPath);
     dir.removeRecursively();
@@ -75,7 +75,7 @@ void GifCreator::create(QString videoPath, QString outputPath, float startSec, f
         }
     }
 
-    int fps = (24 / (framesDropped+1))+1;
+    int fps = (24 / (framesDropped+1)) + (framesDropped > 0) ? 1 : 0;
     QString fpsString = QString("1x%1").arg(fps, 2, 10, QChar('0'));
 
     QProcess imagemagick;
@@ -99,7 +99,7 @@ void GifCreator::create(QString videoPath, QString outputPath, float startSec, f
 
     qint64 size = QFile(tmpFilePath).size();
     qint64 maxSize = (1024*(1024*maxSizeMib));
-    if (size > maxSize) {
+    if (maxSizeMib > 0 && size > maxSize) {
         float scaleDownFactor = ((double)maxSize / (double)size) + 0.15;
         scaleDownFactor = std::min(scaleDownFactor, 0.9f);
         std::pair<int,int> lowerResolution = resolution;
