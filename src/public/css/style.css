@@ -23,7 +23,7 @@ ul {
 }
 
 li {
-    padding-left: 1em;
+    padding-left: 0px;
     list-style-type: none;
 }
 
@@ -39,12 +39,20 @@ li.focused {
     color: gold;
 }
 
+.showList li {
+    padding-left: 1em;
+}
+
 .season li:hover {
     color: gold;
 }
 
 .season li:hover > span:hover ~ span {
     color: white;
+}
+
+.season li .toggleWatchedButton {
+    padding-left: 1em;
 }
 
 .season li .chapterList {
