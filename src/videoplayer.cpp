@@ -95,6 +95,17 @@ void VideoPlayer::receivedPlaylist(QHttpResponse *resp, const QByteArray& body) 
     }
 }
 
+void VideoPlayer::onGifReady(bool success) {
+    ServerDataReady* sdr = dynamic_cast<ServerDataReady*>(sender());
+    if (sdr) {
+        QString status = success ? "true" : "false";
+        Server::simpleWrite(sdr->resp, 200, QString("{\"status\": \"%1\"}").arg(status), mime::json);
+        sdr->deleteLater();
+    } else {
+        qDebug() << "invalid sender to onExactProgressReady is not a ServerDataReady type";
+    }
+}
+
 void VideoPlayer::onExactProgressReady(float second) {
     ServerDataReady* sdr = dynamic_cast<ServerDataReady*>(sender());
     if (sdr) {
@@ -186,8 +197,7 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         NwUtils::describe(jr, "end", end);
         jr.close();
 
-        createGif(start, end);
-        Server::simpleWrite(resp, 200, "{\"status\": \"done\"}", mime::json);
+        createGif(resp, start, end);
     } else if (req->path() == "/api/player/progress") {
         Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson(), mime::json);
     } else if (req->path() == "/api/player/exactProgress") {
@@ -201,11 +211,16 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
-void VideoPlayer::createGif(float startSecond, float endSecond) {
+void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSecond) {
     QString outputPath = gifOutputPath(startSecond, endSecond);
-    GifCreator gifc;
-    std::pair<int,int> resolution = gifc.suggestedResolution(nowPlaying.metaData.resolution());
-    gifc.create(nowPlaying.path, outputPath, startSecond, endSecond, resolution, snapshotConfig.gifMaxSizeMiB, snapshotConfig.gifFramesDropped);
+    GifCreator* gifc = new GifCreator(this);
+    std::pair<int,int> resolution = gifc->suggestedResolution(nowPlaying.metaData.resolution());
+    gifc->init(nowPlaying.path, outputPath, startSecond, endSecond, resolution, snapshotConfig.gifMaxSizeMiB, snapshotConfig.gifFramesDropped);
+
+    ServerDataReady* sdr = new ServerDataReady(resp, gifc);
+    connect(gifc, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));
+    connect(sdr, SIGNAL(boolReady(bool)), this, SLOT(onGifReady(bool)));
+    gifc->start();
 }
 
 const MetaDataParser *VideoPlayer::getMetaDataParser() const

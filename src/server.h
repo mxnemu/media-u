@@ -41,6 +41,7 @@ public:
 signals:
     // Qt signals doesn't have templates
     void floatReady(float);
+    void boolReady(bool);
 
 public:
     QHttpResponse* resp;

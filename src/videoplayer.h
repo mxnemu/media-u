@@ -55,7 +55,7 @@ public:
     void resetPlayingStatus();
     VideoProgress getNowPlaying() const;
 
-    void createGif(float startSecond, float endSecond);
+    void createGif(QHttpResponse* resp, float startSecond, float endSecond);
 signals:
     void paused();
     void unpaused();
@@ -97,6 +97,7 @@ protected:
 public slots:
     void onThumbnailCreated(const QByteArray img);
     void receivedPlaylist(QHttpResponse* resp, const QByteArray& body);
+    void onGifReady(bool success);
     void onExactProgressReady(float);
 
 private slots:

@@ -7,7 +7,7 @@
 #include <QDebug>
 
 GifCreator::GifCreator(QObject *parent) :
-    QObject(parent)
+    QThread(parent)
 {
 }
 
@@ -22,19 +22,32 @@ std::pair<int, int> GifCreator::suggestedResolution(int originalW, int originalH
     return std::pair<int,int>(targetW, ((float)originalH / (float)originalW) * (float)targetW);
 }
 
-void GifCreator::create(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, float maxSizeMib, int framesDropped) {
+void GifCreator::init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, float maxSizeMib, int framesDropped) {
+    this->videoPath = videoPath;
+    this->outputPath = outputPath;
+    this->startSec = startSec;
+    this->endSec = endSec;
+    this->resolution = resolution;
+    this->maxSizeMib = maxSizeMib;
+    this->framesDropped = std::max(framesDropped, 0);
+}
+
+void GifCreator::run() {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("gif_%p", this));
     QDir dir(dirPath);
     dir.removeRecursively();
     if (!dir.mkpath(".")) {
         qDebug() << "failed to create tmp dir" << dirPath;
+        emit done(false);
+        deleteLater();
         return;
     }
-    framesDropped = std::max(framesDropped, 0);
 
     float dif = endSec - startSec;
     if (dif > 120.f) {
         qDebug() << "gif longer than 120s canceling creation" << startSec << endSec;
+        emit done(false);
+        deleteLater();
         return;
     }
 
@@ -108,11 +121,14 @@ void GifCreator::create(QString videoPath, QString outputPath, float startSec, f
 
         if (lowerResolution.first < 50 || lowerResolution.second < 50) {
             qDebug() << "gif is too long generation stopped. won't retry anymore.";
+            emit done(false);
+            deleteLater();
             return;
         }
 
         qDebug() << "gif was too big, retrying at resolution" << lowerResolution.first << "x" << lowerResolution.second;
-        this->create(videoPath, outputPath, startSec, endSec, lowerResolution, maxSizeMib, framesDropped);
+        this->init(videoPath, outputPath, startSec, endSec, lowerResolution, maxSizeMib, framesDropped);
+        this->exec();
         return;
     }
 
@@ -120,4 +136,6 @@ void GifCreator::create(QString videoPath, QString outputPath, float startSec, f
     if (QFile::rename(tmpFilePath, outputPath)) {
         dir.removeRecursively();
     }
+    emit done(true);
+    deleteLater();
 }
