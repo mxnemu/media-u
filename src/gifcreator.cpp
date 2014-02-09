@@ -75,7 +75,7 @@ void GifCreator::create(QString videoPath, QString outputPath, float startSec, f
         }
     }
 
-    int fps = (24 / (framesDropped+1)) + (framesDropped > 0) ? 1 : 0;
+    int fps = (24 / (framesDropped+1)) + ((framesDropped > 0) ? 1 : 0);
     QString fpsString = QString("1x%1").arg(fps, 2, 10, QChar('0'));
 
     QProcess imagemagick;
