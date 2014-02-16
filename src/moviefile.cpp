@@ -71,9 +71,9 @@ MovieFile::MovieFile(const QString originalPath) {
                       "(\\sEP[0-9])|"
                       "(\\sSP[0-9])|"
                       "(\\sEpisode\\s?[0-9])|"
-                      "(\\sPlay All)|"
+                      "(\\sPlay\\s?All)|"
                       "$"
-                      ")");
+                      ")", Qt::CaseInsensitive);
     regexName.setMinimal(true);
     int nameIndex = regexName.indexIn(path);
     this->showName = regexName.cap(1).trimmed();
@@ -107,7 +107,7 @@ MovieFile::MovieFile(const QString originalPath) {
          "\\sOpening(\\s?[0-9]+)?|"
          "\\sPreview\\s?([0-9]+)?|"
          "\\sSpecials?\\s?-?\\s?([0-9]+)?|"
-         "\\sPlay All\\s(.+)($|\\(|\\[)?|"
+         "\\sPlay\\s?All\\s(.+)($|\\(|\\[)?|"
          "\\sEnding(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
@@ -233,7 +233,7 @@ bool MovieFile::isSpecial(QString episodeNumberString) {
         "Opening(\\s?[0-9]+)?|"
         "Preview\\s?([0-9]+)?|"
         "Specials?|"
-        "Play All|"
+        "Play\\s?All|"
         "Ending(\\s?[0-9]+)?"
         ")", Qt::CaseInsensitive);
     bool is = -1 != specialRegex.indexIn(episodeNumberString);
