@@ -129,9 +129,9 @@ QStringList EpisodeList::releaseGroups() const {
     return groups;
 }
 
-float EpisodeList::highestWatchedEpisodeNumber() const
+float EpisodeList::highestWatchedEpisodeNumber(int min) const
 {
-    float highest = -1;
+    float highest = min;
     for (int i=0; i < episodes.length(); ++i) {
         if (episodes.at(i)->getWatched()) {
             float num = episodes.at(i)->getEpisodeNumber();

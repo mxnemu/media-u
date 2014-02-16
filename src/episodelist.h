@@ -25,7 +25,7 @@ public:
 
     int numberOfEpisodes() const;
     int numberOfWatchedEpisodes() const;
-    float highestWatchedEpisodeNumber() const;
+    float highestWatchedEpisodeNumber(int min = -1) const;
 
     Episode* getEpisodeForPath(const QString &path);
     QString mostDownloadedReleaseGroup() const;

@@ -538,7 +538,7 @@ void AnimeItemData::updateShow(TvShow* show) {
 }
 
 bool AnimeItemData::localIsUpToDate(const TvShow* show) const {
-    return show->episodeList().highestWatchedEpisodeNumber() >= this->my_watched_episodes;
+    return show->episodeList().highestWatchedEpisodeNumber(0) >= this->my_watched_episodes;
 }
 
 bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
@@ -547,7 +547,7 @@ bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
     // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
     return (statusMalWouldSendIfSynced == this->my_status ||
             (this->my_status == TvShow::completed && statusMalWouldSendIfSynced == TvShow::watching)) &&
-            this->my_watched_episodes >= std::min(show->getTotalEpisodes(), (int)show->episodeList().highestWatchedEpisodeNumber());
+            this->my_watched_episodes >= std::min(this->series_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
 }
 
 } // namespace
