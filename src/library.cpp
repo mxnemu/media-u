@@ -97,6 +97,11 @@ TvShow& Library::tvShow(const QString name) {
             return *(it.i->t());
         }
     }
+    foreach (TvShow* show, tvShows) {
+        if (show->getSynonyms().contains(name, Qt::CaseInsensitive)) {
+            return *show;
+        }
+    }
     this->tvShows.push_back(new TvShow(name, this));
     TvShow* show = this->tvShows.back();
     emit showAdded(show);
