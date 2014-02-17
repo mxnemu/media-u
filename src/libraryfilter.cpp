@@ -7,55 +7,55 @@ LibraryFilter::LibraryFilter(QList<TvShow *> &shows, QDir libraryDir) :
 {
 }
 
-QList<TvShow *> LibraryFilter::all()
+QList<TvShow *> LibraryFilter::all() const
 {
     return filter(LibraryFilter::filterAll);
 }
 
-QList<TvShow *> LibraryFilter::airing()
+QList<TvShow *> LibraryFilter::airing() const
 {
     return filter(LibraryFilter::filterAiring);
 }
 
-QList<TvShow *> LibraryFilter::withWallpaper() {
+QList<TvShow *> LibraryFilter::withWallpaper() const {
     return filter(LibraryFilter::filterHasWallpaper);
 }
 
-QList<TvShow *> LibraryFilter::recentlyWatched() {
+QList<TvShow *> LibraryFilter::recentlyWatched() const{
     return filter(LibraryFilter::filterRecentlyWatched);
 }
 
-QList<TvShow *> LibraryFilter::statusCompleted() {
+QList<TvShow *> LibraryFilter::statusCompleted() const{
     TvShow::WatchStatus container = TvShow::completed;
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-QList<TvShow *> LibraryFilter::statusWatching() {
+QList<TvShow *> LibraryFilter::statusWatching() const{
     TvShow::WatchStatus container = TvShow::watching;
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-QList<TvShow *> LibraryFilter::statusWaitingForNewEpisodes() {
+QList<TvShow *> LibraryFilter::statusWaitingForNewEpisodes() const{
     TvShow::WatchStatus container = TvShow::waitingForNewEpisodes;
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-QList<TvShow *> LibraryFilter::statusOnHold() {
+QList<TvShow *> LibraryFilter::statusOnHold() const{
     TvShow::WatchStatus container = TvShow::onHold;
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-QList<TvShow *> LibraryFilter::statusDropped() {
+QList<TvShow *> LibraryFilter::statusDropped() const{
     TvShow::WatchStatus container = TvShow::dropped;
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-QList<TvShow *> LibraryFilter::statusPlanToWatch() {
+QList<TvShow *> LibraryFilter::statusPlanToWatch() const{
     TvShow::WatchStatus container = TvShow::planToWatch;
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
+bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) const {
     if (req->path().startsWith("/api/library/filter/lists")) {
         sendLists(resp,genLists());
 
@@ -83,7 +83,7 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
-QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() {
+QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() const {
     QList<TvShow*> airing;
     QList<TvShow*> watching;
     QList<TvShow*> waitingForNewEpisodes;
@@ -117,7 +117,7 @@ QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() {
             std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::completed), completed);
 }
 
-void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow*> > > lists) {
+void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow*> > > lists) const {
     std::stringstream ss;
     nw::JsonWriter jw(ss);
     jw.push("lists");
@@ -136,7 +136,7 @@ void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QLis
     Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
 }
 
-Episode *LibraryFilter::getEpisodeForPath(const QString &path) {
+Episode *LibraryFilter::getEpisodeForPath(const QString &path) const {
     for (int i=0; i < tvShows.length(); ++i) {
         Episode* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
         if (episode) {
@@ -146,7 +146,7 @@ Episode *LibraryFilter::getEpisodeForPath(const QString &path) {
     return NULL;
 }
 
-TvShow* LibraryFilter::getTvShowForPath(const QString &path) {
+TvShow* LibraryFilter::getTvShowForPath(const QString &path) const {
     for (int i=0; i < tvShows.length(); ++i) {
         Episode* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
         if (episode) {
@@ -156,7 +156,7 @@ TvShow* LibraryFilter::getTvShowForPath(const QString &path) {
     return NULL;
 }
 
-TvShow *LibraryFilter::getShowForRemoteId(int remoteId) {
+TvShow *LibraryFilter::getShowForRemoteId(int remoteId) const {
     foreach (TvShow* show, tvShows) {
         if (show->getRemoteId() == remoteId) {
             return show;
@@ -165,11 +165,11 @@ TvShow *LibraryFilter::getShowForRemoteId(int remoteId) {
     return NULL;
 }
 
-TvShow *LibraryFilter::getRandomShow() {
+TvShow *LibraryFilter::getRandomShow() const {
     return getRandomShow(tvShows);
 }
 
-TvShow *LibraryFilter::getRandomShow(const QList<TvShow*>& shows) {
+TvShow *LibraryFilter::getRandomShow(const QList<TvShow*>& shows) const {
     if (shows.empty()) {
         return NULL;
     }
@@ -180,7 +180,7 @@ TvShow *LibraryFilter::getRandomShow(const QList<TvShow*>& shows) {
     return NULL;
 }
 
-QString LibraryFilter::getRandomWallpaper() {
+QString LibraryFilter::getRandomWallpaper() const {
     TvShow* show = getRandomShow(withWallpaper());
     if (show) {
         return show->randomWallpaper(libraryDir);
@@ -188,7 +188,7 @@ QString LibraryFilter::getRandomWallpaper() {
     return QString();
 }
 
-QList<TvShow *> LibraryFilter::filter(FilterFunction filterFunc, const void* userData)
+QList<TvShow *> LibraryFilter::filter(FilterFunction filterFunc, const void* userData) const
 {
     QList<TvShow*> filteredList;
     for (int i=0; i < tvShows.length(); ++i) {

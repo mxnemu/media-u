@@ -12,33 +12,33 @@ class LibraryFilter
 public:
     LibraryFilter(QList<TvShow*>& shows, QDir libraryDir);
 
-    QList<TvShow*> all();
-    QList<TvShow*> airing();
-    QList<TvShow*> withWallpaper();
-    QList<TvShow*> recentlyWatched();
+    QList<TvShow*> all() const;
+    QList<TvShow*> airing() const;
+    QList<TvShow*> withWallpaper() const;
+    QList<TvShow*> recentlyWatched() const;
 
-    bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
-    Episode* getEpisodeForPath(const QString& path);
-    TvShow* getTvShowForPath(const QString& path);
-    TvShow* getShowForRemoteId(int remoteId);
-    TvShow* getRandomShow();
-    QString getRandomWallpaper();
+    bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp) const;
+    Episode* getEpisodeForPath(const QString& path) const;
+    TvShow* getTvShowForPath(const QString& path) const;
+    TvShow* getShowForRemoteId(int remoteId) const;
+    TvShow* getRandomShow() const;
+    QString getRandomWallpaper() const;
 
     QDir getLibraryDir() const;
 
-    QList<TvShow *> statusCompleted();
-    QList<TvShow *> statusWatching();
-    QList<TvShow *> statusWaitingForNewEpisodes();
-    QList<TvShow *> statusOnHold();
-    QList<TvShow *> statusDropped();
-    QList<TvShow *> statusPlanToWatch();
-    void sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow *> > > lists);
+    QList<TvShow *> statusCompleted() const;
+    QList<TvShow *> statusWatching() const;
+    QList<TvShow *> statusWaitingForNewEpisodes() const;
+    QList<TvShow *> statusOnHold() const;
+    QList<TvShow *> statusDropped() const;
+    QList<TvShow *> statusPlanToWatch() const;
+    void sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow *> > > lists) const;
 
-    QList<std::pair<QString, QList<TvShow*> > > genLists();
+    QList<std::pair<QString, QList<TvShow*> > > genLists() const;
 private:
     typedef bool (*FilterFunction)(const TvShow &, const LibraryFilter&, const void*);
 
-    QList<TvShow*> filter(FilterFunction, const void* userData = NULL);
+    QList<TvShow*> filter(FilterFunction, const void* userData = NULL) const;
 
     static bool filterAll(const TvShow&, const LibraryFilter&, const void *userData);
     static bool filterAiring(const TvShow & show, const LibraryFilter&, const void* userData);
@@ -46,9 +46,9 @@ private:
     static bool filterRecentlyWatched(const TvShow& show, const LibraryFilter&, const void *userData);
     static bool filterStatus(const TvShow& show, const LibraryFilter&, const void* userData);
 
-    TvShow* getRandomShow(const QList<TvShow *> &shows);
+    TvShow* getRandomShow(const QList<TvShow *> &shows) const;
 
-    QList<TvShow*>& tvShows;
+    const QList<TvShow*>& tvShows;
     QDir libraryDir;
 
 };

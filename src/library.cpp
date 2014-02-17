@@ -118,7 +118,7 @@ TvShow* Library::existingTvShow(const QString name) {
     return NULL;
 }
 
-LibraryFilter &Library::filter()
+const LibraryFilter& Library::filter() const
 {
     return mFilter;
 }
@@ -147,7 +147,7 @@ void Library::xbmcLinkExport(QDir outputDir) {
 */
 
 void Library::fetchMetaData() {
-    malClient.fetchShows(tvShows, directory);
+    malClient.fetchShows(tvShows, *this);
     //malapiClient.startUpdate(tvShows, directory);
 }
 

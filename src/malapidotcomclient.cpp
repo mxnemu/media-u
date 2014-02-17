@@ -76,6 +76,10 @@ Entry::Entry(nw::Describer* de) : OnlineTvShowDatabase::Entry() {
     describe(de);
 }
 
+int Entry::getRemoteId() const {
+    return id;
+}
+
 void Entry::updateSynopsis(TvShow &show) const {
     show.setSynopsis(synopsis);
 }
@@ -148,6 +152,7 @@ void Entry::describe(nw::Describer *de) {
     RelatedTvShow::parseFromList(de, "summaries", summaries, true);
     RelatedTvShow::parseFromList(de, "alternative_versions", alternative_versions, true);
 }
+
 
 QString Entry::dateFormat = "yyyy-MM-dd";
 

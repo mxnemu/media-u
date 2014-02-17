@@ -1,6 +1,7 @@
 #include "onlinetvshowdatabase.h"
 #include <QDebug>
 #include <utils.h>
+#include "library.h"
 
 namespace OnlineTvShowDatabase {
 Client::Client(QObject* parent) :
@@ -10,16 +11,16 @@ Client::Client(QObject* parent) :
 }
 
 
-void Client::startUpdate(QList<TvShow*> &showList, QDir libraryDir) {
+void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
     if (this->activeThread) {
         return;
     }
-    this->activeThread = new Thread(*this, showList, libraryDir, this);
+    this->activeThread = new Thread(*this, showList, library, this);
     connect(this->activeThread, SIGNAL(finished()), this, SLOT(threadFinished()));
     this->activeThread->start();
 }
 
-bool Client::findShow(TvShow& show, QDir &libraryDir) {
+bool Client::findShow(TvShow& show, const Library& library) {
     QString name = show.name();
     SearchResult* result = this->search(name);
     if (!result) {
@@ -27,7 +28,7 @@ bool Client::findShow(TvShow& show, QDir &libraryDir) {
     }
     const Entry* entry = this->bestResult(*result);
     if (entry) {
-        entry->updateShow(show, libraryDir);
+        entry->updateShow(show, library);
         return true;
     }
     return false;
@@ -52,7 +53,9 @@ SearchResult::~SearchResult() {
 Entry::Entry() {}
 Entry::~Entry() {}
 
-void Entry::updateShow(TvShow& show, QDir& libraryDir, UpdateFilter filter) const {
+void Entry::updateShow(TvShow& show, const Library& library, UpdateFilter filter) const {
+
+    const TvShow* existingShow = library.filter().getShowForRemoteId(this->getRemoteId());
 
     if (filter & OnlineTvShowDatabase::ufSynopsis) {
         updateSynopsis(show);
@@ -72,27 +75,30 @@ void Entry::updateShow(TvShow& show, QDir& libraryDir, UpdateFilter filter) cons
         updateAiringDates(show);
     }
 
-    if (filter & OnlineTvShowDatabase::ufSynonyms) {
-        updateSynonyms(show);
-    }
+    // never overwrite remoteId and synonyms when there is a conflicting entry
+    if (!existingShow || existingShow == &show) {
+        if (filter & OnlineTvShowDatabase::ufSynonyms) {
+            updateSynonyms(show);
+        }
 
-    if (filter & OnlineTvShowDatabase::ufRemoteId) {
-        updateRemoteId(show);
+        if (filter & OnlineTvShowDatabase::ufRemoteId) {
+            updateRemoteId(show);
+        }
     }
 
     if (filter & OnlineTvShowDatabase::ufImage) {
-        updateImage(show, libraryDir);
+        updateImage(show, library.getDirectory());
     }
 
     //qDebug() << "updated show from mal-api.com" << id << title;
 }
 
 
-Thread::Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent) :
+Thread::Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent) :
     QThread(parent),
     client(client),
     tvShows(shows),
-    libraryDir(libraryDir),
+    library(library),
     requestSleepPadding(3000)
 {
 }
@@ -130,7 +136,7 @@ void Thread::run() {
             QTime timer;
             timer.start();
 
-            client.findShow(*show, libraryDir);
+            client.findShow(*show, library);
 
             int sleepTime = this->requestSleepPadding - timer.elapsed();
             if (sleepTime > 0) {

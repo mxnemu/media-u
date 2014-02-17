@@ -71,7 +71,7 @@ public:
     
     bool hasVerifiedCredentials() const;
 
-    void fetchShows(QList<TvShow *> &showList, QDir libraryDir);
+    void fetchShows(QList<TvShow *> &showList, const Library& library);
     void fetchShowBlocking(TvShow &show, QDir libraryDir);
 
     virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
@@ -110,6 +110,7 @@ public:
     int querySimiliarityScore; // TODO not here
     void calculateQuerySimiliarity(const QString query);
 
+    virtual int getRemoteId() const;
     virtual void updateSynopsis(TvShow& show) const;
     virtual void updateTitle(TvShow&) const;
     virtual void updateRemoteId(TvShow& show) const;
@@ -142,7 +143,7 @@ class SearchResult : public OnlineTvShowDatabase::SearchResult {
 public:
     SearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);
-    void updateShowFromBestEntry(TvShow& show, QDir libraryDir) const;
+    void updateShowFromBestEntry(TvShow& show, const Library& library) const;
     const Entry*bestResult() const;
 private:
     QList<Entry> entries;

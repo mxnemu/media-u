@@ -7,7 +7,7 @@
 #include <QDir>
 #include <QThread>
 
-
+class Library;
 namespace OnlineTvShowDatabase {
 
 enum UpdateFilter {
@@ -22,13 +22,13 @@ enum UpdateFilter {
     ufAll = ((unsigned int)-1)
 };
 
-
 class Entry {
 public:
     Entry();
     virtual ~Entry();
-    void updateShow(TvShow& show, QDir &libraryDir, UpdateFilter filter = OnlineTvShowDatabase::ufAll) const;
+    void updateShow(TvShow& show, const Library& library, UpdateFilter filter = OnlineTvShowDatabase::ufAll) const;
 
+    virtual int getRemoteId() const = 0;
     virtual void updateSynopsis(TvShow& show) const = 0;
     virtual void updateTitle(TvShow& show) const = 0;
     virtual void updateRemoteId(TvShow& show) const = 0;
@@ -55,8 +55,8 @@ class Client : public QObject {
 public:
     Client(QObject* parent = NULL);
 
-    void startUpdate(QList<TvShow *> &showList, QDir libraryDir);
-    bool findShow(TvShow& show, QDir &libraryDir);
+    void startUpdate(QList<TvShow *> &showList, const Library& library);
+    bool findShow(TvShow& show, const Library& library);
 
     virtual bool login() = 0;
     virtual SearchResult* search(QString anime) = 0;
@@ -76,14 +76,14 @@ private:
 class Thread : public QThread {
     Q_OBJECT
 public:
-    Thread(Client &client, QList<TvShow*> &shows, QDir libraryDir, QObject *parent);
+    Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent);
 
     void run();
 
 protected:
     Client &client;
     QList<TvShow*> &tvShows;
-    QDir libraryDir;
+    const Library& library;
     const int requestSleepPadding;
 };
 

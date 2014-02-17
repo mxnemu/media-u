@@ -34,11 +34,11 @@ void Client::init(QString configFilePath) {
     }
 }
 
-void Client::fetchShows(QList<TvShow*> &showList, QDir libraryDir) {
+void Client::fetchShows(QList<TvShow*> &showList, const Library& library) {
     if (activeThread) {
         return;
     }
-    activeThread = new Thread(*this, showList, libraryDir, this);
+    activeThread = new Thread(*this, showList, library, this);
     activeThread->start(QThread::LowPriority);
     qDebug() << "started mal fetchThread";
 
@@ -245,6 +245,10 @@ void Entry::calculateQuerySimiliarity(const QString query) {
     querySimiliarityScore = bestResult;
 }
 
+int Entry::getRemoteId() const {
+    return id.toInt();
+}
+
 void Entry::updateSynopsis(TvShow& show) const {
     show.setSynopsis(synopsis);
 }
@@ -370,11 +374,11 @@ const Entry* SearchResult::bestResult() const {
     return best.second;
 }
 
-void SearchResult::updateShowFromBestEntry(TvShow &show, QDir libraryDir) const {
+void SearchResult::updateShowFromBestEntry(TvShow &show, const Library& library) const {
     const Entry* entry = bestResult();
 
     if (entry) {
-        entry->updateShow(show, libraryDir);
+        entry->updateShow(show, library);
         qDebug() << "updated " << show.getShowType() << show.name();
     }
 }

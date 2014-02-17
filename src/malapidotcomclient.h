@@ -17,6 +17,7 @@ public:
     Entry(nw::Describer *de);
 
     void describe(nw::Describer* de);
+    virtual int getRemoteId() const;
     virtual void updateSynopsis(TvShow& show) const;
     virtual void updateTitle(TvShow&) const;
     virtual void updateRemoteId(TvShow& show) const;

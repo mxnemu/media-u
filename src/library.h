@@ -37,7 +37,7 @@ public:
 
     TvShow& tvShow(const QString name);
     TvShow* existingTvShow(const QString name);
-    LibraryFilter& filter();
+    const LibraryFilter& filter() const;
 
     //void xbmcLinkExport(QDir outputDir);
     void write();
