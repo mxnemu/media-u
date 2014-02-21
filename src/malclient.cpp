@@ -185,7 +185,7 @@ bool Client::updateInOnlineTracker(TvShow* show) {
 
     const AnimeItemData* item = animeListData.getShow(show);
     if (item) {
-        if (!item->remoteIsUpToDate(show)) {
+        if (item->localIsUpToDate(show) && !item->remoteIsUpToDate(show)) {
             return this->updateinOnlineTrackerOrAdd(show, "update");
         }
         qDebug() << "MAL TRACKER skip up2date" << show->name();
