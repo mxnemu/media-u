@@ -36,7 +36,7 @@ void Client::addFeed(Feed* feed) {
     }
 
     this->feeds.push_back(feed);
-    connect(feed, SIGNAL(foundCandidateForAutoDownload(Entry)), this, SLOT(autoDownloadEntry(Entry)));
+    connect(feed, SIGNAL(foundCandidateForAutoDownload(TorrentRss::Entry)), this, SLOT(autoDownloadEntry(TorrentRss::Entry)));
     feed->fetch();
 }
 
@@ -54,7 +54,7 @@ void Client::addFeedsForWaitingShows() {
     }
 }
 
-void Client::autoDownloadEntry(Entry entry) {
+void Client::autoDownloadEntry(TorrentRss::Entry entry) {
     Feed* feed = dynamic_cast<Feed*>(sender());
     this->removeFeed(feed);
 

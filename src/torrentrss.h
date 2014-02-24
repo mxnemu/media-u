@@ -43,7 +43,7 @@ public:
     Entry* candidateForAutoDownload(const RssConfig& rssConfig);
 
 signals:
-    void foundCandidateForAutoDownload(Entry entry);
+    void foundCandidateForAutoDownload(TorrentRss::Entry entry);
 protected:
     virtual FeedResult* createFeedResult(const RssConfig& rssConfig) = 0;
     CURL* defaultCurlClient(QString url, CurlResult& userdata);
@@ -70,11 +70,11 @@ public:
     void removeFeed(Feed* feed);
     void connectLibrary();
 signals:
-    void torrentAvailable(Entry url);
+    void torrentAvailable(TorrentRss::Entry url);
 
 public slots:
     void addFeedsForWaitingShows();
-    void autoDownloadEntry(Entry entry);
+    void autoDownloadEntry(TorrentRss::Entry entry);
 
 private slots:
     void tvShowChangedStatus(TvShow* show, TvShow::WatchStatus newStatus, TvShow::WatchStatus oldStatus);
