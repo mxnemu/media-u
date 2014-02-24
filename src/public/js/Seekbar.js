@@ -99,40 +99,39 @@ Seekbar.prototype.bindEvents = function() {
     //touch seek
     var doTouchSeek = false;
     this.container.on("touchstart", function(event) {
-        event.originalEvent.preventDefault();
         if ($(event.originalEvent.target).hasClass("button")) {
             doTouchSeek = false;
         } else {
+            event.originalEvent.preventDefault();
             doTouchSeek = true;
+            previewMove(event.originalEvent.touches[0].clientX);
+            self.tooltip.show();
         }
-        self.tooltip.show();
     });
     this.container.on("touchcanel", function() {
         self.tooltip.hide();
-        touchMoved = false;
         doTouchSeek = false;
     });
     this.container.on("touchleave", function() {
         self.tooltip.hide();
-        touchMoved = false;
         doTouchSeek = false;
-        console.log("leave", touchMoved);
     });
-    var touchMoved = false;    
     this.container.on("touchend", function(event) {
-        if (touchMoved) {
+        if (doTouchSeek) {
             jump(event.originalEvent.changedTouches[0].clientX);
-            touchMoved = false;
             doTouchSeek = false;
         }
         self.tooltip.hide();
     });
     var touchMoveHappenedDelay = null;
     this.container.on("touchmove", function(event) {
+        var topBorder = window.innerHeight - (self.container.outerHeight()*2);
+        if (event.originalEvent.touches[0].screenY < topBorder) {
+            self.tooltip.hide();
+            doTouchSeek = false;
+        }
         if (doTouchSeek) {
             previewMove(event.originalEvent.touches[0].clientX);
-            touchMoved = true;
-            console.log("move", touchMoved);
         }
     });
     
