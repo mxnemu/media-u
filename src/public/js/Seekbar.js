@@ -20,7 +20,7 @@ Seekbar.prototype.setTooltip = function(time, x, y, img, chapter) {
     if (img) {
         this.tooltip.append(img);
     }
-    this.tooltip.css("left", x);
+    this.tooltip.css("left", window.scrollX + x);
     this.tooltip.css("top", y);
 }
 
@@ -99,6 +99,7 @@ Seekbar.prototype.bindEvents = function() {
     //touch seek
     var doTouchSeek = false;
     this.container.on("touchstart", function(event) {
+        event.originalEvent.preventDefault();
         if ($(event.originalEvent.target).hasClass("button")) {
             doTouchSeek = false;
         } else {
