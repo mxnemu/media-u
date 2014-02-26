@@ -121,6 +121,8 @@ public:
     void setRewatchMarker(int marker);
     int getRewatchCount() const;
     void setRewatchCount(int count);
+    QDateTime getLastOnlineTrackerUpdate() const;
+    void setLastOnlineTrackerUpdate(const QDateTime& value);
 
 signals:
 
@@ -138,6 +140,7 @@ private:
     int rewatchCount;
 
     int remoteId;
+    QDateTime lastOnlineTrackerUpdate;
     QStringList synonyms;
     QString showType;
     QString airingStatus;

@@ -36,7 +36,7 @@ public:
     TvShow::WatchStatus my_status;
     int my_rewatching;
     int my_rewatching_ep;
-    int my_last_updated; // maybe date? example: 1388944557
+    QDateTime my_last_updated; // unix time int example: 1388944557
     QStringList my_tags; // separated by ", "
 
     void describe(nw::Describer& de);

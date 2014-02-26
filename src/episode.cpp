@@ -105,7 +105,9 @@ void Episode::setWatched(bool value) {
     bool oldValue = this->getWatched();
     emit beforeWatchedChanged(value, oldValue);
     if (value) {
-        watchedDate = QDateTime::currentDateTime();
+        if (!oldValue) {
+            watchedDate = QDateTime::currentDateTime();
+        }
     } else {
         watchedDate = QDateTime();
     }

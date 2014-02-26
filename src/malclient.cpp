@@ -213,6 +213,7 @@ bool Client::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
         } else if (type == "add") {
             QString responseString = userData.data.str().c_str();
             if (responseString.contains("201 Created")) {
+                show->setLastOnlineTrackerUpdate(QDateTime::currentDateTimeUtc());
                 qDebug() << "MAL TRACKER ADD success" << show->name();
                 return true;
             }
@@ -532,7 +533,11 @@ void AnimeItemData::describe(nw::Describer& de) {
     NwUtils::describe(de, "my_status", status);
     NwUtils::describe(de, "my_rewatching", my_rewatching);
     NwUtils::describe(de, "my_rewatching_ep", my_rewatching_ep);
-    //int my_last_updated; // maybe date? example: 1388944557
+
+    uint unixTimeUpdate = 0; // unix time int example: 1388944557
+    NwUtils::describe(de, "my_last_updated", unixTimeUpdate);
+    my_last_updated = QDateTime::fromTime_t(unixTimeUpdate);
+
     //QStringList my_tags; // separated by ", "
     my_status = AnimeItemData::restoreStatus(status);
 }
@@ -544,12 +549,18 @@ void AnimeItemData::updateShow(TvShow* show) {
         int count = std::max(this->my_rewatching, show->getRewatchCount());
         show->setRewatchCount(count);
         show->setRewatchMarker(marker);
+        show->setLastOnlineTrackerUpdate(this->my_last_updated);
+    }
+    if (show->getLastOnlineTrackerUpdate().isNull()) {
+        show->setLastOnlineTrackerUpdate(this->my_last_updated);
     }
 }
 
-// TODO use my_last_updated
 bool AnimeItemData::localIsUpToDate(const TvShow* show) const {
-    return show->episodeList().highestWatchedEpisodeNumber(0) >= this->my_watched_episodes;
+    if (show->getLastOnlineTrackerUpdate().isNull()) {
+        return show->episodeList().highestWatchedEpisodeNumber(0) >= this->my_watched_episodes;
+    }
+    return show->getLastOnlineTrackerUpdate() >= this->my_last_updated;
 }
 
 bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {

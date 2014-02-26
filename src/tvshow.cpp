@@ -38,6 +38,7 @@ void TvShow::read(QDir &dir) {
 
 
     NwUtils::describe(jr, "remoteId", remoteId);
+    NwUtils::describe(jr, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
     jr.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jr, "airingStatus", airingStatus);
     NwUtils::describe(jr, "startDate", startDate);
@@ -96,6 +97,7 @@ void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "rewatchCount", rewatchCount);
 
     NwUtils::describe(jw, "remoteId", remoteId);
+    NwUtils::describe(jw, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
     jw.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jw, std::string("airingStatus"), airingStatus);
     NwUtils::describe(jw, "startDate", startDate);
@@ -586,4 +588,14 @@ int TvShow::getRewatchCount() const
 
 void TvShow::setRewatchCount(int count) {
     this->rewatchCount = count;
+}
+
+QDateTime TvShow::getLastOnlineTrackerUpdate() const
+{
+    return lastOnlineTrackerUpdate;
+}
+
+void TvShow::setLastOnlineTrackerUpdate(const QDateTime& value)
+{
+    lastOnlineTrackerUpdate = value;
 }
