@@ -1,6 +1,7 @@
 #include "videoplayer.h"
 #include "gifcreator.h"
-#include <server.h>
+#include "server.h"
+#include "tvshow.h"
 
 VideoPlayer::VideoPlayer(Library& library, const SnapshotConfig& snapshotConfig, QObject* parent) :
     QObject(parent),
@@ -252,9 +253,19 @@ void VideoPlayer::onThumbnailCreated(const QByteArray img) {
 
 void VideoPlayer::onPlaybackEndedNormally() {
 
-    Episode* episode = this->library.filter().getEpisodeForPath(nowPlaying.path);
-    if (episode) {
-        episode->setWatched(true);
+    TvShow* show = this->library.filter().getTvShowForPath(nowPlaying.path);
+    if (show) {
+        Episode* episode = show->episodeList().getEpisodeForPath(nowPlaying.path);
+        if (episode) {
+            if (episode->getWatched()) {
+                int number = episode->getEpisodeNumber();
+                if (number >= 0) {
+                    show->setRewatchMarker(number);
+                }
+            } else {
+                episode->setWatched(true);
+            }
+        }
     }
 
     this->resetPlayingStatus();

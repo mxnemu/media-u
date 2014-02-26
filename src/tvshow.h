@@ -6,6 +6,7 @@
 #include <QDir>
 #include "episodelist.h"
 #include <N0Slib.h>
+#include <qhttpconnection.h>
 
 class TvShowPlayerSettings {
 public:
@@ -60,7 +61,9 @@ public:
     bool isAiring() const;
     QString coverPath(QDir libaryPath) const;
 
-    // TODO reimplement for episode list
+    void handleApiRequest(int urlPrefixOffset, QHttpRequest *req, QHttpResponse *resp);
+
+    // TODO reimplement export for episode list
     // or remove, since it didn't work very good to begin with
     //void exportXbmcLinks(QDir dir);
 
@@ -114,6 +117,7 @@ public:
     void writeAsListingItem(nw::Describer *de) const;
     QStringList getReleaseGroupPreference() const;
     void setReleaseGroupPreference(QStringList value);
+    void setRewatchMarker(int marker);
 signals:
 
 private:
@@ -126,6 +130,7 @@ private:
     QList<RelatedTvShow> sideStories;
     QList<RelatedTvShow> sequels;
     QStringList releaseGroupPreference;
+    int rewatchMarker;
 
     int remoteId;
     QStringList synonyms;

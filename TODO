@@ -1,4 +1,6 @@
 Roadmap:
+-rewatch marker:
+    -mal sync
 -opimize auto rss:
     -list torrents in the web-ui before downloading them
     -use QWaitConditions and QEventLoops for the rss thread

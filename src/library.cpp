@@ -54,6 +54,20 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 {
     if (req->path().startsWith("/api/library/filter")) {
         return filter().handleApiRequest(req, resp);
+    } else if (req->path().startsWith("/api/library/tvshow/")) {
+        const int prefixOffset = sizeof("/api/library/tvshow/")-1;
+        const QString encodedPath = req->url().path(QUrl::EncodeDelimiters);
+        QString encodedShowName = encodedPath.mid(prefixOffset, encodedPath.indexOf('/', prefixOffset)-prefixOffset);
+        QString showName = QUrl::fromPercentEncoding(encodedShowName.toUtf8());
+        qDebug() << showName;
+
+        TvShow* show = existingTvShow(showName);
+        if (show) {
+            int urlPrefixOffset = encodedPath.indexOf('/', prefixOffset);
+            show->handleApiRequest(urlPrefixOffset, req, resp);
+        } else {
+            Server::simpleWrite(resp, 400, "{\"error\":\"invalid show name\"}");
+        }
     } else if (req->path().startsWith("/api/library/randomWallpaper")) {
         // TODO change abs img path to server url
         Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(filter().getRandomWallpaper()), mime::json);

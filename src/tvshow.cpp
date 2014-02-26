@@ -3,12 +3,14 @@
 #include "filedownloadthread.h"
 #include "directoryscanner.h"
 #include "filefilterscanner.h"
+#include "server.h"
 
 TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     this->mName = name;
     totalEpisodes = 0;
     remoteId = -1;
     customStatus = automatic;
+    rewatchMarker = -1;
 }
 
 EpisodeList& TvShow::episodeList() {
@@ -30,6 +32,7 @@ void TvShow::read(QDir &dir) {
     QString customStatusString;
     NwUtils::describe(jr, "customStatus", customStatusString);
     this->customStatus = watchStatusFromString(customStatusString);
+    NwUtils::describe(jr, "rewatchMarker", rewatchMarker);
 
     NwUtils::describe(jr, "remoteId", remoteId);
     jr.describe("totalEpisodes", totalEpisodes);
@@ -86,6 +89,7 @@ void TvShow::write(nw::JsonWriter& jw) {
 
     QString customStatusString = watchStatusToString(customStatus);
     NwUtils::describe(jw, "customStatus", customStatusString);
+    NwUtils::describe(jw, "rewatchMarker", rewatchMarker);
 
     NwUtils::describe(jw, "remoteId", remoteId);
     jw.describe("totalEpisodes", totalEpisodes);
@@ -190,6 +194,22 @@ QString TvShow::favouriteReleaseGroup() {
 
 QString TvShow::coverPath(QDir libaryPath) const {
     return this->directory(libaryPath).absoluteFilePath("cover");
+}
+
+void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpResponse* resp) {
+    if (urlPrefixOffset == req->path().indexOf("/setRewatchMarker", urlPrefixOffset)) {
+        bool ok = false;
+        int marker = req->url().query(QUrl::FullyDecoded).toInt(&ok);
+        if (ok) {
+            this->setRewatchMarker(marker);
+            Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+            return;
+        }
+        Server::simpleWrite(resp, 400, "{\"error\":\"invalid number\"}", mime::json);
+
+    } else {
+        Server::simpleWrite(resp, 400, "{\"error\":\"no api for url path\"}", mime::json);
+    }
 }
 
 /*
@@ -542,4 +562,8 @@ QStringList TvShow::getReleaseGroupPreference() const {
 
 void TvShow::setReleaseGroupPreference(QStringList value) {
     releaseGroupPreference = value;
+}
+
+void TvShow::setRewatchMarker(int marker) {
+    this->rewatchMarker = marker;
 }

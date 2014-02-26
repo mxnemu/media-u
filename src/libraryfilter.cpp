@@ -138,7 +138,7 @@ void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QLis
 
 Episode *LibraryFilter::getEpisodeForPath(const QString &path) const {
     for (int i=0; i < tvShows.length(); ++i) {
-        Episode* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
+        Episode* episode = tvShows[i]->episodeList().getEpisodeForPath(path);
         if (episode) {
             return episode;
         }
@@ -148,7 +148,7 @@ Episode *LibraryFilter::getEpisodeForPath(const QString &path) const {
 
 TvShow* LibraryFilter::getTvShowForPath(const QString &path) const {
     for (int i=0; i < tvShows.length(); ++i) {
-        Episode* episode = tvShows[i]->episodeListMutable().getEpisodeForPath(path);
+        Episode* episode = tvShows[i]->episodeList().getEpisodeForPath(path);
         if (episode) {
             return tvShows[i];
         }

@@ -85,6 +85,7 @@ TvShowPage.prototype.createNodes = function() {
         self.statusList.value = data.customStatus;
         self.createReleaseGroupPreference(data.releaseGroupPreference);
         self.createEpisodeList(data.episodes, self.episodesEl);
+        self.createRewatchMarker(data.rewatchMarker);        
     });
 
     this.page.append(backButton);
@@ -120,6 +121,12 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
         
         var episodeEl = $(document.createElement("li"));
         var text = $(document.createElement("span"));
+        
+        if (self.tvShow.rewatchMarker >= 0 && 
+            ep.numericEpisodeNumber == self.tvShow.rewatchMarker) {
+            
+            episodeEl.addClass("rewatchMarker");
+        }
 
         var title = 
             ep.episodeNumber + " " +
@@ -262,6 +269,25 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
     
     this.page.append(rgp);
     this.releaseGroupPreference = rgp;
+}
+
+TvShowPage.prototype.createRewatchMarker = function(marker) {
+    if (marker >= 0) {
+        var self = this;
+        var button = document.createElement("button");
+        button.innerHTML = "clear rewatch"
+        button.onclick = function() {
+            var uri = 
+                "api/library/tvshow/" + 
+                encodeURIComponent(self.tvShow.name) + "/setRewatchMarker?-1";
+            $.getJSON(uri, function(data) {
+                console.log("reset rewatch", data);
+                $(".rewatchMarker").removeClass("rewatchMarker");
+                button.parentElement.removeChild(button);
+            });
+        }
+        this.page.append(button);
+    }
 }
 
 TvShowPage.prototype.play = function(episodes) {
