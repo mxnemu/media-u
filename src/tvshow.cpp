@@ -11,6 +11,7 @@ TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     remoteId = -1;
     customStatus = automatic;
     rewatchMarker = -1;
+    rewatchCount = 0;
 }
 
 EpisodeList& TvShow::episodeList() {
@@ -33,6 +34,8 @@ void TvShow::read(QDir &dir) {
     NwUtils::describe(jr, "customStatus", customStatusString);
     this->customStatus = watchStatusFromString(customStatusString);
     NwUtils::describe(jr, "rewatchMarker", rewatchMarker);
+    NwUtils::describe(jr, "rewatchCount", rewatchCount);
+
 
     NwUtils::describe(jr, "remoteId", remoteId);
     jr.describe("totalEpisodes", totalEpisodes);
@@ -90,6 +93,7 @@ void TvShow::write(nw::JsonWriter& jw) {
     QString customStatusString = watchStatusToString(customStatus);
     NwUtils::describe(jw, "customStatus", customStatusString);
     NwUtils::describe(jw, "rewatchMarker", rewatchMarker);
+    NwUtils::describe(jw, "rewatchCount", rewatchCount);
 
     NwUtils::describe(jw, "remoteId", remoteId);
     jw.describe("totalEpisodes", totalEpisodes);
@@ -564,6 +568,22 @@ void TvShow::setReleaseGroupPreference(QStringList value) {
     releaseGroupPreference = value;
 }
 
+int TvShow::getRewatchMarker() const {
+    return this->rewatchMarker;
+}
+
 void TvShow::setRewatchMarker(int marker) {
     this->rewatchMarker = marker;
+    if (marker == std::max((int)this->episodeList().highestDownloadedEpisodeNumber(), this->totalEpisodes)) {
+        ++rewatchCount;
+    }
+}
+
+int TvShow::getRewatchCount() const
+{
+    return rewatchCount;
+}
+
+void TvShow::setRewatchCount(int count) {
+    this->rewatchCount = count;
 }

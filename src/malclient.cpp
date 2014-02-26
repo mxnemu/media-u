@@ -388,6 +388,8 @@ AnimeUpdateData::AnimeUpdateData(TvShow *show) {
     this->episode = show->episodeList().highestWatchedEpisodeNumber();
     this->status = calculateWatchStatus(show->getStatus());
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();
+    this->times_rewatched = std::max(0, show->getRewatchCount());
+    this->rewatch_value = std::max(0, show->getRewatchMarker());
 
     score = -1;
     storage_type = -1; // int (will be updated to accomodate strings soon) // yeah sure soon...
@@ -424,8 +426,8 @@ void AnimeUpdateData::describe(nw::Describer& de) {
     NwUtils::describe(de, "downloaded_episodes", downloaded_episodes);
     NwUtils::describe(de, "storage_type", empty);
     NwUtils::describe(de, "storage_value", empty);
-    NwUtils::describe(de, "times_rewatched", empty);
-    NwUtils::describe(de, "rewatch_value", empty);
+    NwUtils::describe(de, "times_rewatched", times_rewatched);
+    NwUtils::describe(de, "rewatch_value", rewatch_value);
     NwUtils::describe(de, "date_start", empty);
     NwUtils::describe(de, "date_finish", empty);
     NwUtils::describe(de, "priority", empty);
@@ -538,9 +540,14 @@ void AnimeItemData::describe(nw::Describer& de) {
 void AnimeItemData::updateShow(TvShow* show) {
     if (!localIsUpToDate(show)) {
         show->episodeList().setMinimalWatched(this->my_watched_episodes);
+        int marker = this->my_rewatching_ep == 0 ? -1 :this->my_rewatching_ep;
+        int count = std::max(this->my_rewatching, show->getRewatchCount());
+        show->setRewatchCount(count);
+        show->setRewatchMarker(marker);
     }
 }
 
+// TODO use my_last_updated
 bool AnimeItemData::localIsUpToDate(const TvShow* show) const {
     return show->episodeList().highestWatchedEpisodeNumber(0) >= this->my_watched_episodes;
 }

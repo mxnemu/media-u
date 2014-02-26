@@ -173,7 +173,7 @@ private:
     int storage_type; // int (will be updated to accomodate strings soon) // yeah sure soon...
     float storage_value; // wat
     int times_rewatched;
-    short rewatch_value; // 0 - 10 ? dont know didn't check
+    int rewatch_value; // latest rewatched episode
     QDate date_start; // date. mmddyyyy
     QDate date_finish; // date. mmddyyyy
     int priority; // 0 - 10 ? dont know didn't check

@@ -117,7 +117,11 @@ public:
     void writeAsListingItem(nw::Describer *de) const;
     QStringList getReleaseGroupPreference() const;
     void setReleaseGroupPreference(QStringList value);
+    int getRewatchMarker() const;
     void setRewatchMarker(int marker);
+    int getRewatchCount() const;
+    void setRewatchCount(int count);
+
 signals:
 
 private:
@@ -131,6 +135,7 @@ private:
     QList<RelatedTvShow> sequels;
     QStringList releaseGroupPreference;
     int rewatchMarker;
+    int rewatchCount;
 
     int remoteId;
     QStringList synonyms;
