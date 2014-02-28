@@ -212,10 +212,66 @@ void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpRespo
             return;
         }
         Server::simpleWrite(resp, 400, "{\"error\":\"invalid number\"}", mime::json);
-
+    } else if (urlPrefixOffset == req->path().indexOf("/playerSettings", urlPrefixOffset)) {
+        if (req->method() == QHttpRequest::HTTP_PUT) {
+            RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
+            connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
+            connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(receivedPlayerSettings(QHttpResponse*,const QByteArray&)));
+        } else if (req->method() == QHttpRequest::HTTP_GET) {
+            std::stringstream ss;
+            nw::JsonWriter jw(ss);
+            this->playerSettings.describe(&jw);
+            jw.close();
+            Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
+        } else {
+            Server::simpleWrite(resp, 400, "page does not have a show set");
+        }
+    } else if (urlPrefixOffset == req->path().indexOf("/releaseGroupPreference")) {
+        if (req->method() == QHttpRequest::HTTP_PUT) {
+            RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
+            connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
+            connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(receivedReleaseGroupPreference(QHttpResponse*,const QByteArray&)));
+        } else {
+            Server::simpleWrite(resp, 400, "page does not have a show set");
+        }
+    } else if (urlPrefixOffset == req->path().indexOf("/setStatus")) {
+        TvShow::WatchStatus status = TvShow::watchStatusFromString(req->url().query(QUrl::FullyDecoded));
+        this->setStatus(status);
+        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
     } else {
         Server::simpleWrite(resp, 400, "{\"error\":\"no api for url path\"}", mime::json);
     }
+}
+
+
+void TvShow::receivedPlayerSettings(QHttpResponse *resp, const QByteArray& body) {
+    std::stringstream ss;
+    ss << body.data();
+    nw::JsonReader jr(ss);
+
+    if (jr.getErrorMessage().empty()) {
+        this->playerSettings.describe(&jr);
+        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+    } else {
+        Server::simpleWrite(resp, 400, "{\"error\": \"no valid json provided in query\"}", mime::json);
+    }
+    jr.close();
+}
+
+void TvShow::receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArray& body) {
+    std::stringstream ss;
+    ss << body.data();
+    nw::JsonReader jr(ss);
+
+    if (jr.getErrorMessage().empty()) {
+        QStringList groups;
+        NwUtils::describeValueArray(jr, "releaseGroupPreference", groups);
+        this->setReleaseGroupPreference(groups);
+        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+    } else {
+        Server::simpleWrite(resp, 400, "{\"error\": \"no valid json array provided in query\"}", mime::json);
+    }
+    jr.close();
 }
 
 /*

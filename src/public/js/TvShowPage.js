@@ -9,6 +9,10 @@ TvShowPage.prototype.bindEvents = function() {
     window.addEventListener("keydown", this.keyDownListener);
 }
 
+TvShowPage.prototype.apiPrefix = function() {
+    return "api/library/tvshow/" + encodeURIComponent(this.tvShow.name);
+}
+
 TvShowPage.prototype.unbindEvents = function() {
     window.removeEventListener("keydown", this.keyDownListener);
 }
@@ -47,39 +51,43 @@ TvShowPage.prototype.createNodes = function() {
     
     this.statusList.onchange = function() {
         // TODO refresh ep list if complete or planToWatch
-        $.getJSON("api/page/setStatus?" + this.value);
+        $.getJSON(self.apiPrefix() + "/setStatus?" + this.value);
     }
     
     var subtitleTrackField = $("<input type=\"number\"/>");
     var audioTrackField = $("<input type=\"number\"/>");
-    $.getJSON("api/page/playerSettings", function(data) {
-        subtitleTrackField.get(0).value = data.subtitleTrack;
-        audioTrackField.get(0).value = data.audioTrack;
-        
-        function setFn(key) {
-            return function() {
-                var number = this.value;
-                data[key] = number;
-                var json = JSON.stringify(data);
-                $.ajax({
-                    url:"api/page/playerSettings",
-                    type: "PUT",
-                    data: json
-                }).complete(function() {
-                    console.log("set subtitle to ", number);
-                });
-            }
-        }
-        
-        subtitleTrackField.on("input", setFn("subtitleTrack"));
-        audioTrackField.on("input", setFn("audioTrack"));
-    });
+    
     
     this.episodesEl = $(document.createElement("div"));
     this.episodesEl.addClass("seasons");
     
     $.getJSON("api/page/showDetails", function(data) {
         self.tvShow = data;
+        
+        //TODO cleanup
+        $.getJSON(self.apiPrefix() + "/playerSettings", function(data) {
+            subtitleTrackField.get(0).value = data.subtitleTrack;
+            audioTrackField.get(0).value = data.audioTrack;
+            
+            function setFn(key) {
+                return function() {
+                    var number = this.value;
+                    data[key] = number;
+                    var json = JSON.stringify(data);
+                    $.ajax({
+                        url:self.apiPrefix() + "/playerSettings",
+                        type: "PUT",
+                        data: json
+                    }).complete(function() {
+                        console.log("set subtitle to ", number);
+                    });
+                }
+            }
+            
+            subtitleTrackField.on("input", setFn("subtitleTrack"));
+            audioTrackField.on("input", setFn("audioTrack"));
+        });
+        
         self.playButton.removeAttr("disabled");
         self.statusList.removeAttribute("disabled");
         self.statusList.value = data.customStatus;
@@ -249,12 +257,13 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
         var json = JSON.stringify(newArray);
         // TODO move page independent
         $.ajax({
-            url:"api/page/releaseGroupPreference",
+            url: self.apiPrefix() + "/releaseGroupPreference",
             type: "PUT",
             data: json
         }).complete(function() {
             console.log("set releaseGroupPreference to ", newArray);
             
+            // TODO unify refetch; write show name into #url
             $.getJSON("api/page/showDetails", function(data) {
                 self.tvShow = data;
                 self.episodesEl.empty();
@@ -277,9 +286,7 @@ TvShowPage.prototype.createRewatchMarker = function(marker) {
         var button = document.createElement("button");
         button.innerHTML = "clear rewatch"
         button.onclick = function() {
-            var uri = 
-                "api/library/tvshow/" + 
-                encodeURIComponent(self.tvShow.name) + "/setRewatchMarker?-1";
+            var uri = self.apiPrefix() + "/setRewatchMarker?-1";
             $.getJSON(uri, function(data) {
                 console.log("reset rewatch", data);
                 $(".rewatchMarker").removeClass("rewatchMarker");

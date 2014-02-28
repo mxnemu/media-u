@@ -126,6 +126,10 @@ public:
 
 signals:
 
+private slots:
+    void receivedPlayerSettings(QHttpResponse* resp, const QByteArray& body);
+    void receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArray& body);
+
 private:
 
     QString mName;

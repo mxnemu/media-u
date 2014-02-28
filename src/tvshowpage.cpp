@@ -62,45 +62,6 @@ void TvShowPage::updateWatched(int,  int) {
     ));
 }
 
-void TvShowPage::receivedPlayerSettings(QHttpResponse *resp, const QByteArray& body) {
-    if (!tvShow) {
-        return;
-    }
-
-    std::stringstream ss;
-    ss << body.data();
-    nw::JsonReader jr(ss);
-
-    if (jr.getErrorMessage().empty()) {
-        tvShow->playerSettings.describe(&jr);
-        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
-    } else {
-        Server::simpleWrite(resp, 400, "{\"error\": \"no valid number provided in query\"}", mime::json);
-    }
-    jr.close();
-}
-
-void TvShowPage::receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArray& body) {
-    if (!tvShow) {
-        return;
-    }
-
-    std::stringstream ss;
-    ss << body.data();
-    nw::JsonReader jr(ss);
-
-    if (jr.getErrorMessage().empty()) {
-        QStringList groups;
-        NwUtils::describeValueArray(jr, "releaseGroupPreference", groups);
-        tvShow->setReleaseGroupPreference(groups);
-        Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
-    } else {
-        Server::simpleWrite(resp, 400, "{\"error\": \"no array provided in query\"}", mime::json);
-    }
-    jr.close();
-}
-
-
 bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 {
     if (!tvShow) {
@@ -115,42 +76,6 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         jw.close();
         Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
         return true;
-    } else if (req->path().startsWith("/api/page/playerSettings")) {
-        // TODO handle this independet from the page
-
-        if (req->method() == QHttpRequest::HTTP_PUT) {
-            RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
-            connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
-            connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(receivedPlayerSettings(QHttpResponse*,const QByteArray&)));
-        } else if (req->method() == QHttpRequest::HTTP_GET) {
-            std::stringstream ss;
-            nw::JsonWriter jw(ss);
-            tvShow->playerSettings.describe(&jw);
-            jw.close();
-            Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
-        } else {
-            return false;
-        }
-        return true;
-    } else if (req->path().startsWith("/api/page/releaseGroupPreference")) {
-        // TODO handle this independet from the page
-
-        if (req->method() == QHttpRequest::HTTP_PUT) {
-            RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
-            connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
-            connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(receivedReleaseGroupPreference(QHttpResponse*,const QByteArray&)));
-        } else {
-            return false;
-        }
-        return true;
-    } else if (req->path().startsWith("/api/page/setStatus")) {
-        TvShow::WatchStatus status = TvShow::watchStatusFromString(req->url().query(QUrl::FullyDecoded));
-        if (this->tvShow) {
-            this->tvShow->setStatus(status);
-            Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
-        } else {
-            Server::simpleWrite(resp, 400, "page does not have a show set");
-        }
     }
     return false;
 }

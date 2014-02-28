@@ -544,6 +544,7 @@ void AnimeItemData::describe(nw::Describer& de) {
 
 void AnimeItemData::updateShow(TvShow* show) {
     if (!localIsUpToDate(show)) {
+        qDebug() << this->my_last_updated << "newer" << show->getLastOnlineTrackerUpdate();
         show->episodeList().setMinimalWatched(this->my_watched_episodes);
         int marker = this->my_rewatching_ep == 0 ? -1 :this->my_rewatching_ep;
         int count = std::max(this->my_rewatching, show->getRewatchCount());

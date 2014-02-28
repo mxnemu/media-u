@@ -6,7 +6,6 @@
 #include <qhttpconnection.h>
 #include <utility>
 
-// TODO get const correctness right I think it was fucked somewhere
 class LibraryFilter
 {
 public:
