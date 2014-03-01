@@ -120,6 +120,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
     this.episodeList = new EpisodeList(episodes);
     PlayButton.initOnClick(this.playButton, this.episodeList);
      
+    var isRewatchMarker = false;
     $.each(this.episodeList.episodes, function() {
         var ep = this;
         
@@ -130,10 +131,12 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
         var episodeEl = $(document.createElement("li"));
         var text = $(document.createElement("span"));
         
+        if (isRewatchMarker) {
+            episodeEl.addClass("rewatchMarker");
+        }
         if (self.tvShow.rewatchMarker >= 0 && 
             ep.numericEpisodeNumber == self.tvShow.rewatchMarker) {
-            
-            episodeEl.addClass("rewatchMarker");
+            isRewatchMarker = true;
         }
 
         var title = 

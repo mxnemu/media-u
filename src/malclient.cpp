@@ -214,7 +214,7 @@ bool Client::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
             QString responseString = userData.data.str().c_str();
             if (responseString.contains("201 Created")) {
                 show->setLastOnlineTrackerUpdate(QDateTime::currentDateTimeUtc());
-                qDebug() << "MAL TRACKER ADD success" << show->name();
+                qDebug() << "MAL TRACKER ADD success" << show->name() << QDateTime::currentDateTimeUtc();
                 return true;
             }
         }
