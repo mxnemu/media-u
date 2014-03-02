@@ -208,6 +208,7 @@ bool Client::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
         userData.print();
     } else {
         if (type == "update" && userData.data.str() == "Updated") {
+            show->setLastOnlineTrackerUpdate(QDateTime::currentDateTimeUtc());
             qDebug() << "MAL TRACKER UPDATE success" << show->name();
             return true;
         } else if (type == "add") {
