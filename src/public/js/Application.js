@@ -30,6 +30,8 @@ Application.prototype.setScreenFromLocationHash = function()
             self.setPage(nextPage);
         }
     } else {
+        self.setPage(new StartPage());
+        /*
         $.getJSON("api/activePage", function(data) {
             if (self.pageList[data.page]) {
                 //self.setPage(new self.pageList[data.page]);
@@ -42,6 +44,7 @@ Application.prototype.setScreenFromLocationHash = function()
         }).error(function() {
             console.error("did not receive active page id");
         });
+        */
     }
 }
 
