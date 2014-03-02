@@ -47,8 +47,8 @@ public:
 
     void startSearch();
     void startSearch(const QList<SearchDirectory> dirs);
-    Library::searchStatus getSearchStatus();
-    bool getWallpaperDownloadRunning();
+    Library::searchStatus getSearchStatus() const;
+    bool getWallpaperDownloadRunning() const;
 
     const QList<SearchDirectory>& getSearchDirectories() const;
     bool addSearchDirectory(SearchDirectory dir);

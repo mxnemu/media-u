@@ -50,8 +50,7 @@ void Library::initMalClient(QString malConfigFilepath) {
             this, SLOT(fetchingFinished()));
 }
 
-bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
-{
+bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     if (req->path().startsWith("/api/library/filter")) {
         return filter().handleApiRequest(req, resp);
     } else if (req->path().startsWith("/api/library/tvshow/")) {
@@ -114,8 +113,7 @@ TvShow* Library::existingTvShow(const QString name) {
     return NULL;
 }
 
-const LibraryFilter& Library::filter() const
-{
+const LibraryFilter& Library::filter() const {
     return mFilter;
 }
 
@@ -144,7 +142,6 @@ void Library::xbmcLinkExport(QDir outputDir) {
 
 void Library::fetchMetaData() {
     malClient.fetchShows(tvShows, *this);
-    //malapiClient.startUpdate(tvShows, directory);
 }
 
 void Library::startWallpaperDownloaders() {
@@ -191,14 +188,14 @@ void Library::startSearch(const QList<SearchDirectory> dirs) {
     this->searchThread->start(QThread::HighPriority);
 }
 
-Library::searchStatus Library::getSearchStatus() {
+Library::searchStatus Library::getSearchStatus() const {
     if (this->searchThread) {
         return this->searchThread->isRunning() ? inProgress : done;
     }
     return notStarted;
 }
 
-bool Library::getWallpaperDownloadRunning() {
+bool Library::getWallpaperDownloadRunning() const {
     return !runningWallpaperDownloaders.empty();
 }
 
@@ -320,6 +317,7 @@ void Library::readAll() {
         }
         jr.close();
     } else {
+        /* TODO maybe provide an ui on first start to add these directories
         QStringList defaultDirs = QStandardPaths::standardLocations(QStandardPaths::MoviesLocation);
         defaultDirs.append(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation));
 
@@ -329,6 +327,7 @@ void Library::readAll() {
                 searchDirectories.append(SearchDirectory(dir));
             }
         }
+        */
     }
     generateFrenchises();
 }
@@ -362,18 +361,14 @@ void Library::write() {
     }
 }
 
-
-MetaDataParser *Library::getMetaDataParser() const
-{
+MetaDataParser *Library::getMetaDataParser() const {
     return metaDataParser;
 }
 
-void Library::setMetaDataParser(MetaDataParser *value)
-{
+void Library::setMetaDataParser(MetaDataParser *value) {
     metaDataParser = value;
 }
 
-QDir Library::getDirectory() const
-{
+QDir Library::getDirectory() const {
     return directory;
 }
