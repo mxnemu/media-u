@@ -76,6 +76,7 @@ public:
     QString getSynopsis() const;
     QString getShowType() const;
     int getRemoteId() const;
+    bool matchesNameOrSynonym(QString str) const;
 
     void addPrequels(QList<RelatedTvShow> relations);
     void addSideStories(QList<RelatedTvShow> relations);

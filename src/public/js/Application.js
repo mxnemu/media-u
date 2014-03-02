@@ -11,8 +11,7 @@ function Application() {
     });
 }
 
-Application.prototype.setScreenFromLocationHash = function()
-{
+Application.prototype.setScreenFromLocationHash = function() {
     var self = this;
     if (!this.page) {
         $(".page").empty();

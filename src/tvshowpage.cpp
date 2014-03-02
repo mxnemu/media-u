@@ -74,3 +74,7 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
     }
     return false;
 }
+
+bool TvShowPage::conformsTo(QString query) const {
+    return this->tvShow->matchesNameOrSynonym(query);
+}

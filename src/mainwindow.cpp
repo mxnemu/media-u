@@ -47,7 +47,7 @@ QString MainWindow::activePageId() {
     return pageId;
 }
 
-Page *MainWindow::activePage() {
+Page *MainWindow::getPage() {
     return page;
 }
 

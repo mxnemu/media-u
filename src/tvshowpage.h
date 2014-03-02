@@ -18,9 +18,9 @@ public:
     ~TvShowPage();
 
     void initFromQuery(const QString &initString);
-
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
-    
+    bool conformsTo(QString query) const;
+
     void setTvShow(TvShow *show);
 
 public slots:

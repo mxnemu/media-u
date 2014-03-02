@@ -13,6 +13,7 @@ public:
 
     virtual bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp) = 0;
     virtual void initFromQuery(const QString& initString);
+    virtual bool conformsTo(QString) const { return false; }
     
 signals:
     

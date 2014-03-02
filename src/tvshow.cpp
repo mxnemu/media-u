@@ -375,6 +375,11 @@ int TvShow::getRemoteId() const
     return remoteId;
 }
 
+bool TvShow::matchesNameOrSynonym(QString str) const {
+    return 0 == this->mName.compare(str, Qt::CaseInsensitive) ||
+            this->synonyms.contains(str, Qt::CaseInsensitive);
+}
+
 void TvShow::setRemoteId(const int &value)
 {
     remoteId = value;

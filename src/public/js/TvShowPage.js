@@ -65,6 +65,12 @@ TvShowPage.prototype.createNodes = function() {
     var requestUrl = this.tvShowName
         ? "api/library/tvshow/"+ encodeURIComponent(this.tvShowName) +"/details"
         : "api/page/details";
+        
+    if (this.tvShowName) {
+        var url = "api/assurePage/TvShowPage?" + 
+            encodeURIComponent(this.tvShowName);
+        $.getJSON(url);
+    }
 
     $.getJSON(requestUrl, function(data) {
         self.tvShow = data;

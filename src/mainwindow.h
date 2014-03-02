@@ -22,7 +22,7 @@ public:
     void setPage(const QString& pageName, const QString &initString);
     void setPage(const QString& pageName);
     QString activePageId();
-    Page* activePage();
+    Page* getPage();
 
     MainBackgroundWidget* getCentralWidget();
     

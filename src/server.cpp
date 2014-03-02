@@ -45,13 +45,19 @@ void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
 bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
     QString path = req->path();
     if (path.startsWith(QString("/api/setPage/"))) {
-        //QRegExp regex("\\?(.+)$");
-        QString pageName = QFileInfo(req->path()).fileName();
-
-        qDebug() << "set page " << pageName << " with q"  << req->url().query(QUrl::FullyDecoded);
-
+        QString pageName = QDir(req->path()).dirName();
         window.setPage(pageName, req->url().query(QUrl::FullyDecoded));
         simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(pageName), mime::json);
+        return true;
+    } else if (path.startsWith("/api/assurePage")) {
+        QString pageName = QDir(req->path()).dirName();
+        const QString query = req->url().query(QUrl::FullyDecoded);
+        if (!window.getPage() || !window.getPage()->conformsTo(query)) {
+            window.setPage(pageName, query);
+            simpleWrite(resp, 200, QString("{\"status\":\"set\",\"page\":\"%1\"}").arg(pageName), mime::json);
+        } else {
+            simpleWrite(resp, 200, QString("{\"status\":\"ok\",\"page\":\"%1\"}").arg(pageName), mime::json);
+        }
         return true;
     } else if (path.startsWith("/api/activePage")) {
         simpleWrite(resp, 200, QString("{\"page\":\"%1\"}").arg(window.activePageId()), mime::json);
@@ -62,8 +68,8 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         return library.handleApiRequest(req, resp);
     } else if (path.startsWith("/api/events/")) {
         return pushEvents.handleApiRequest(req, resp);
-    } else if (path.startsWith("/api/page/") && window.activePage()) {
-        return window.activePage()->handleApiRequest(req, resp);
+    } else if (path.startsWith("/api/page/") && window.getPage()) {
+        return window.getPage()->handleApiRequest(req, resp);
     }
     return false;
 }

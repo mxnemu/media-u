@@ -94,27 +94,21 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
 }
 
 TvShow& Library::tvShow(const QString name) {
-    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        if ((*it)->name().compare(name, Qt::CaseInsensitive) == 0) {
-            return *(it.i->t());
-        }
+    TvShow* show = existingTvShow(name);
+    if (show) {
+        return *show;
     }
-    foreach (TvShow* show, tvShows) {
-        if (show->getSynonyms().contains(name, Qt::CaseInsensitive)) {
-            return *show;
-        }
-    }
-    this->tvShows.push_back(new TvShow(name, this));
-    TvShow* show = this->tvShows.back();
+    show = new TvShow(name, this);
+    this->tvShows.push_back(show);
     emit showAdded(show);
     connect(&show->episodeList(), SIGNAL(beforeWatchCountChanged(int,int)), this, SIGNAL(beforeWatchCountChanged(int,int)));
     return *show;
 }
 
 TvShow* Library::existingTvShow(const QString name) {
-    for (QList<TvShow*>::iterator it = tvShows.begin(); it != tvShows.end(); ++it) {
-        if ((*it)->name() == name) {
-            return it.i->t();
+    foreach (TvShow* show, tvShows) {
+        if (show->matchesNameOrSynonym(name)) {
+            return show;
         }
     }
     return NULL;
