@@ -22,7 +22,12 @@ Application.prototype.setScreenFromLocationHash = function()
     
     if (fields.length > 0) {
         if (self.pageList[fields[0]]) {
-            self.setPage(new self.pageList[fields[0]](fields.slice(1)));
+            var nextPage = new self.pageList[fields[0]];
+            self.pageList[fields[0]].prototype.constructor.apply(
+                nextPage,
+                fields.slice(1)
+            );
+            self.setPage(nextPage);
         }
     } else {
         $.getJSON("api/activePage", function(data) {

@@ -203,7 +203,14 @@ QString TvShow::coverPath(QDir libaryPath) const {
 }
 
 void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpResponse* resp) {
-    if (urlPrefixOffset == req->path().indexOf("/setRewatchMarker", urlPrefixOffset)) {
+    if (urlPrefixOffset == req->path().indexOf("/details", urlPrefixOffset)) {
+        std::stringstream ss;
+        nw::JsonWriter jw(ss);
+        jw.setState("detailed", true);
+        this->write(jw);
+        jw.close();
+        Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
+    } else if (urlPrefixOffset == req->path().indexOf("/setRewatchMarker", urlPrefixOffset)) {
         bool ok = false;
         int marker = req->url().query(QUrl::FullyDecoded).toInt(&ok);
         if (ok) {

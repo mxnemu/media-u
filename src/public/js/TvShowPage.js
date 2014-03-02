@@ -63,8 +63,8 @@ TvShowPage.prototype.createNodes = function() {
     
     // TODO make sure this is the current page without changing when it is
     var requestUrl = this.tvShowName
-        ? "api/library/tvShowDetails?" + encodeURIComponent(this.tvShowName)
-        : "api/page/showDetails";
+        ? "api/library/tvshow/"+ encodeURIComponent(this.tvShowName) +"/details"
+        : "api/page/details";
 
     $.getJSON(requestUrl, function(data) {
         self.tvShow = data;

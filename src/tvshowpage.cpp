@@ -68,13 +68,8 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         return false;
     }
 
-    if (req->path() == "/api/page/showDetails") {
-        std::stringstream ss;
-        nw::JsonWriter jw(ss);
-        jw.setState("detailed", true);
-        tvShow->write(jw);
-        jw.close();
-        Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
+    if (req->path() == "/api/page/details") {
+        tvShow->handleApiRequest(sizeof("/api/page") -1, req, resp);
         return true;
     }
     return false;

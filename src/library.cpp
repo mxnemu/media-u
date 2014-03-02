@@ -79,19 +79,6 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         } else {
             Server::simpleWrite(resp, 400, QString("{\"error\":\"Episode not found\"}"), mime::json);
         }
-        // TODO move to TvShow
-    } else if (req->path().startsWith("/api/library/tvShowDetails")) {
-        TvShow* tvShow = existingTvShow(req->url().query(QUrl::FullyDecoded));
-        if (tvShow) {
-            std::stringstream ss;
-            nw::JsonWriter jw(ss);
-            jw.setState("detailed", true);
-            tvShow->write(jw);
-            jw.close();
-            Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
-        } else {
-            Server::simpleWrite(resp, 400, QString("{\"error\":\"TvShow not found\"}"), mime::json);
-        }
     } else if (req->path().startsWith("/api/library/movieFileMetaData")) {
         QString path = req->url().query(QUrl::FullyDecoded);
         Episode* ep = filter().getEpisodeForPath(path);
