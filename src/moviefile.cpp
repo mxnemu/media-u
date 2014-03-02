@@ -2,6 +2,24 @@
 #include <QFileInfo>
 #include <QDebug>
 
+#define IS_SPECIAL_REGEX(prefix) \
+    prefix "ED(\\s|$)|" \
+    prefix "OP(\\s|$)|" \
+ \
+    prefix "ED\\s?[0-9]+|" \
+    prefix "OP\\s?[0-9]+[a-z]?|" \
+    prefix "SP\\s?[0-9]+|" \
+    prefix "NC.?OP\\s?([0-9]+)?|" \
+    prefix "NC.?ED\\s?([0-9]+)?|" \
+    prefix "EX\\s?([0-9]+)?|" \
+    prefix "PV\\s?([0-9]+)?|" \
+ \
+    prefix "Opening(\\s?[0-9]+)?|" \
+    prefix "Preview\\s?([0-9]+)?|" \
+    prefix "Specials?\\s?-?\\s?([0-9]+)?|" \
+    prefix "Play\\s?All\\s(.+)($|\\(|\\[)?|" \
+    prefix "Ending(\\s?[0-9]+)?"
+
 MovieFile::MovieFile(const QString originalPath) {
     // set the path and resolve links
     QString path = originalPath;
@@ -93,22 +111,7 @@ MovieFile::MovieFile(const QString originalPath) {
         "\\sEP\\s?[0-9]+|"
         "\\sEpisode\\s?[0-9]+|"
 
-         "\\sED(\\s|$)|"
-         "\\sOP(\\s|$)|"
-
-         "\\sED\\s?[0-9]+|"
-         "\\sOP\\s?[0-9]+[a-z]?|"
-         "\\sSP\\s?[0-9]+|"
-         "\\sNC.?OP\\s?([0-9]+)?|"
-         "\\sNC.?ED\\s?([0-9]+)?|"
-         "\\sEX\\s?([0-9]+)?|"
-         "\\sPV\\s?([0-9]+)?|"
-
-         "\\sOpening(\\s?[0-9]+)?|"
-         "\\sPreview\\s?([0-9]+)?|"
-         "\\sSpecials?\\s?-?\\s?([0-9]+)?|"
-         "\\sPlay\\s?All\\s(.+)($|\\(|\\[)?|"
-         "\\sEnding(\\s?[0-9]+)?"
+        IS_SPECIAL_REGEX("\\s")
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);
@@ -164,16 +167,13 @@ MovieFile::MovieFile(const QString originalPath) {
         episodeName.remove(QRegExp("^(-(\\s+)?)"));
     }
 
-    // TODO less redundant get an isSpecial function with \\s prefixes
-    if (0 == showName.compare("ED", Qt::CaseInsensitive) ||
-        0 == showName.compare("OP", Qt::CaseInsensitive) ||
-        0 == showName.compare("Episode", Qt::CaseInsensitive) ||
-        0 == showName.compare("EP", Qt::CaseInsensitive)) {
+    this->showName = this->showName.trimmed();
 
+    QRegExp showNameIsInDirectory("(" IS_SPECIAL_REGEX("^") ")");
+    if (-1 != showNameIsInDirectory.indexIn(this->showName)) {
         const MovieFile parentDir(QFileInfo(originalPath).absolutePath());
         this->episodeNumber = this->showName;
         this->showName = parentDir.showName;
-
     }
 }
 
@@ -210,25 +210,9 @@ QString MovieFile::xbmcEpisodeName() const {
 
 bool MovieFile::isSpecial(QString episodeNumberString) {
     QRegExp specialRegex("("
-        "ED(\\s|$)|"
-        "OP(\\s|$)|"
-
-        "ED\\s?[0-9]+|"
-        "OP\\s?[0-9]+[a-z]?|"
-        "SP\\s?[0-9]+|"
-        "NC.?OP\\s?([0-9]+)?|"
-        "NC.?ED\\s?([0-9]+)?|"
-        "EX\\s?([0-9]+)?|"
-        "PV\\s?([0-9]+)?|"
-
-        "Opening(\\s?[0-9]+)?|"
-        "Preview\\s?([0-9]+)?|"
-        "Specials?|"
-        "Play\\s?All|"
-        "Ending(\\s?[0-9]+)?"
-        ")", Qt::CaseInsensitive);
+        IS_SPECIAL_REGEX()
+    ")", Qt::CaseInsensitive);
     bool is = -1 != specialRegex.indexIn(episodeNumberString);
-    //qDebug() << specialRegex.cap(1);
     return is;
 }
 
