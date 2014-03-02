@@ -20,9 +20,9 @@ Application.prototype.setScreenFromLocationHash = function()
     
     var fields = Utils.parseHashUrl(window.location.hash);
     
-    if (fields.length === 1) {
+    if (fields.length > 0) {
         if (self.pageList[fields[0]]) {
-            self.setPage(new self.pageList[fields[0]]);
+            self.setPage(new self.pageList[fields[0]](fields.slice(1)));
         }
     } else {
         $.getJSON("api/activePage", function(data) {

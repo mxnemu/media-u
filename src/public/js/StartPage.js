@@ -139,7 +139,7 @@ StartPage.prototype.liForShow = function(show) {
         // todo don't send when the active page is already correct,
         // because this causes a new background img to be shown.
         $.getJSON("api/setPage/TvShowPage?" + show.name, function() {
-            window.location.hash = "#!/TvShowPage"
+            window.location.hash = "#!/TvShowPage/" + show.name;
         });
         //G.app.setPage(new TvShowPage());
     });

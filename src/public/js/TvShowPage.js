@@ -1,5 +1,5 @@
-function TvShowPage() {
-    this.tvShow = null;
+function TvShowPage(tvShowName) {
+    this.tvShowName = tvShowName;
 }
 
 TvShowPage.prototype.bindEvents = function() {
@@ -61,7 +61,12 @@ TvShowPage.prototype.createNodes = function() {
     this.episodesEl = $(document.createElement("div"));
     this.episodesEl.addClass("seasons");
     
-    $.getJSON("api/page/showDetails", function(data) {
+    // TODO make sure this is the current page without changing when it is
+    var requestUrl = this.tvShowName
+        ? "api/library/tvShowDetails?" + encodeURIComponent(this.tvShowName)
+        : "api/page/showDetails";
+
+    $.getJSON(requestUrl, function(data) {
         self.tvShow = data;
         
         //TODO cleanup
@@ -267,6 +272,7 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
             console.log("set releaseGroupPreference to ", newArray);
             
             // TODO unify refetch; write show name into #url
+            var url = "api/library/tvShowDetails?" + encodeURIComponent(this.tvShow.name);
             $.getJSON("api/page/showDetails", function(data) {
                 self.tvShow = data;
                 self.episodesEl.empty();

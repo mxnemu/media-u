@@ -79,6 +79,7 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
         } else {
             Server::simpleWrite(resp, 400, QString("{\"error\":\"Episode not found\"}"), mime::json);
         }
+        // TODO move to TvShow
     } else if (req->path().startsWith("/api/library/tvShowDetails")) {
         TvShow* tvShow = existingTvShow(req->url().query(QUrl::FullyDecoded));
         if (tvShow) {
