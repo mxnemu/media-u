@@ -569,9 +569,19 @@ bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
     TvShow::WatchStatus status = show->getStatus();
     TvShow::WatchStatus statusMalWouldSendIfSynced = restoreStatus(AnimeUpdateData::calculateWatchStatus(status));
     // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
-    return (statusMalWouldSendIfSynced == this->my_status ||
-            (this->my_status == TvShow::completed && statusMalWouldSendIfSynced == TvShow::watching)) &&
-            this->my_watched_episodes >= std::min(this->series_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
+    const bool statusUpToDate =
+            statusMalWouldSendIfSynced == this->my_status ||
+            (this->my_status == TvShow::completed && statusMalWouldSendIfSynced == TvShow::watching);
+
+    const bool episodesUpToDate =
+            this->my_watched_episodes >=
+            std::min(this->series_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
+
+    const bool rewatchUpToDate =
+            my_rewatching >= show->getRewatchCount() &&
+            my_rewatching_ep >= show->getRewatchMarker();
+
+    return  statusUpToDate && episodesUpToDate && rewatchUpToDate;
 }
 
 } // namespace
