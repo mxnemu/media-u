@@ -113,7 +113,6 @@ MovieFile::MovieFile(const QString originalPath) {
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);
     this->episodeNumber = regexEpisode.cap(1).trimmed();
-
     path.remove(episodeIndex, regexEpisode.cap(1).length());
 
     QRegExp regexSeason("((SE?)[0-9]+|(Season\\s?)[0-9]+)", Qt::CaseInsensitive);
@@ -124,23 +123,13 @@ MovieFile::MovieFile(const QString originalPath) {
         path.remove(seasonIndex, regexSeason.cap(1).length());
     }
 
-    // check epNum after epName
+    // check epNum after showName
     if (this->episodeNumber.isEmpty() || this->episodeNumber.isNull()) {
-        //QRegExp regexNumberAfterShowName("(\\s[0-9]+\\s?)$");
-        //int epIndex = regexNumberAfterShowName.indexIn(mShowName);
         int epIndex = regexEpisode.indexIn(this->showName);
         // TODO check all caps for the longest
         if (epIndex != -1) {
             this->episodeNumber = regexEpisode.cap(1).trimmed();
             this->showName.remove(epIndex, regexEpisode.cap(1).length());
-
-            QRegExp regexEpName("(.*)");
-            int epNameIndex = regexEpName.indexIn(this->showName, epIndex);
-            if (epNameIndex != -1) {
-                this->episodeName = regexEpName.cap(1).trimmed();
-                this->showName.remove(epIndex, regexEpName.cap(1).length());
-            }
-            this->showName = this->showName.trimmed();
         }
     }
 
@@ -167,10 +156,12 @@ MovieFile::MovieFile(const QString originalPath) {
         }
     }
 
-    QRegExp epNameRegex("-\\s?(.*)$");
+    QRegExp epNameRegex("-?\\s?(.*)$");
     if (episodeName.isEmpty() && -1 != epNameRegex.indexIn(path)) {
         episodeName = epNameRegex.cap(1);
         episodeName = episodeName.trimmed();
+        episodeName.remove(QRegExp("((\\s+)?-)$"));
+        episodeName.remove(QRegExp("^(-(\\s+)?)"));
     }
 
     // TODO less redundant get an isSpecial function with \\s prefixes
