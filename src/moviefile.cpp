@@ -169,6 +169,11 @@ MovieFile::MovieFile(const QString originalPath) {
 
     this->showName = this->showName.trimmed();
 
+    if (this->showName.isEmpty()) {
+        const MovieFile parentDir(QFileInfo(originalPath).absolutePath());
+        this->showName = parentDir.showName;
+    }
+
     QRegExp showNameIsInDirectory("(" IS_SPECIAL_REGEX("^") ")");
     if (-1 != showNameIsInDirectory.indexIn(this->showName)) {
         const MovieFile parentDir(QFileInfo(originalPath).absolutePath());

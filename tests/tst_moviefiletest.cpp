@@ -255,6 +255,13 @@ void MovieFileTest::testPathParsing_data()
                                                       -2.f <<
                                                       "";
 
+    QTest::newRow("ShowName: show name in Parent Directory") <<
+                                                      "/[Kuroi Raws] Higashi no Eden (BD 1920x1080 H264 AC-3 5.1ch)/[Kuroi Raws] Episode 01 (BD 1920x1080 H264 AC-3 5.1ch) [533BC43C].mkv" <<
+                                                      "[Kuroi Raws]" <<
+                                                      "Higashi no Eden" <<
+                                                      "Episode 01" <<
+                                                      1.f <<
+                                                      "";
 }
 
 
