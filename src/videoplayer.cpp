@@ -224,23 +224,19 @@ void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSec
     gifc->start();
 }
 
-const MetaDataParser *VideoPlayer::getMetaDataParser() const
-{
+const MetaDataParser *VideoPlayer::getMetaDataParser() const {
     return metaDataParser;
 }
 
-void VideoPlayer::setMetaDataParser(const MetaDataParser *value)
-{
+void VideoPlayer::setMetaDataParser(const MetaDataParser *value) {
     metaDataParser = value;
 }
 
-const ThumbnailCreator *VideoPlayer::getThumbnailCreator() const
-{
+const ThumbnailCreator *VideoPlayer::getThumbnailCreator() const {
     return thumbnailCreator;
 }
 
-void VideoPlayer::setThumbnailCreator(const ThumbnailCreator *value)
-{
+void VideoPlayer::setThumbnailCreator(const ThumbnailCreator *value) {
     thumbnailCreator = value;
 }
 
