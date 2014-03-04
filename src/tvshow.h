@@ -119,9 +119,10 @@ public:
     QStringList getReleaseGroupPreference() const;
     void setReleaseGroupPreference(QStringList value);
     int getRewatchMarker() const;
-    void setRewatchMarker(int marker);
+    void setRewatchMarker(int marker, bool updateTracker);
     int getRewatchCount() const;
-    void setRewatchCount(int count);
+    void setRewatchCount(int count, bool updateTracker);
+    QDateTime getLastLocalUpdate() const;
     QDateTime getLastOnlineTrackerUpdate() const;
     void setLastOnlineTrackerUpdate(const QDateTime& value);
 
@@ -130,6 +131,7 @@ signals:
 private slots:
     void receivedPlayerSettings(QHttpResponse* resp, const QByteArray& body);
     void receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArray& body);
+    void onWatchCountChanged(int newCount, int oldCount);
 
 private:
 
@@ -146,6 +148,7 @@ private:
 
     int remoteId;
     QDateTime lastOnlineTrackerUpdate;
+    QDateTime lastLocalUpdate;
     QStringList synonyms;
     QString showType;
     QString airingStatus;

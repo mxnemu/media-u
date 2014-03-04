@@ -12,6 +12,7 @@ TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     customStatus = automatic;
     rewatchMarker = -1;
     rewatchCount = 0;
+    connect(&this->episodes, SIGNAL(watchCountChanged(int,int)), this, SLOT(onWatchCountChanged(int, int)));
 }
 
 EpisodeList& TvShow::episodeList() {
@@ -39,6 +40,7 @@ void TvShow::read(QDir &dir) {
 
     NwUtils::describe(jr, "remoteId", remoteId);
     NwUtils::describe(jr, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
+    NwUtils::describe(jr, "lastLocalUpdate", lastLocalUpdate);
     jr.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jr, "airingStatus", airingStatus);
     NwUtils::describe(jr, "startDate", startDate);
@@ -98,6 +100,7 @@ void TvShow::write(nw::JsonWriter& jw) {
 
     NwUtils::describe(jw, "remoteId", remoteId);
     NwUtils::describe(jw, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
+    NwUtils::describe(jw, "lastLocalUpdate", lastLocalUpdate);
     jw.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jw, std::string("airingStatus"), airingStatus);
     NwUtils::describe(jw, "startDate", startDate);
@@ -214,7 +217,7 @@ void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpRespo
         bool ok = false;
         int marker = req->url().query(QUrl::FullyDecoded).toInt(&ok);
         if (ok) {
-            this->setRewatchMarker(marker);
+            this->setRewatchMarker(marker, true);
             Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
             return;
         }
@@ -279,6 +282,10 @@ void TvShow::receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArra
         Server::simpleWrite(resp, 400, "{\"error\": \"no valid json array provided in query\"}", mime::json);
     }
     jr.close();
+}
+
+void TvShow::onWatchCountChanged(int newCount, int oldCount) {
+    this->lastLocalUpdate = QDateTime::currentDateTimeUtc();
 }
 
 /*
@@ -642,28 +649,37 @@ int TvShow::getRewatchMarker() const {
     return this->rewatchMarker;
 }
 
-void TvShow::setRewatchMarker(int marker) {
+void TvShow::setRewatchMarker(int marker, bool updateTracker) {
     this->rewatchMarker = marker;
     if (marker == std::max((int)this->episodeList().highestDownloadedEpisodeNumber(), this->totalEpisodes)) {
         ++rewatchCount;
     }
+    if (updateTracker) {
+        this->lastLocalUpdate = QDateTime::currentDateTimeUtc();
+    }
 }
 
-int TvShow::getRewatchCount() const
-{
+int TvShow::getRewatchCount() const {
     return rewatchCount;
 }
 
-void TvShow::setRewatchCount(int count) {
+void TvShow::setRewatchCount(int count, bool updateTracker) {
     this->rewatchCount = count;
+    if (updateTracker) {
+        this->lastLocalUpdate = QDateTime::currentDateTimeUtc();
+    }
 }
 
-QDateTime TvShow::getLastOnlineTrackerUpdate() const
-{
+QDateTime TvShow::getLastLocalUpdate() const {
+    return lastLocalUpdate;
+}
+
+
+QDateTime TvShow::getLastOnlineTrackerUpdate() const {
     return lastOnlineTrackerUpdate;
 }
 
-void TvShow::setLastOnlineTrackerUpdate(const QDateTime& value)
-{
+void TvShow::setLastOnlineTrackerUpdate(const QDateTime& value) {
     lastOnlineTrackerUpdate = value;
+    lastLocalUpdate = value;
 }

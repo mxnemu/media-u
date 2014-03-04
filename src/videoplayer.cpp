@@ -256,7 +256,7 @@ void VideoPlayer::onPlaybackEndedNormally() {
             if (episode->getWatched()) {
                 int number = episode->getEpisodeNumber();
                 if (number >= 0) {
-                    show->setRewatchMarker(number);
+                    show->setRewatchMarker(number, true);
                 }
             } else {
                 episode->setWatched(true);

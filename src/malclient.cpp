@@ -549,8 +549,8 @@ void AnimeItemData::updateShow(TvShow* show) {
         show->episodeList().setMinimalWatched(this->my_watched_episodes);
         int marker = this->my_rewatching_ep == 0 ? -1 :this->my_rewatching_ep;
         int count = std::max(this->my_rewatching, show->getRewatchCount());
-        show->setRewatchCount(count);
-        show->setRewatchMarker(marker);
+        show->setRewatchCount(count, false);
+        show->setRewatchMarker(marker, false);
         show->setLastOnlineTrackerUpdate(this->my_last_updated);
     }
     if (show->getLastOnlineTrackerUpdate().isNull()) {
@@ -566,6 +566,11 @@ bool AnimeItemData::localIsUpToDate(const TvShow* show) const {
 }
 
 bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
+    if (!show->getLastLocalUpdate().isNull()) {
+        return my_last_updated.isNull() &&
+                my_last_updated >= show->getLastLocalUpdate();
+    }
+
     TvShow::WatchStatus status = show->getStatus();
     TvShow::WatchStatus statusMalWouldSendIfSynced = restoreStatus(AnimeUpdateData::calculateWatchStatus(status));
     // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
