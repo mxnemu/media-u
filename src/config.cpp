@@ -263,6 +263,7 @@ void SnapshotConfig::describe(nw::Describer& de) {
     NwUtils::describe(de, "snapshotName", snapshotName);
 
     NwUtils::describe(de, "gifDir", gifDir);
+    NwUtils::describe(de, "gifName", gifName);
     NwUtils::describe(de, "gifResolutionX", gifResolutionX);
     NwUtils::describe(de, "gifResolutionY", gifResolutionY);
     NwUtils::describe(de, "gifMaxSizeMiB", gifMaxSizeMiB);
