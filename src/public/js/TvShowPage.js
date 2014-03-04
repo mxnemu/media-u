@@ -132,6 +132,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
     PlayButton.initOnClick(this.playButton, this.episodeList);
      
     var isRewatchMarker = false;
+    var addedRewatchMarker = false;
     $.each(this.episodeList.episodes, function() {
         var ep = this;
         
@@ -142,8 +143,9 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
         var episodeEl = $(document.createElement("li"));
         var text = $(document.createElement("span"));
         
-        if (isRewatchMarker) {
+        if (isRewatchMarker && !addedRewatchMarker) {
             episodeEl.addClass("rewatchMarker");
+            addedRewatchMarker = true;
         }
         if (self.tvShow.rewatchMarker >= 0 && 
             ep.numericEpisodeNumber == self.tvShow.rewatchMarker) {
