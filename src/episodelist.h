@@ -38,6 +38,7 @@ public:
     QList<Episode*> episodes;
     void setMinimalWatched(int number);
     void setWatched(int number);
+    void setMaximalWatched(int number);
 signals:
     void beforeWatchCountChanged(int newCount, int oldCount);
     void watchCountChanged(int oldCount, int newCount); // TODO new, old

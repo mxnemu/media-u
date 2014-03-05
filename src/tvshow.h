@@ -131,7 +131,7 @@ signals:
 private slots:
     void receivedPlayerSettings(QHttpResponse* resp, const QByteArray& body);
     void receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArray& body);
-    void onWatchCountChanged(int newCount, int oldCount);
+    void onWatchCountChanged(int, int);
 
 private:
 

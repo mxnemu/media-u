@@ -44,6 +44,7 @@ public:
     bool localIsUpToDate(const TvShow* show) const;
     bool remoteIsUpToDate(const TvShow* show) const;
     static TvShow::WatchStatus restoreStatus(int malStatusId);
+    bool syncConflict(const TvShow* show) const;
 };
 
 class AnimeListData {

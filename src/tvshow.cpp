@@ -284,7 +284,7 @@ void TvShow::receivedReleaseGroupPreference(QHttpResponse* resp, const QByteArra
     jr.close();
 }
 
-void TvShow::onWatchCountChanged(int newCount, int oldCount) {
+void TvShow::onWatchCountChanged(int, int) {
     this->lastLocalUpdate = QDateTime::currentDateTimeUtc();
 }
 
