@@ -13,6 +13,7 @@ public:
     void init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int, int> resolution, float maxSizeMib = 3, int framesDropped = 2);
     void run();
 
+    void generate();
 signals:
     void done(bool);
 public slots:

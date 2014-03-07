@@ -33,21 +33,23 @@ void GifCreator::init(QString videoPath, QString outputPath, float startSec, flo
 }
 
 void GifCreator::run() {
+    generate();
+    emit done(true);
+    deleteLater();
+}
+
+void GifCreator::generate() {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("gif_%p", this));
     QDir dir(dirPath);
     dir.removeRecursively();
     if (!dir.mkpath(".")) {
         qDebug() << "failed to create tmp dir" << dirPath;
-        emit done(false);
-        deleteLater();
         return;
     }
 
     float dif = endSec - startSec;
     if (dif > 120.f) {
         qDebug() << "gif longer than 120s canceling creation" << startSec << endSec;
-        emit done(false);
-        deleteLater();
         return;
     }
 
@@ -127,8 +129,8 @@ void GifCreator::run() {
         }
 
         qDebug() << "gif was too big, retrying at resolution" << lowerResolution.first << "x" << lowerResolution.second;
-        this->init(videoPath, outputPath, startSec, endSec, lowerResolution, maxSizeMib, framesDropped);
-        this->exec();
+        this->resolution = lowerResolution;
+        this->generate();
         return;
     }
 
@@ -136,6 +138,4 @@ void GifCreator::run() {
     if (QFile::rename(tmpFilePath, outputPath)) {
         dir.removeRecursively();
     }
-    emit done(true);
-    deleteLater();
 }
