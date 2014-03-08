@@ -31,7 +31,7 @@ void TvShowPage::setTvShow(TvShow* show) {
         return;
     }
 
-    connect(&tvShow->episodeListMutable(), SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
+    connect(&tvShow->episodeList(), SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
 
     ui->title->setText(show->name());
     if (show->coverPath(library.getDirectory()).length() > 0) {

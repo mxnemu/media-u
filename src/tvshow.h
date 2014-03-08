@@ -109,9 +109,7 @@ public:
     WatchStatus getStatus() const;
     void setStatus(TvShow::WatchStatus status);
     bool isCompleted() const;
-    bool startedWatching() const;
     const EpisodeList& episodeList() const;
-    EpisodeList &episodeListMutable();
     static QString watchStatusToString(TvShow::WatchStatus status);
     static TvShow::WatchStatus watchStatusFromString(QString statusString);
 

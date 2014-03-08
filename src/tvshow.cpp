@@ -613,19 +613,6 @@ bool TvShow::isCompleted() const {
     return !isAiring() && episodes.numberOfWatchedEpisodes() >= total;
 }
 
-bool TvShow::startedWatching() const {
-    foreach(Episode* m, episodes.episodes) {
-        if (!m->getWatchedDate().isNull()) {
-            return true;
-        }
-    }
-    return false;
-}
-
-EpisodeList &TvShow::episodeListMutable() {
-    return episodes;
-}
-
 const EpisodeList &TvShow::episodeList() const {
     return episodes;
 }
