@@ -54,8 +54,8 @@ TvShowPage.prototype.createNodes = function() {
         $.getJSON(self.apiPrefix() + "/setStatus?" + this.value);
     }
     
-    var subtitleTrackField = $("<input type=\"number\"/>");
-    var audioTrackField = $("<input type=\"number\"/>");
+    this.subtitleTrackField = $("<input type=\"number\"/>");
+    this.audioTrackField = $("<input type=\"number\"/>");
     
     
     this.episodesEl = $(document.createElement("div"));
@@ -66,39 +66,11 @@ TvShowPage.prototype.createNodes = function() {
         ? "api/library/tvshow/"+ encodeURIComponent(this.tvShowName) +"/details"
         : "api/page/details";
         
-    if (this.tvShowName) {
-        var url = "api/assurePage/TvShowPage?" + 
-            encodeURIComponent(this.tvShowName);
-        $.getJSON(url);
-    }
-
     $.getJSON(requestUrl, function(data) {
         self.tvShow = data;
         
         //TODO cleanup
-        $.getJSON(self.apiPrefix() + "/playerSettings", function(data) {
-            subtitleTrackField.get(0).value = data.subtitleTrack;
-            audioTrackField.get(0).value = data.audioTrack;
-            
-            function setFn(key) {
-                return function() {
-                    var number = this.value;
-                    data[key] = number;
-                    var json = JSON.stringify(data);
-                    $.ajax({
-                        url:self.apiPrefix() + "/playerSettings",
-                        type: "PUT",
-                        data: json
-                    }).complete(function() {
-                        console.log("set subtitle to ", number);
-                    });
-                }
-            }
-            
-            subtitleTrackField.on("input", setFn("subtitleTrack"));
-            audioTrackField.on("input", setFn("audioTrack"));
-        });
-        
+        self.setPlayerSettings(data.playerSettings);        
         self.playButton.removeAttr("disabled");
         self.statusList.removeAttribute("disabled");
         self.statusList.value = data.customStatus;
@@ -106,13 +78,19 @@ TvShowPage.prototype.createNodes = function() {
         self.createEpisodeList(data.episodes, self.episodesEl);
         self.createRewatchMarker(data.rewatchMarker);        
     });
+    
+    if (this.tvShowName) {
+        var url = "api/assurePage/TvShowPage?" + 
+            encodeURIComponent(this.tvShowName);
+        $.getJSON(url);
+    }
 
     this.page.append(backButton);
     this.page.append(this.playButton);
     this.page.append("<span> sub: </span>");
-    this.page.append(subtitleTrackField);
+    this.page.append(this.subtitleTrackField);
     this.page.append("<span> audio: </span>");
-    this.page.append(audioTrackField);
+    this.page.append(this.audioTrackField);
     this.page.append(this.episodesEl);
     this.page.append(this.statusList);
     this.bindEvents();
@@ -121,6 +99,28 @@ TvShowPage.prototype.createNodes = function() {
 
 TvShowPage.prototype.removeNodes = function() {
     this.unbindEvents();
+}
+
+TvShowPage.prototype.setPlayerSettings = function(settings) {
+    this.subtitleTrackField.get(0).value = settings.subtitleTrack;
+    this.audioTrackField.get(0).value = settings.audioTrack;
+    
+    function setFn(key) {
+        return function() {
+            var number = this.value;
+            settings[key] = number;
+            var json = JSON.stringify(settings);
+            $.ajax({
+                url:self.apiPrefix() + "/playerSettings",
+                type: "PUT",
+                data: json
+            }).complete(function() {
+                console.log("set subtitle to ", number);
+            });
+        }
+    }
+    this.subtitleTrackField.on("input", setFn("subtitleTrack"));
+    this.audioTrackField.on("input", setFn("audioTrack"));
 }
 
 TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
