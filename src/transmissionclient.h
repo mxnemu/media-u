@@ -10,6 +10,7 @@ class TransmissionClient : public TorrentClient
 public:
     explicit TransmissionClient(QObject *parent = 0);
     bool addTorrent(QString filePath);
+    void newProcess();
 signals:
     
 public slots:
@@ -18,7 +19,7 @@ private:
     QString command;
     void findCommand();
     
-    QProcess process;
+    QProcess* process;
 };
 
 #endif // TRANSMISSIONCLIENT_H

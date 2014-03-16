@@ -4,21 +4,30 @@
 #include <QDebug>
 
 TransmissionClient::TransmissionClient(QObject *parent) :
-    TorrentClient(parent)
+    TorrentClient(parent),
+    process(NULL)
 {
     this->findCommand();
+}
 
-    process.setWorkingDirectory(QDir::temp().absolutePath());
+void TransmissionClient::newProcess() {
+    if (process) {
+        delete process;
+    }
+    process = new QProcess(NULL);
+    process->setWorkingDirectory(QDir::temp().absolutePath());
 }
 
 bool TransmissionClient::addTorrent(QString filePath) {
     if (command.isNull()) {
         return false;
     }
+    if (!process || process->state() == QProcess::Running) {
+        newProcess();
+    }
 
-    process.start(command, QStringList() << filePath);
-
-    process.waitForStarted();
+    process->start(command, QStringList() << filePath);
+    process->waitForStarted();
     //process.waitForFinished();
     return true;
 }
