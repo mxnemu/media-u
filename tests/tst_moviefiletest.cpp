@@ -262,6 +262,15 @@ void MovieFileTest::testPathParsing_data()
                                                       "Episode 01" <<
                                                       1.f <<
                                                       "";
+
+    // prown to error: Neon Genesis EvangelionDirectors Cut
+    QTest::newRow("ShowName: don't append Episodename to show name when number is removed") <<
+                                                                "/mnt/fields1/torrents/Neon Genesis Evangelion/Neon Genesis Evangelion TV/Directors Cut/  Neon Genesis Evangelion 21 Directors Cut (R2DVD x264 720x480 AC3) .mkv" <<
+                                                                "" <<
+                                                                "Neon Genesis Evangelion" <<
+                                                                "21" <<
+                                                                21.f <<
+                                                                "Directors Cut";
 }
 
 

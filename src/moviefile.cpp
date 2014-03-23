@@ -118,6 +118,7 @@ MovieFile::MovieFile(const QString originalPath) {
     this->episodeNumber = regexEpisode.cap(1).trimmed();
     path.remove(episodeIndex, regexEpisode.cap(1).length());
 
+
     QRegExp regexSeason("((SE?)[0-9]+|(Season\\s?)[0-9]+)", Qt::CaseInsensitive);
     regexSeason.setMinimal(true);
     int seasonIndex = regexSeason.indexIn(path);
@@ -133,6 +134,11 @@ MovieFile::MovieFile(const QString originalPath) {
         if (epIndex != -1) {
             this->episodeNumber = regexEpisode.cap(1).trimmed();
             this->showName.remove(epIndex, regexEpisode.cap(1).length());
+            QString epname = showName.mid(epIndex, showName.length()-epIndex).trimmed();
+            if (epname.length()) {
+                this->episodeName = epname;
+                this->showName.remove(epIndex, showName.length()-epIndex);
+            }
         }
     }
 
