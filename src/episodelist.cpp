@@ -179,7 +179,10 @@ void EpisodeList::setMinimalWatched(int number) {
     foreach (Episode* ep, episodes) {
         float epNum = ep->getEpisodeNumber();
         // ignore 11.5 style special episodes
-        if (epNum <= number && epNum > 0 && 0 == epNum - (int)epNum) {
+        if (epNum <= 0 || 0 != epNum - (int)epNum) {
+            continue;
+        }
+        if (epNum <= number) {
             ep->setWatched(true);
         }
     }
@@ -189,7 +192,7 @@ void EpisodeList::setMaximalWatched(int number) {
     foreach (Episode* ep, episodes) {
         float epNum = ep->getEpisodeNumber();
         // ignore 11.5 style special episodes
-        if (epNum > 0 && 0 == epNum - (int)epNum) {
+        if (epNum <= 0 || 0 != epNum - (int)epNum) {
             continue;
         }
         if (epNum <= number) {
