@@ -11,7 +11,6 @@
     prefix "SP\\s?[0-9]+|" \
     prefix "NC.?OP\\s?([0-9]+)?|" \
     prefix "NC.?ED\\s?([0-9]+)?|" \
-    prefix "EX\\s?([0-9]+)?|" \
     prefix "PV\\s?([0-9]+)?|" \
  \
     prefix "Opening(\\s?[0-9]+)?|" \
@@ -110,6 +109,7 @@ MovieFile::MovieFile(const QString originalPath) {
         "\\s[0-9]+x[0-9]+|"
         "\\sEP\\s?[0-9]+|"
         "\\sEpisode\\s?[0-9]+|"
+        "\\sEX(\\s|\\s?[0-9]+)|"
 
         IS_SPECIAL_REGEX("\\s")
         ")", Qt::CaseInsensitive);

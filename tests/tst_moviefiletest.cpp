@@ -271,6 +271,15 @@ void MovieFileTest::testPathParsing_data()
                                                                 "21" <<
                                                                 21.f <<
                                                                 "Directors Cut";
+
+
+    QTest::newRow("ShowName: contains word starting with EX (an episode start sign)") <<
+                                                                "/mnt/fields2/torrents/[Coalgirls]_Serial_Experiments_Lain_(1520x1080_Blu-Ray_FLAC)/[Coalgirls]_Serial_Experiments_Lain_01_(1520x1080_Blu-Ray_FLAC)_[573CDDD6].mkv" <<
+                                                                "[Coalgirls]" <<
+                                                                "Serial Experiments Lain" <<
+                                                                "01" <<
+                                                                1.f <<
+                                                                "";
 }
 
 
