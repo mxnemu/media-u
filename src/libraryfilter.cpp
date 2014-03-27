@@ -108,9 +108,9 @@ QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() const {
         }
     }
     return QList<std::pair<QString, QList<TvShow*> > >() <<
-            std::pair<QString, QList<TvShow*> >("airing", airing) <<
             std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::watching), watching) <<
             std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), waitingForNewEpisodes) <<
+            std::pair<QString, QList<TvShow*> >("airing", airing) <<
             std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::planToWatch), planToWatch) <<
             std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::onHold), onHold) <<
             std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::dropped), dropped) <<
