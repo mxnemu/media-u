@@ -45,6 +45,8 @@ public:
     bool remoteIsUpToDate(const TvShow* show) const;
     static TvShow::WatchStatus restoreStatus(int malStatusId);
     bool syncConflict(const TvShow* show) const;
+    /// check if data is eq, disregarding the change dates
+    bool remoteIsEq(const TvShow* show) const;
 };
 
 class AnimeListData {
@@ -79,7 +81,7 @@ public:
     virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&result) const;
     bool login();
 
-    bool updateInOnlineTracker(TvShow* show);
+    bool updateInOnlineTracker(TvShow* show); ///< return true when everything is now synced, false on failure
     bool fetchOnlineTrackerList(QList<TvShow*>& show);
 
     Thread* getActiveThread() const;

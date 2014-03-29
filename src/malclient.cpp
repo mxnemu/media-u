@@ -186,6 +186,10 @@ bool Client::updateInOnlineTracker(TvShow* show) {
     const AnimeItemData* item = animeListData.getShow(show);
     if (item) {
         if (item->localIsUpToDate(show) && !item->remoteIsUpToDate(show)) {
+            if (item->remoteIsEq(show)) {
+                show->setLastOnlineTrackerUpdate(item->my_last_updated);
+                return true;
+            }
             return this->updateinOnlineTrackerOrAdd(show, "update");
         }
         qDebug() << "MAL TRACKER skip up2date" << show->name();
@@ -576,11 +580,12 @@ bool AnimeItemData::localIsUpToDate(const TvShow* show) const {
 }
 
 bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
-    if (!show->getLastLocalUpdate().isNull()) {
-        return my_last_updated.isNull() &&
-                my_last_updated >= show->getLastLocalUpdate();
-    }
+    const QDateTime lastLocalUpdate = show->getLastLocalUpdate();
+    return (!lastLocalUpdate.isNull() &&
+            (!my_last_updated.isNull() && my_last_updated >= lastLocalUpdate));
+}
 
+bool AnimeItemData::remoteIsEq(const TvShow* show) const {
     TvShow::WatchStatus status = show->getStatus();
     TvShow::WatchStatus statusMalWouldSendIfSynced = restoreStatus(AnimeUpdateData::calculateWatchStatus(status));
     // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
