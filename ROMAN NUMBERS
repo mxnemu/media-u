@@ -1,0 +1,44 @@
+regex? TODO procedual generated for signlist
+(I?X)
+(I?V)
+(I{1,3})
+(VI{0,3})
+
+read -> if bigger sign appears take as prefix
+        apply prefix to bigger sign
+        save sum and start again (foldl)
+        end of input sum signs and return
+        
+test cases:
+assertEq fromRoman "XLIV" 44
+assertEq fromRoman "XLIX" 49
+assertEq fromRoman "XXXVII" 37
+assertEq fromRoman "IV" 4
+assertEq fromRoman "XCVII" 97
+
+signs:
+I 1
+V 5
+X 10
+L 50
+C 100
+D 500
+M 1000
+ↁ 50000
+ↂ 10000
+
+# I don't need them, but it looks interesting
+russian signs
+1 1
+П 2
+Ш 3
+У 5
+Х 10
+
+russian tests:
+1У 4
+У1 6
+УП 7
+УШ 8
+1Х 9
+
