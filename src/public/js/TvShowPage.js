@@ -3,18 +3,25 @@ function TvShowPage(tvShowName) {
 }
 
 TvShowPage.prototype.bindEvents = function() {
+    var self = this;
     this.keyDownListener = function(event) {
         ListUtils.handleKeyDown(event);
     }
+    this.onPlaybackEnded = function() {
+        self.refetch();
+    }
+    
     window.addEventListener("keydown", this.keyDownListener);
-}
-
-TvShowPage.prototype.apiPrefix = function() {
-    return "api/library/tvshow/" + encodeURIComponent(this.tvShow.name);
+    G.app.serverEvents.addEventListener("playbackEnded", this.onPlaybackEnded);
 }
 
 TvShowPage.prototype.unbindEvents = function() {
     window.removeEventListener("keydown", this.keyDownListener);
+    G.app.serverEvents.removeEventListener("playbackEnded", this.onPlaybackEnded);
+}
+
+TvShowPage.prototype.apiPrefix = function() {
+    return "api/library/tvshow/" + encodeURIComponent(this.tvShow.name);
 }
 
 TvShowPage.prototype.createNodes = function() {
@@ -50,8 +57,9 @@ TvShowPage.prototype.createNodes = function() {
     this.statusList.className = "statusSelect";
     
     this.statusList.onchange = function() {
-        // TODO refresh ep list if complete or planToWatch
-        $.getJSON(self.apiPrefix() + "/setStatus?" + this.value);
+        $.getJSON(self.apiPrefix() + "/setStatus?" + this.value, function() {
+            self.refetch();
+        });
     }
     
     this.subtitleTrackField = $("<input type=\"number\"/>");
@@ -60,24 +68,8 @@ TvShowPage.prototype.createNodes = function() {
     
     this.episodesEl = $(document.createElement("div"));
     this.episodesEl.addClass("seasons");
-    
-    // TODO make sure this is the current page without changing when it is
-    var requestUrl = this.tvShowName
-        ? "api/library/tvshow/"+ encodeURIComponent(this.tvShowName) +"/details"
-        : "api/page/details";
-        
-    $.getJSON(requestUrl, function(data) {
-        self.tvShow = data;
-        
-        //TODO cleanup
-        self.setPlayerSettings(data.playerSettings);        
-        self.playButton.removeAttr("disabled");
-        self.statusList.removeAttribute("disabled");
-        self.statusList.value = data.customStatus;
-        self.createReleaseGroupPreference(data.releaseGroupPreference);
-        self.createEpisodeList(data.episodes, self.episodesEl);
-        self.createRewatchMarker(data.rewatchMarker);        
-    });
+
+    this.refetch();    
     
     if (this.tvShowName) {
         var url = "api/assurePage/TvShowPage?" + 
@@ -119,6 +111,9 @@ TvShowPage.prototype.setPlayerSettings = function(settings) {
             });
         }
     }
+    // TODO just do it once in init
+    this.subtitleTrackField.unbind("input");
+    this.audioTrackField.unbind("input");
     this.subtitleTrackField.on("input", setFn("subtitleTrack"));
     this.audioTrackField.on("input", setFn("audioTrack"));
 }
@@ -240,10 +235,46 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
         
         seasonEl.append(episodeEl);
     });
+    episodesEl.empty();
     episodesEl.append(seasonEl);
 }
 
+TvShowPage.prototype.refetch = function() {
+    var self = this;
+    var requestUrl = this.tvShowName
+        ? "api/library/tvshow/"+ encodeURIComponent(this.tvShowName) +"/details"
+        : "api/page/details";
+
+    self.playButton.disabled = true;
+    self.statusList.disabled = true;
+    self.playButton.unbind("click");
+
+    $.getJSON(requestUrl, function(data) {
+        self.tvShow = data;
+        self.tvShowName = data.name;
+        
+        self.setPlayerSettings(data.playerSettings);        
+        self.statusList.value = data.customStatus;
+        self.createReleaseGroupPreference(data.releaseGroupPreference);
+        self.createEpisodeList(data.episodes, self.episodesEl);
+        self.createRewatchMarker(data.rewatchMarker);
+        
+        self.playButton.removeAttr("disabled");
+        self.statusList.removeAttribute("disabled");
+        PlayButton.initOnClick(self.playButton, self.episodeList);
+    }).fail(function(error) {
+        var data = error.responseJSON;
+        if (!data.name || data.error) {
+            self.page.append("<p>" + JSON.stringify(data) + "</p>");
+        }    
+    });
+}
+
 TvShowPage.prototype.createReleaseGroupPreference = function(array) {
+    if (this.releaseGroupPreference) {
+        $(this.releaseGroupPreference).remove();
+    }
+
     var rgp = document.createElement("div");
     rgp.className = "releaseGroupPreference";
     for (var i=0; i < array.length; ++i) {
@@ -278,18 +309,6 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
             data: json
         }).complete(function() {
             console.log("set releaseGroupPreference to ", newArray);
-            
-            // TODO unify refetch; write show name into #url
-            var url = "api/library/tvShowDetails?" + encodeURIComponent(this.tvShow.name);
-            $.getJSON("api/page/showDetails", function(data) {
-                self.tvShow = data;
-                self.episodesEl.empty();
-                self.createEpisodeList(data.episodes, self.episodesEl);
-                self.playButton.unbind("click");
-                PlayButton.initOnClick(self.playButton, self.episodeList);
-                $(self.releaseGroupPreference).remove();
-                self.createReleaseGroupPreference(data.releaseGroupPreference);
-            });
         });
     }
     
@@ -298,6 +317,10 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
 }
 
 TvShowPage.prototype.createRewatchMarker = function(marker) {
+    if (this.clearRewatchButton) {
+        $(this.clearRewatchButton).remove();
+    }
+
     if (marker >= 0) {
         var self = this;
         var button = document.createElement("button");
@@ -311,6 +334,7 @@ TvShowPage.prototype.createRewatchMarker = function(marker) {
             });
         }
         this.page.append(button);
+        this.clearRewatchButton = button;
     }
 }
 
