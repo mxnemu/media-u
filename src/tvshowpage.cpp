@@ -25,6 +25,9 @@ void TvShowPage::initFromQuery(const QString &initString) {
 }
 
 void TvShowPage::setTvShow(TvShow* show) {
+    if (this->tvShow) {
+        disconnect(this->tvShow, SIGNAL(watchCountChanged(int,int)), this, SLOT(updateWatched(int,int)));
+    }
     this->tvShow = show;
 
     if (!show) {
@@ -55,6 +58,9 @@ void TvShowPage::setTvShow(TvShow* show) {
 }
 
 void TvShowPage::updateWatched(int,  int) {
+    if ((TvShow*)sender() != this->tvShow) {
+        return;
+    }
     ui->episodes->setText(QString("%1/%2/%3").arg(
         QString::number(tvShow->episodeList().numberOfWatchedEpisodes()),
         QString::number(tvShow->episodeList().numberOfEpisodes()),
