@@ -7,26 +7,23 @@ class GifCreator : public ShortClipCreator
 {
     Q_OBJECT
 public:
-    explicit GifCreator(QObject *parent = 0);
-    std::pair<int,int> suggestedResolution(std::pair<int,int> resolution);
-    std::pair<int,int> suggestedResolution(int originalW, int originalH);
-    void init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int, int> resolution, float maxSizeMib = 3, int framesDropped = 2);
-    void run();
-
-    void generate();
-
     class Config : public ShortClipCreator::Config {
     public:
+        Config();
+
         int framesDropped;
     };
 
-signals:
-    void done(bool);
+    explicit GifCreator(Config* config, QObject *parent = 0);
+    void init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int, int> resolution, float maxSizeMib = 3, int framesDropped = 2);
+
+    bool generate();
 public slots:
     
 private:
     QString videoPath;
-    QString outputPath; float startSec;
+    QString outputPath;
+    float startSec;
     float endSec;
     std::pair<int, int> resolution;
     float maxSizeMib;

@@ -46,11 +46,11 @@ public:
     bool includeRaw;
 };
 
-class Config
+class BaseConfig
 {
 public:
-    Config(int argc, char* argv[]);
-    Config(QString initPath);
+    BaseConfig(int argc, char* argv[]);
+    BaseConfig(QString initPath);
     void fromArgs(int argc, char* argv[]);
 
     bool init(QString path = QString());

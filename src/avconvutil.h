@@ -7,6 +7,7 @@ namespace avconfutil {
 
 QString time(float second);
 QString resolution(int width, int height);
+QStringList fastAccurateSeekArgs(float startSec, QString videoPath);
 
 } // namespace
 

@@ -7,18 +7,18 @@
 #include "systemutils.h"
 
 
-Config::Config(int argc, char* argv[]) {
+BaseConfig::BaseConfig(int argc, char* argv[]) {
     setDefaults();
     this->fromArgs(argc, argv);
 }
 
-Config::Config(QString initPath)
+BaseConfig::BaseConfig(QString initPath)
 {
     this->setDefaults();
     this->init(initPath);
 }
 
-void Config::setDefaults() {
+void BaseConfig::setDefaults() {
     mServerPort = -1;
     initialized = false;
     noGui = false;
@@ -26,7 +26,7 @@ void Config::setDefaults() {
     autoOpenBrowser = false;
 }
 
-void Config::fromArgs(int argc, char* argv[]) {
+void BaseConfig::fromArgs(int argc, char* argv[]) {
     QString configPath;
 
     for (int i=0; i < argc; ++i) {
@@ -69,7 +69,7 @@ void Config::fromArgs(int argc, char* argv[]) {
     init(configPath);
 }
 
-bool Config::init(QString path) {
+bool BaseConfig::init(QString path) {
     QDir dir;
     if (path.isNull() || path.isEmpty()) {
         dir = this->configPath();
@@ -89,7 +89,7 @@ bool Config::init(QString path) {
     }
 }
 
-bool Config::parse(const QString& jsonData)
+bool BaseConfig::parse(const QString& jsonData)
 {
     std::istringstream input(jsonData.toStdString());
     nw::JsonReader jr(input);
@@ -100,7 +100,7 @@ bool Config::parse(const QString& jsonData)
     return true;
 }
 
-void Config::describe(nw::Describer* de) {
+void BaseConfig::describe(nw::Describer* de) {
     de->describe("port", mServerPort);
     de->describe("noGui", noGui);
     de->describe("fullScreen", fullScreen);
@@ -123,7 +123,7 @@ void Config::describe(nw::Describer* de) {
     de->pop();
 }
 
-bool Config::createNewConfig(QString filepath)
+bool BaseConfig::createNewConfig(QString filepath)
 {
     mLibraryPath = libraryPath();
     mServerPort = 8082;
@@ -138,14 +138,14 @@ bool Config::createNewConfig(QString filepath)
     return true;
 }
 
-QDir Config::configPath() {
+QDir BaseConfig::configPath() {
     if (mConfigPath.isNull() || mConfigPath.isEmpty()) {
         return QDir(QDir::home().absoluteFilePath(".mediaU"));
     }
     return QDir(mConfigPath);
 }
 
-QString Config::libraryPath() {
+QString BaseConfig::libraryPath() {
     if (initialized) {
         return this->mLibraryPath;
     }
@@ -154,31 +154,31 @@ QString Config::libraryPath() {
     return dir.absoluteFilePath("library");
 }
 
-QString Config::malConfigFilePath() {
+QString BaseConfig::malConfigFilePath() {
     return configPath().absoluteFilePath("malConfig.json");
 }
 
-QString Config::mplayerLocation() {
+QString BaseConfig::mplayerLocation() {
     return mplayerConfig.path;
 }
 
-QString Config::omxplayerLocation() {
+QString BaseConfig::omxplayerLocation() {
     return "/usr/bin/omxplayer";
 }
 
-bool Config::omxPlayerIsInstalled() {
+bool BaseConfig::omxPlayerIsInstalled() {
     return SystemUtils::commandExists(omxplayerLocation());
 }
 
-bool Config::mplayerIsInstalled() {
+bool BaseConfig::mplayerIsInstalled() {
     return SystemUtils::commandExists(mplayerLocation());
 }
 
-const SnapshotConfig&Config::getSnapshotConfigConstRef() const {
+const SnapshotConfig&BaseConfig::getSnapshotConfigConstRef() const {
     return snapshotConfig;
 }
 
-int Config::serverPort() {
+int BaseConfig::serverPort() {
     if (initialized && mServerPort > 0) {
         return mServerPort;
     }
@@ -214,24 +214,24 @@ void MplayerConfig::setDefaultValues() {
         "-embeddedfonts";
 }
 
-const MplayerConfig& Config::getMplayerConfigConstRef() const
+const MplayerConfig& BaseConfig::getMplayerConfigConstRef() const
 {
     return mplayerConfig;
 }
 
-const RssConfig& Config::getRssConfigConstRef() const {
+const RssConfig& BaseConfig::getRssConfigConstRef() const {
     return rssConfig;
 }
 
-bool Config::getFullScreen() const{
+bool BaseConfig::getFullScreen() const{
     return fullScreen;
 }
 
-bool Config::getNoGui() const {
+bool BaseConfig::getNoGui() const {
     return noGui;
 }
 
-bool Config::getAutoOpenBrowser() const {
+bool BaseConfig::getAutoOpenBrowser() const {
     return autoOpenBrowser;
 }
 

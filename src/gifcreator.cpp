@@ -6,20 +6,9 @@
 #include <QProcess>
 #include <QDebug>
 
-GifCreator::GifCreator(QObject *parent) :
-    ShortClipCreator(parent)
+GifCreator::GifCreator(GifCreator::Config* config, QObject *parent) :
+    ShortClipCreator(config, parent)
 {
-}
-
-std::pair<int, int> GifCreator::suggestedResolution(std::pair<int, int> resolution) {
-    return this->suggestedResolution(resolution.first, resolution.second);
-}
-
-std::pair<int, int> GifCreator::suggestedResolution(int originalW, int originalH) {
-    originalW = originalW > 0 ? originalW : 480;
-    originalH = originalH > 0 ? originalH : 253;
-    int targetW = std::min(480, originalW);
-    return std::pair<int,int>(targetW, ((float)originalH / (float)originalW) * (float)targetW);
 }
 
 void GifCreator::init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, float maxSizeMib, int framesDropped) {
@@ -32,25 +21,19 @@ void GifCreator::init(QString videoPath, QString outputPath, float startSec, flo
     this->framesDropped = std::max(framesDropped, 0);
 }
 
-void GifCreator::run() {
-    generate();
-    emit done(true);
-    deleteLater();
-}
-
-void GifCreator::generate() {
+bool GifCreator::generate() {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("gif_%p", this));
     QDir dir(dirPath);
     dir.removeRecursively();
     if (!dir.mkpath(".")) {
         qDebug() << "failed to create tmp dir" << dirPath;
-        return;
+        return false;
     }
 
     float dif = endSec - startSec;
     if (dif > 120.f) {
         qDebug() << "gif longer than 120s canceling creation" << startSec << endSec;
-        return;
+        return false;
     }
 
     qDebug() << avconfutil::time(startSec) << avconfutil::time(dif);
@@ -123,19 +106,23 @@ void GifCreator::generate() {
 
         if (lowerResolution.first < 50 || lowerResolution.second < 50) {
             qDebug() << "gif is too long generation stopped. won't retry anymore.";
-            emit done(false);
-            deleteLater();
-            return;
+            return false;
         }
 
         qDebug() << "gif was too big, retrying at resolution" << lowerResolution.first << "x" << lowerResolution.second;
         this->resolution = lowerResolution;
-        this->generate();
-        return;
+        return this->generate();
     }
 
     QDir(QFileInfo(outputPath).dir()).mkpath(".");
     if (QFile::rename(tmpFilePath, outputPath)) {
         dir.removeRecursively();
+        return true;
     }
+    return false;
+}
+
+
+GifCreator::Config::Config() : ShortClipCreator::Config() {
+    framesDropped = 2;
 }

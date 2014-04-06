@@ -214,21 +214,16 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
 }
 
 const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(float startSecond, float endSecond) const {
-    QString outputPath = gifOutputPath(startSecond, endSecond);
-    ShortClipCreator::Config* config = new ShortClipCreator::Config(); // TODO clone from default
+    ShortClipCreator::Config* config = new VideoClipCreator::Config(); // TODO clone from default
     config->startSec = startSecond;
     config->endSec = endSecond;
     config->resolution = config->adaptRatio(nowPlaying.metaData.resolution());
     config->videoPath = nowPlaying.path;
-    config->outputPath = outputPath;
+    config->outputPath = shortClipOutputPath(startSecond, endSecond);
     return config;
 }
 
 void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSecond) {
-    /*
-    GifCreator* gifc = new GifCreator(this);
-    */
-
     const ShortClipCreator::Config* config = initShortClipConfig(startSecond, endSecond);
     if (!config->isValid()) {
         Server::simpleWrite(resp, 500, "fugg it ain't valid");
@@ -236,14 +231,13 @@ void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSec
         return;
     }
 
-    ShortClipCreator& creator = *(ShortClipCreator*)NULL; // TODO get from config
+    ShortClipCreator* creator = new VideoClipCreator((VideoClipCreator::Config*)config, this); // TODO get from config
 
-    ServerDataReady* sdr = new ServerDataReady(resp, &creator);
-    connect(&creator, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));
+    ServerDataReady* sdr = new ServerDataReady(resp, creator);
+    connect(creator, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));
     connect(sdr, SIGNAL(boolReady(bool)), this, SLOT(onGifReady(bool)));
 
-    creator.start();
-    //gifc->start();
+    creator->start();
 }
 
 const MetaDataParser *VideoPlayer::getMetaDataParser() const {
@@ -368,7 +362,7 @@ QString VideoPlayer::snapshotOutputPath() const {
     return baseDir.absoluteFilePath(name);
 }
 
-QString VideoPlayer::gifOutputPath(float start, float end) const {
+QString VideoPlayer::shortClipOutputPath(float start, float end) const {
     QString name = snapshotConfig.gifName;
 
     QString startMinuteString = QString::number((int)start / 60);
@@ -386,7 +380,7 @@ QString VideoPlayer::gifOutputPath(float start, float end) const {
     name = name.replace(endMReplaceText, endMinuteString);
     name = name.replace(endSReplaceText, endSecondString);
 
-    name = this->imageName(name, "gif");
+    name = this->imageName(name, "webm"); // TODO separate config
 
     QDir baseDir = QDir(snapshotConfig.gifDir);
     return baseDir.absoluteFilePath(name);

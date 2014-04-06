@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     curl_global_init(CURL_GLOBAL_SSL);
 
     // TODO move argument parsing partly back here, since it calls exit(0)
-    Config config(argc, argv);
+    BaseConfig config(argc, argv);
 
     Library library(config.libraryPath());
     library.readAll();
