@@ -1,5 +1,6 @@
 #include "videoplayer.h"
 #include "gifcreator.h"
+#include "videoclipcreator.h"
 #include "server.h"
 #include "tvshow.h"
 
@@ -212,16 +213,37 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
-void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSecond) {
+const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(float startSecond, float endSecond) const {
     QString outputPath = gifOutputPath(startSecond, endSecond);
-    GifCreator* gifc = new GifCreator(this);
-    std::pair<int,int> resolution = gifc->suggestedResolution(nowPlaying.metaData.resolution());
-    gifc->init(nowPlaying.path, outputPath, startSecond, endSecond, resolution, snapshotConfig.gifMaxSizeMiB, snapshotConfig.gifFramesDropped);
+    ShortClipCreator::Config* config = new ShortClipCreator::Config(); // TODO clone from default
+    config->startSec = startSecond;
+    config->endSec = endSecond;
+    config->resolution = config->adaptRatio(nowPlaying.metaData.resolution());
+    config->videoPath = nowPlaying.path;
+    config->outputPath = outputPath;
+    return config;
+}
 
-    ServerDataReady* sdr = new ServerDataReady(resp, gifc);
-    connect(gifc, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));
+void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSecond) {
+    /*
+    GifCreator* gifc = new GifCreator(this);
+    */
+
+    const ShortClipCreator::Config* config = initShortClipConfig(startSecond, endSecond);
+    if (!config->isValid()) {
+        Server::simpleWrite(resp, 500, "fugg it ain't valid");
+        delete config;
+        return;
+    }
+
+    ShortClipCreator& creator = *(ShortClipCreator*)NULL; // TODO get from config
+
+    ServerDataReady* sdr = new ServerDataReady(resp, &creator);
+    connect(&creator, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));
     connect(sdr, SIGNAL(boolReady(bool)), this, SLOT(onGifReady(bool)));
-    gifc->start();
+
+    creator.start();
+    //gifc->start();
 }
 
 const MetaDataParser *VideoPlayer::getMetaDataParser() const {

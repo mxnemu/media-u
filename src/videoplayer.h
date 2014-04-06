@@ -8,6 +8,7 @@
 #include "thumbnailcreator.h"
 #include "library.h"
 #include "config.h"
+#include "shortclipcreator.h"
 
 class VideoProgress {
 public:
@@ -93,6 +94,9 @@ protected:
     QString gifOutputPath(float start, float end) const;
     void convertSnapshots();
     bool convertSnapshot(const QString snapshotPath, const QString outputPath);
+
+private:
+    const ShortClipCreator::Config* initShortClipConfig(float startSecond, float endSecond) const;
 
 public slots:
     void onThumbnailCreated(const QByteArray img);

@@ -14,6 +14,12 @@ public:
     void run();
 
     void generate();
+
+    class Config : public ShortClipCreator::Config {
+    public:
+        int framesDropped;
+    };
+
 signals:
     void done(bool);
 public slots:

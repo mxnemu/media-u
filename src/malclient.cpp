@@ -64,7 +64,6 @@ OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
 
     QString url = "http://myanimelist.net/api/anime/search.xml?q=";
     url.append(name.replace(' ', '+').remove('~'));
-    url = QUrl(url).toString(QUrl::FullyEncoded);
 
     CurlResult userData(this);
     CURL* handle = curlClient(url.toLocal8Bit().data(), userData);
