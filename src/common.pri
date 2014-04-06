@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     moviefile.cpp \
     snapshotwallpapergenerator.cpp \
     gifcreator.cpp \
-    avconvutil.cpp
+    avconvutil.cpp \
+    shortclipcreator.cpp \
+    videoclipcreator.cpp
 
 
 HEADERS  += library.h \
@@ -60,5 +62,7 @@ HEADERS  += library.h \
     moviefile.h \
     snapshotwallpapergenerator.h \
     gifcreator.h \
-    avconvutil.h
+    avconvutil.h \
+    shortclipcreator.h \
+    videoclipcreator.h
 

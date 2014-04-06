@@ -7,7 +7,7 @@
 #include <QDebug>
 
 GifCreator::GifCreator(QObject *parent) :
-    QThread(parent)
+    ShortClipCreator(parent)
 {
 }
 

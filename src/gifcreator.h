@@ -1,9 +1,9 @@
 #ifndef GIFCREATOR_H
 #define GIFCREATOR_H
 
-#include <QThread>
+#include "shortclipcreator.h"
 
-class GifCreator : public QThread
+class GifCreator : public ShortClipCreator
 {
     Q_OBJECT
 public:
