@@ -10,7 +10,10 @@ public:
     class Config : public ShortClipCreator::Config {
     public:
         Config();
+        virtual void describe(nw::Describer &de);
 
+        int resolutionX;
+        int resolutionY;
         int framesDropped;
     };
 

@@ -10,13 +10,15 @@ public:
         friend VideoClipCreator;
     public:
         Config();
+        virtual void describe(nw::Describer &de);
+        QString getExtension();
 
+    private:
         QString videoCodec;
         QString audioCodec;
         QString extension;
         int qualityCrf;
 
-    private:
         QStringList videoCodecArgs() const;
     };
 

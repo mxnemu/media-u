@@ -219,7 +219,7 @@ const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(float startSeco
     config->endSec = endSecond;
     config->resolution = config->adaptRatio(nowPlaying.metaData.resolution());
     config->videoPath = nowPlaying.path;
-    config->outputPath = shortClipOutputPath(startSecond, endSecond);
+    config->outputPath = shortClipOutputPath(*config, startSecond, endSecond);
     return config;
 }
 
@@ -362,8 +362,8 @@ QString VideoPlayer::snapshotOutputPath() const {
     return baseDir.absoluteFilePath(name);
 }
 
-QString VideoPlayer::shortClipOutputPath(float start, float end) const {
-    QString name = snapshotConfig.gifName;
+QString VideoPlayer::shortClipOutputPath(const ShortClipCreator::Config& sccofig, float start, float end) const {
+    QString name = sccofig.name;
 
     QString startMinuteString = QString::number((int)start / 60);
     QString startSecondString = QString::number((int)start % 60);
@@ -382,7 +382,7 @@ QString VideoPlayer::shortClipOutputPath(float start, float end) const {
 
     name = this->imageName(name, "webm"); // TODO separate config
 
-    QDir baseDir = QDir(snapshotConfig.gifDir);
+    QDir baseDir = QDir(sccofig.dir);
     return baseDir.absoluteFilePath(name);
 }
 

@@ -4,6 +4,8 @@
 #include <QString>
 #include <QDir>
 #include "nwutils.h"
+#include "videoclipcreator.h"
+#include "gifcreator.h"
 
 class MplayerConfig {
 public:
@@ -22,13 +24,6 @@ public:
     QString snapshotFormat;
     QString snapshotName;
     qint8 snapshotQuality;
-
-    QString gifDir;
-    QString gifName;
-    int gifResolutionX;
-    int gifResolutionY;
-    float gifMaxSizeMiB;
-    int gifFramesDropped;
 
 private:
     bool needsInit();
@@ -78,9 +73,14 @@ public:
     bool getFullScreen() const;
     bool getAutoOpenBrowser() const;
 
+    const VideoClipCreator::Config& getVideoClipCreatorConfig() const;
+    const GifCreator::Config& getGifCreatorConfig() const;
+
 private:
     QString mConfigPath;
     QString mLibraryPath;
+    QString shortClipCreatorType;
+
     int mServerPort;
     bool noGui;
     bool fullScreen;
@@ -91,6 +91,9 @@ private:
     SnapshotConfig snapshotConfig;
     MplayerConfig mplayerConfig;
     RssConfig rssConfig;
+
+    VideoClipCreator::Config videoClipCreatorConfig;
+    GifCreator::Config gifCreatorConfig;
 
     void setDefaults();
 };

@@ -39,6 +39,17 @@ VideoClipCreator::Config::Config() :
 {
 }
 
+void VideoClipCreator::Config::describe(nw::Describer& de) {
+    NwUtils::describe(de, "videoCodec", videoCodec);
+    NwUtils::describe(de, "audioCodec", audioCodec);
+    NwUtils::describe(de, "extension", extension);
+    NwUtils::describe(de, "qualityCrf", qualityCrf);
+}
+
+QString VideoClipCreator::Config::getExtension() {
+    return this->extension.isEmpty() ? this->extension : "webm";
+}
+
 QStringList VideoClipCreator::Config::videoCodecArgs() const {
     if (this->videoCodec.isEmpty()) {
         if (this->extension.isEmpty()) {

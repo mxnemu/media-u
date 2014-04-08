@@ -123,6 +123,15 @@ bool GifCreator::generate() {
 }
 
 
-GifCreator::Config::Config() : ShortClipCreator::Config() {
-    framesDropped = 2;
+GifCreator::Config::Config() :
+    ShortClipCreator::Config(),
+    framesDropped(2)
+{
+}
+
+void GifCreator::Config::describe(nw::Describer& de) {
+
+    NwUtils::describe(de, "resolutionX", resolutionX);
+    NwUtils::describe(de, "resolutionY", resolutionY);
+    NwUtils::describe(de, "framesDropped", framesDropped);
 }

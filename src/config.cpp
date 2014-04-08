@@ -5,6 +5,9 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include "systemutils.h"
+#include "utils.h"
+#include "videoclipcreator.h"
+#include "gifcreator.h"
 
 
 BaseConfig::BaseConfig(int argc, char* argv[]) {
@@ -105,6 +108,7 @@ void BaseConfig::describe(nw::Describer* de) {
     de->describe("noGui", noGui);
     de->describe("fullScreen", fullScreen);
     de->describe("autoOpenBrowser", autoOpenBrowser);
+    NwUtils::describe(*de, "shortClipCreatorType", shortClipCreatorType);
 
     de->push("library");
     NwUtils::describe(*de, "path", mLibraryPath);
@@ -120,6 +124,14 @@ void BaseConfig::describe(nw::Describer* de) {
 
     de->push("rss");
     rssConfig.describe(*de);
+    de->pop();
+
+    de->push("videoClipCreatorConfig");
+    videoClipCreatorConfig.describe(*de);
+    de->pop();
+
+    de->push("gifCreatorConfig");
+    gifCreatorConfig.describe(*de);
     de->pop();
 }
 
@@ -262,13 +274,6 @@ void SnapshotConfig::describe(nw::Describer& de) {
     NwUtils::describe(de, "snapshotQuality", snapshotQuality);
     NwUtils::describe(de, "snapshotName", snapshotName);
 
-    NwUtils::describe(de, "gifDir", gifDir);
-    NwUtils::describe(de, "gifName", gifName);
-    NwUtils::describe(de, "gifResolutionX", gifResolutionX);
-    NwUtils::describe(de, "gifResolutionY", gifResolutionY);
-    NwUtils::describe(de, "gifMaxSizeMiB", gifMaxSizeMiB);
-    NwUtils::describe(de, "gifFramesDropped", gifFramesDropped);
-
     this->snapshotQuality = std::min(this->snapshotQuality, (qint8)100);
     this->snapshotQuality = std::max(this->snapshotQuality, (qint8)-1);
 
@@ -278,7 +283,7 @@ void SnapshotConfig::describe(nw::Describer& de) {
 }
 
 bool SnapshotConfig::needsInit() {
-    return snapshotName.isEmpty() || snapshotDir.isEmpty() || gifDir.isEmpty() || gifName.isEmpty();
+    return snapshotName.isEmpty() || snapshotDir.isEmpty();
 }
 
 void SnapshotConfig::setDefaultValues() {
@@ -286,27 +291,20 @@ void SnapshotConfig::setDefaultValues() {
     this->snapshotName = "$(tvShow)/$(file) - $(progressM)m$(progressS)s - $(nowDate).$(ext)";
     this->snapshotQuality = 100;
 
-    this->gifName = "$(tvShow)/$(file) - $(startM)m$(startS)s:$(endM)m$(endS)s - $(nowDate).$(ext)";
-    this->gifMaxSizeMiB = 3.f;
-    this->gifFramesDropped = 2;
-    this->gifResolutionX = 420;
-    this->gifResolutionY = 270;
 
     QStringList imageDirs = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
 
     if (!imageDirs.isEmpty()) {
         QString imageDir = imageDirs.first();
-        this->snapshotDir = createSaveDir(imageDir, "snapshots");
-        this->gifDir = createSaveDir(imageDir, "snapshots_gif");
+        this->snapshotDir = Utils::createSaveDir(imageDir, "snapshots");
     }
 }
 
-QString SnapshotConfig::createSaveDir(const QString parentDir, const QString dirname) {
-    QDir dir = QDir(parentDir);
-    dir.mkpath(dirname);
-    dir.cd(dirname);
-    if (dir.exists()) {
-        return dir.absolutePath();
-    }
-    return QString();
+const VideoClipCreator::Config& BaseConfig::getVideoClipCreatorConfig() const
+{
+    return videoClipCreatorConfig;
+}
+
+const GifCreator::Config&BaseConfig::getGifCreatorConfig() const {
+    return this->gifCreatorConfig;
 }

@@ -91,7 +91,7 @@ protected:
 
     QString imageName(QString templateString, QString extension) const;
     QString snapshotOutputPath() const;
-    QString shortClipOutputPath(float start, float end) const;
+    QString shortClipOutputPath(const ShortClipCreator::Config& sccofig, float start, float end) const;
     void convertSnapshots();
     bool convertSnapshot(const QString snapshotPath, const QString outputPath);
 

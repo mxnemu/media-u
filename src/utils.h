@@ -13,6 +13,7 @@ public:
     static QStringList commonSlicesInStrings(const QString a, const QString b);
     static QString commonSliceInStrings(const QStringList& strings);
 
+    static QString createSaveDir(const QString parentDir, const QString dirname);
 private:
     static QString commonSliceAtStart(const QString &a, const QString &b, int startIndex);
 };

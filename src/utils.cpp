@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <QStringList>
+#include <QDir>
 
 Utils::Utils()
 {
@@ -105,4 +106,15 @@ QString Utils::commonSliceInStrings(const QStringList &strings) {
     }
 
     return bestResult;
+}
+
+
+QString Utils::createSaveDir(const QString parentDir, const QString dirname) {
+    QDir dir = QDir(parentDir);
+    dir.mkpath(dirname);
+    dir.cd(dirname);
+    if (dir.exists()) {
+        return dir.absolutePath();
+    }
+    return QString();
 }
