@@ -4,8 +4,8 @@
 #include <QDebug>
 #include "systemutils.h"
 
-Mplayer::Mplayer(Library& library, const SnapshotConfig& snapshotConfig, const MplayerConfig &config) :
-    VideoPlayer(library, snapshotConfig),
+Mplayer::Mplayer(Library& library, const BaseConfig& baseConfig, const MplayerConfig &config) :
+    VideoPlayer(library, baseConfig),
     config(config)
 {
     connect(&process, SIGNAL(finished(int)), this, SLOT(onProcessFinished(int)));

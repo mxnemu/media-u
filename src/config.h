@@ -64,7 +64,7 @@ public:
     bool omxPlayerIsInstalled();
     bool mplayerIsInstalled();
 
-
+    std::pair<ShortClipCreator*, ShortClipCreator::Config*> cloneShortClipCreator() const;
     const SnapshotConfig& getSnapshotConfigConstRef() const;
     const MplayerConfig& getMplayerConfigConstRef() const;
     const RssConfig& getRssConfigConstRef() const;

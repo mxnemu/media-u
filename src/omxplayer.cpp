@@ -6,7 +6,7 @@
 
 // TODO get rid of all the redunant stuff from mplayer and merge it into 1 base
 
-Omxplayer::Omxplayer(Library& library, const SnapshotConfig& snapshotConfig) :
+Omxplayer::Omxplayer(Library& library, const BaseConfig& snapshotConfig) :
     VideoPlayer(library, snapshotConfig) {
 }
 

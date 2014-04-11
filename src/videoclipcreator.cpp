@@ -40,6 +40,7 @@ VideoClipCreator::Config::Config() :
 }
 
 void VideoClipCreator::Config::describe(nw::Describer& de) {
+    ShortClipCreator::Config::describe(de);
     NwUtils::describe(de, "videoCodec", videoCodec);
     NwUtils::describe(de, "audioCodec", audioCodec);
     NwUtils::describe(de, "extension", extension);
@@ -52,9 +53,6 @@ QString VideoClipCreator::Config::getExtension() {
 
 QStringList VideoClipCreator::Config::videoCodecArgs() const {
     if (this->videoCodec.isEmpty()) {
-        if (this->extension.isEmpty()) {
-            return QStringList() << "-c:v" << "libvpx";
-        }
         return QStringList();
     }
     return QStringList() << "-c:v" << this->videoCodec;

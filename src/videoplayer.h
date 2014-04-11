@@ -25,7 +25,7 @@ class VideoPlayer : public QObject
 {
    Q_OBJECT // TODO build breaks here when trying to inherit qobject
 public:
-    explicit VideoPlayer(Library &library, const SnapshotConfig& snapshotConfig, QObject *parent = NULL);
+    explicit VideoPlayer(Library &library, const BaseConfig& baseConfig, QObject *parent = NULL);
     virtual ~VideoPlayer();
     bool playFile(QString filepath);
 
@@ -77,6 +77,7 @@ protected:
     virtual void getExactProgress() { emit exactProgressReady(nowPlaying.seconds); }
 
     Library& library;
+    const BaseConfig& baseConfig;
     const SnapshotConfig& snapshotConfig;
     const MetaDataParser* metaDataParser;
     const ThumbnailCreator* thumbnailCreator;
@@ -96,7 +97,7 @@ protected:
     bool convertSnapshot(const QString snapshotPath, const QString outputPath);
 
 private:
-    const ShortClipCreator::Config* initShortClipConfig(float startSecond, float endSecond) const;
+    const ShortClipCreator::Config* initShortClipConfig(ShortClipCreator::Config* config, float startSecond, float endSecond) const;
 
 public slots:
     void onThumbnailCreated(const QByteArray img);

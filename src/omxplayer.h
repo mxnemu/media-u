@@ -6,7 +6,7 @@
 class Omxplayer : public VideoPlayer
 {
 public:
-    Omxplayer(Library& library, const SnapshotConfig& snapshotConfig);
+    Omxplayer(Library& library, const BaseConfig& snapshotConfig);
 
     virtual bool playFileImpl(QString filepath, const TvShowPlayerSettings &);
 

@@ -4,10 +4,11 @@
 #include "server.h"
 #include "tvshow.h"
 
-VideoPlayer::VideoPlayer(Library& library, const SnapshotConfig& snapshotConfig, QObject* parent) :
+VideoPlayer::VideoPlayer(Library& library, const BaseConfig& baseConfig, QObject* parent) :
     QObject(parent),
     library(library),
-    snapshotConfig(snapshotConfig)
+    baseConfig(baseConfig),
+    snapshotConfig(baseConfig.getSnapshotConfigConstRef())
 {
     pauseStatus = false;
     connect(this, SIGNAL(playbackEndedNormally()), this, SLOT(onPlaybackEndedNormally()));
@@ -213,25 +214,28 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
-const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(float startSecond, float endSecond) const {
-    ShortClipCreator::Config* config = new VideoClipCreator::Config(); // TODO clone from default
+const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(ShortClipCreator::Config* config, float startSecond, float endSecond) const {
     config->startSec = startSecond;
     config->endSec = endSecond;
     config->resolution = config->adaptRatio(nowPlaying.metaData.resolution());
     config->videoPath = nowPlaying.path;
     config->outputPath = shortClipOutputPath(*config, startSecond, endSecond);
+
+    QFileInfo(config->outputPath).dir().mkpath(".");
     return config;
 }
 
 void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSecond) {
-    const ShortClipCreator::Config* config = initShortClipConfig(startSecond, endSecond);
+    std::pair<ShortClipCreator*, ShortClipCreator::Config*> pair = baseConfig.cloneShortClipCreator();
+    const ShortClipCreator::Config* config = initShortClipConfig(pair.second, startSecond, endSecond);
     if (!config->isValid()) {
         Server::simpleWrite(resp, 500, "fugg it ain't valid");
         delete config;
         return;
     }
 
-    ShortClipCreator* creator = new VideoClipCreator((VideoClipCreator::Config*)config, this); // TODO get from config
+    ShortClipCreator* creator = pair.first;
+    creator->setParent(this);
 
     ServerDataReady* sdr = new ServerDataReady(resp, creator);
     connect(creator, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));

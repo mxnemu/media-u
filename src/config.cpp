@@ -186,6 +186,16 @@ bool BaseConfig::mplayerIsInstalled() {
     return SystemUtils::commandExists(mplayerLocation());
 }
 
+std::pair<ShortClipCreator*, ShortClipCreator::Config*> BaseConfig::cloneShortClipCreator() const {
+
+    if (shortClipCreatorType == "gif") {
+        GifCreator::Config* config = new GifCreator::Config(this->gifCreatorConfig);
+        return std::pair<ShortClipCreator*, ShortClipCreator::Config*>(new GifCreator(config), config);
+    }
+    VideoClipCreator::Config* videoConfig = new VideoClipCreator::Config(this->videoClipCreatorConfig);
+    return std::pair<ShortClipCreator*, ShortClipCreator::Config*>(new VideoClipCreator(videoConfig), videoConfig);
+}
+
 const SnapshotConfig&BaseConfig::getSnapshotConfigConstRef() const {
     return snapshotConfig;
 }

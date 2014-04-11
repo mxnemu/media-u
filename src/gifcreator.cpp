@@ -130,7 +130,7 @@ GifCreator::Config::Config() :
 }
 
 void GifCreator::Config::describe(nw::Describer& de) {
-
+    ShortClipCreator::Config::describe(de);
     NwUtils::describe(de, "resolutionX", resolutionX);
     NwUtils::describe(de, "resolutionY", resolutionY);
     NwUtils::describe(de, "framesDropped", framesDropped);
