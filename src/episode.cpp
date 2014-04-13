@@ -170,6 +170,6 @@ void Episode::pushFile(const MovieFile* mf) {
 
 QList<const MovieFile*> Episode::missingFiles() const {
     return Utils::filter(files, [](const MovieFile*const& f) -> bool {
-        return f->exists();
+        return !f->exists();
     });
 }
