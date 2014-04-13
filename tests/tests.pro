@@ -4,6 +4,9 @@
 #
 #-------------------------------------------------
 
+CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++11
+
 # qhttp
 INCLUDEPATH += $$_PRO_FILE_PWD_/../src/libs/qhttpserver/src
 INCLUDEPATH += $$_PRO_FILE_PWD_/../src/libs/qhttpserver/http-parser
