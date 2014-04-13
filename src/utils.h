@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <functional>
 
 class Utils
 {
@@ -14,6 +15,18 @@ public:
     static QString commonSliceInStrings(const QStringList& strings);
 
     static QString createSaveDir(const QString parentDir, const QString dirname);
+
+    template<class T>
+    static QList<T> filter(const QList<T> list, typename std::common_type<const std::function<bool(const T&)> >::type filterFn) {
+        QList<T> reducedList;
+        foreach (T it, list) {
+            if (filterFn(it)) {
+                reducedList << it;
+            }
+        }
+        return reducedList;
+    }
+
 private:
     static QString commonSliceAtStart(const QString &a, const QString &b, int startIndex);
 };

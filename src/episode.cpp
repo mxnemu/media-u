@@ -1,6 +1,7 @@
 #include "episode.h"
 #include <stdlib.h>
 #include <QDebug>
+#include "utils.h"
 
 Episode::Episode(nw::Describer *jw, QObject* parent) :
     QObject(parent),
@@ -168,11 +169,7 @@ void Episode::pushFile(const MovieFile* mf) {
 }
 
 QList<const MovieFile*> Episode::missingFiles() const {
-    QList<const MovieFile*> missing;
-    foreach (const MovieFile* f, files) {
-        if (!f->exists()) {
-            missing << f;
-        }
-    }
-    return missing;
+    return Utils::filter(files, [](const MovieFile*const& f) -> bool {
+        return f->exists();
+    });
 }
