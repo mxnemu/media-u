@@ -34,6 +34,7 @@ public:
     void sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow *> > > lists) const;
 
     QList<std::pair<QString, QList<TvShow*> > > genLists() const;
+    QList<const MovieFile*> missingFiles() const;
 private:
     typedef bool (*FilterFunction)(const TvShow &, const LibraryFilter&, const void*);
 

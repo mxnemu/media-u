@@ -39,6 +39,7 @@ public:
     void setMinimalWatched(int number);
     void setWatched(int number);
     void setMaximalWatched(int number);
+    QList<const MovieFile*> missingFiles() const;
 signals:
     void beforeWatchCountChanged(int newCount, int oldCount);
     void watchCountChanged(int oldCount, int newCount); // TODO new, old

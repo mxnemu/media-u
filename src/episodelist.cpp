@@ -240,3 +240,11 @@ void EpisodeList::beforeWatchedChanged(bool newValue, bool oldValue) {
         emit beforeWatchCountChanged(count+diff, count);
     }
 }
+
+QList<const MovieFile*> EpisodeList::missingFiles() const {
+    QList<const MovieFile*> missing;
+    foreach (Episode* ep, episodes) {
+        missing << ep->missingFiles();
+    }
+    return missing;
+}

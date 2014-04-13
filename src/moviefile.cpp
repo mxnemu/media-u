@@ -192,6 +192,17 @@ bool MovieFile::hasMovieExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$|\\.mp5$", Qt::CaseInsensitive));
 }
 
+void MovieFile::writeForApi(nw::Writer& de) const {
+    NwUtils::describeConst(de, "path", path);
+    NwUtils::describeConst(de, "releaseGroup",releaseGroup);
+    NwUtils::describeConst(de, "episodeName", episodeName);
+    //NwUtils::describeConst(de, "techTags", techTags);
+    NwUtils::describeConst(de, "showName", showName);
+    NwUtils::describeConst(de, "seasonName", seasonName);
+    NwUtils::describeConst(de, "episodeNumber", episodeNumber);
+    NwUtils::describeConst(de, "hashId", hashId);
+}
+
 QString MovieFile::xbmcEpisodeNumber() const {
     int num = numericEpisodeNumber();
     if (num == SPECIAL) {

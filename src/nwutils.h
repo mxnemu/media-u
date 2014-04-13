@@ -59,6 +59,16 @@ public:
         }
     }
 
+    template<class T> static void describeConst(T& d, const nw::String key, const QString& value) {
+        d.describeName(key);
+        describeValueConst(d, value);
+    }
+
+    template<class T> static void describeValueConst(T& d, const QString& value) {
+        std::string str = value.toStdString();
+        d.describeValueConst(str);
+    }
+
     template<class T> static void describe(T& d, const nw::String key, QStringList& value, char separator) {
         if (d.isInWriteMode()) {
             std::stringstream ss;
@@ -97,6 +107,10 @@ public:
 
     template<class T, class T2> inline static void describe(T& d, const nw::String key, T2& value) {
         d.describe(key, value);
+    }
+
+    template<class T, class T2> inline static void describeConst(T& d, const nw::String key, const T2& value) {
+        d.describeConst(key, value);
     }
 };
 

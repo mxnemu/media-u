@@ -10,6 +10,7 @@ public:
 
     static bool hasMovieExtension(QString filename);
 
+    void writeForApi(nw::Writer& de) const;
     bool isSpecial() const;
     static bool isSpecial(QString episodeNumberString);
     float numericEpisodeNumber() const;

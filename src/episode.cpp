@@ -166,3 +166,13 @@ void Episode::pushFile(const MovieFile* mf) {
     }
     this->files.push_back(mf);
 }
+
+QList<const MovieFile*> Episode::missingFiles() const {
+    QList<const MovieFile*> missing;
+    foreach (const MovieFile* f, files) {
+        if (!f->exists()) {
+            missing << f;
+        }
+    }
+    return missing;
+}
