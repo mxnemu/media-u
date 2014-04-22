@@ -18,7 +18,7 @@ public:
     void writeAsElement(nw::JsonWriter& jw);
     void readAsElement(nw::JsonReader &jr);
 
-    void addMovieFile(const MovieFile *movieFile); ///< this takes ownage
+    void addMovieFile(const VideoFile *movieFile); ///< this takes ownage
     void addEpisode(Episode* episode); ///< this takes ownage
 
     Episode* getEpisodeForNumber(float number);
@@ -39,7 +39,7 @@ public:
     void setMinimalWatched(int number);
     void setWatched(int number);
     void setMaximalWatched(int number);
-    QList<const MovieFile*> missingFiles() const;
+    QList<const VideoFile*> missingFiles() const;
 signals:
     void beforeWatchCountChanged(int newCount, int oldCount);
     void watchCountChanged(int oldCount, int newCount); // TODO new, old

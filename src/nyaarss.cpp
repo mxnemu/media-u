@@ -57,7 +57,7 @@ void Entry::parse(nw::Describer* de) {
 
 
 bool Entry::isCandidateForAutoDownload(QString query, int episode, QString subgroup, const RssConfig& rssConfig) {
-    const MovieFile parsed = this->name;
+    const VideoFile parsed = this->name;
     if (0 == parsed.showName.compare(query, Qt::CaseInsensitive) &&
         parsed.numericEpisodeNumber() ==  episode &&
         (rssConfig.requireFavouriteReleaseGroup ? parsed.releaseGroup.contains(subgroup) : true) &&

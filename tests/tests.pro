@@ -44,13 +44,13 @@ TEMPLATE = app
 SOURCES += tst_moviefiletest.cpp \
     ../src/nwutils.cpp \
     ../src/episode.cpp \
-    ../src/moviefile.cpp \
+    ../src/videofile.cpp \
     ../src/systemutils.cpp \
     ../src/utils.cpp
 
 HEADERS  += ../src/nwutils.h \
     ../src/episode.h \
-    ../src/moviefile.h \
+    ../src/videofile.h \
     ../src/systemutils.h \
     ../src/utils.h
 

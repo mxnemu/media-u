@@ -1,4 +1,4 @@
-#include "moviefile.h"
+#include "videofile.h"
 #include <QFileInfo>
 #include <QDebug>
 
@@ -19,7 +19,7 @@
     prefix "Play\\s?All\\s(.+)($|\\(|\\[)?|" \
     prefix "Ending(\\s?[0-9]+)?"
 
-MovieFile::MovieFile(const QString originalPath) {
+VideoFile::VideoFile(const QString originalPath) {
     // set the path and resolve links
     QString path = originalPath;
     this->path = QFileInfo(path).canonicalFilePath();
@@ -176,23 +176,23 @@ MovieFile::MovieFile(const QString originalPath) {
     this->showName = this->showName.trimmed();
 
     if (this->showName.isEmpty()) {
-        const MovieFile parentDir(QFileInfo(originalPath).absolutePath());
+        const VideoFile parentDir(QFileInfo(originalPath).absolutePath());
         this->showName = parentDir.showName;
     }
 
     QRegExp showNameIsInDirectory("(" IS_SPECIAL_REGEX("^") ")");
     if (-1 != showNameIsInDirectory.indexIn(this->showName)) {
-        const MovieFile parentDir(QFileInfo(originalPath).absolutePath());
+        const VideoFile parentDir(QFileInfo(originalPath).absolutePath());
         this->episodeNumber = this->showName;
         this->showName = parentDir.showName;
     }
 }
 
-bool MovieFile::hasMovieExtension(QString filename) {
+bool VideoFile::hasVideoExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$|\\.mp5$", Qt::CaseInsensitive));
 }
 
-void MovieFile::writeForApi(nw::Writer& de) const {
+void VideoFile::writeForApi(nw::Writer& de) const {
     NwUtils::describeConst(de, "path", path);
     NwUtils::describeConst(de, "releaseGroup",releaseGroup);
     NwUtils::describeConst(de, "episodeName", episodeName);
@@ -203,7 +203,7 @@ void MovieFile::writeForApi(nw::Writer& de) const {
     NwUtils::describeConst(de, "hashId", hashId);
 }
 
-QString MovieFile::xbmcEpisodeNumber() const {
+QString VideoFile::xbmcEpisodeNumber() const {
     int num = numericEpisodeNumber();
     if (num == SPECIAL) {
         return QString("0x%1").arg(episodeNumber);
@@ -215,22 +215,22 @@ QString MovieFile::xbmcEpisodeNumber() const {
 }
 
 
-QString MovieFile::fileExtension() const {
+QString VideoFile::fileExtension() const {
     return QFileInfo(path).completeSuffix();
 }
 
-bool MovieFile::exists() const {
+bool VideoFile::exists() const {
     return QFile::exists(path);
 }
 
-QString MovieFile::xbmcEpisodeName() const {
+QString VideoFile::xbmcEpisodeName() const {
     if (episodeName.length() > 0) {
         return episodeName;
     }
     return "Episode";
 }
 
-bool MovieFile::isSpecial(QString episodeNumberString) {
+bool VideoFile::isSpecial(QString episodeNumberString) {
     QRegExp specialRegex("("
         IS_SPECIAL_REGEX()
     ")", Qt::CaseInsensitive);
@@ -238,11 +238,11 @@ bool MovieFile::isSpecial(QString episodeNumberString) {
     return is;
 }
 
-bool MovieFile::isSpecial() const {
+bool VideoFile::isSpecial() const {
     return isSpecial(this->episodeNumber);
 }
 
-float MovieFile::numericEpisodeNumber() const {
+float VideoFile::numericEpisodeNumber() const {
     if (isSpecial()) {
         return SPECIAL;
     }

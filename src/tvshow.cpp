@@ -138,7 +138,7 @@ void TvShow::writeAsListingItem(nw::Describer* de) const {
 
 
 
-void TvShow::importMovieFile(const MovieFile *episode) {
+void TvShow::importVideoFile(const VideoFile *episode) {
     episodes.addMovieFile(episode);
 }
 

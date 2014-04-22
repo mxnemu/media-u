@@ -8,7 +8,7 @@
 #include <QDateTime>
 
 #include "nwutils.h"
-#include "moviefile.h"
+#include "videofile.h"
 
 class Episode : public QObject
 {
@@ -16,17 +16,17 @@ class Episode : public QObject
 public:
     explicit Episode(nw::Describer *jw, QObject *parent = 0);
     explicit Episode(QString path, QObject *parent = 0);
-    explicit Episode(const MovieFile* path, QObject* parent = 0);
+    explicit Episode(const VideoFile* path, QObject* parent = 0);
     virtual ~Episode();
     
     void addPath(QString path);
-    void addPath(const MovieFile* movieFile);
+    void addPath(const VideoFile* movieFile);
 
     void describe(nw::Describer *jw);
     void writeDetailed(nw::JsonWriter& jw, const QStringList& releaseGroupPreference);
 
-    const MovieFile* getMovieFileForPath(QString path);
-    const MovieFile* bestFile(const QStringList& releaseGroupPreference) const;
+    const VideoFile* getMovieFileForPath(QString path);
+    const VideoFile* bestFile(const QStringList& releaseGroupPreference) const;
 
     QString getShowName() const;
     bool getWatched() const;
@@ -37,7 +37,7 @@ public:
     QStringList releaseGroups() const;
 
     bool isSpecial() const;
-    QList<const MovieFile*> missingFiles() const;
+    QList<const VideoFile*> missingFiles() const;
 signals:
     void beforeWatchedChanged(bool newValue, bool oldValue);
     void watchedChanged(bool oldValue, bool newValue); // TODO change to old, new
@@ -45,12 +45,12 @@ signals:
 public slots:
     
 private:
-    QList<const MovieFile*> files;
+    QList<const VideoFile*> files;
     QString showName;
     QDateTime watchedDate;
     float episodeNumber;
 
-    void pushFile(const MovieFile*);
+    void pushFile(const VideoFile*);
 };
 
 #endif // EPISODE_H

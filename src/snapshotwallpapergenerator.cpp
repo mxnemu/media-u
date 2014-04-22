@@ -17,7 +17,7 @@ SearchResult Client::fetchPostsBlocking(const TvShow* show, int page) {
 
     const QList<Episode*>& eps = show->episodeList().episodes;
     foreach (const Episode* ep, eps) {
-        const MovieFile* mf = ep->bestFile(show->getReleaseGroupPreference());
+        const VideoFile* mf = ep->bestFile(show->getReleaseGroupPreference());
         if (!mf) {
             continue;
         }

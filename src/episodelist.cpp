@@ -46,7 +46,7 @@ void EpisodeList::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGr
     }
 }
 
-void EpisodeList::addMovieFile(const MovieFile* movieFile) {
+void EpisodeList::addMovieFile(const VideoFile* movieFile) {
     if (movieFile->path.isEmpty() || NULL != getEpisodeForPath(movieFile->path)) {
         delete movieFile;
         return;
@@ -167,7 +167,7 @@ bool epNumLess(const Episode* a, const Episode* b) {
 Episode* EpisodeList::getEpisodeForPath(const QString& path) {
     for (int i=0; i < episodes.length(); ++i) {
         Episode* f = episodes[i];
-        const MovieFile* mf = f->getMovieFileForPath(path);
+        const VideoFile* mf = f->getMovieFileForPath(path);
         if (mf) {
             return f;
         }
@@ -241,8 +241,8 @@ void EpisodeList::beforeWatchedChanged(bool newValue, bool oldValue) {
     }
 }
 
-QList<const MovieFile*> EpisodeList::missingFiles() const {
-    QList<const MovieFile*> missing;
+QList<const VideoFile*> EpisodeList::missingFiles() const {
+    QList<const VideoFile*> missing;
     foreach (Episode* ep, episodes) {
         missing << ep->missingFiles();
     }

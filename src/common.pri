@@ -25,12 +25,12 @@ SOURCES += main.cpp\
     franchise.cpp \
     episodelist.cpp \
     episode.cpp \
-    moviefile.cpp \
     snapshotwallpapergenerator.cpp \
     gifcreator.cpp \
     avconvutil.cpp \
     shortclipcreator.cpp \
-    videoclipcreator.cpp
+    videoclipcreator.cpp \
+    videofile.cpp
 
 
 HEADERS  += library.h \
@@ -59,10 +59,10 @@ HEADERS  += library.h \
     franchise.h \
     episodelist.h \
     episode.h \
-    moviefile.h \
     snapshotwallpapergenerator.h \
     gifcreator.h \
     avconvutil.h \
     shortclipcreator.h \
-    videoclipcreator.h
+    videoclipcreator.h \
+    videofile.h
 

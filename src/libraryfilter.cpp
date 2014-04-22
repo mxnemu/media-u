@@ -55,8 +55,8 @@ QList<TvShow *> LibraryFilter::statusPlanToWatch() const{
     return filter(LibraryFilter::filterStatus, &container);
 }
 
-QList<const MovieFile *> LibraryFilter::missingFiles() const {
-    QList<const MovieFile *> missing;
+QList<const VideoFile *> LibraryFilter::missingFiles() const {
+    QList<const VideoFile *> missing;
     foreach (TvShow* show, tvShows) {
         missing << show->episodeList().missingFiles();
     }
@@ -86,10 +86,10 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) con
                   std::pair<QString, QList<TvShow*> >("recently-watched", recentlyWatched())
         );
     } else if (req->path().startsWith("/api/library/filter/missingFiles")) {
-        QList<const MovieFile*> missing = this->missingFiles();
+        QList<const VideoFile*> missing = this->missingFiles();
         std::stringstream ss;
         nw::JsonWriter jw(ss);
-        foreach (const MovieFile* mf, missing) {
+        foreach (const VideoFile* mf, missing) {
             mf->writeForApi(jw);
         }
         jw.close();

@@ -5,27 +5,27 @@
 
 Episode::Episode(nw::Describer *jw, QObject* parent) :
     QObject(parent),
-    episodeNumber(MovieFile::INVALID)
+    episodeNumber(VideoFile::INVALID)
 {
     this->describe(jw);
 }
 
 Episode::Episode(QString path, QObject *parent) :
     QObject(parent),
-    episodeNumber(MovieFile::INVALID)
+    episodeNumber(VideoFile::INVALID)
 {
     addPath(path);
 }
 
-Episode::Episode(const MovieFile *path, QObject *parent) :
+Episode::Episode(const VideoFile *path, QObject *parent) :
     QObject(parent),
-    episodeNumber(MovieFile::INVALID)
+    episodeNumber(VideoFile::INVALID)
 {
     addPath(path);
 }
 
 Episode::~Episode() {
-    foreach (const MovieFile* m, files) {
+    foreach (const VideoFile* m, files) {
         delete m;
     }
 }
@@ -38,7 +38,7 @@ void Episode::describe(nw::Describer *de) {
         if (de->isInReadMode()) {
             QString path;
             NwUtils::describeValue(*de, path);
-            addPath(new MovieFile(path));
+            addPath(new VideoFile(path));
         } else {
             QString path = files.at(i)->path;
             NwUtils::describeValue(*de, path);
@@ -54,9 +54,9 @@ void Episode::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupP
     NwUtils::describe(jw, "numericEpisodeNumber", episodeNumber);
 
     // TODO don't rely on an abs path for TVSHOWPAGE
-    const MovieFile* best = this->bestFile(releaseGroupPreference);
+    const VideoFile* best = this->bestFile(releaseGroupPreference);
     if (best) {
-        MovieFile copy = *best;
+        VideoFile copy = *best;
         bool exists = copy.exists();
         NwUtils::describe(jw, "path", copy.path);
         NwUtils::describe(jw, "episodeNumber", copy.episodeNumber);
@@ -69,8 +69,8 @@ void Episode::writeDetailed(nw::JsonWriter &jw, const QStringList& releaseGroupP
     }
 }
 
-const MovieFile *Episode::getMovieFileForPath(QString path) {
-    foreach (const MovieFile* mf, files) {
+const VideoFile *Episode::getMovieFileForPath(QString path) {
+    foreach (const VideoFile* mf, files) {
         if (mf->path == path) {
             return mf;
         }
@@ -78,9 +78,9 @@ const MovieFile *Episode::getMovieFileForPath(QString path) {
     return NULL;
 }
 
-const MovieFile *Episode::bestFile(const QStringList& releaseGroupPreference) const {
-    std::pair<const MovieFile*, int> best = std::pair<const MovieFile*, int>(NULL,-1);
-    foreach (const MovieFile* file, files) {
+const VideoFile *Episode::bestFile(const QStringList& releaseGroupPreference) const {
+    std::pair<const VideoFile*, int> best = std::pair<const VideoFile*, int>(NULL,-1);
+    foreach (const VideoFile* file, files) {
         if (!file) {
             continue;
         }
@@ -126,7 +126,7 @@ QDateTime Episode::getWatchedDate() const
 
 QStringList Episode::releaseGroups() const {
     QStringList groups;
-    foreach (const MovieFile* mf, files) {
+    foreach (const VideoFile* mf, files) {
         if (!groups.contains(mf->releaseGroup)) {
             groups.push_back(mf->releaseGroup);
         }
@@ -135,22 +135,22 @@ QStringList Episode::releaseGroups() const {
 }
 
 bool Episode::isSpecial() const {
-    return episodeNumber == MovieFile::SPECIAL;
+    return episodeNumber == VideoFile::SPECIAL;
 }
 
 
 void Episode::addPath(QString path) {
-    foreach (const MovieFile* f, files) {
+    foreach (const VideoFile* f, files) {
         if (f->path == path) {
             return;
         }
     }
-    pushFile(new MovieFile(path));
+    pushFile(new VideoFile(path));
 }
 
-void Episode::addPath(const MovieFile *movieFile) {
+void Episode::addPath(const VideoFile *movieFile) {
     QString path = movieFile->path;
-    foreach (const MovieFile* f, files) {
+    foreach (const VideoFile* f, files) {
         if (f->path == path) {
             delete movieFile;
             return;
@@ -160,7 +160,7 @@ void Episode::addPath(const MovieFile *movieFile) {
 }
 
 
-void Episode::pushFile(const MovieFile* mf) {
+void Episode::pushFile(const VideoFile* mf) {
     if (this->files.isEmpty()) {
         this->episodeNumber = mf->numericEpisodeNumber();
         this->showName = mf->showName;
@@ -168,8 +168,8 @@ void Episode::pushFile(const MovieFile* mf) {
     this->files.push_back(mf);
 }
 
-QList<const MovieFile*> Episode::missingFiles() const {
-    return Utils::filter(files, [](const MovieFile*const& f) -> bool {
+QList<const VideoFile*> Episode::missingFiles() const {
+    return Utils::filter(files, [](const VideoFile*const& f) -> bool {
         return !f->exists();
     });
 }

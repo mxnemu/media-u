@@ -1,7 +1,7 @@
 #include <QString>
 #include <QtTest>
 
-#include "../src/moviefile.h"
+#include "../src/videofile.h"
 #include "../src/systemutils.h"
 #include "../src/utils.h"
 
@@ -291,7 +291,7 @@ void MovieFileTest::testPathParsing() {
     QFETCH(float, numericEpisodeNumber);
     QFETCH(QString, episodeName);
 
-    const MovieFile m(path);
+    const VideoFile m(path);
     QCOMPARE(m.releaseGroup, releaseGroup);
     QCOMPARE(m.showName, showName);
     QCOMPARE(m.episodeNumber, episodeNumber);

@@ -4,11 +4,11 @@
 #include <QString>
 #include "nwutils.h"
 
-class MovieFile {
+class VideoFile {
 public:
-    MovieFile(const QString originalPath);
+    VideoFile(const QString originalPath);
 
-    static bool hasMovieExtension(QString filename);
+    static bool hasVideoExtension(QString filename);
 
     void writeForApi(nw::Writer& de) const;
     bool isSpecial() const;

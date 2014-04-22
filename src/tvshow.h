@@ -55,7 +55,7 @@ public:
     void read(QDir &dir);
     void write(nw::JsonWriter &jw);
 
-    void importMovieFile(const MovieFile *episode);
+    void importVideoFile(const VideoFile *episode);
     void downloadImage(const QString url, QDir libraryDirectory);
 
     bool isAiring() const;

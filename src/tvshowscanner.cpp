@@ -1,5 +1,5 @@
 #include "tvshowscanner.h"
-#include "moviefile.h"
+#include "videofile.h"
 #include <iostream>
 
 TvShowScanner::TvShowScanner(Library& library, QObject* parent) :
@@ -11,7 +11,7 @@ TvShowScanner::TvShowScanner(Library& library, QObject* parent) :
 void TvShowScanner::scanFiles(const QStringList &files, const QDir& dir)
 {
     foreach(QString file, files) {
-        if (MovieFile::hasMovieExtension(file)) {
+        if (VideoFile::hasVideoExtension(file)) {
             std::cout << "movie file found " << file.toStdString() << std::endl;
             emit machingFile((dir.absoluteFilePath(file)));
         }

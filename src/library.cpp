@@ -5,7 +5,7 @@
 #include "directoryscanner.h"
 #include "tvshowscanner.h"
 #include <QStandardPaths>
-#include "moviefile.h"
+#include "videofile.h"
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
@@ -118,10 +118,10 @@ const LibraryFilter& Library::filter() const {
 }
 
 void Library::importTvShowEpisode(QString episodePath) {
-    const MovieFile* movieFile = new MovieFile(episodePath);
+    const VideoFile* movieFile = new VideoFile(episodePath);
     if (!movieFile->showName.isEmpty()) {
         TvShow& show = this->tvShow(movieFile->showName);
-        show.importMovieFile(movieFile); // takes ownage
+        show.importVideoFile(movieFile); // takes ownage
     } else {
         qDebug() << "could not import (no show name parsed):" << movieFile->showName;
         delete movieFile;
