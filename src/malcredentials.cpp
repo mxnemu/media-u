@@ -1,4 +1,5 @@
 #include "malcredentials.h"
+#include <QDebug>
 
 MalCredentials::MalCredentials()
 {
@@ -26,12 +27,4 @@ bool MalCredentials::verifyCredentials() {
     qDebug() << "mal connection is " << mHasVerifiedCredentials;
     curl_easy_cleanup(handle);
     return mHasVerifiedCredentials;
-}
-
-bool MalCredentials::hasVerifiedCredentials() const {
-    return mHasVerifiedCredentials;
-}
-
-bool MalCredentials::login() {
-    return this->hasVerifiedCredentials() || this->verifyCredentials();
 }

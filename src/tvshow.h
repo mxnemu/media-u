@@ -92,8 +92,9 @@ public:
     int getTotalEpisodes() const;
     QString getSynopsis() const;
     QString getShowType() const;
-    int getRemoteId() const;
+    int getRemoteId(const QString trackerIdentifierKey) const;
     bool matchesNameOrSynonym(QString str) const;
+    bool matchesRemote(const QString trackerIdentifierKey, int id) const;
 
     void addPrequels(QList<RelatedTvShow> relations);
     void addSideStories(QList<RelatedTvShow> relations);
@@ -109,7 +110,7 @@ public:
     void setTotalEpisodes(int value);
     void setShowType(const QString &value);
     void setSynopsis(const QString &value);
-    void setRemoteId(const int &value);
+    void setRemoteId(const QString remoteIdentifier, const int &value);
 
     QDir directory(QDir libraryDirectory) const;
     QDir wallpaperDirectory(QDir libraryDirectory) const;
@@ -138,7 +139,7 @@ public:
     int getRewatchCount() const;
     void setRewatchCount(int count, bool updateTracker);
     QDateTime getLastLocalUpdate() const;
-    QDateTime getLastOnlineTrackerUpdate() const;
+    QDateTime getLastOnlineTrackerUpdate(const QString trackerKey) const;
     void setLastOnlineTrackerUpdate(const QString trackerKey, const QDateTime& value);
 
 signals:

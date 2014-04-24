@@ -89,7 +89,7 @@ void Entry::updateTitle(TvShow &) const {
 }
 
 void Entry::updateRemoteId(TvShow &show) const {
-    show.setRemoteId(id);
+    show.setRemoteId("malapidotcom", id);
 }
 
 void Entry::updateRelations(TvShow &show) const {

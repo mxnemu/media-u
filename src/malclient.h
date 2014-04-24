@@ -66,7 +66,7 @@ private:
 class Client : public OnlineTvShowDatabase::Client {
     Q_OBJECT
 public:
-    explicit Client(QObject *parent = 0);
+    explicit Client(OnlineCredentials& credentials, QObject *parent = 0);
     void init(QString configFilePath);
 
     bool hasVerifiedCredentials() const;

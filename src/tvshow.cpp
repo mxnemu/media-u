@@ -37,7 +37,6 @@ void TvShow::read(QDir &dir) {
     NwUtils::describe(jr, "rewatchCount", rewatchCount);
 
 
-    int onlineDataIndex = 0;
     jr.describeArray("onlineSyncData", "data", onlineSyncData.size());
     for (int i=0; jr.enterNextElement(i); ++i) {
         QString key;
@@ -382,9 +381,21 @@ void TvShow::setSynopsis(const QString &value)
     synopsis = value;
 }
 
+void TvShow::setRemoteId(const QString remoteIdentifier, const int& value) {
+    this->onlineSyncData[remoteIdentifier].setRemoteId(value);
+}
+
 QString TvShow::getShowType() const
 {
     return showType;
+}
+
+int TvShow::getRemoteId(const QString trackerIdentifierKey) const {
+    auto it = this->onlineSyncData.find(trackerIdentifierKey);
+    if (it != this->onlineSyncData.end()) {
+        return it->second.getRemoteId();
+    }
+    return -1;
 }
 
 void TvShow::setShowType(const QString &value)
@@ -395,6 +406,10 @@ void TvShow::setShowType(const QString &value)
 bool TvShow::matchesNameOrSynonym(QString str) const {
     return 0 == this->mName.compare(str, Qt::CaseInsensitive) ||
             this->synonyms.contains(str, Qt::CaseInsensitive);
+}
+
+bool TvShow::matchesRemote(const QString trackerIdentifierKey, int id) const {
+    return this->getRemoteId(trackerIdentifierKey) == id;
 }
 
 TvShowPlayerSettings::TvShowPlayerSettings() :
@@ -670,6 +685,14 @@ QDateTime TvShow::getLastLocalUpdate() const {
     return lastLocalUpdate;
 }
 
+QDateTime TvShow::getLastOnlineTrackerUpdate(const QString trackerKey) const {
+    auto it = this->onlineSyncData.find(trackerKey);
+    if (it != this->onlineSyncData.end()) {
+        return it->second.getLastOnlineTrackerUpdate();
+    }
+    return QDateTime();
+}
+
 void TvShow::setLastOnlineTrackerUpdate(const QString trackerKey, const QDateTime& value) {
     onlineSyncData[trackerKey].setLastOnlineTrackerUpdate(value);
     lastLocalUpdate = value;
@@ -698,4 +721,8 @@ int TvShow::OnlineSyncData::getRemoteId() const
 void TvShow::OnlineSyncData::setRemoteId(int value)
 {
     remoteId = value;
+}
+
+QDateTime TvShow::OnlineSyncData::getLastOnlineTrackerUpdate() const {
+    return this->lastOnlineTrackerUpdate;
 }

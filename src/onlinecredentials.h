@@ -13,10 +13,13 @@ public:
     virtual bool verifyCredentials() = 0;
     virtual bool login() {return mHasVerifiedCredentials || this->verifyCredentials();}
 
-    CURL* curlClient(const char* url, CurlResult &userdata);
-    CURL* curlNoAuthClient(const char* url, CurlResult& userdata);
+    CURL* curlClient(const char* url, CurlResult &userdata) const;
+    CURL* curlNoAuthClient(const char* url, CurlResult& userdata) const;
 
-private:
+    bool hasVerifiedCredentials() const;
+    QString getUsername() const;
+
+protected:
 
     bool mHasVerifiedCredentials;
     QString username;

@@ -31,11 +31,11 @@ public:
     QStringList my_tags; // separated by ", "
 
     void describe(nw::Describer& de);
-    void updateShow(TvShow* show);
-    bool localIsUpToDate(const TvShow* show) const;
+    void updateShow(const QString trackerIdentifierKey, TvShow* show);
+    bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
     bool remoteIsUpToDate(const TvShow* show) const;
     static TvShow::WatchStatus restoreStatus(int malStatusId);
-    bool syncConflict(const TvShow* show) const;
+    bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
     /// check if data is eq, disregarding the change dates
     bool remoteIsEq(const TvShow* show) const;
 };
@@ -49,8 +49,8 @@ public:
     QString error; // should be empty
 
     void describe(nw::Describer& de);
-    void updateShows(QList<TvShow*> shows);
-    const AnimeItemData* getShow(const TvShow* show) const;
+    void updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows);
+    const AnimeItemData* getShow(const QString trackerIdentifierKey, const TvShow* show) const;
 };
 
 enum UpdateWatchStatus {
@@ -91,16 +91,16 @@ class Tracker : public OnlineTracker
 {
     Q_OBJECT
 public:
-    explicit Tracker(QObject *parent = 0);
+    explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
     bool updateRemote(TvShow* show); ///< return true when everything is now synced, false on failure
     bool fetchRemote(QList<TvShow*>& show);
 
-    bool updateinOnlineTrackerOrAdd(TvShow* show, const QString& type);
 signals:
 
 public slots:
 
 private:
+    bool updateinOnlineTrackerOrAdd(TvShow* show, const QString& type);
     CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data);
     AnimeListData animeListData;
 };

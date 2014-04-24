@@ -1,6 +1,7 @@
 #include "onlinetracker.h"
 
-OnlineTracker::OnlineTracker(QObject *parent) :
-    QObject(parent)
+OnlineTracker::OnlineTracker(const OnlineCredentials& credentials, QObject *parent) :
+    QObject(parent),
+    credentials(credentials)
 {
 }

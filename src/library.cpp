@@ -11,7 +11,7 @@ Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
     mFilter(tvShows, directory),
-    searchThread(NULL),
+    searchThread(NULL)
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
@@ -20,7 +20,7 @@ Library::Library(QString path, QObject *parent) :
     addWallpaperDownloader(new Moebooru::Client(("https://yande.re")));
     addWallpaperDownloader(new Gelbooru::Client());
 
-    connect(&malapiClient, SIGNAL(updateFinished()),
+    connect(&onlineSync, SIGNAL(updateFinished()),
             this, SLOT(fetchingFinished()));
 
     fileSystemWatcher = new QFileSystemWatcher(this);
@@ -29,24 +29,22 @@ Library::Library(QString path, QObject *parent) :
 }
 
 Library::~Library() {
-    Mal::Thread* malThread = malClient.getActiveThread();
+    // terminate
     foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
         t->terminate();
     }
     searchThread->terminate();
-    if (malThread) malThread->terminate();
 
+    // wait
     foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
         t->wait();
     }
     searchThread->wait();
-    if (malThread) malThread->wait();
-
 }
 
-void Library::initMalClient(QString malConfigFilepath) {
-    malClient.init(malConfigFilepath);
-    connect(&malClient, SIGNAL(fetchingFinished()),
+void Library::initOnlineSync(QString malConfigFilepath) {
+    onlineSync.init(malConfigFilepath);
+    connect(&onlineSync, SIGNAL(fetchingFinished()),
             this, SLOT(fetchingFinished()));
 }
 
@@ -141,7 +139,7 @@ void Library::xbmcLinkExport(QDir outputDir) {
 */
 
 void Library::fetchMetaData() {
-    malClient.fetchShows(tvShows, *this);
+    onlineSync.fetchShows(tvShows, *this);
 }
 
 void Library::startWallpaperDownloaders() {

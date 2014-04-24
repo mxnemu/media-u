@@ -4,6 +4,7 @@
 #include "library.h"
 
 namespace OnlineTvShowDatabase {
+const QString Client::identifierKey = "db.mal";
 Client::Client(OnlineCredentials& credentials, QObject* parent) :
     QObject(parent),
     credentials(credentials),
@@ -56,7 +57,7 @@ Entry::~Entry() {}
 
 void Entry::updateShow(TvShow& show, const Library& library, UpdateFilter filter) const {
 
-    const TvShow* existingShow = library.filter().getShowForRemoteId(this->getRemoteId());
+    const TvShow* existingShow = library.filter().getShowForRemoteId(Client::identifierKey, this->getRemoteId());
 
     if (filter & OnlineTvShowDatabase::ufSynopsis) {
         updateSynopsis(show);
@@ -118,7 +119,7 @@ void Thread::run() {
         msleep(loginSleep);
     }
 
-    bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
+    //bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
 
     QDate now = QDate::currentDate();
 
@@ -127,7 +128,7 @@ void Thread::run() {
             continue;
         }
 
-        if (show->getRemoteId() == -1 ||
+        if (show->getRemoteId(client.identifierKey) == -1 ||
             show->getTotalEpisodes() == 0 ||
             (show->isAiring() && (
              (show->episodeList().numberOfEpisodes() >= show->getTotalEpisodes()) ||
@@ -145,9 +146,9 @@ void Thread::run() {
             }
         }
 
-        if (fetchingSucess) {
-            client.updateInOnlineTracker(show);
-        }
+        //if (fetchingSucess) {
+        //    client.updateInOnlineTracker(show);
+        //}
     }
 }
 

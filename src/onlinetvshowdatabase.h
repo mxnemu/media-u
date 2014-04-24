@@ -63,6 +63,8 @@ public:
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
 
+    static const QString identifierKey;
+
 signals:
     void updateFinished();
 

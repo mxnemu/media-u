@@ -12,9 +12,9 @@ SOURCES += filedownloadthread.cpp \
     transmissionclient.cpp \
     onlinetracker.cpp \
     maltracker.cpp \
-    onlinesyncthread.cpp \
     onlinecredentials.cpp \
-    malcredentials.cpp
+    malcredentials.cpp \
+    onlinesync.cpp
 
 HEADERS += filedownloadthread.h \
     curlresult.h \
@@ -30,6 +30,6 @@ HEADERS += filedownloadthread.h \
     transmissionclient.h \
     onlinetracker.h \
     maltracker.h \
-    onlinesyncthread.h \
     onlinecredentials.h \
-    malcredentials.h
+    malcredentials.h \
+    onlinesync.h

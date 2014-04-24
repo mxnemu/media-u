@@ -5,7 +5,7 @@ OnlineCredentials::OnlineCredentials() :
 {
 }
 
-CURL* OnlineCredentials::curlNoAuthClient(const char* url, CurlResult& userdata) {
+CURL* OnlineCredentials::curlNoAuthClient(const char* url, CurlResult& userdata) const {
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, url);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, CurlResult::write_data);
@@ -16,7 +16,7 @@ CURL* OnlineCredentials::curlNoAuthClient(const char* url, CurlResult& userdata)
     return handle;
 }
 
-CURL* OnlineCredentials::curlClient(const char* url, CurlResult& userdata) {
+CURL* OnlineCredentials::curlClient(const char* url, CurlResult& userdata) const {
     CURL* handle = curlNoAuthClient(url, userdata);
     curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
@@ -32,4 +32,13 @@ void OnlineCredentials::set(const QString name, const QString password) {
 void OnlineCredentials::set(const QString name, const QString password, QString userAgent) {
     this->set(name, password);
     this->userAgent = userAgent;
+}
+
+bool OnlineCredentials::hasVerifiedCredentials() const {
+    return mHasVerifiedCredentials;
+}
+
+QString OnlineCredentials::getUsername() const
+{
+    return username;
 }

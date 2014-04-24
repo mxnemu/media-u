@@ -173,9 +173,9 @@ TvShow* LibraryFilter::getTvShowForPath(const QString &path) const {
     return NULL;
 }
 
-TvShow *LibraryFilter::getShowForRemoteId(int remoteId) const {
+TvShow *LibraryFilter::getShowForRemoteId(const QString trackerIdentifierKey, int remoteId) const {
     foreach (TvShow* show, tvShows) {
-        if (show->getRemoteId() == remoteId) {
+        if (show->matchesRemote(trackerIdentifierKey, remoteId)) {
             return show;
         }
     }
