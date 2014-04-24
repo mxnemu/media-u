@@ -4,8 +4,9 @@
 #include "library.h"
 
 namespace OnlineTvShowDatabase {
-Client::Client(QObject* parent) :
+Client::Client(OnlineCredentials& credentials, QObject* parent) :
     QObject(parent),
+    credentials(credentials),
     activeThread(NULL)
 {
 }
@@ -148,8 +149,6 @@ void Thread::run() {
             client.updateInOnlineTracker(show);
         }
     }
-
-
 }
 
 }

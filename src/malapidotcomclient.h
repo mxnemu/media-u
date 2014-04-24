@@ -60,7 +60,7 @@ public:
 class Client : public OnlineTvShowDatabase::Client {
     Q_OBJECT
 public:
-    Client(QObject* parent = NULL);
+    Client(OnlineCredentials& credentials, QObject* parent = NULL);
 
     virtual inline bool login() { return true; }
     virtual SearchResult* search(QString anime);

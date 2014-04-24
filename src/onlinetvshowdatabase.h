@@ -6,6 +6,7 @@
 #include "curlresult.h"
 #include <QDir>
 #include <QThread>
+#include "onlinecredentials.h"
 
 class Library;
 namespace OnlineTvShowDatabase {
@@ -53,7 +54,7 @@ class Thread;
 class Client : public QObject {
     Q_OBJECT
 public:
-    Client(QObject* parent = NULL);
+    Client(OnlineCredentials& credentials, QObject* parent = NULL);
 
     void startUpdate(QList<TvShow *> &showList, const Library& library);
     bool findShow(TvShow& show, const Library& library);
@@ -61,15 +62,14 @@ public:
     virtual bool login() = 0;
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
-    virtual bool updateInOnlineTracker(TvShow* show) = 0;
-    virtual bool fetchOnlineTrackerList(QList<TvShow*>& shows) = 0;
 
 signals:
     void updateFinished();
 
 public slots:
     void threadFinished();
-private:
+protected:
+    OnlineCredentials& credentials;
     Thread* activeThread;
 };
 
@@ -77,7 +77,6 @@ class Thread : public QThread {
     Q_OBJECT
 public:
     Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent);
-
     void run();
 
 protected:

@@ -4,8 +4,8 @@
 
 namespace MalApiDotCom {
 
-Client::Client(QObject* parent) :
-    OnlineTvShowDatabase::Client(parent)
+Client::Client(OnlineCredentials& credentials, QObject* parent) :
+    OnlineTvShowDatabase::Client(credentials, parent)
 {
 }
 

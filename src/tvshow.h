@@ -2,6 +2,7 @@
 #define TVSHOW_H
 
 #include <QList>
+#include <map>
 #include <QDate>
 #include <QDir>
 #include "episodelist.h"
@@ -21,11 +22,14 @@ class TvShow;
 class Library;
 class RelatedTvShow {
 public:
-    RelatedTvShow(int id = -1);
-    int id;
+    RelatedTvShow(const QString id = "");
+    QString id;
+    int remoteId;
     QString title;
     TvShow* get(Library &library) const;
 
+    bool matches(const TvShow& show) const;
+    bool isDummy() const;
     bool operator ==(const RelatedTvShow& other) const;
     void describe(nw::Describer* de);
     void parseForManga(nw::Describer* de);
@@ -46,6 +50,19 @@ public:
         onHold,
         dropped,
         planToWatch
+    };
+
+    class OnlineSyncData {
+    public:
+        OnlineSyncData();
+        void describe(nw::Describer& de);
+        int getRemoteId() const;
+        void setRemoteId(int value);
+        QDateTime getLastOnlineTrackerUpdate() const;
+        void setLastOnlineTrackerUpdate(const QDateTime& value);
+    private:
+        int remoteId;
+        QDateTime lastOnlineTrackerUpdate;
     };
 
     TvShow(QString name, QObject* parent = NULL);
@@ -122,7 +139,7 @@ public:
     void setRewatchCount(int count, bool updateTracker);
     QDateTime getLastLocalUpdate() const;
     QDateTime getLastOnlineTrackerUpdate() const;
-    void setLastOnlineTrackerUpdate(const QDateTime& value);
+    void setLastOnlineTrackerUpdate(const QString trackerKey, const QDateTime& value);
 
 signals:
 
@@ -144,8 +161,7 @@ private:
     int rewatchMarker;
     int rewatchCount;
 
-    int remoteId;
-    QDateTime lastOnlineTrackerUpdate;
+    std::map<const QString, OnlineSyncData> onlineSyncData;
     QDateTime lastLocalUpdate;
     QStringList synonyms;
     QString showType;

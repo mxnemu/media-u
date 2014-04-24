@@ -11,7 +11,7 @@ Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
     mFilter(tvShows, directory),
-    searchThread(NULL)
+    searchThread(NULL),
 {
     if (!directory.exists() && !QDir::root().mkpath(directory.absolutePath())) {
         qDebug() << "could not create library dir";
