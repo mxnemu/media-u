@@ -237,6 +237,7 @@ bool Library::removeSearchDirectory(QString path) {
 }
 
 void Library::generateFrenchises() {
+    /*
     foreach (TvShow* show, tvShows) {
         show->syncRelations(*this);
     }
@@ -246,6 +247,7 @@ void Library::generateFrenchises() {
     foreach (Franchise* franchise, franchises) {
         franchise->generateName();
     }
+    */
 }
 
 void Library::fileChangedInSearchDirectory(QString path) {

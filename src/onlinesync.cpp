@@ -3,10 +3,12 @@
 OnlineSync::OnlineSync() {
 }
 
-void OnlineSync::init(QString configFile)
-{
+void OnlineSync::init(QString configFile) {
+
 }
 
-void OnlineSync::fetchShows(QList<TvShow*> shows, Library& library)
-{
+void OnlineSync::fetchShows(QList<TvShow*> shows, Library& library) {
+    emit databasesFinished();
+    emit trackersFinished();
+    emit allFinished();
 }

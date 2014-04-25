@@ -426,7 +426,7 @@ void TvShowPlayerSettings::describe(nw::Describer*de) {
 }
 
 
-RelatedTvShow::RelatedTvShow(const QString) :
+RelatedTvShow::RelatedTvShow(const QString id) :
     id(id)
 {
 }
