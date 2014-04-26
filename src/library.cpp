@@ -20,7 +20,7 @@ Library::Library(QString path, QObject *parent) :
     addWallpaperDownloader(new Moebooru::Client(("https://yande.re")));
     addWallpaperDownloader(new Gelbooru::Client());
 
-    connect(&onlineSync, SIGNAL(updateFinished()),
+    connect(&onlineSync, SIGNAL(allFinished()),
             this, SLOT(fetchingFinished()));
 
     fileSystemWatcher = new QFileSystemWatcher(this);
@@ -44,7 +44,7 @@ Library::~Library() {
 
 void Library::initOnlineSync(QString malConfigFilepath) {
     onlineSync.init(malConfigFilepath);
-    connect(&onlineSync, SIGNAL(fetchingFinished()),
+    connect(&onlineSync, SIGNAL(allFinished()),
             this, SLOT(fetchingFinished()));
 }
 

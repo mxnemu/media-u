@@ -20,6 +20,7 @@ signals:
     void allFinished();
 
 private:
+    QList<OnlineCredentials*> credentials;
     QList<OnlineTracker*> trackers;
     QList<OnlineTvShowDatabase::Client*> databases;
 };

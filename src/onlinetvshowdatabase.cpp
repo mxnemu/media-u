@@ -25,15 +25,7 @@ void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
 bool Client::findShow(TvShow& show, const Library& library) {
     QString name = show.name();
     SearchResult* result = this->search(name);
-    if (!result) {
-        return false;
-    }
-    const Entry* entry = this->bestResult(*result);
-    if (entry) {
-        entry->updateShow(show, library);
-        return true;
-    }
-    return false;
+    return result;
 }
 
 void Client::threadFinished() {
