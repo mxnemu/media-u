@@ -80,12 +80,14 @@ const VideoFile *Episode::getMovieFileForPath(QString path) {
 
 const VideoFile *Episode::bestFile(const QStringList& releaseGroupPreference) const {
     std::pair<const VideoFile*, int> best = std::pair<const VideoFile*, int>(NULL,-1);
+    const int worst = releaseGroupPreference.length();
     foreach (const VideoFile* file, files) {
         if (!file) {
             continue;
         }
         int score = releaseGroupPreference.indexOf(file->releaseGroup);
-        score += releaseGroupPreference.length() * !file->exists();
+        score = -1 == score ? worst : score;
+        score += worst * !file->exists();
         if (best.second == -1 || score < best.second) {
             best.first = file;
             best.second = score;
