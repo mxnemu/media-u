@@ -139,7 +139,9 @@ void Library::xbmcLinkExport(QDir outputDir) {
 */
 
 void Library::fetchMetaData() {
-    onlineSync.fetchShows(tvShows, *this);
+    foreach (TvShow* show, tvShows) {
+        onlineSync.fetchShow(show, *this);
+    }
 }
 
 void Library::startWallpaperDownloaders() {

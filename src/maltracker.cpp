@@ -9,7 +9,7 @@ Tracker::Tracker(const OnlineCredentials& credentials, QObject *parent) :
 {
 }
 
-CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) {
+CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) const {
     CURL* handle = credentials.curlClient(url, userdata);
     curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
     QString dataStr = QUrl(data.toXml()).toEncoded();
@@ -43,33 +43,37 @@ bool Tracker::fetchRemote(QList<TvShow*>& shows) {
     return false;
 }
 
-bool Tracker::updateRemote(TvShow* show) {
+const QString Tracker::IDENTIFIERKEY = "mal";
+const QString Tracker::identifierKey() const {
+    return IDENTIFIERKEY;
+}
+
+OnlineTracker::UpdateResult Tracker::updateRemote(const TvShow* show) {
     int id = show->getRemoteId(identifierKey());
-    if (id <= 0) return false;
+    if (id <= 0) return failedDueToMissingData;
 
     if (!animeListData.error.isEmpty()) {
-        return false;
+        return failedDueToMissingData;
     }
 
     const AnimeItemData* item = animeListData.getShow(this->identifierKey(), show);
     if (item) {
         if (item->localIsUpToDate(this->identifierKey(), show) && !item->remoteIsUpToDate(show)) {
             if (item->remoteIsEq(show)) {
-                show->setLastOnlineTrackerUpdate(this->identifierKey(), item->my_last_updated);
-                return true;
+                return alreadySameAsLocal;
             }
             return this->updateinOnlineTrackerOrAdd(show, "update");
         }
         qDebug() << "MAL TRACKER skip up2date" << show->name();
-        return true;
+        return skipDueToNoChanges;
     } else {
         return this->updateinOnlineTrackerOrAdd(show, "add");
     }
 }
 
-bool Tracker::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
+OnlineTracker::UpdateResult Tracker::updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const {
     QString url = QString("http://myanimelist.net/api/animelist/%2/%1.xml").arg(QString::number(show->getRemoteId(identifierKey())), type);
-    CurlResult userData(this);
+    CurlResult userData;
     AnimeUpdateData updateData(show);
 
     CURL* handle = curlTrackerUpdateClient(url.toUtf8().data(), userData, updateData);
@@ -80,25 +84,23 @@ bool Tracker::updateinOnlineTrackerOrAdd(TvShow* show, const QString& type) {
         userData.print();
     } else {
         if (type == "update" && userData.data.str() == "Updated") {
-            show->setLastOnlineTrackerUpdate(this->identifierKey(), QDateTime::currentDateTimeUtc());
             qDebug() << "MAL TRACKER UPDATE success" << show->name();
-            return true;
+            return success;
         } else if (type == "add") {
             QString responseString = userData.data.str().c_str();
             if (responseString.contains("201 Created")) {
-                show->setLastOnlineTrackerUpdate(this->identifierKey(), QDateTime::currentDateTimeUtc());
                 qDebug() << "MAL TRACKER ADD success" << show->name() << QDateTime::currentDateTimeUtc();
-                return true;
+                return success;
             }
         }
     }
     qDebug() << "Could not" << type << "MAL tracker:\n";
     userData.print();
-    return false;
+    return failedDueToNetwork;
 }
 
 
-AnimeUpdateData::AnimeUpdateData(TvShow *show) {
+AnimeUpdateData::AnimeUpdateData(const TvShow* show) {
     this->episode = show->episodeList().highestWatchedEpisodeNumber();
     this->status = calculateWatchStatus(show->getStatus());
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();

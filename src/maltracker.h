@@ -63,7 +63,7 @@ enum UpdateWatchStatus {
 
 class AnimeUpdateData {
 public:
-    AnimeUpdateData(TvShow*);
+    AnimeUpdateData(const TvShow*);
     static UpdateWatchStatus calculateWatchStatus(const TvShow::WatchStatus status);
 
     void describe(nw::Describer& de);
@@ -92,16 +92,18 @@ class Tracker : public OnlineTracker
     Q_OBJECT
 public:
     explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
-    bool updateRemote(TvShow* show); ///< return true when everything is now synced, false on failure
+    UpdateResult updateRemote(const TvShow* show); ///< return true when everything is now synced, false on failure
     bool fetchRemote(QList<TvShow*>& show);
+    const QString identifierKey() const;
+    static const QString IDENTIFIERKEY;
 
 signals:
 
 public slots:
 
 private:
-    bool updateinOnlineTrackerOrAdd(TvShow* show, const QString& type);
-    CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data);
+    UpdateResult updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const;
+    CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) const;
     AnimeListData animeListData;
 };
 

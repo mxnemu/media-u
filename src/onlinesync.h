@@ -12,7 +12,8 @@ public:
     OnlineSync();
 
     void init(QString configFile);
-    void fetchShows(QList<TvShow*> shows, Library& library);
+    void fetchShow(TvShow* show, Library& library);
+    void updateShow(TvShow* show, Library& library);
 
 signals:
     void trackersFinished();
@@ -20,6 +21,9 @@ signals:
     void allFinished();
 
 private:
+    QList<TvShow*> unhandledFetch;
+    QList<TvShow*> unhandledUpdate;
+
     QList<OnlineCredentials*> credentials;
     QList<OnlineTracker*> trackers;
     QList<OnlineTvShowDatabase::Client*> databases;

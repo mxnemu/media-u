@@ -22,7 +22,7 @@ void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
     this->activeThread->start();
 }
 
-bool Client::findShow(TvShow& show, const Library& library) {
+SearchResult* Client::findShow(TvShow& show) {
     QString name = show.name();
     SearchResult* result = this->search(name);
     return result;
@@ -130,7 +130,10 @@ void Thread::run() {
             QTime timer;
             timer.start();
 
-            client.findShow(*show, library);
+            SearchResult* result = client.findShow(*show);
+            const Entry* best = client.bestResult(*result);
+            best->updateShow(*show, library);
+
 
             int sleepTime = this->requestSleepPadding - timer.elapsed();
             if (sleepTime > 0) {

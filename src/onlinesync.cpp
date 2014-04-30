@@ -14,26 +14,40 @@ void OnlineSync::init(QString configFile) {
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 }
 
-void OnlineSync::fetchShows(QList<TvShow*> shows, Library& library) {
-    for (TvShow* show : shows) {
-        QList<OnlineTvShowDatabase::SearchResult> results;
-        for (OnlineTvShowDatabase::Client* db : databases) {
-            db->findShow(*show, library);
-        }
-        /* old update code from Client
-            if (!result) {
-                return false;
-            }
-            const Entry* entry = this->bestResult(*result);
-            if (entry) {
-                entry->updateShow(show, library);
-                return true;
-            }
-            return false;
-        */
-
+void OnlineSync::fetchShow(TvShow* show, Library& library) {
+    QList<OnlineTvShowDatabase::SearchResult*> results;
+    for (OnlineTvShowDatabase::Client* db : databases) {
+        results.push_back(db->findShow(*show));
     }
+    /* old update code from Client
+        if (!result) {
+            return false;
+        }
+        const Entry* entry = this->bestResult(*result);
+        if (entry) {
+            entry->updateShow(show, library);
+            return true;
+        }
+        return false;
+    */
     emit databasesFinished();
     emit trackersFinished();
     emit allFinished();
+}
+
+
+void OnlineSync::updateShow(TvShow* show, Library& library) {
+    for (OnlineTracker* tracker : trackers) {
+        OnlineTracker::UpdateResult result = tracker->updateRemote(show);
+        if (result == OnlineTracker::success) {
+            show->setLastOnlineTrackerUpdate(tracker->identifierKey(), QDateTime::currentDateTimeUtc());
+        }
+        if (result == OnlineTracker::alreadySameAsLocal) {
+            // show->setLastOnlineTrackerUpdate(this->identifierKey(), item->my_last_updated);
+
+            show->
+                    continue coding here
+                    cause explicit compile error so I remember where i stopped
+        }
+    }
 }

@@ -208,7 +208,7 @@ QStringList TvShow::wallpapers(QDir libraryDirectory) const {
     return ffs->getMatchedFiles();
 }
 
-QString TvShow::favouriteReleaseGroup() {
+QString TvShow::favouriteReleaseGroup() const {
     if (releaseGroupPreference.isEmpty()) {
         return this->episodeList().mostDownloadedReleaseGroup();
     }

@@ -57,7 +57,7 @@ public:
     Client(OnlineCredentials& credentials, QObject* parent = NULL);
 
     void startUpdate(QList<TvShow *> &showList, const Library& library);
-    bool findShow(TvShow& show, const Library& library);
+    SearchResult* findShow(TvShow& show);
 
     virtual bool login() = 0;
     virtual SearchResult* search(QString anime) = 0;

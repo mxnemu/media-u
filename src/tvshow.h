@@ -117,7 +117,7 @@ public:
     int numberOfWallpapers(QDir libraryDirectory) const;
     QString randomWallpaper(QDir libraryDirectory) const;
     QStringList wallpapers(QDir libraryDirectory) const;
-    QString favouriteReleaseGroup();
+    QString favouriteReleaseGroup() const;
 
     Episode* getEpisodeForPath(const QString &path);
 
