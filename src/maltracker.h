@@ -7,52 +7,6 @@
 
 namespace Mal {
 
-class AnimeItemData {
-public:
-    AnimeItemData(nw::Describer &de);
-    int series_animedb_id;
-    QString series_title;
-    QString series_synonyms;
-    int series_type;
-    int series_episodes;
-    int series_status;
-    QDate series_start; //2004-10-05
-    QDate series_end;
-    QString series_image;
-    QString my_id; // always 0 no idea what it does
-    int my_watched_episodes;
-    QDate my_start_date; // 0000-00-00
-    QDate my_finish_date; // 0000-00-00
-    int my_score;
-    TvShow::WatchStatus my_status;
-    int my_rewatching;
-    int my_rewatching_ep;
-    QDateTime my_last_updated; // unix time int example: 1388944557
-    QStringList my_tags; // separated by ", "
-
-    void describe(nw::Describer& de);
-    void updateShow(const QString trackerIdentifierKey, TvShow* show);
-    bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
-    bool remoteIsUpToDate(const TvShow* show) const;
-    static TvShow::WatchStatus restoreStatus(int malStatusId);
-    bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
-    /// check if data is eq, disregarding the change dates
-    bool remoteIsEq(const TvShow* show) const;
-};
-
-class AnimeListData {
-public:
-    AnimeListData();
-    AnimeListData(nw::Describer& de);
-
-    QList<AnimeItemData> items;
-    QString error; // should be empty
-
-    void describe(nw::Describer& de);
-    void updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows);
-    const AnimeItemData* getShow(const QString trackerIdentifierKey, const TvShow* show) const;
-};
-
 enum UpdateWatchStatus {
     watching = 1,
     completed = 2,
@@ -61,9 +15,9 @@ enum UpdateWatchStatus {
     plantowatch = 6
 };
 
-class AnimeUpdateData {
+class UpdateItem {
 public:
-    AnimeUpdateData(const TvShow*);
+    UpdateItem(const TvShow*);
     static UpdateWatchStatus calculateWatchStatus(const TvShow::WatchStatus status);
 
     void describe(nw::Describer& de);
@@ -91,8 +45,56 @@ class Tracker : public OnlineTracker
 {
     Q_OBJECT
 public:
+
+    class Entry : public OnlineTracker::Entry {
+    public:
+        Entry(nw::Describer &de);
+        int series_animedb_id;
+        QString series_title;
+        QString series_synonyms;
+        int series_type;
+        int series_episodes;
+        int series_status;
+        QDate series_start; //2004-10-05
+        QDate series_end;
+        QString series_image;
+        QString my_id; // always 0 no idea what it does
+        int my_watched_episodes;
+        QDate my_start_date; // 0000-00-00
+        QDate my_finish_date; // 0000-00-00
+        int my_score;
+        TvShow::WatchStatus my_status;
+        int my_rewatching;
+        int my_rewatching_ep;
+        // field: my_last_updated AS lastUpdated: unix time int example: 1388944557
+        QStringList my_tags; // separated by ", "
+
+        void describe(nw::Describer& de);
+        void updateShow(const QString trackerIdentifierKey, TvShow* show);
+        bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
+        bool remoteIsUpToDate(const TvShow* show) const;
+        static TvShow::WatchStatus restoreStatus(int malStatusId);
+        bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
+        /// check if data is eq, disregarding the change dates
+        bool remoteIsEq(const TvShow* show) const;
+    };
+
+    class EntryList : public OnlineTracker::EntryList {
+    public:
+        EntryList();
+        EntryList(nw::Describer& de);
+
+        Entry* get(int remoteId);
+        QList<Entry*> items;
+        QString error; // should be empty
+
+        void describe(nw::Describer& de);
+        void updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows);
+        const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const;
+    };
+
     explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
-    UpdateResult updateRemote(const TvShow* show); ///< return true when everything is now synced, false on failure
+    UpdateResult updateRemoteImpl(const TvShow* show); ///< return true when everything is now synced, false on failure
     bool fetchRemote(QList<TvShow*>& show);
     const QString identifierKey() const;
     static const QString IDENTIFIERKEY;
@@ -103,8 +105,7 @@ public slots:
 
 private:
     UpdateResult updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const;
-    CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) const;
-    AnimeListData animeListData;
+    CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, UpdateItem& data) const;
 };
 
 

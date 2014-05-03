@@ -18,16 +18,32 @@ public:
         skipDueToNoChanges
     };
 
+    class Entry {
+    public:
+        QDateTime lastUpdate;
+        int remoteId;
+    };
+
+    class EntryList {
+    public:
+        virtual const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const = 0 ;
+        virtual void describe(nw::Describer& de) = 0;
+    };
+
+    EntryList* getEntries();
+
     explicit OnlineTracker(const OnlineCredentials& credentials, QObject *parent = 0);
-    virtual UpdateResult updateRemote(const TvShow* show) = 0;
+    virtual UpdateResult updateRemoteImpl(const TvShow* show) = 0;
+    virtual bool updateRemote(TvShow* show);
     virtual bool fetchRemote(QList<TvShow*>& shows) = 0;
     virtual const QString identifierKey() const = 0;
 signals:
-    
-public slots:   
+
+public slots:
 
 protected:
-    const OnlineCredentials& credentials;    
+    const OnlineCredentials& credentials;
+    EntryList* entries;
 };
 
 #endif // ONLINETRACKER_H

@@ -4,7 +4,8 @@
 #include "maltracker.h"
 
 OnlineSync::OnlineSync() {
-
+    connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
+    connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
 }
 
 void OnlineSync::init(QString configFile) {
@@ -31,23 +32,25 @@ void OnlineSync::fetchShow(TvShow* show, Library& library) {
         return false;
     */
     emit databasesFinished();
-    emit trackersFinished();
-    emit allFinished();
 }
 
 
-void OnlineSync::updateShow(TvShow* show, Library& library) {
+void OnlineSync::updateShow(TvShow* show) {
+    this->unhandledFetch.insert(show);
+    bool noFail = true;
     for (OnlineTracker* tracker : trackers) {
-        OnlineTracker::UpdateResult result = tracker->updateRemote(show);
-        if (result == OnlineTracker::success) {
-            show->setLastOnlineTrackerUpdate(tracker->identifierKey(), QDateTime::currentDateTimeUtc());
-        }
-        if (result == OnlineTracker::alreadySameAsLocal) {
-            // show->setLastOnlineTrackerUpdate(this->identifierKey(), item->my_last_updated);
+        bool success = tracker->updateRemote(show);
+        noFail *= success;
+    }
+    if (noFail) {
+        this->unhandledFetch.erase(show);
+        emit trackersFinished();
+    }
+}
 
-            show->
-                    continue coding here
-                    cause explicit compile error so I remember where i stopped
-        }
+
+void OnlineSync::checkIfAllFinished() {
+    if (unhandledFetch.empty() && unhandledUpdate.empty()) {
+        emit allFinished();
     }
 }

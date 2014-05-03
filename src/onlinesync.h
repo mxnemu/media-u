@@ -13,16 +13,19 @@ public:
 
     void init(QString configFile);
     void fetchShow(TvShow* show, Library& library);
-    void updateShow(TvShow* show, Library& library);
+    void updateShow(TvShow* show);
 
 signals:
     void trackersFinished();
     void databasesFinished();
     void allFinished();
 
+private slots:
+    void checkIfAllFinished();
+
 private:
-    QList<TvShow*> unhandledFetch;
-    QList<TvShow*> unhandledUpdate;
+    std::set<TvShow*> unhandledFetch;
+    std::set<TvShow*> unhandledUpdate;
 
     QList<OnlineCredentials*> credentials;
     QList<OnlineTracker*> trackers;

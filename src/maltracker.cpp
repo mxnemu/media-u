@@ -9,7 +9,7 @@ Tracker::Tracker(const OnlineCredentials& credentials, QObject *parent) :
 {
 }
 
-CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, AnimeUpdateData& data) const {
+CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, UpdateItem& data) const {
     CURL* handle = credentials.curlClient(url, userdata);
     curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
     QString dataStr = QUrl(data.toXml()).toEncoded();
@@ -32,12 +32,14 @@ bool Tracker::fetchRemote(QList<TvShow*>& shows) {
         userData.print();
     } else {
         nw::XmlReader xr(userData.data);
-        animeListData.describe(xr);
-        if (!animeListData.error.isEmpty()) {
-            qDebug() << "got error from mal status list fetching:" << animeListData.error;
+
+        EntryList& entries = static_cast<EntryList&>(*this->entries);
+        entries.describe(xr);
+        if (!entries.error.isEmpty()) {
+            qDebug() << "got error from mal status list fetching:" << entries.error;
             return false;
         }
-        animeListData.updateShows(this->identifierKey(), shows);
+        entries.updateShows(this->identifierKey(), shows);
         return true;
     }
     return false;
@@ -48,15 +50,16 @@ const QString Tracker::identifierKey() const {
     return IDENTIFIERKEY;
 }
 
-OnlineTracker::UpdateResult Tracker::updateRemote(const TvShow* show) {
+OnlineTracker::UpdateResult Tracker::updateRemoteImpl(const TvShow* show) {
     int id = show->getRemoteId(identifierKey());
     if (id <= 0) return failedDueToMissingData;
 
-    if (!animeListData.error.isEmpty()) {
+    EntryList& entries = static_cast<EntryList&>(*this->entries);
+    if (!entries.error.isEmpty()) {
         return failedDueToMissingData;
     }
 
-    const AnimeItemData* item = animeListData.getShow(this->identifierKey(), show);
+    const Entry* item = entries.get(this->identifierKey(), show);
     if (item) {
         if (item->localIsUpToDate(this->identifierKey(), show) && !item->remoteIsUpToDate(show)) {
             if (item->remoteIsEq(show)) {
@@ -74,7 +77,7 @@ OnlineTracker::UpdateResult Tracker::updateRemote(const TvShow* show) {
 OnlineTracker::UpdateResult Tracker::updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const {
     QString url = QString("http://myanimelist.net/api/animelist/%2/%1.xml").arg(QString::number(show->getRemoteId(identifierKey())), type);
     CurlResult userData;
-    AnimeUpdateData updateData(show);
+    UpdateItem updateData(show);
 
     CURL* handle = curlTrackerUpdateClient(url.toUtf8().data(), userData, updateData);
     CURLcode error = curl_easy_perform(handle);
@@ -100,7 +103,7 @@ OnlineTracker::UpdateResult Tracker::updateinOnlineTrackerOrAdd(const TvShow* sh
 }
 
 
-AnimeUpdateData::AnimeUpdateData(const TvShow* show) {
+UpdateItem::UpdateItem(const TvShow* show) {
     this->episode = show->episodeList().highestWatchedEpisodeNumber();
     this->status = calculateWatchStatus(show->getStatus());
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();
@@ -119,7 +122,7 @@ AnimeUpdateData::AnimeUpdateData(const TvShow* show) {
     QStringList tags; // string. tags separated by commas
 }
 
-UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(const TvShow::WatchStatus status) {
+UpdateWatchStatus UpdateItem::calculateWatchStatus(const TvShow::WatchStatus status) {
     switch (status) {
     case TvShow::waitingForNewEpisodes:
     case TvShow::watching:
@@ -133,7 +136,7 @@ UpdateWatchStatus AnimeUpdateData::calculateWatchStatus(const TvShow::WatchStatu
     }
 }
 
-void AnimeUpdateData::describe(nw::Describer& de) {
+void UpdateItem::describe(nw::Describer& de) {
     int statusInt = status;
     nw::String empty = "";
     NwUtils::describe(de, "episode", episode);
@@ -154,7 +157,7 @@ void AnimeUpdateData::describe(nw::Describer& de) {
     NwUtils::describe(de, "tags", tags, ',');
 }
 
-QString AnimeUpdateData::toXml() {
+QString UpdateItem::toXml() {
     std::stringstream ss;
     nw::XmlWriter xw(ss);
     this->describe(xw);
@@ -166,7 +169,7 @@ QString AnimeUpdateData::toXml() {
     return QString(ss.str().data());
 }
 
-TvShow::WatchStatus AnimeItemData::restoreStatus(int malStatusId) {
+TvShow::WatchStatus Tracker::Entry::restoreStatus(int malStatusId) {
     switch(malStatusId) {
     case 1: return TvShow::watching;
     case 2: return TvShow::completed;
@@ -179,37 +182,37 @@ TvShow::WatchStatus AnimeItemData::restoreStatus(int malStatusId) {
 }
 
 
-AnimeListData::AnimeListData() :
+Tracker::EntryList::EntryList() :
     error("noinit")
 {
 }
 
-AnimeListData::AnimeListData(nw::Describer& de) {
+Tracker::EntryList::EntryList(nw::Describer& de) {
     describe(de);
 }
 
-void AnimeListData::updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows) {
-    foreach (AnimeItemData item, items) {
+void Tracker::EntryList::updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows) {
+    foreach (Entry* item, items) {
         foreach (TvShow* show, shows) {
-            if (show->getRemoteId(trackerIdentifierKey) == item.series_animedb_id) {
-                item.updateShow(trackerIdentifierKey, show);
+            if (show->getRemoteId(trackerIdentifierKey) == item->series_animedb_id) {
+                item->updateShow(trackerIdentifierKey, show);
                 break;
             }
         }
     }
 }
 
-const AnimeItemData* AnimeListData::getShow(const QString trackerIdentifierKey, const TvShow* show) const {
+const Tracker::Entry* Tracker::EntryList::get(const QString trackerIdentifierKey, const TvShow* show) const {
     int id = show->getRemoteId(trackerIdentifierKey);
-    foreach (const AnimeItemData& item, items) {
-        if (item.series_animedb_id == id) {
-            return &item;
+    foreach (const Tracker::Entry* item, items) {
+        if (item->series_animedb_id == id) {
+            return item;
         }
     }
     return NULL;
 }
 
-void AnimeListData::describe(nw::Describer& de) {
+void Tracker::EntryList::describe(nw::Describer& de) {
     error.clear();
     NwUtils::describe(de, "error", error);
     if (!error.isEmpty()) {
@@ -217,15 +220,15 @@ void AnimeListData::describe(nw::Describer& de) {
     }
     de.describeArray("", "anime", -1);
     for (int i=0; de.enterNextElement(i); ++i) {
-        items.push_back(AnimeItemData(de));
+        items.push_back(new Entry(de));
     }
 }
 
-AnimeItemData::AnimeItemData(nw::Describer& de) {
+Tracker::Entry::Entry(nw::Describer& de) {
     describe(de);
 }
 
-void AnimeItemData::describe(nw::Describer& de) {
+void Tracker::Entry::describe(nw::Describer& de) {
     int status = -1;
     NwUtils::describe(de, "series_animedb_id", series_animedb_id);
     NwUtils::describe(de, "series_title", series_title);
@@ -247,13 +250,13 @@ void AnimeItemData::describe(nw::Describer& de) {
 
     uint unixTimeUpdate = 0; // unix time int example: 1388944557
     NwUtils::describe(de, "my_last_updated", unixTimeUpdate);
-    my_last_updated = QDateTime::fromTime_t(unixTimeUpdate);
+    this->lastUpdate = QDateTime::fromTime_t(unixTimeUpdate);
 
     //QStringList my_tags; // separated by ", "
-    my_status = AnimeItemData::restoreStatus(status);
+    my_status = Entry::restoreStatus(status);
 }
 
-void AnimeItemData::updateShow(const QString trackerIdentifierKey, TvShow* show) {
+void Tracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show) {
     if (!localIsUpToDate(trackerIdentifierKey, show)) {
         int marker = this->my_rewatching_ep == 0 ? -1 :this->my_rewatching_ep;
         int count = this->my_rewatching;
@@ -266,34 +269,34 @@ void AnimeItemData::updateShow(const QString trackerIdentifierKey, TvShow* show)
         }
         show->setRewatchCount(count, false);
         show->setRewatchMarker(marker, false);
-        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->my_last_updated);
+        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
     }
     if (show->getLastOnlineTrackerUpdate(trackerIdentifierKey).isNull()) {
-        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->my_last_updated);
+        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
     }
 }
 
-bool AnimeItemData::syncConflict(const QString trackerIdentifier, const TvShow* show) const {
-    return show->getLastLocalUpdate() > my_last_updated &&
-            my_last_updated > show->getLastOnlineTrackerUpdate(trackerIdentifier);
+bool Tracker::Entry::syncConflict(const QString trackerIdentifier, const TvShow* show) const {
+    return show->getLastLocalUpdate() > lastUpdate &&
+            lastUpdate > show->getLastOnlineTrackerUpdate(trackerIdentifier);
 }
 
-bool AnimeItemData::localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const {
+bool Tracker::Entry::localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const {
     if (show->getLastOnlineTrackerUpdate(trackerIdentifier).isNull()) {
         return show->episodeList().highestWatchedEpisodeNumber(0) >= this->my_watched_episodes;
     }
-    return show->getLastOnlineTrackerUpdate(trackerIdentifier) >= this->my_last_updated;
+    return show->getLastOnlineTrackerUpdate(trackerIdentifier) >= this->lastUpdate;
 }
 
-bool AnimeItemData::remoteIsUpToDate(const TvShow* show) const {
+bool Tracker::Entry::remoteIsUpToDate(const TvShow* show) const {
     const QDateTime lastLocalUpdate = show->getLastLocalUpdate();
     return (!lastLocalUpdate.isNull() &&
-            (!my_last_updated.isNull() && my_last_updated >= lastLocalUpdate));
+            (!lastUpdate.isNull() && lastUpdate >= lastLocalUpdate));
 }
 
-bool AnimeItemData::remoteIsEq(const TvShow* show) const {
+bool Tracker::Entry::remoteIsEq(const TvShow* show) const {
     TvShow::WatchStatus status = show->getStatus();
-    TvShow::WatchStatus statusMalWouldSendIfSynced = restoreStatus(AnimeUpdateData::calculateWatchStatus(status));
+    TvShow::WatchStatus statusMalWouldSendIfSynced = restoreStatus(UpdateItem::calculateWatchStatus(status));
     // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
     const bool statusUpToDate =
             statusMalWouldSendIfSynced == this->my_status ||
