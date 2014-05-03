@@ -9,29 +9,42 @@ OnlineSync::OnlineSync() {
 }
 
 void OnlineSync::init(QString configFile) {
+    // TODO use a library that accesses system keychains
     MalCredentials* malCreds = new MalCredentials();
+    malCreds->readConfig(configFile);
     this->credentials.push_back(malCreds);
     this->databases.push_back(new Mal::Client(*malCreds, this));
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 }
 
 void OnlineSync::fetchShow(TvShow* show, Library& library) {
-    QList<OnlineTvShowDatabase::SearchResult*> results;
+    // TODO combine all results and use the metaData from the best one
+    //QList<OnlineTvShowDatabase::SearchResult*> results;
+    this->unhandledFetch.insert(show);
+    bool anySuccess = false;
     for (OnlineTvShowDatabase::Client* db : databases) {
-        results.push_back(db->findShow(*show));
-    }
-    /* old update code from Client
+
+        TODO continue coding here
+                check if it actually needs to be (re)fetched
+
+        OnlineTvShowDatabase::SearchResult* result = db->findShow(*show);
+
         if (!result) {
-            return false;
+            continue;
         }
-        const Entry* entry = this->bestResult(*result);
+
+        //results.push_back(result);
+        const OnlineTvShowDatabase::Entry* entry = db->bestResult(*result);
         if (entry) {
-            entry->updateShow(show, library);
-            return true;
+            entry->updateShow(*show, library);
+            anySuccess = true;
+            break;
         }
-        return false;
-    */
-    emit databasesFinished();
+    }
+    if (anySuccess) {
+        this->unhandledFetch.erase(show);
+        emit databasesFinished();
+    }
 }
 
 

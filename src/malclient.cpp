@@ -15,22 +15,6 @@ Client::Client(OnlineCredentials& credentials, QObject *parent) :
 {
 }
 
-void Client::init(QString configFilePath) {
-    if (QFile(configFilePath).exists()) {
-        std::string user, password, userAgent;
-
-        nw::JsonReader jr(configFilePath.toStdString());
-        jr.describe("user", user);
-        jr.describe("password", password);
-        NwUtils::describe(jr, "userAgent", userAgent);
-        jr.close();
-
-        if (user.length() > 0 && password.length() > 0) {
-            this->credentials.set(QString(user.data()), QString(password.data()));
-        }
-    }
-}
-
 void Client::fetchShows(QList<TvShow*> &showList, const Library& library) {
     if (activeThread) {
         return;

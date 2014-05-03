@@ -9,6 +9,7 @@ public:
     MalCredentials();
     bool verifyCredentials();
     bool hasVerifiedCredentials() const;
+    bool readConfig(QString configFilePath);
 };
 
 #endif // MALCREDENTIALS_H

@@ -141,6 +141,7 @@ void Library::xbmcLinkExport(QDir outputDir) {
 void Library::fetchMetaData() {
     foreach (TvShow* show, tvShows) {
         onlineSync.fetchShow(show, *this);
+        onlineSync.updateShow(show);
     }
 }
 
