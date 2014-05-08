@@ -63,6 +63,10 @@ QList<const VideoFile *> LibraryFilter::missingFiles() const {
     return missing;
 }
 
+QList<TvShow *> LibraryFilter::noRemoteId() const {
+    return filter(LibraryFilter::filterNoRemoteId);
+}
+
 bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) const {
     if (req->path().startsWith("/api/library/filter/lists")) {
         sendLists(resp,genLists());
@@ -94,6 +98,11 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) con
         }
         jw.close();
         Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
+    } else if (req->path().startsWith("/api/library/filter/noRemoteId")) {
+        sendLists(resp,
+                  QList<std::pair<QString, QList<TvShow*> > >() <<
+                  std::pair<QString, QList<TvShow*> >("noRemoteId", noRemoteId())
+        );
     } else {
         return false;
     }
@@ -242,6 +251,10 @@ bool LibraryFilter::filterRecentlyWatched(const TvShow &show, const LibraryFilte
 
 bool LibraryFilter::filterStatus(const TvShow &show, const LibraryFilter &, const void *userData) {
     return show.getStatus() == *((const TvShow::WatchStatus*)userData);
+}
+
+bool LibraryFilter::filterNoRemoteId(const TvShow &show, const LibraryFilter &, const void *) {
+    return show.getRemoteId() == -1;
 }
 
 QDir LibraryFilter::getLibraryDir() const

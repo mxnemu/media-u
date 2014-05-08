@@ -35,6 +35,7 @@ public:
 
     QList<std::pair<QString, QList<TvShow*> > > genLists() const;
     QList<const VideoFile*> missingFiles() const;
+    QList<TvShow*> noRemoteId() const;
 private:
     typedef bool (*FilterFunction)(const TvShow &, const LibraryFilter&, const void*);
 
@@ -45,6 +46,7 @@ private:
     static bool filterHasWallpaper(const TvShow& show, const LibraryFilter& filter, const void* userData);
     static bool filterRecentlyWatched(const TvShow& show, const LibraryFilter&, const void *userData);
     static bool filterStatus(const TvShow& show, const LibraryFilter&, const void* userData);
+    static bool filterNoRemoteId(const TvShow& show, const LibraryFilter&, const void*);
 
     TvShow* getRandomShow(const QList<TvShow *> &shows) const;
 
