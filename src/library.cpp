@@ -10,6 +10,7 @@
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
+    onlineSync(*this),
     mFilter(tvShows, directory),
     searchThread(NULL)
 {
@@ -140,8 +141,8 @@ void Library::xbmcLinkExport(QDir outputDir) {
 
 void Library::fetchMetaData() {
     foreach (TvShow* show, tvShows) {
-        onlineSync.fetchShow(show, *this);
-        onlineSync.updateShow(show);
+        onlineSync.addShowToFetch(show);
+        onlineSync.addShowToUpdate(show);
     }
 }
 

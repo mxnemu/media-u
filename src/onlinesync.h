@@ -5,16 +5,17 @@
 #include "onlinetracker.h"
 #include "onlinetvshowdatabase.h"
 
-class OnlineSync : public QObject
+class OnlineSync : public QThread
 {
     Q_OBJECT
 public:
-    OnlineSync();
+    OnlineSync(const Library& library);
 
     void init(QString configFile);
-    void fetchShow(TvShow* show, Library& library);
-    void updateShow(TvShow* show);
+    void addShowToFetch(TvShow* show);
+    void addShowToUpdate(TvShow* show);
 
+    void run();
 signals:
     void trackersFinished();
     void databasesFinished();
@@ -24,10 +25,14 @@ private slots:
     void checkIfAllFinished();
 
 private:
+    void startThreadIfNotRunning();
     bool requiresFetch(const TvShow* show, const QString dbIdentifier);
+    bool fetchShow(TvShow* show, const Library& library);
+    bool updateShow(TvShow* show);
 
     std::set<TvShow*> unhandledFetch;
     std::set<TvShow*> unhandledUpdate;
+    const Library& library;
 
     QList<OnlineCredentials*> credentials;
     QList<OnlineTracker*> trackers;

@@ -3,7 +3,9 @@
 #include "malclient.h"
 #include "maltracker.h"
 
-OnlineSync::OnlineSync() {
+OnlineSync::OnlineSync(const Library& library) :
+    library(library)
+{
     connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
     connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
 }
@@ -17,6 +19,22 @@ void OnlineSync::init(QString configFile) {
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 }
 
+void OnlineSync::startThreadIfNotRunning() {
+    if (!this->isRunning()) {
+        this->start();
+    }
+}
+
+void OnlineSync::addShowToFetch(TvShow *show) {
+    this->unhandledFetch.insert(show);
+    this->startThreadIfNotRunning();
+}
+
+void OnlineSync::addShowToUpdate(TvShow *show) {
+    this->unhandledFetch.insert(show);
+    this->startThreadIfNotRunning();
+}
+
 bool OnlineSync::requiresFetch(const TvShow* show, const QString dbIdentifier) {
     QDate today = QDate::currentDate();
     return
@@ -28,10 +46,9 @@ bool OnlineSync::requiresFetch(const TvShow* show, const QString dbIdentifier) {
          (show->getStatus() == TvShow::completed)));
 }
 
-void OnlineSync::fetchShow(TvShow* show, Library& library) {
+bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
     // TODO combine all results and use the metaData from the best one
     //QList<OnlineTvShowDatabase::SearchResult*> results;
-    this->unhandledFetch.insert(show);
     bool anySuccess = false;
     for (OnlineTvShowDatabase::Client* db : databases) {
         if (!requiresFetch(show, db->identifierKey())) {
@@ -55,23 +72,22 @@ void OnlineSync::fetchShow(TvShow* show, Library& library) {
         }
     }
     if (anySuccess) {
-        this->unhandledFetch.erase(show);
-        emit databasesFinished();
+        return true;
     }
+    return false;
 }
 
 
-void OnlineSync::updateShow(TvShow* show) {
-    this->unhandledFetch.insert(show);
+bool OnlineSync::updateShow(TvShow* show) {
     bool noFail = true;
     for (OnlineTracker* tracker : trackers) {
         bool success = tracker->updateRemote(show);
         noFail *= success;
     }
     if (noFail) {
-        this->unhandledFetch.erase(show);
-        emit trackersFinished();
+        return true;
     }
+    return false;
 }
 
 
@@ -79,4 +95,29 @@ void OnlineSync::checkIfAllFinished() {
     if (unhandledFetch.empty() && unhandledUpdate.empty()) {
         emit allFinished();
     }
+}
+
+void OnlineSync::run() {
+    while (!unhandledFetch.empty()) {
+        auto itr = unhandledFetch.begin();
+        TvShow* show = *itr;
+        bool success = this->fetchShow(show, library);
+        if (!success) {
+            qDebug() << "failed to fetch" << show->name();
+        }
+        unhandledFetch.erase(itr);
+    }
+    emit databasesFinished();
+
+    // TODO copy pasta
+    while (!unhandledUpdate.empty()) {
+        auto itr = unhandledUpdate.begin();
+        TvShow* show = *itr;
+        bool success = this->updateShow(show);
+        if (!success) {
+            qDebug() << "failed to fetch" << show->name();
+        }
+        unhandledUpdate.erase(itr);
+    }
+    emit trackersFinished();
 }
