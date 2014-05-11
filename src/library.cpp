@@ -6,6 +6,7 @@
 #include "tvshowscanner.h"
 #include <QStandardPaths>
 #include "videofile.h"
+#include "config.h"
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
@@ -20,9 +21,6 @@ Library::Library(QString path, QObject *parent) :
     addWallpaperDownloader(new Moebooru::Client(("http://konachan.com")));
     addWallpaperDownloader(new Moebooru::Client(("https://yande.re")));
     addWallpaperDownloader(new Gelbooru::Client());
-
-    connect(&onlineSync, SIGNAL(allFinished()),
-            this, SLOT(fetchingFinished()));
 
     fileSystemWatcher = new QFileSystemWatcher(this);
     connect(fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedInSearchDirectory(QString)));
@@ -43,8 +41,8 @@ Library::~Library() {
     searchThread->wait();
 }
 
-void Library::initOnlineSync(QString malConfigFilepath) {
-    onlineSync.init(malConfigFilepath);
+void Library::initOnlineSync(const BaseConfig& config) {
+    onlineSync.init(config);
     connect(&onlineSync, SIGNAL(allFinished()),
             this, SLOT(fetchingFinished()));
 }

@@ -150,7 +150,7 @@ bool BaseConfig::createNewConfig(QString filepath)
     return true;
 }
 
-QDir BaseConfig::configPath() {
+QDir BaseConfig::configPath() const {
     if (mConfigPath.isNull() || mConfigPath.isEmpty()) {
         return QDir(QDir::home().absoluteFilePath(".mediaU"));
     }
@@ -166,7 +166,7 @@ QString BaseConfig::libraryPath() {
     return dir.absoluteFilePath("library");
 }
 
-QString BaseConfig::malConfigFilePath() {
+QString BaseConfig::malConfigFilePath() const {
     return configPath().absoluteFilePath("malConfig.json");
 }
 

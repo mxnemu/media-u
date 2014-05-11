@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage");
 
-    library.initOnlineSync(config.malConfigFilePath());
+    library.initOnlineSync(config);
     library.startSearch();
 
     int returnCode = a.exec();

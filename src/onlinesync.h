@@ -5,13 +5,14 @@
 #include "onlinetracker.h"
 #include "onlinetvshowdatabase.h"
 
+class BaseConfig;
 class OnlineSync : public QThread
 {
     Q_OBJECT
 public:
     OnlineSync(const Library& library);
 
-    void init(QString configFile);
+    void init(const BaseConfig& config);
     void addShowToFetch(TvShow* show);
     void addShowToUpdate(TvShow* show);
 

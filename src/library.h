@@ -17,6 +17,7 @@
 #include "franchise.h"
 #include "onlinesync.h"
 
+class BaseConfig;
 class DirectoryScannerThread;
 
 class Library : public QObject
@@ -32,7 +33,7 @@ public:
 
     explicit Library(QString path, QObject *parent = 0);
     virtual ~Library();
-    void initOnlineSync(QString malConfigFilepath);
+    void initOnlineSync(const BaseConfig& malConfigFilepath);
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
 

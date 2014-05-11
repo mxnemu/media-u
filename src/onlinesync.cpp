@@ -2,6 +2,7 @@
 #include "malcredentials.h"
 #include "malclient.h"
 #include "maltracker.h"
+#include "config.h"
 
 OnlineSync::OnlineSync(const Library& library) :
     library(library)
@@ -10,10 +11,10 @@ OnlineSync::OnlineSync(const Library& library) :
     connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
 }
 
-void OnlineSync::init(QString configFile) {
+void OnlineSync::init(const BaseConfig& config) {
     // TODO use a library that accesses system keychains
     MalCredentials* malCreds = new MalCredentials();
-    malCreds->readConfig(configFile);
+    malCreds->readConfig(config.malConfigFilePath());
     this->credentials.push_back(malCreds);
     this->databases.push_back(new Mal::Client(*malCreds, this));
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
