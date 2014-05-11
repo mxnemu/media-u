@@ -19,10 +19,9 @@ CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, Up
     return handle;
 }
 
-bool Tracker::fetchRemote(QList<TvShow*>& shows) {
-
+OnlineTracker::EntryList* Tracker::fetchRemote() const {
     QString url = QString("http://myanimelist.net/malappinfo.php?u=%1&status=all&type=anime").arg(credentials.getUsername());
-    CurlResult userData(this);
+    CurlResult userData(NULL);
 
     CURL* handle = credentials.curlNoAuthClient(url.toUtf8().data(), userData);
     CURLcode error = curl_easy_perform(handle);
@@ -33,28 +32,27 @@ bool Tracker::fetchRemote(QList<TvShow*>& shows) {
     } else {
         nw::XmlReader xr(userData.data);
 
-        EntryList& entries = static_cast<EntryList&>(*this->entries);
-        entries.describe(xr);
-        if (!entries.error.isEmpty()) {
-            qDebug() << "got error from mal status list fetching:" << entries.error;
-            return false;
+        EntryList* entries = new EntryList(xr);
+        if (!entries->error.isEmpty()) {
+            qDebug() << "got error from mal status list fetching:" << entries->error;
+            delete entries;
+            return NULL;
         }
-        entries.updateShows(this->identifierKey(), shows);
-        return true;
+        return entries;
     }
-    return false;
+    return NULL;
 }
 
-const QString Tracker::IDENTIFIERKEY = "mal";
+const QString Tracker::IDENTIFIER_KEY = "mal";
 const QString Tracker::identifierKey() const {
-    return IDENTIFIERKEY;
+    return IDENTIFIER_KEY;
 }
 
-OnlineTracker::UpdateResult Tracker::updateRemoteImpl(const TvShow* show) {
+OnlineTracker::UpdateResult Tracker::updateRemoteImpl(const TvShow* show, const OnlineTracker::EntryList& e) const {
     int id = show->getRemoteId(identifierKey());
     if (id <= 0) return failedDueToMissingData;
 
-    EntryList& entries = static_cast<EntryList&>(*this->entries);
+    const EntryList& entries = static_cast<const EntryList&>(e);
     if (!entries.error.isEmpty()) {
         return failedDueToMissingData;
     }
@@ -185,6 +183,10 @@ TvShow::WatchStatus Tracker::Entry::restoreStatus(int malStatusId) {
 Tracker::EntryList::EntryList() :
     error("noinit")
 {
+}
+
+Tracker::EntryList::~EntryList() {
+
 }
 
 Tracker::EntryList::EntryList(nw::Describer& de) {

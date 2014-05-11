@@ -9,6 +9,10 @@
 #include <N0Slib.h>
 #include <qhttpconnection.h>
 
+TODO write migrations for the old data,
+fix Franchises somehow
+continue writing code in this file, I guess
+
 class TvShowPlayerSettings {
 public:
     TvShowPlayerSettings();

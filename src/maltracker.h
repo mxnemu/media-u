@@ -82,6 +82,7 @@ public:
     class EntryList : public OnlineTracker::EntryList {
     public:
         EntryList();
+        virtual ~EntryList();
         EntryList(nw::Describer& de);
 
         Entry* get(int remoteId);
@@ -94,10 +95,10 @@ public:
     };
 
     explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
-    UpdateResult updateRemoteImpl(const TvShow* show); ///< return true when everything is now synced, false on failure
-    bool fetchRemote(QList<TvShow*>& show);
+    OnlineTracker::UpdateResult updateRemoteImpl(const TvShow* show, const OnlineTracker::EntryList& e) const;
+    OnlineTracker::EntryList* fetchRemote() const;
     const QString identifierKey() const;
-    static const QString IDENTIFIERKEY;
+    static const QString IDENTIFIER_KEY;
 
 signals:
 

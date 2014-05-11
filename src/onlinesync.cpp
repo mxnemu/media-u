@@ -116,7 +116,7 @@ void OnlineSync::run() {
         TvShow* show = *itr;
         bool success = this->updateShow(show);
         if (!success) {
-            qDebug() << "failed to fetch" << show->name();
+            qDebug() << "failed to update" << show->name();
         }
         unhandledUpdate.erase(itr);
     }

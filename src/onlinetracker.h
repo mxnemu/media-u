@@ -26,16 +26,17 @@ public:
 
     class EntryList {
     public:
+        EntryList();
         virtual const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const = 0 ;
         virtual void describe(nw::Describer& de) = 0;
+        bool tooOld() const;
+        const QDateTime fetchTime;
     };
 
-    EntryList* getEntries();
-
     explicit OnlineTracker(const OnlineCredentials& credentials, QObject *parent = 0);
-    virtual UpdateResult updateRemoteImpl(const TvShow* show) = 0;
+    virtual UpdateResult updateRemoteImpl(const TvShow* show, const EntryList& entries) const = 0;
     virtual bool updateRemote(TvShow* show);
-    virtual bool fetchRemote(QList<TvShow*>& shows) = 0;
+    virtual EntryList* fetchRemote() const = 0; ///< Must create a new EntryList using online Data, or NULL on error
     virtual const QString identifierKey() const = 0;
 signals:
 
@@ -43,7 +44,11 @@ public slots:
 
 protected:
     const OnlineCredentials& credentials;
-    EntryList* entries;
+private:
+    /// Either returns cached entries, or fetches new ones when cached are too old
+    EntryList* satisfyingEntries();
+
+    EntryList* cachedEntries;
 };
 
 #endif // ONLINETRACKER_H
