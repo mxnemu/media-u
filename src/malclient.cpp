@@ -63,6 +63,11 @@ const OnlineTvShowDatabase::Entry*Client::bestResult(const OnlineTvShowDatabase:
     return ((SearchResult&)result).bestResult(); // not a good cast use pointers
 }
 
+const QString Client::IDENTIFIER_KEY = "mal";
+const QString Client::identifierKey() const {
+    return IDENTIFIER_KEY;
+}
+
 bool Client::login() {
     if (!this->credentials.hasVerifiedCredentials()) {
         return this->credentials.verifyCredentials();
@@ -106,7 +111,7 @@ void Entry::updateTitle(TvShow&) const {
 }
 
 void Entry::updateRemoteId(TvShow& show) const {
-    show.setRemoteId(Client::identifierKey, id.toInt());
+    show.setRemoteId(Client::IDENTIFIER_KEY, id.toInt());
 }
 
 void Entry::updateRelations(TvShow& ) const {
@@ -225,7 +230,7 @@ void SearchResult::updateShowFromBestEntry(TvShow &show, const Library& library)
     const Entry* entry = bestResult();
 
     if (entry) {
-        entry->updateShow(show, library);
+        entry->updateShow(show, library, Client::IDENTIFIER_KEY);
         qDebug() << "updated " << show.getShowType() << show.name();
     }
 }

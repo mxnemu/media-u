@@ -27,7 +27,7 @@ class Entry {
 public:
     Entry();
     virtual ~Entry();
-    void updateShow(TvShow& show, const Library& library, UpdateFilter filter = OnlineTvShowDatabase::ufAll) const;
+    void updateShow(TvShow& show, const Library& library, const QString identifierKey, UpdateFilter filter = OnlineTvShowDatabase::ufAll) const;
 
     virtual int getRemoteId() const = 0;
     virtual void updateSynopsis(TvShow& show) const = 0;
@@ -63,7 +63,7 @@ public:
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
 
-    static const QString identifierKey;
+    virtual const QString identifierKey() const = 0;
 
 signals:
     void updateFinished();

@@ -76,6 +76,8 @@ public:
 
     virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
     virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&result) const;
+    virtual const QString identifierKey() const;
+    static const QString IDENTIFIER_KEY;
     bool login();
 
     Thread* getActiveThread() const;

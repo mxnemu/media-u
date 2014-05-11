@@ -17,18 +17,28 @@ void OnlineSync::init(QString configFile) {
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 }
 
+bool OnlineSync::requiresFetch(const TvShow* show, const QString dbIdentifier) {
+    QDate today = QDate::currentDate();
+    return
+        show->getRemoteId(dbIdentifier) == -1 ||
+        show->getTotalEpisodes() == 0 ||
+        (show->isAiring() && (
+         (show->episodeList().numberOfEpisodes() >= show->getTotalEpisodes()) ||
+         (show->getEndDate().isValid() && today > show->getEndDate()) ||
+         (show->getStatus() == TvShow::completed)));
+}
+
 void OnlineSync::fetchShow(TvShow* show, Library& library) {
     // TODO combine all results and use the metaData from the best one
     //QList<OnlineTvShowDatabase::SearchResult*> results;
     this->unhandledFetch.insert(show);
     bool anySuccess = false;
     for (OnlineTvShowDatabase::Client* db : databases) {
-
-        TODO continue coding here
-                check if it actually needs to be (re)fetched
+        if (!requiresFetch(show, db->identifierKey())) {
+            continue;
+        }
 
         OnlineTvShowDatabase::SearchResult* result = db->findShow(*show);
-
         if (!result) {
             continue;
         }
@@ -36,8 +46,11 @@ void OnlineSync::fetchShow(TvShow* show, Library& library) {
         //results.push_back(result);
         const OnlineTvShowDatabase::Entry* entry = db->bestResult(*result);
         if (entry) {
-            entry->updateShow(*show, library);
+            entry->updateShow(*show, library, db->identifierKey());
             anySuccess = true;
+            // TODO don't break, collect all,
+            // update metaData from the best entry of all
+            // update remoteId for every db
             break;
         }
     }

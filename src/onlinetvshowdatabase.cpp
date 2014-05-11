@@ -4,7 +4,6 @@
 #include "library.h"
 
 namespace OnlineTvShowDatabase {
-const QString Client::identifierKey = "db.mal";
 Client::Client(OnlineCredentials& credentials, QObject* parent) :
     QObject(parent),
     credentials(credentials),
@@ -47,9 +46,9 @@ SearchResult::~SearchResult() {
 Entry::Entry() {}
 Entry::~Entry() {}
 
-void Entry::updateShow(TvShow& show, const Library& library, UpdateFilter filter) const {
+void Entry::updateShow(TvShow& show, const Library& library, const QString identifierKey, UpdateFilter filter) const {
 
-    const TvShow* existingShow = library.filter().getShowForRemoteId(Client::identifierKey, this->getRemoteId());
+    const TvShow* existingShow = library.filter().getShowForRemoteId(identifierKey, this->getRemoteId());
 
     if (filter & OnlineTvShowDatabase::ufSynopsis) {
         updateSynopsis(show);
@@ -113,32 +112,22 @@ void Thread::run() {
 
     //bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
 
-    QDate now = QDate::currentDate();
-
     foreach (TvShow* show, tvShows) {
         if (!show) {
             continue;
         }
+        // removed fetch success, this will be taken down anyway
+        QTime timer;
+        timer.start();
 
-        if (show->getRemoteId(client.identifierKey) == -1 ||
-            show->getTotalEpisodes() == 0 ||
-            (show->isAiring() && (
-             (show->episodeList().numberOfEpisodes() >= show->getTotalEpisodes()) ||
-             (show->getEndDate().isValid() && now > show->getEndDate()) ||
-             (show->getStatus() == TvShow::completed)))) {
-
-            QTime timer;
-            timer.start();
-
-            SearchResult* result = client.findShow(*show);
-            const Entry* best = client.bestResult(*result);
-            best->updateShow(*show, library);
+        SearchResult* result = client.findShow(*show);
+        const Entry* best = client.bestResult(*result);
+        best->updateShow(*show, library, client.identifierKey());
 
 
-            int sleepTime = this->requestSleepPadding - timer.elapsed();
-            if (sleepTime > 0) {
-                msleep(sleepTime);
-            }
+        int sleepTime = this->requestSleepPadding - timer.elapsed();
+        if (sleepTime > 0) {
+            msleep(sleepTime);
         }
 
         //if (fetchingSucess) {

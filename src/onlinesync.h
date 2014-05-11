@@ -24,6 +24,8 @@ private slots:
     void checkIfAllFinished();
 
 private:
+    bool requiresFetch(const TvShow* show, const QString dbIdentifier);
+
     std::set<TvShow*> unhandledFetch;
     std::set<TvShow*> unhandledUpdate;
 
