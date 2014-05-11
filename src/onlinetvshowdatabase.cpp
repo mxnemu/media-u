@@ -11,7 +11,7 @@ Client::Client(OnlineCredentials& credentials, QObject* parent) :
 {
 }
 
-
+/*
 void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
     if (this->activeThread) {
         return;
@@ -20,6 +20,7 @@ void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
     connect(this->activeThread, SIGNAL(finished()), this, SLOT(threadFinished()));
     this->activeThread->start();
 }
+*/
 
 SearchResult* Client::findShow(TvShow& show) {
     QString name = show.name();
@@ -27,6 +28,7 @@ SearchResult* Client::findShow(TvShow& show) {
     return result;
 }
 
+/*
 void Client::threadFinished() {
     if (dynamic_cast<Thread*>(sender()) != this->activeThread) {
         throw "malapidotcom::Client::threadFinished called from unknown thread";
@@ -34,6 +36,7 @@ void Client::threadFinished() {
     this->activeThread = NULL;
     emit updateFinished();
 }
+*/
 
 SearchResult::SearchResult(QString searchedQuery) : searchedQuery(searchedQuery) {}
 
@@ -86,7 +89,7 @@ void Entry::updateShow(TvShow& show, const Library& library, const QString ident
     //qDebug() << "updated show from mal-api.com" << id << title;
 }
 
-
+/*
 Thread::Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent) :
     QThread(parent),
     client(client),
@@ -135,5 +138,5 @@ void Thread::run() {
         //}
     }
 }
-
+*/
 }

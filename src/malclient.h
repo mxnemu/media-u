@@ -80,12 +80,11 @@ public:
     static const QString IDENTIFIER_KEY;
     bool login();
 
-    Thread* getActiveThread() const;
 signals:
     void fetchingFinished();
 
 private slots:
-    void fetchThreadFinished();
+    //void fetchThreadFinished();
 };
 
 } // namespace

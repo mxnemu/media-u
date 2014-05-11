@@ -15,6 +15,7 @@ Client::Client(OnlineCredentials& credentials, QObject *parent) :
 {
 }
 
+/*
 void Client::fetchShows(QList<TvShow*> &showList, const Library& library) {
     if (activeThread) {
         return;
@@ -36,6 +37,7 @@ void Client::fetchThreadFinished() {
     }
     emit fetchingFinished();
 }
+*/
 
 OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
     QString name = anime;

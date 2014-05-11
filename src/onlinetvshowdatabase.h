@@ -69,12 +69,12 @@ signals:
     void updateFinished();
 
 public slots:
-    void threadFinished();
+    //void threadFinished();
 protected:
     OnlineCredentials& credentials;
     Thread* activeThread;
 };
-
+/*
 class Thread : public QThread {
     Q_OBJECT
 public:
@@ -87,7 +87,7 @@ protected:
     const Library& library;
     const int requestSleepPadding;
 };
-
+*/
 
 }
 
