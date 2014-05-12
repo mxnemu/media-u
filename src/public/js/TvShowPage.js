@@ -94,6 +94,7 @@ TvShowPage.prototype.removeNodes = function() {
 }
 
 TvShowPage.prototype.setPlayerSettings = function(settings) {
+    var self = this;
     this.subtitleTrackField.get(0).value = settings.subtitleTrack;
     this.audioTrackField.get(0).value = settings.audioTrack;
     
