@@ -26,9 +26,6 @@ class Library;
 class RelatedTvShow {
 public:
     RelatedTvShow(const QString id = "");
-    QString id;
-    int remoteId;
-    QString title;
     TvShow* get(Library &library) const;
 
     bool matches(const TvShow& show) const;
@@ -38,6 +35,10 @@ public:
     void parseForManga(nw::Describer* de);
     void parseForAnime(nw::Describer* de);
     static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedTvShow> &list, const bool anime);
+
+private:
+    std::set<const QString, int> remoteIds;
+    QString title;
 };
 
 class TvShow : public QObject
