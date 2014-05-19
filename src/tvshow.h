@@ -9,8 +9,7 @@
 #include <N0Slib.h>
 #include <qhttpconnection.h>
 
-TODO write migrations for the old data,
-fix Franchises somehow
+TODO fix Franchises by asking for service-identifier + remoteId
 continue writing code in this file, I guess
 
 class TvShowPlayerSettings {

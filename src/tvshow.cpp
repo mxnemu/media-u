@@ -37,6 +37,15 @@ void TvShow::read(QDir &dir) {
     NwUtils::describe(jr, "rewatchCount", rewatchCount);
 
 
+    // try to migrate old remoteId format
+    int deprecatedMalRemoteId = -1;
+    jr.describe("remoteId", deprecatedMalRemoteId);
+    if (deprecatedMalRemoteId > -1) {
+        OnlineSyncData data;
+        data.setRemoteId(deprecatedMalRemoteId);
+        onlineSyncData["mal"] = data;
+    }
+
     jr.describeArray("onlineSyncData", "data", onlineSyncData.size());
     for (int i=0; jr.enterNextElement(i); ++i) {
         QString key;
