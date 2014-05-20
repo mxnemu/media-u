@@ -435,13 +435,19 @@ void TvShowPlayerSettings::describe(nw::Describer*de) {
 }
 
 
-RelatedTvShow::RelatedTvShow(const QString id) :
+RelatedTvShow::RelatedTvShow(const QString identifier, int id) :
     id(id)
 {
 }
 
 TvShow *RelatedTvShow::get(Library& library) const {
-    return library.existingTvShow(this->id);
+    for (std::pair<const QString, int>& it : remoteIds) {
+        TvShow* show = library.filter().getShowForRemoteId(it.first, it.second);
+        if (show) {
+            return show;
+        }
+    }
+    return NULL;
 }
 
 bool RelatedTvShow::matches(const TvShow& show) const {
@@ -453,11 +459,30 @@ bool RelatedTvShow::isDummy() const {
 }
 
 bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
-    return this->id == other.id; //|| this->title.compare(other.title, Qt::CaseInsensitive) == 0;
+    for (std::pair<const QString, int>& it : remoteIds) {
+        auto ot = other.remoteIds.find(it.first);
+        if (ot != other.remoteIds.end() && ot.second == it.second) {
+            return true;
+        }
+    }
 }
 
 void RelatedTvShow::describe(nw::Describer *de) {
-    NwUtils::describe(*de, "id", id);
+    if (de->isInReadMode()) {
+
+    } else if (de->isInWriteMode()) {
+
+    }
+    auto it = remoteIds.begin();
+    de->describeArray("remoteIds", "remoteId", remoteIds.size());
+    for (int i=0; de->enterNextElement(i); ++i) {
+        QString identifier = it.first;
+        int id = it.second;
+        NwUtils::describe(*de, "identifier", identifier);
+        NwUtils::describe(*de, "id", id);
+
+        ++it;
+    }
     NwUtils::describe(*de, "title", title);
 }
 
@@ -469,6 +494,10 @@ void RelatedTvShow::parseForManga(nw::Describer* de) {
 void RelatedTvShow::parseForAnime(nw::Describer* de) {
     NwUtils::describe(*de, "anime_id", id);
     NwUtils::describe(*de, "title", title);
+}
+
+RelatedTvShow RelatedTvShow::makeDummy() {
+    return RelatedTvShow("", -1);
 }
 
 void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedTvShow>& list, const bool anime) {

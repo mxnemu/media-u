@@ -9,8 +9,8 @@
 #include <N0Slib.h>
 #include <qhttpconnection.h>
 
-TODO fix Franchises by asking for service-identifier + remoteId
-continue writing code in this file, I guess
+//TODO fix Franchises by asking for service-identifier + remoteId
+//continue writing code in this file, I guess
 
 class TvShowPlayerSettings {
 public:
@@ -25,7 +25,7 @@ class TvShow;
 class Library;
 class RelatedTvShow {
 public:
-    RelatedTvShow(const QString id = "");
+    RelatedTvShow(const QString identifier, int id);
     TvShow* get(Library &library) const;
 
     bool matches(const TvShow& show) const;
@@ -34,6 +34,7 @@ public:
     void describe(nw::Describer* de);
     void parseForManga(nw::Describer* de);
     void parseForAnime(nw::Describer* de);
+    static RelatedTvShow makeDummy();
     static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedTvShow> &list, const bool anime);
 
 private:
