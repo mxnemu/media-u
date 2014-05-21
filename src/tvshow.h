@@ -9,8 +9,8 @@
 #include <N0Slib.h>
 #include <qhttpconnection.h>
 
-//TODO fix Franchises by asking for service-identifier + remoteId
-//continue writing code in this file, I guess
+TODO add migrations for Franchises
+continue writing code in this file, I guess
 
 class TvShowPlayerSettings {
 public:
@@ -32,13 +32,14 @@ public:
     bool isDummy() const;
     bool operator ==(const RelatedTvShow& other) const;
     void describe(nw::Describer* de);
-    void parseForManga(nw::Describer* de);
-    void parseForAnime(nw::Describer* de);
+    void parseForManga(nw::Describer* de, QString identifier);
+    void parseForAnime(nw::Describer* de, QString identifier);
+    void setRemoteId(QString identifier, int id);
     static RelatedTvShow makeDummy();
-    static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedTvShow> &list, const bool anime);
+    static void parseFromList(nw::Describer* de, QString arrayName, QList<RelatedTvShow> &list, const QString identifier, const bool anime);
 
 private:
-    std::set<const QString, int> remoteIds;
+    std::map<const QString, int> remoteIds;
     QString title;
 };
 
@@ -147,6 +148,7 @@ public:
     QDateTime getLastOnlineTrackerUpdate(const QString trackerKey) const;
     void setLastOnlineTrackerUpdate(const QString trackerKey, const QDateTime& value);
 
+    RelatedTvShow toRelation();
 signals:
 
 private slots:

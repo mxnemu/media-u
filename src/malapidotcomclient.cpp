@@ -72,8 +72,12 @@ SearchResult* Client::parseSearch(CurlResult &response, QString searchedAnime) {
     return result;
 }
 
-Entry::Entry(nw::Describer* de) : OnlineTvShowDatabase::Entry() {
-    describe(de);
+Entry::Entry(nw::Describer* de) :
+    OnlineTvShowDatabase::Entry(),
+    parent_story(RelatedTvShow::makeDummy())
+{
+    // TODO build it if req
+    //describe(de);
 }
 
 int Entry::getRemoteId() const {
@@ -121,7 +125,7 @@ void Entry::updateSynonyms(TvShow &show) const {
 void Entry::updateImage(TvShow &show, QDir libraryDir) const {
     show.downloadImage(image_url, libraryDir);
 }
-
+/* TODO make it build if mal-api.com should ever return
 void Entry::describe(nw::Describer *de) {
     NwUtils::describe(*de, "id", id);
 
@@ -141,7 +145,7 @@ void Entry::describe(nw::Describer *de) {
     NwUtils::describe(*de, "synopsis", synopsis);
     NwUtils::describeValueArray(*de, "genres", genres);
     NwUtils::describeValueArray(*de, "tags", tags);
-    RelatedTvShow::parseFromList(de, "manga_adaptations", manga_adaptations, false);
+    RelatedTvShow::parseFromList(de, "manga_adaptations", manga_adaptations, mal false);
     RelatedTvShow::parseFromList(de, "prequels", prequels, true);
     RelatedTvShow::parseFromList(de, "sequels", sequels, true);
     RelatedTvShow::parseFromList(de, "side_stories", side_stories, true);
@@ -152,7 +156,7 @@ void Entry::describe(nw::Describer *de) {
     RelatedTvShow::parseFromList(de, "summaries", summaries, true);
     RelatedTvShow::parseFromList(de, "alternative_versions", alternative_versions, true);
 }
-
+*/
 
 QString Entry::dateFormat = "yyyy-MM-dd";
 

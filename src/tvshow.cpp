@@ -65,19 +65,19 @@ void TvShow::read(QDir &dir) {
     prequels.clear();
     jr.describeArray("prequels", "tvShowRelation", prequels.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        prequels.push_back(RelatedTvShow());
+        prequels.push_back(RelatedTvShow::makeDummy());
         prequels[i].describe(&jr);
     }
     sideStories.clear();
     jr.describeArray("sideStories", "tvShowRelation", sideStories.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        sideStories.push_back(RelatedTvShow());
+        sideStories.push_back(RelatedTvShow::makeDummy());
         sideStories[i].describe(&jr);
     }
     sequels.clear();
     jr.describeArray("sequels", "tvShowRelation", sequels.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        sequels.push_back(RelatedTvShow());
+        sequels.push_back(RelatedTvShow::makeDummy());
         sequels[i].describe(&jr);
     }
 
@@ -435,13 +435,12 @@ void TvShowPlayerSettings::describe(nw::Describer*de) {
 }
 
 
-RelatedTvShow::RelatedTvShow(const QString identifier, int id) :
-    id(id)
-{
+RelatedTvShow::RelatedTvShow(const QString identifier, int id) {
+
 }
 
 TvShow *RelatedTvShow::get(Library& library) const {
-    for (std::pair<const QString, int>& it : remoteIds) {
+    for (const std::pair<const QString, int>& it : remoteIds) {
         TvShow* show = library.filter().getShowForRemoteId(it.first, it.second);
         if (show) {
             return show;
@@ -451,20 +450,26 @@ TvShow *RelatedTvShow::get(Library& library) const {
 }
 
 bool RelatedTvShow::matches(const TvShow& show) const {
-    return show.name() == this->id;
-}
-
-bool RelatedTvShow::isDummy() const {
-    return "" == this->id;
-}
-
-bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
-    for (std::pair<const QString, int>& it : remoteIds) {
-        auto ot = other.remoteIds.find(it.first);
-        if (ot != other.remoteIds.end() && ot.second == it.second) {
+    for (const std::pair<const QString, int>& it : remoteIds) {
+        if (show.getRemoteId(it.first) == it.second) {
             return true;
         }
     }
+    return false;
+}
+
+bool RelatedTvShow::isDummy() const {
+    return this->remoteIds.empty();
+}
+
+bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
+    for (const std::pair<const QString, int>& it : remoteIds) {
+        auto ot = other.remoteIds.find(it.first);
+        if (ot != other.remoteIds.end() && ot->second == it.second) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void RelatedTvShow::describe(nw::Describer *de) {
@@ -476,8 +481,8 @@ void RelatedTvShow::describe(nw::Describer *de) {
     auto it = remoteIds.begin();
     de->describeArray("remoteIds", "remoteId", remoteIds.size());
     for (int i=0; de->enterNextElement(i); ++i) {
-        QString identifier = it.first;
-        int id = it.second;
+        QString identifier = it->first;
+        int id = it->second;
         NwUtils::describe(*de, "identifier", identifier);
         NwUtils::describe(*de, "id", id);
 
@@ -486,29 +491,49 @@ void RelatedTvShow::describe(nw::Describer *de) {
     NwUtils::describe(*de, "title", title);
 }
 
-void RelatedTvShow::parseForManga(nw::Describer* de) {
+void RelatedTvShow::parseForManga(nw::Describer* de, QString identifier) {
+    int id = -1;
     NwUtils::describe(*de, "manga_id", id);
     NwUtils::describe(*de, "title", title);
+    this->setRemoteId(identifier, id);
 }
 
-void RelatedTvShow::parseForAnime(nw::Describer* de) {
+void RelatedTvShow::parseForAnime(nw::Describer* de, QString identifier) {
+    int id = -1;
+    QString title;
     NwUtils::describe(*de, "anime_id", id);
     NwUtils::describe(*de, "title", title);
+    this->setRemoteId(identifier, id);
+}
+
+void RelatedTvShow::setRemoteId(QString identifier, int id) {
+    if (!identifier.isNull()) {
+        remoteIds[identifier] = id;
+    }
 }
 
 RelatedTvShow RelatedTvShow::makeDummy() {
     return RelatedTvShow("", -1);
 }
 
-void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedTvShow>& list, const bool anime) {
+RelatedTvShow TvShow::toRelation() {
+    RelatedTvShow rel = RelatedTvShow::makeDummy();
+    for (auto dataPair : this->onlineSyncData) {
+        rel.setRemoteId(dataPair.first, dataPair.second.getRemoteId());
+    }
+
+    return rel;
+}
+
+void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedTvShow>& list, const QString identifier, const bool anime) {
     list.empty();
     de->describeArray(arrayName.toUtf8().data(), "", 0);
     for (int i=0; de->enterNextElement(i); ++i) {
-        RelatedTvShow entry;
+        RelatedTvShow entry = RelatedTvShow::makeDummy();
         if (anime) {
-            entry.parseForAnime(de);
+            entry.parseForAnime(de, identifier);
         } else {
-            entry.parseForManga(de);
+            entry.parseForManga(de, identifier);
         }
         list.append(entry);
     }
@@ -540,7 +565,7 @@ void TvShow::addSequels(QList<RelatedTvShow> relations) {
 
 void TvShow::syncRelations(Library& library) {
     QList<RelatedTvShow> relation;
-    relation.append(RelatedTvShow(this->name()));
+    relation.append(this->toRelation());
     foreach (const RelatedTvShow& rel, prequels) {
         TvShow* show = rel.get(library);
         if (show) {
