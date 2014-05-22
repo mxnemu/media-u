@@ -436,7 +436,7 @@ void TvShowPlayerSettings::describe(nw::Describer*de) {
 
 
 RelatedTvShow::RelatedTvShow(const QString identifier, int id) {
-
+    this->setRemoteId(identifier, id);
 }
 
 TvShow *RelatedTvShow::get(Library& library) const {
@@ -474,19 +474,29 @@ bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
 
 void RelatedTvShow::describe(nw::Describer *de) {
     if (de->isInReadMode()) {
-
-    } else if (de->isInWriteMode()) {
-
+        // migrate old data
+        int oldRemoteId = -1;
+        NwUtils::describe(*de, "id", oldRemoteId);
+        if (oldRemoteId > 0) {
+            this->setRemoteId("mal", oldRemoteId);
+        }
     }
     auto it = remoteIds.begin();
     de->describeArray("remoteIds", "remoteId", remoteIds.size());
     for (int i=0; de->enterNextElement(i); ++i) {
-        QString identifier = it->first;
-        int id = it->second;
-        NwUtils::describe(*de, "identifier", identifier);
-        NwUtils::describe(*de, "id", id);
-
-        ++it;
+        if (de->isInWriteMode()) {
+            QString identifier = it->first;
+            int id = it->second;
+            NwUtils::describe(*de, "identifier", identifier);
+            NwUtils::describe(*de, "id", id);
+            ++it;
+        } else if (de->isInReadMode()) {
+            QString identifier;
+            int id;
+            NwUtils::describe(*de, "identifier", identifier);
+            NwUtils::describe(*de, "id", id);
+            this->setRemoteId(identifier, id);
+        }
     }
     NwUtils::describe(*de, "title", title);
 }

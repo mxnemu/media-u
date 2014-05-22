@@ -9,9 +9,6 @@
 #include <N0Slib.h>
 #include <qhttpconnection.h>
 
-TODO add migrations for Franchises
-continue writing code in this file, I guess
-
 class TvShowPlayerSettings {
 public:
     TvShowPlayerSettings();
