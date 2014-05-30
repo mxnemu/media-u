@@ -123,6 +123,8 @@ void TvShow::write(nw::JsonWriter& jw) {
         kv.second.describe(jw);
         ++onlineDataIndex;
     };
+    jw.enterNextElement(onlineDataIndex); // close the last one
+
     NwUtils::describe(jw, "lastLocalUpdate", lastLocalUpdate);
     jw.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jw, std::string("airingStatus"), airingStatus);
