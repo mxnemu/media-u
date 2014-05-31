@@ -5,6 +5,7 @@
 #include "config.h"
 
 OnlineSync::OnlineSync(const Library& library) :
+    shouldQuit(false),
     library(library)
 {
     connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
@@ -53,8 +54,15 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
     bool anySuccess = false;
     for (OnlineTvShowDatabase::Client* db : databases) {
         if (!requiresFetch(show, db->identifierKey())) {
+            anySuccess = true;
             continue;
         }
+
+        // TODO try to lock the credentials,
+        // otherwise skip to the next one, but keep this one in the list,
+        // right now request-spam-protection-timeout is locked in the Network thread
+        // this causes the start of a bazillion threads that try to lock the timer and
+        // do nothing but waiting for the lock
 
         OnlineTvShowDatabase::SearchResult* result = db->findShow(*show);
         if (!result) {
@@ -93,12 +101,19 @@ bool OnlineSync::updateShow(TvShow* show) {
 
 
 void OnlineSync::checkIfAllFinished() {
-    if (unhandledFetch.empty() && unhandledUpdate.empty()) {
-        emit allFinished();
+    if (!unhandledFetch.empty()) {
+        fetchDatabases();
+        return;
     }
+    if (!unhandledUpdate.empty()) {
+        updateTrackers();
+        return;
+    }
+    shouldQuit = true;
+    emit allFinished();
 }
 
-void OnlineSync::run() {
+void OnlineSync::fetchDatabases() {
     while (!unhandledFetch.empty()) {
         auto itr = unhandledFetch.begin();
         TvShow* show = *itr;
@@ -109,7 +124,9 @@ void OnlineSync::run() {
         unhandledFetch.erase(itr);
     }
     emit databasesFinished();
+}
 
+void OnlineSync::updateTrackers() {
     // TODO copy pasta
     while (!unhandledUpdate.empty()) {
         auto itr = unhandledUpdate.begin();
@@ -121,4 +138,16 @@ void OnlineSync::run() {
         unhandledUpdate.erase(itr);
     }
     emit trackersFinished();
+}
+
+void OnlineSync::run() {
+    this->fetchDatabases();
+    // TODO I've got no idea if this works how I expect.
+    // right now I've got the problem that the thread quits
+    // even though there are still signals unhandled, at least I guess that.
+    // I hope this prevents the thread from quiting during signal handling
+    // doing multithreading with an unfamiliar framework sucks
+    while (!shouldQuit) {
+        this->msleep(50); // sleep 0.05 seconds
+    }
 }

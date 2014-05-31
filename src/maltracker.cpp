@@ -4,7 +4,7 @@
 
 namespace Mal {
 
-Tracker::Tracker(const OnlineCredentials& credentials, QObject *parent) :
+Tracker::Tracker(OnlineCredentials& credentials, QObject *parent) :
     OnlineTracker(credentials, parent)
 {
 }
