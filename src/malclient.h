@@ -78,7 +78,6 @@ public:
     virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&result) const;
     virtual const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;
-    bool login();
 
 signals:
     void fetchingFinished();

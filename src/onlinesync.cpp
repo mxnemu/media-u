@@ -19,6 +19,8 @@ void OnlineSync::init(const BaseConfig& config) {
     this->credentials.push_back(malCreds);
     this->databases.push_back(new Mal::Client(*malCreds, this));
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+
+    malCreds->login();
 }
 
 void OnlineSync::startThreadIfNotRunning() {
@@ -51,6 +53,7 @@ bool OnlineSync::requiresFetch(const TvShow* show, const QString dbIdentifier) {
 bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
     // TODO combine all results and use the metaData from the best one
     //QList<OnlineTvShowDatabase::SearchResult*> results;
+    
     bool anySuccess = false;
     for (OnlineTvShowDatabase::Client* db : databases) {
         if (!requiresFetch(show, db->identifierKey())) {
@@ -58,15 +61,19 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
             continue;
         }
 
-        // TODO try to lock the credentials,
-        // otherwise skip to the next one, but keep this one in the list,
-        // right now request-spam-protection-timeout is locked in the Network thread
-        // this causes the start of a bazillion threads that try to lock the timer and
-        // do nothing but waiting for the lock
-
         OnlineTvShowDatabase::SearchResult* result = db->findShow(*show);
         if (!result) {
             continue;
+        }
+
+        // un-const fuckery
+        int indexOfCreds = this->credentials.indexOf((OnlineCredentials*)&db->credentials);
+        if (indexOfCreds == -1) {
+            continue;
+        }
+        // TODO don't block this thread until other locks are tested
+        while (this->credentials.at(indexOfCreds)->lock.blockUntilReady()) {
+            // waits the correct time as side-effect
         }
 
         //results.push_back(result);

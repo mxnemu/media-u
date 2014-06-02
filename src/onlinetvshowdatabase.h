@@ -59,11 +59,12 @@ public:
     void startUpdate(QList<TvShow *> &showList, const Library& library);
     SearchResult* findShow(TvShow& show);
 
-    virtual bool login() = 0;
     virtual SearchResult* search(QString anime) = 0;
     virtual const Entry* bestResult(const SearchResult&) const = 0;
 
     virtual const QString identifierKey() const = 0;
+
+    const OnlineCredentials&  credentials;
 
 signals:
     void updateFinished();
@@ -71,7 +72,6 @@ signals:
 public slots:
     //void threadFinished();
 protected:
-    OnlineCredentials& credentials;
     Thread* activeThread;
 };
 /*

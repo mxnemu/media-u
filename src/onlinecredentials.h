@@ -11,7 +11,6 @@ public:
     OnlineCredentials();
     void set(const QString name, const QString password);
     void set(const QString name, const QString password, QString userAgent);
-    virtual bool verifyCredentials() = 0;
     virtual bool login() {return mHasVerifiedCredentials || this->verifyCredentials();}
 
     CURL* curlClient(const char* url, CurlResult &userdata);
@@ -23,7 +22,7 @@ public:
     bool hasVerifiedCredentials() const;
     QString getUsername() const;
 
-protected:
+
     class TimeLock {
     public:
         TimeLock(int timeToWaitInMs);
@@ -37,11 +36,15 @@ protected:
         int timeToWaitInMs;
     };
 
+    TimeLock lock;
+
+protected:
+    virtual bool verifyCredentials() = 0;
+
     bool mHasVerifiedCredentials;
     QString username;
     QString password;
     QString userAgent;
-    TimeLock lock;
 };
 
 #endif // ONLINECREDENTIALS_H

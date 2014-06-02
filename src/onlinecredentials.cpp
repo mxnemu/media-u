@@ -2,8 +2,8 @@
 #include <QThread>
 
 OnlineCredentials::OnlineCredentials() :
-    mHasVerifiedCredentials(false),
-    lock(1000)
+    lock(1000),
+    mHasVerifiedCredentials(false)
 {
 }
 
