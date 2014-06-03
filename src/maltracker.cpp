@@ -4,13 +4,13 @@
 
 namespace Mal {
 
-Tracker::Tracker(OnlineCredentials& credentials, QObject *parent) :
+Tracker::Tracker(const OnlineCredentials& credentials, QObject *parent) :
     OnlineTracker(credentials, parent)
 {
 }
 
 CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, UpdateItem& data) const {
-    CURL* handle = credentials.curlClient(url, userdata);
+    CURL* handle = credentials.curlClientNoLock(url, userdata);
     curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
     QString dataStr = QUrl(data.toXml()).toEncoded();
     QByteArray xml = QString("data=%1").arg(dataStr).toUtf8();
@@ -23,7 +23,7 @@ OnlineTracker::EntryList* Tracker::fetchRemote() const {
     QString url = QString("http://myanimelist.net/malappinfo.php?u=%1&status=all&type=anime").arg(credentials.getUsername());
     CurlResult userData(NULL);
 
-    CURL* handle = credentials.curlNoAuthClient(url.toUtf8().data(), userData);
+    CURL* handle = credentials.curlNoAuthClientNoLock(url.toUtf8().data(), userData);
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {
@@ -111,10 +111,9 @@ UpdateItem::UpdateItem(const TvShow* show) {
     score = -1;
     storage_type = -1; // int (will be updated to accomodate strings soon) // yeah sure soon...
     storage_value = -1; // wat
-    times_rewatched = -1;
-    rewatch_value = -1; // 0 - 10 ? dont know didn't check
     priority = -1; // 0 - 10 ? dont know didn't check
     enable_discussion = 0; // int. 1=enable, 0=disable
+    // TODO add a status for this
     enable_rewatching = -1; // int. 1=enable, 0=disable
     fansub_group = show->favouriteReleaseGroup();
     QStringList tags; // string. tags separated by commas

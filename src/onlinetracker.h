@@ -33,17 +33,14 @@ public:
         const QDateTime fetchTime;
     };
 
-    explicit OnlineTracker(OnlineCredentials& credentials, QObject *parent = 0);
+    explicit OnlineTracker(const OnlineCredentials& credentials, QObject *parent = 0);
     virtual UpdateResult updateRemoteImpl(const TvShow* show, const EntryList& entries) const = 0;
     virtual bool updateRemote(TvShow* show);
     virtual EntryList* fetchRemote() const = 0; ///< Must create a new EntryList using online Data, or NULL on error
     virtual const QString identifierKey() const = 0;
-signals:
 
-public slots:
+    const OnlineCredentials& credentials;
 
-protected:
-    OnlineCredentials& credentials;
 private:
     /// Either returns cached entries, or fetches new ones when cached are too old
     EntryList* satisfyingEntries();

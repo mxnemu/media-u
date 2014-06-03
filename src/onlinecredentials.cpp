@@ -67,16 +67,16 @@ OnlineCredentials::TimeLock::TimeLock(int timeToWaitInMs) :
 }
 
 bool OnlineCredentials::TimeLock::blockUntilReady() {
-    bool couldLock = this->lock();
-    if (!couldLock) {
-        QThread::msleep(this->timeToWaitInMs - timer.elapsed());
+    bool success = this->lock();
+    if (!success) {
+        QThread::msleep(std::max(0, this->timeToWaitInMs - timer.elapsed()));
         return false;
     }
     return true;
 }
 
 bool OnlineCredentials::TimeLock::lock() {
-    if (timer.isNull() || this->timer.elapsed() > timeToWaitInMs) {
+    if (timer.isNull() || this->timer.elapsed() > this->timeToWaitInMs) {
         this->timer.start();
         return true;
     }

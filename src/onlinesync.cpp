@@ -35,7 +35,7 @@ void OnlineSync::addShowToFetch(TvShow *show) {
 }
 
 void OnlineSync::addShowToUpdate(TvShow *show) {
-    this->unhandledFetch.insert(show);
+    this->unhandledUpdate.insert(show);
     this->startThreadIfNotRunning();
 }
 
@@ -97,6 +97,18 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
 bool OnlineSync::updateShow(TvShow* show) {
     bool noFail = true;
     for (OnlineTracker* tracker : trackers) {
+
+        // TODO make a common base for tracker and db, to avoid coppy pasta
+        // un-const fuckery
+        int indexOfCreds = this->credentials.indexOf((OnlineCredentials*)&tracker->credentials);
+        if (indexOfCreds == -1) {
+            continue;
+        }
+        // TODO don't block this thread until other locks are tested
+        while (this->credentials.at(indexOfCreds)->lock.blockUntilReady()) {
+            // waits the correct time as side-effect
+        }
+
         bool success = tracker->updateRemote(show);
         noFail *= success;
     }
@@ -138,6 +150,7 @@ void OnlineSync::updateTrackers() {
     while (!unhandledUpdate.empty()) {
         auto itr = unhandledUpdate.begin();
         TvShow* show = *itr;
+
         bool success = this->updateShow(show);
         if (!success) {
             qDebug() << "failed to update" << show->name();
