@@ -8,8 +8,6 @@ OnlineSync::OnlineSync(const Library& library) :
     shouldQuit(false),
     library(library)
 {
-    connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
-    connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
 }
 
 void OnlineSync::init(const BaseConfig& config) {
@@ -129,6 +127,8 @@ void OnlineSync::checkIfAllFinished() {
         return;
     }
     shouldQuit = true;
+    disconnect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
+    disconnect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
     emit allFinished();
 }
 
@@ -161,6 +161,9 @@ void OnlineSync::updateTrackers() {
 }
 
 void OnlineSync::run() {
+    connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
+    connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
+
     this->fetchDatabases();
     // TODO I've got no idea if this works how I expect.
     // right now I've got the problem that the thread quits
