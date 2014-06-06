@@ -239,6 +239,15 @@ void MovieFileTest::testPathParsing_data()
                                                 -2.f <<
                                                 "";
 
+    QTest::newRow("ShowName: Play All file no extra names, written in one word") <<
+                                                "/mnt/fields2/torrents/[Coalgirls]_Nekomonogatari_(1920x1080_Blu-ray_FLAC)/[Coalgirls]_Nekomonogatari_Playall_(1920x1080_Blu-ray_FLAC)_[3DAE1544].mkv" <<
+                                                "[Coalgirls]" <<
+                                                "Nekomonogatari" <<
+                                                "Playall" <<
+                                                -2.f <<
+                                                "";
+
+
     QTest::newRow("ShowName: Number in Show name") <<
                                                       "/tmp/Evangelion_1.0_You_Are_[Not]_Alone_(1080p)_[@Home]" <<
                                                       "" << // TODO take [@Home]

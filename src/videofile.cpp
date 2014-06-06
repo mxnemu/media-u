@@ -16,7 +16,7 @@
     prefix "Opening(\\s?[0-9]+)?|" \
     prefix "Preview\\s?([0-9]+)?|" \
     prefix "Specials?\\s?-?\\s?([0-9]+)?|" \
-    prefix "Play\\s?All\\s(.+)($|\\(|\\[)?|" \
+    prefix "Play\\s?All\\b(.+)?($|\\(|\\[)?|" \
     prefix "Ending(\\s?[0-9]+)?"
 
 VideoFile::VideoFile(const QString originalPath) {
