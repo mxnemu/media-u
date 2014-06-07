@@ -238,6 +238,13 @@ void MovieFileTest::testPathParsing_data()
                                        4.f <<
                                        "";
 
+    QTest::newRow("EpNum: Roman Number in title won't overwrite existing epNum") <<
+                                       "/torrents/[KiteSeekers-Wasurenai] Tantei Opera Milky Holmes II - 01-12 [1280x720 H264 OGG]/[KiteSeekers-Wasurenai] Tantei Opera Milky Holmes II - 01 [1280x720 H264 OGG] [45B5EDD5].mkv" <<
+                                       "[KiteSeekers-Wasurenai]" <<
+                                       "Tantei Opera Milky Holmes II" <<
+                                       "01" <<
+                                       1.f <<
+                                       "";
 
 
     QTest::newRow("ShowName: Play All file") <<
