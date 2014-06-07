@@ -230,6 +230,15 @@ void MovieFileTest::testPathParsing_data()
                                        1.f <<
                                        "";
 
+    QTest::newRow("EpNum: Roman Number in title") <<
+                                       "/torrents/[Final8]Hellsing Ultimate I-X + Dawn I-III (BD 10-bit 1920x1080 x264 FLAC 5.1)/[Final8]Hellsing Ultimate IV (BD 10-bit 1920x1080 x264 FLAC 5.1)[1F6EAC2A].mkv" <<
+                                       "[Final8]" <<
+                                       "Hellsing Ultimate" <<
+                                       "4" <<
+                                       4.f <<
+                                       "";
+
+
 
     QTest::newRow("ShowName: Play All file") <<
                                                 "tmp/[Coalgirls]_Toradora_Play_All_No_OPED_Style_1_(1280x720_Blu-ray_FLAC)_[051337D2].mkv" <<
