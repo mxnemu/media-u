@@ -58,7 +58,8 @@ void TvShowPage::setTvShow(TvShow* show) {
 }
 
 void TvShowPage::updateWatched(int,  int) {
-    if ((TvShow*)sender() != this->tvShow) {
+    // allow direct calls, but cancel delayed calls when show-selection changed
+    if (sender() != NULL && (TvShow*)sender() != this->tvShow) {
         return;
     }
     ui->episodes->setText(QString("%1/%2/%3").arg(
