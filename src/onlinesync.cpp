@@ -95,6 +95,9 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
 bool OnlineSync::updateShow(TvShow* show) {
     bool noFail = true;
     for (OnlineTracker* tracker : trackers) {
+        if (show->getRemoteId(tracker->identifierKey()) <= 0) {
+            continue;
+        }
 
         // TODO make a common base for tracker and db, to avoid coppy pasta
         // un-const fuckery
