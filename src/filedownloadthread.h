@@ -5,6 +5,9 @@
 #include <QFile>
 #include "curlresult.h"
 
+// TODO I doubt that I need 1 thread for each download,
+// but I could implement it without thinking
+// prepare to get RAM-RAPED
 
 class FileDownloadThread : public QThread {
     Q_OBJECT

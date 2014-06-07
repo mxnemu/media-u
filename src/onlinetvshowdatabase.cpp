@@ -4,13 +4,14 @@
 #include "library.h"
 
 namespace OnlineTvShowDatabase {
-Client::Client(QObject* parent) :
+Client::Client(OnlineCredentials& credentials, QObject* parent) :
     QObject(parent),
+    credentials(credentials),
     activeThread(NULL)
 {
 }
 
-
+/*
 void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
     if (this->activeThread) {
         return;
@@ -19,21 +20,15 @@ void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
     connect(this->activeThread, SIGNAL(finished()), this, SLOT(threadFinished()));
     this->activeThread->start();
 }
+*/
 
-bool Client::findShow(TvShow& show, const Library& library) {
+SearchResult* Client::findShow(TvShow& show) {
     QString name = show.name();
     SearchResult* result = this->search(name);
-    if (!result) {
-        return false;
-    }
-    const Entry* entry = this->bestResult(*result);
-    if (entry) {
-        entry->updateShow(show, library);
-        return true;
-    }
-    return false;
+    return result;
 }
 
+/*
 void Client::threadFinished() {
     if (dynamic_cast<Thread*>(sender()) != this->activeThread) {
         throw "malapidotcom::Client::threadFinished called from unknown thread";
@@ -41,6 +36,7 @@ void Client::threadFinished() {
     this->activeThread = NULL;
     emit updateFinished();
 }
+*/
 
 SearchResult::SearchResult(QString searchedQuery) : searchedQuery(searchedQuery) {}
 
@@ -53,9 +49,9 @@ SearchResult::~SearchResult() {
 Entry::Entry() {}
 Entry::~Entry() {}
 
-void Entry::updateShow(TvShow& show, const Library& library, UpdateFilter filter) const {
+void Entry::updateShow(TvShow& show, const Library& library, const QString identifierKey, UpdateFilter filter) const {
 
-    const TvShow* existingShow = library.filter().getShowForRemoteId(this->getRemoteId());
+    const TvShow* existingShow = library.filter().getShowForRemoteId(identifierKey, this->getRemoteId());
 
     if (filter & OnlineTvShowDatabase::ufSynopsis) {
         updateSynopsis(show);
@@ -93,7 +89,7 @@ void Entry::updateShow(TvShow& show, const Library& library, UpdateFilter filter
     //qDebug() << "updated show from mal-api.com" << id << title;
 }
 
-
+/*
 Thread::Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent) :
     QThread(parent),
     client(client),
@@ -117,39 +113,30 @@ void Thread::run() {
         msleep(loginSleep);
     }
 
-    bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
-
-    QDate now = QDate::currentDate();
+    //bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
 
     foreach (TvShow* show, tvShows) {
         if (!show) {
             continue;
         }
+        // removed fetch success, this will be taken down anyway
+        QTime timer;
+        timer.start();
 
-        if (show->getRemoteId() == -1 ||
-            show->getTotalEpisodes() == 0 ||
-            (show->isAiring() && (
-             (show->episodeList().numberOfEpisodes() >= show->getTotalEpisodes()) ||
-             (show->getEndDate().isValid() && now > show->getEndDate()) ||
-             (show->getStatus() == TvShow::completed)))) {
+        SearchResult* result = client.findShow(*show);
+        const Entry* best = client.bestResult(*result);
+        best->updateShow(*show, library, client.identifierKey());
 
-            QTime timer;
-            timer.start();
 
-            client.findShow(*show, library);
-
-            int sleepTime = this->requestSleepPadding - timer.elapsed();
-            if (sleepTime > 0) {
-                msleep(sleepTime);
-            }
+        int sleepTime = this->requestSleepPadding - timer.elapsed();
+        if (sleepTime > 0) {
+            msleep(sleepTime);
         }
 
-        if (fetchingSucess) {
-            client.updateInOnlineTracker(show);
-        }
+        //if (fetchingSucess) {
+        //    client.updateInOnlineTracker(show);
+        //}
     }
-
-
 }
-
+*/
 }

@@ -6,10 +6,12 @@
 #include "tvshowscanner.h"
 #include <QStandardPaths>
 #include "videofile.h"
+#include "config.h"
 
 Library::Library(QString path, QObject *parent) :
     QObject(parent),
     directory(path),
+    onlineSync(*this),
     mFilter(tvShows, directory),
     searchThread(NULL)
 {
@@ -20,33 +22,28 @@ Library::Library(QString path, QObject *parent) :
     addWallpaperDownloader(new Moebooru::Client(("https://yande.re")));
     addWallpaperDownloader(new Gelbooru::Client());
 
-    connect(&malapiClient, SIGNAL(updateFinished()),
-            this, SLOT(fetchingFinished()));
-
     fileSystemWatcher = new QFileSystemWatcher(this);
     connect(fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedInSearchDirectory(QString)));
     connect(fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fileChangedInSearchDirectory(QString)));
 }
 
 Library::~Library() {
-    Mal::Thread* malThread = malClient.getActiveThread();
+    // terminate
     foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
         t->terminate();
     }
     searchThread->terminate();
-    if (malThread) malThread->terminate();
 
+    // wait
     foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
         t->wait();
     }
     searchThread->wait();
-    if (malThread) malThread->wait();
-
 }
 
-void Library::initMalClient(QString malConfigFilepath) {
-    malClient.init(malConfigFilepath);
-    connect(&malClient, SIGNAL(fetchingFinished()),
+void Library::initOnlineSync(const BaseConfig& config) {
+    onlineSync.init(config);
+    connect(&onlineSync, SIGNAL(allFinished()),
             this, SLOT(fetchingFinished()));
 }
 
@@ -141,7 +138,10 @@ void Library::xbmcLinkExport(QDir outputDir) {
 */
 
 void Library::fetchMetaData() {
-    malClient.fetchShows(tvShows, *this);
+    foreach (TvShow* show, tvShows) {
+        onlineSync.addShowToFetch(show);
+        onlineSync.addShowToUpdate(show);
+    }
 }
 
 void Library::startWallpaperDownloaders() {
@@ -239,6 +239,7 @@ bool Library::removeSearchDirectory(QString path) {
 }
 
 void Library::generateFrenchises() {
+    /*
     foreach (TvShow* show, tvShows) {
         show->syncRelations(*this);
     }
@@ -248,6 +249,7 @@ void Library::generateFrenchises() {
     foreach (Franchise* franchise, franchises) {
         franchise->generateName();
     }
+    */
 }
 
 void Library::fileChangedInSearchDirectory(QString path) {

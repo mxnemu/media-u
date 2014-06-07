@@ -15,7 +15,9 @@
 #include "libraryfilter.h"
 #include "searchdirectory.h"
 #include "franchise.h"
+#include "onlinesync.h"
 
+class BaseConfig;
 class DirectoryScannerThread;
 
 class Library : public QObject
@@ -31,7 +33,7 @@ public:
 
     explicit Library(QString path, QObject *parent = 0);
     virtual ~Library();
-    void initMalClient(QString malConfigFilepath);
+    void initOnlineSync(const BaseConfig& malConfigFilepath);
 
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp);
 
@@ -86,8 +88,7 @@ private:
     QList<Franchise*> franchises;
     QList<SearchDirectory> searchDirectories;
 
-    Mal::Client malClient;
-    MalApiDotCom::Client malapiClient;
+    OnlineSync onlineSync;
     LibraryFilter mFilter;
     MetaDataParser* metaDataParser;
 

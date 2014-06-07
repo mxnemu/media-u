@@ -56,8 +56,8 @@ public:
     QString libraryPath();
     int serverPort();
 
-    QDir configPath();
-    QString malConfigFilePath();
+    QDir configPath() const;
+    QString malConfigFilePath() const;
 
     QString mplayerLocation();
     QString omxplayerLocation();

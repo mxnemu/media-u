@@ -4,6 +4,10 @@
 #include <QString>
 #include "nwutils.h"
 
+/// This parses useful info out of a VideoFileName
+/// I made all data public for easy access, so please only create const instances.
+/// Side-effects:
+/// It might check the parent directory name & symlinks
 class VideoFile {
 public:
     VideoFile(const QString originalPath);

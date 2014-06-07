@@ -19,7 +19,7 @@ public:
     bool handleApiRequest(QHttpRequest* req, QHttpResponse* resp) const;
     Episode* getEpisodeForPath(const QString& path) const;
     TvShow* getTvShowForPath(const QString& path) const;
-    TvShow* getShowForRemoteId(int remoteId) const;
+    TvShow* getShowForRemoteId(const QString trackerIdentifierKey, int remoteId) const;
     TvShow* getRandomShow() const;
     QString getRandomWallpaper() const;
 

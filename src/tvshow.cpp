@@ -8,7 +8,6 @@
 TvShow::TvShow(QString name, QObject *parent) : QObject(parent) {
     this->mName = name;
     totalEpisodes = 0;
-    remoteId = -1;
     customStatus = automatic;
     rewatchMarker = -1;
     rewatchCount = 0;
@@ -38,8 +37,23 @@ void TvShow::read(QDir &dir) {
     NwUtils::describe(jr, "rewatchCount", rewatchCount);
 
 
-    NwUtils::describe(jr, "remoteId", remoteId);
-    NwUtils::describe(jr, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
+    // try to migrate old remoteId format
+    int deprecatedMalRemoteId = -1;
+    jr.describe("remoteId", deprecatedMalRemoteId);
+    if (deprecatedMalRemoteId > -1) {
+        OnlineSyncData data;
+        data.setRemoteId(deprecatedMalRemoteId);
+        onlineSyncData["mal"] = data;
+    }
+
+    jr.describeArray("onlineSyncData", "data", onlineSyncData.size());
+    for (int i=0; jr.enterNextElement(i); ++i) {
+        QString key;
+        OnlineSyncData data;
+        NwUtils::describe(jr, "key", key);
+        data.describe(jr);
+        onlineSyncData[key] = data;
+    };
     NwUtils::describe(jr, "lastLocalUpdate", lastLocalUpdate);
     jr.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jr, "airingStatus", airingStatus);
@@ -51,19 +65,19 @@ void TvShow::read(QDir &dir) {
     prequels.clear();
     jr.describeArray("prequels", "tvShowRelation", prequels.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        prequels.push_back(RelatedTvShow());
+        prequels.push_back(RelatedTvShow::makeDummy());
         prequels[i].describe(&jr);
     }
     sideStories.clear();
     jr.describeArray("sideStories", "tvShowRelation", sideStories.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        sideStories.push_back(RelatedTvShow());
+        sideStories.push_back(RelatedTvShow::makeDummy());
         sideStories[i].describe(&jr);
     }
     sequels.clear();
     jr.describeArray("sequels", "tvShowRelation", sequels.length());
     for (int i=0; i < jr.enterNextElement(i); ++i) {
-        sequels.push_back(RelatedTvShow());
+        sequels.push_back(RelatedTvShow::makeDummy());
         sequels[i].describe(&jr);
     }
 
@@ -98,8 +112,19 @@ void TvShow::write(nw::JsonWriter& jw) {
     NwUtils::describe(jw, "rewatchMarker", rewatchMarker);
     NwUtils::describe(jw, "rewatchCount", rewatchCount);
 
-    NwUtils::describe(jw, "remoteId", remoteId);
-    NwUtils::describe(jw, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
+    int onlineDataIndex = 0;
+    jw.describeArray("onlineSyncData", "data", onlineSyncData.size());
+    for (auto& kv : onlineSyncData) {
+        if (!jw.enterNextElement(onlineDataIndex)) {
+            break;
+        }
+        QString key = kv.first;
+        NwUtils::describe(jw, "key", key);
+        kv.second.describe(jw);
+        ++onlineDataIndex;
+    };
+    jw.enterNextElement(onlineDataIndex); // close the last one
+
     NwUtils::describe(jw, "lastLocalUpdate", lastLocalUpdate);
     jw.describe("totalEpisodes", totalEpisodes);
     NwUtils::describe(jw, std::string("airingStatus"), airingStatus);
@@ -194,7 +219,7 @@ QStringList TvShow::wallpapers(QDir libraryDirectory) const {
     return ffs->getMatchedFiles();
 }
 
-QString TvShow::favouriteReleaseGroup() {
+QString TvShow::favouriteReleaseGroup() const {
     if (releaseGroupPreference.isEmpty()) {
         return this->episodeList().mostDownloadedReleaseGroup();
     }
@@ -367,9 +392,21 @@ void TvShow::setSynopsis(const QString &value)
     synopsis = value;
 }
 
+void TvShow::setRemoteId(const QString remoteIdentifier, const int& value) {
+    this->onlineSyncData[remoteIdentifier].setRemoteId(value);
+}
+
 QString TvShow::getShowType() const
 {
     return showType;
+}
+
+int TvShow::getRemoteId(const QString trackerIdentifierKey) const {
+    auto it = this->onlineSyncData.find(trackerIdentifierKey);
+    if (it != this->onlineSyncData.end()) {
+        return it->second.getRemoteId();
+    }
+    return -1;
 }
 
 void TvShow::setShowType(const QString &value)
@@ -377,19 +414,13 @@ void TvShow::setShowType(const QString &value)
     showType = value;
 }
 
-int TvShow::getRemoteId() const
-{
-    return remoteId;
-}
-
 bool TvShow::matchesNameOrSynonym(QString str) const {
     return 0 == this->mName.compare(str, Qt::CaseInsensitive) ||
             this->synonyms.contains(str, Qt::CaseInsensitive);
 }
 
-void TvShow::setRemoteId(const int &value)
-{
-    remoteId = value;
+bool TvShow::matchesRemote(const QString trackerIdentifierKey, int id) const {
+    return this->getRemoteId(trackerIdentifierKey) == id;
 }
 
 TvShowPlayerSettings::TvShowPlayerSettings() :
@@ -406,43 +437,115 @@ void TvShowPlayerSettings::describe(nw::Describer*de) {
 }
 
 
-RelatedTvShow::RelatedTvShow(int id) :
-    id(id)
-{
+RelatedTvShow::RelatedTvShow(const QString identifier, int id) {
+    this->setRemoteId(identifier, id);
 }
 
 TvShow *RelatedTvShow::get(Library& library) const {
-    return library.filter().getShowForRemoteId(this->id);
+    for (const std::pair<const QString, int>& it : remoteIds) {
+        TvShow* show = library.filter().getShowForRemoteId(it.first, it.second);
+        if (show) {
+            return show;
+        }
+    }
+    return NULL;
+}
+
+bool RelatedTvShow::matches(const TvShow& show) const {
+    for (const std::pair<const QString, int>& it : remoteIds) {
+        if (show.getRemoteId(it.first) == it.second) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool RelatedTvShow::isDummy() const {
+    return this->remoteIds.empty();
 }
 
 bool RelatedTvShow::operator ==(const RelatedTvShow &other) const {
-    return this->id == other.id; //|| this->title.compare(other.title, Qt::CaseInsensitive) == 0;
+    for (const std::pair<const QString, int>& it : remoteIds) {
+        auto ot = other.remoteIds.find(it.first);
+        if (ot != other.remoteIds.end() && ot->second == it.second) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void RelatedTvShow::describe(nw::Describer *de) {
-    NwUtils::describe(*de, "id", id);
+    if (de->isInReadMode()) {
+        // migrate old data
+        int oldRemoteId = -1;
+        NwUtils::describe(*de, "id", oldRemoteId);
+        if (oldRemoteId > 0) {
+            this->setRemoteId("mal", oldRemoteId);
+        }
+    }
+    auto it = remoteIds.begin();
+    de->describeArray("remoteIds", "remoteId", remoteIds.size());
+    for (int i=0; de->enterNextElement(i); ++i) {
+        if (de->isInWriteMode()) {
+            QString identifier = it->first;
+            int id = it->second;
+            NwUtils::describe(*de, "identifier", identifier);
+            NwUtils::describe(*de, "id", id);
+            ++it;
+        } else if (de->isInReadMode()) {
+            QString identifier;
+            int id;
+            NwUtils::describe(*de, "identifier", identifier);
+            NwUtils::describe(*de, "id", id);
+            this->setRemoteId(identifier, id);
+        }
+    }
     NwUtils::describe(*de, "title", title);
 }
 
-void RelatedTvShow::parseForManga(nw::Describer* de) {
+void RelatedTvShow::parseForManga(nw::Describer* de, QString identifier) {
+    int id = -1;
     NwUtils::describe(*de, "manga_id", id);
     NwUtils::describe(*de, "title", title);
+    this->setRemoteId(identifier, id);
 }
 
-void RelatedTvShow::parseForAnime(nw::Describer* de) {
+void RelatedTvShow::parseForAnime(nw::Describer* de, QString identifier) {
+    int id = -1;
+    QString title;
     NwUtils::describe(*de, "anime_id", id);
     NwUtils::describe(*de, "title", title);
+    this->setRemoteId(identifier, id);
 }
 
-void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedTvShow>& list, const bool anime) {
+void RelatedTvShow::setRemoteId(QString identifier, int id) {
+    if (!identifier.isNull()) {
+        remoteIds[identifier] = id;
+    }
+}
+
+RelatedTvShow RelatedTvShow::makeDummy() {
+    return RelatedTvShow("", -1);
+}
+
+RelatedTvShow TvShow::toRelation() {
+    RelatedTvShow rel = RelatedTvShow::makeDummy();
+    for (auto dataPair : this->onlineSyncData) {
+        rel.setRemoteId(dataPair.first, dataPair.second.getRemoteId());
+    }
+
+    return rel;
+}
+
+void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<RelatedTvShow>& list, const QString identifier, const bool anime) {
     list.empty();
     de->describeArray(arrayName.toUtf8().data(), "", 0);
     for (int i=0; de->enterNextElement(i); ++i) {
-        RelatedTvShow entry;
+        RelatedTvShow entry = RelatedTvShow::makeDummy();
         if (anime) {
-            entry.parseForAnime(de);
+            entry.parseForAnime(de, identifier);
         } else {
-            entry.parseForManga(de);
+            entry.parseForManga(de, identifier);
         }
         list.append(entry);
     }
@@ -450,7 +553,7 @@ void RelatedTvShow::parseFromList(nw::Describer *de, QString arrayName, QList<Re
 
 void TvShow::addPrequels(QList<RelatedTvShow> relations) {
     foreach (const RelatedTvShow& rel, relations) {
-        if (!this->prequels.contains(rel) && rel.id != -1) {
+        if (!this->prequels.contains(rel) && !rel.isDummy()) {
             this->prequels.append(rel);
         }
     }
@@ -458,7 +561,7 @@ void TvShow::addPrequels(QList<RelatedTvShow> relations) {
 
 void TvShow::addSideStories(QList<RelatedTvShow> relations) {
     foreach (const RelatedTvShow& rel, relations) {
-        if (!this->sideStories.contains(rel) && rel.id != -1) {
+        if (!this->sideStories.contains(rel) && !rel.isDummy()) {
             this->sideStories.append(rel);
         }
     }
@@ -466,19 +569,15 @@ void TvShow::addSideStories(QList<RelatedTvShow> relations) {
 
 void TvShow::addSequels(QList<RelatedTvShow> relations) {
     foreach (const RelatedTvShow& rel, relations) {
-        if (!this->sequels.contains(rel) && rel.id != -1) {
+        if (!this->sequels.contains(rel) && !rel.isDummy()) {
             this->sequels.append(rel);
         }
     }
 }
 
 void TvShow::syncRelations(Library& library) {
-    if (this->remoteId == -1) {
-        return;
-    }
-
     QList<RelatedTvShow> relation;
-    relation.append(RelatedTvShow(this->remoteId));
+    relation.append(this->toRelation());
     foreach (const RelatedTvShow& rel, prequels) {
         TvShow* show = rel.get(library);
         if (show) {
@@ -500,22 +599,22 @@ void TvShow::syncRelations(Library& library) {
 }
 
 bool TvShow::hasRelationTo(const TvShow *show) const {
-    if (show->remoteId == -1) {
+    if (!show) {
         return false;
     }
 
     foreach (const RelatedTvShow& rel, prequels) {
-        if (rel.id == show->remoteId) {
+        if (rel.matches(*show)) {
             return true;
         }
     }
     foreach (const RelatedTvShow& rel, sideStories) {
-        if (rel.id == show->remoteId) {
+        if (rel.matches(*show)) {
             return true;
         }
     }
     foreach (const RelatedTvShow& rel, sequels) {
-        if (rel.id == show->remoteId) {
+        if (rel.matches(*show)) {
             return true;
         }
     }
@@ -661,12 +760,44 @@ QDateTime TvShow::getLastLocalUpdate() const {
     return lastLocalUpdate;
 }
 
-
-QDateTime TvShow::getLastOnlineTrackerUpdate() const {
-    return lastOnlineTrackerUpdate;
+QDateTime TvShow::getLastOnlineTrackerUpdate(const QString trackerKey) const {
+    auto it = this->onlineSyncData.find(trackerKey);
+    if (it != this->onlineSyncData.end()) {
+        return it->second.getLastOnlineTrackerUpdate();
+    }
+    return QDateTime();
 }
 
-void TvShow::setLastOnlineTrackerUpdate(const QDateTime& value) {
-    lastOnlineTrackerUpdate = value;
+void TvShow::setLastOnlineTrackerUpdate(const QString trackerKey, const QDateTime& value) {
+    onlineSyncData[trackerKey].setLastOnlineTrackerUpdate(value);
     lastLocalUpdate = value;
+}
+
+
+TvShow::OnlineSyncData::OnlineSyncData() :
+    remoteId(-1)
+{
+}
+
+void TvShow::OnlineSyncData::describe(nw::Describer& de) {
+    NwUtils::describe(de, "remoteId", remoteId);
+    NwUtils::describe(de, "lastOnlineTrackerUpdate", lastOnlineTrackerUpdate);
+}
+
+void TvShow::OnlineSyncData::setLastOnlineTrackerUpdate(const QDateTime& value) {
+    lastOnlineTrackerUpdate = value;
+}
+
+int TvShow::OnlineSyncData::getRemoteId() const
+{
+    return remoteId;
+}
+
+void TvShow::OnlineSyncData::setRemoteId(int value)
+{
+    remoteId = value;
+}
+
+QDateTime TvShow::OnlineSyncData::getLastOnlineTrackerUpdate() const {
+    return this->lastOnlineTrackerUpdate;
 }
