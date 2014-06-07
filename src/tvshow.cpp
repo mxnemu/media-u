@@ -409,8 +409,12 @@ int TvShow::getRemoteId(const QString trackerIdentifierKey) const {
     return -1;
 }
 
-void TvShow::setShowType(const QString &value)
-{
+bool TvShow::hasNoRemoteIds() const {
+    return this->onlineSyncData.empty();
+}
+
+
+void TvShow::setShowType(const QString &value) {
     showType = value;
 }
 

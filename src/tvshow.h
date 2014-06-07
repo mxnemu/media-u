@@ -146,6 +146,7 @@ public:
     void setLastOnlineTrackerUpdate(const QString trackerKey, const QDateTime& value);
 
     RelatedTvShow toRelation();
+    bool hasNoRemoteIds() const;
 signals:
 
 private slots:

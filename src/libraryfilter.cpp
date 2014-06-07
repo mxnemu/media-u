@@ -254,7 +254,7 @@ bool LibraryFilter::filterStatus(const TvShow &show, const LibraryFilter &, cons
 }
 
 bool LibraryFilter::filterNoRemoteId(const TvShow &show, const LibraryFilter &, const void *) {
-    return show.getRemoteId() == -1;
+    return show.hasNoRemoteIds();
 }
 
 QDir LibraryFilter::getLibraryDir() const
