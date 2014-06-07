@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <QStringList>
 #include <QDir>
+#include <QDebug>
 
 Utils::Utils()
 {
@@ -106,6 +107,54 @@ QString Utils::commonSliceInStrings(const QStringList &strings) {
     }
 
     return bestResult;
+}
+
+int Utils::parseRomanNumbers(QString numberString) {
+    static const std::map<QString, int> signs = {
+        std::make_pair("I", 1),
+        std::make_pair("V", 5),
+        std::make_pair("X", 10),
+        std::make_pair("L", 50),
+        std::make_pair("C", 100),
+        std::make_pair("D", 500),
+        std::make_pair("M", 1000),
+        std::make_pair("ↁ", 50000),
+        std::make_pair("ↂ", 10000)
+    };
+
+    int totalSum = 0;
+    int currentSum = 0;
+    int lastSignValue = 0;
+    while (!numberString.isEmpty()) {
+        QString newSign = numberString.at(0);
+        auto itr = signs.find(newSign);
+        if (itr == signs.end()) {
+            return -1;
+        }
+
+        const int newValue = itr->second;
+        if (currentSum == 0) {
+            currentSum = newValue;
+        } else if (newValue > lastSignValue) {
+            totalSum += newValue - currentSum; // apply as prefix
+            currentSum = 0;
+        } else if (newValue == lastSignValue) {
+            currentSum += newValue;
+        } else {
+            totalSum += currentSum;
+            currentSum = 0;
+        }
+        lastSignValue = newValue;
+        numberString.remove(0,1);
+    }
+    return totalSum + currentSum;
+}
+
+void Utils::removeLastOccurance(QString& baseStr, const QString matchStr) {
+    // qt is weird and gives us reversed positions (last char = 0)
+    int turnedPos = baseStr.lastIndexOf(baseStr);
+    int normalPos = baseStr.length() - turnedPos - matchStr.length();
+    baseStr.remove(normalPos, matchStr.length());
 }
 
 

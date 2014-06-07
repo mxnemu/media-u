@@ -1,6 +1,7 @@
 #include "videofile.h"
 #include <QFileInfo>
 #include <QDebug>
+#include "utils.h"
 
 #define IS_SPECIAL_REGEX(prefix) \
     prefix "ED(\\s|$)|" \
@@ -138,6 +139,20 @@ VideoFile::VideoFile(const QString originalPath) {
             if (epname.length()) {
                 this->episodeName = epname;
                 this->showName.remove(epIndex, showName.length()-epIndex);
+            }
+        }
+    }
+
+    // check roman number epnum after title
+    const QStringList titleWords = this->showName.split(QRegExp("\\b"), QString::SkipEmptyParts);
+    if (titleWords.length() >= 2) {
+        const QString& lastWord = titleWords.last();
+        int romanNumber = Utils::parseRomanNumbers(lastWord);
+        if (romanNumber > 0) {
+            if (this->episodeNumber.isEmpty()) {
+                this->episodeNumber = QString::number(romanNumber);
+                Utils::removeLastOccurance(this->showName, lastWord);
+                this->showName = this->showName.trimmed();
             }
         }
     }

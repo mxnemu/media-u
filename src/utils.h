@@ -27,6 +27,8 @@ public:
         return reducedList;
     }
 
+    static int parseRomanNumbers(QString numberString);
+    static void removeLastOccurance(QString& baseStr, const QString matchStr);
 private:
     static QString commonSliceAtStart(const QString &a, const QString &b, int startIndex);
 };
