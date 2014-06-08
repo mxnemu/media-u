@@ -11,32 +11,11 @@ Client::Client(OnlineCredentials& credentials, QObject* parent) :
 {
 }
 
-/*
-void Client::startUpdate(QList<TvShow*> &showList, const Library& library) {
-    if (this->activeThread) {
-        return;
-    }
-    this->activeThread = new Thread(*this, showList, library, this);
-    connect(this->activeThread, SIGNAL(finished()), this, SLOT(threadFinished()));
-    this->activeThread->start();
-}
-*/
-
 SearchResult* Client::findShow(TvShow& show) {
     QString name = show.name();
     SearchResult* result = this->search(name);
     return result;
 }
-
-/*
-void Client::threadFinished() {
-    if (dynamic_cast<Thread*>(sender()) != this->activeThread) {
-        throw "malapidotcom::Client::threadFinished called from unknown thread";
-    }
-    this->activeThread = NULL;
-    emit updateFinished();
-}
-*/
 
 SearchResult::SearchResult(QString searchedQuery) : searchedQuery(searchedQuery) {}
 
@@ -89,54 +68,4 @@ void Entry::updateShow(TvShow& show, const Library& library, const QString ident
     //qDebug() << "updated show from mal-api.com" << id << title;
 }
 
-/*
-Thread::Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent) :
-    QThread(parent),
-    client(client),
-    tvShows(shows),
-    library(library),
-    requestSleepPadding(3000)
-{
-}
-
-void Thread::run() {
-
-    QTime loginTimer;
-    loginTimer.start();
-
-    if (!client.login()) {
-        qDebug() << "can't fetch data, no valid login credentials";
-        return;
-    }
-    int loginSleep = requestSleepPadding - loginTimer.elapsed();
-    if (loginSleep > 0) {
-        msleep(loginSleep);
-    }
-
-    //bool fetchingSucess = client.fetchOnlineTrackerList(tvShows);
-
-    foreach (TvShow* show, tvShows) {
-        if (!show) {
-            continue;
-        }
-        // removed fetch success, this will be taken down anyway
-        QTime timer;
-        timer.start();
-
-        SearchResult* result = client.findShow(*show);
-        const Entry* best = client.bestResult(*result);
-        best->updateShow(*show, library, client.identifierKey());
-
-
-        int sleepTime = this->requestSleepPadding - timer.elapsed();
-        if (sleepTime > 0) {
-            msleep(sleepTime);
-        }
-
-        //if (fetchingSucess) {
-        //    client.updateInOnlineTracker(show);
-        //}
-    }
-}
-*/
 }
