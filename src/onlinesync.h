@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QWaitCondition>
+#include <QThread>
 #include "onlinetracker.h"
 #include "onlinetvshowdatabase.h"
 

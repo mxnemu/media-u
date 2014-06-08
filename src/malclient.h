@@ -14,7 +14,6 @@
 #include "onlinetvshowdatabase.h"
 
 namespace Mal {
-using OnlineTvShowDatabase::Thread;
 
 class Entry : public OnlineTvShowDatabase::Entry {
 public:

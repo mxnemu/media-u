@@ -5,7 +5,6 @@
 #include "tvshow.h"
 #include "curlresult.h"
 #include <QDir>
-#include <QThread>
 #include "onlinecredentials.h"
 
 class Library;
@@ -50,8 +49,6 @@ public:
     QList<Entry*> entries;
 };
 
-
-class Thread;
 class Client : public QObject {
     Q_OBJECT
 public:
@@ -61,9 +58,6 @@ public:
     virtual const QString identifierKey() const = 0;
 
     const OnlineCredentials&  credentials;
-
-signals:
-    void updateFinished();
 
 protected:
     virtual SearchResult* search(QString anime) = 0;
