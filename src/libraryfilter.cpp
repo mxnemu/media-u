@@ -74,20 +74,20 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) con
     } else if (req->path().startsWith("/api/library/filter/slowLists")) {
         sendLists(resp,
                   QList<std::pair<QString, QList<TvShow*> > >() <<
-                  std::pair<QString, QList<TvShow*> >("airing", airing()) <<
-                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::watching), statusWatching()) <<
-                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), statusWaitingForNewEpisodes()) <<
-                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::planToWatch), statusPlanToWatch()) <<
-                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::onHold), statusOnHold()) <<
-                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::dropped), statusDropped()) <<
-                  std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::completed), statusCompleted())
+                  std::make_pair("airing", airing()) <<
+                  std::make_pair(TvShow::watchStatusToString(TvShow::watching), statusWatching()) <<
+                  std::make_pair(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), statusWaitingForNewEpisodes()) <<
+                  std::make_pair(TvShow::watchStatusToString(TvShow::planToWatch), statusPlanToWatch()) <<
+                  std::make_pair(TvShow::watchStatusToString(TvShow::onHold), statusOnHold()) <<
+                  std::make_pair(TvShow::watchStatusToString(TvShow::dropped), statusDropped()) <<
+                  std::make_pair(TvShow::watchStatusToString(TvShow::completed), statusCompleted())
         );
     } else if (req->path().startsWith("/api/library/filter/oldLists")) {
         sendLists(resp,
                   QList<std::pair<QString, QList<TvShow*> > >() <<
-                  std::pair<QString, QList<TvShow*> >("airing", airing()) <<
-                  std::pair<QString, QList<TvShow*> >("all", all()) <<
-                  std::pair<QString, QList<TvShow*> >("recently-watched", recentlyWatched())
+                  std::make_pair("airing", airing()) <<
+                  std::make_pair("all", all()) <<
+                  std::make_pair("recently-watched", recentlyWatched())
         );
     } else if (req->path().startsWith("/api/library/filter/missingFiles")) {
         QList<const VideoFile*> missing = this->missingFiles();
@@ -101,7 +101,7 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) con
     } else if (req->path().startsWith("/api/library/filter/noRemoteId")) {
         sendLists(resp,
                   QList<std::pair<QString, QList<TvShow*> > >() <<
-                  std::pair<QString, QList<TvShow*> >("noRemoteId", noRemoteId())
+                  std::make_pair("noRemoteId", noRemoteId())
         );
     } else {
         return false;
@@ -134,13 +134,13 @@ QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() const {
         }
     }
     return QList<std::pair<QString, QList<TvShow*> > >() <<
-            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::watching), watching) <<
-            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), waitingForNewEpisodes) <<
-            std::pair<QString, QList<TvShow*> >("airing", airing) <<
-            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::planToWatch), planToWatch) <<
-            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::onHold), onHold) <<
-            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::dropped), dropped) <<
-            std::pair<QString, QList<TvShow*> >(TvShow::watchStatusToString(TvShow::completed), completed);
+            std::make_pair(TvShow::watchStatusToString(TvShow::watching), watching) <<
+            std::make_pair(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), waitingForNewEpisodes) <<
+            std::make_pair("airing", airing) <<
+            std::make_pair(TvShow::watchStatusToString(TvShow::planToWatch), planToWatch) <<
+            std::make_pair(TvShow::watchStatusToString(TvShow::onHold), onHold) <<
+            std::make_pair(TvShow::watchStatusToString(TvShow::dropped), dropped) <<
+            std::make_pair(TvShow::watchStatusToString(TvShow::completed), completed);
 }
 
 void LibraryFilter::sendLists(QHttpResponse *resp, QList<std::pair<QString, QList<TvShow*> > > lists) const {
