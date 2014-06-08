@@ -5,6 +5,8 @@ SOURCES += mainwindow.cpp \
     page.cpp \
     tvshowpage.cpp \
     settingspage.cpp \
+    mainbackgroundwidget.cpp \
+    tvshowlistwidget.cpp
 
 HEADERS += mainpage.h \
     mainwindow.h \
@@ -12,6 +14,8 @@ HEADERS += mainpage.h \
     page.h \
     tvshowpage.h \
     settingspage.h \
+    mainbackgroundwidget.h \
+    tvshowlistwidget.h
 
 FORMS    += mainwindow.ui \
     mainpage.ui \
