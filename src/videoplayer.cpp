@@ -283,6 +283,7 @@ void VideoPlayer::onPlaybackEndedNormally() {
             }
         }
     }
+    library.onVideoPlaybackEndedNormally(show);
 
     this->resetPlayingStatus();
     emit playbackEnded();

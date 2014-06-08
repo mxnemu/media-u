@@ -259,6 +259,12 @@ void Library::fileChangedInSearchDirectory(QString path) {
     }
 }
 
+void Library::onVideoPlaybackEndedNormally(TvShow* show) {
+    if (show) {
+        this->onlineSync.addShowToUpdate(show);
+    }
+}
+
 void Library::addToFrenchise(const TvShow* show) {
     bool added = false;
     foreach (Franchise* f, franchises) {

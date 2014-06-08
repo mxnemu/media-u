@@ -77,6 +77,7 @@ public slots:
     void generateFrenchises();
 
     void fileChangedInSearchDirectory(QString);
+    void onVideoPlaybackEndedNormally(TvShow* show);
 
 private slots:
     void fetchingFinished();
