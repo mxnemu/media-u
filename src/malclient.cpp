@@ -15,30 +15,6 @@ Client::Client(OnlineCredentials& credentials, QObject *parent) :
 {
 }
 
-/*
-void Client::fetchShows(QList<TvShow*> &showList, const Library& library) {
-    if (activeThread) {
-        return;
-    }
-    activeThread = new Thread(*this, showList, library, this);
-    activeThread->start(QThread::LowPriority);
-    qDebug() << "started mal fetchThread";
-
-    connect(activeThread, SIGNAL(finished()),
-            this, SLOT(fetchThreadFinished()));
-}
-
-void Client::fetchThreadFinished() {
-    if (activeThread == sender()) {
-        delete activeThread;
-        this->activeThread = NULL;
-    } else {
-        throw "fetchThreadFinished() signal received from unknown sender()";
-    }
-    emit fetchingFinished();
-}
-*/
-
 OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
     QString name = anime;
     if (name.isEmpty() || name.isNull()) {
@@ -59,10 +35,6 @@ OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
         return new SearchResult(userData, name);
     }
     return NULL;
-}
-
-const OnlineTvShowDatabase::Entry*Client::bestResult(const OnlineTvShowDatabase::SearchResult& result) const {
-    return ((SearchResult&)result).bestResult(); // not a good cast use pointers
 }
 
 const QString Client::IDENTIFIER_KEY = "mal";
@@ -169,7 +141,7 @@ QString Entry::dateFormat = "yyyy-MM-dd";
 //////////////////////////////////////////////////////////////////
 
 SearchResult::SearchResult(CurlResult &result, QString query) :
-    query(query)
+    OnlineTvShowDatabase::SearchResult(query)
 {
     parse(result);
 }
@@ -182,21 +154,21 @@ void SearchResult::parse(CurlResult &result) {
     bool hasEntries = false;
     for (int i=0; xr.enterNextElement(i); ++i) {
         entries.append(Entry(xr));
-        entries.back().calculateQuerySimiliarity(query);
+        entries.back().calculateQuerySimiliarity(searchedQuery);
         hasEntries = true;
     }
     if (!hasEntries) {
-        qDebug() << "no results for mal search >" << query;
+        qDebug() << "no results for mal search >" << searchedQuery;
     }
     xr.close();
 }
 
-const Entry* SearchResult::bestResult() const {
+const OnlineTvShowDatabase::Entry* SearchResult::bestEntry() const {
     std::pair<int, const Entry*> best(-1, NULL);
     for (int i=0; i < entries.length(); ++i) {
         const Entry* entry = &entries.at(i);
 
-        int score = Utils::querySimiliarity(this->query, entry->title);
+        int score = Utils::querySimiliarity(this->searchedQuery, entry->title);
         /*
         foreach (const QString& name, entry->englishTitles) {
             int s = Utils::querySimiliarity(this->query, name);
@@ -204,7 +176,7 @@ const Entry* SearchResult::bestResult() const {
         }
         */
         foreach (const QString& name, entry->synonyms) {
-            int s = Utils::querySimiliarity(this->query, name);
+            int s = Utils::querySimiliarity(this->searchedQuery, name);
             score = score >= s ? score : s;
         }
         /*
@@ -219,15 +191,6 @@ const Entry* SearchResult::bestResult() const {
         }
     }
     return best.second;
-}
-
-void SearchResult::updateShowFromBestEntry(TvShow &show, const Library& library) const {
-    const Entry* entry = bestResult();
-
-    if (entry) {
-        entry->updateShow(show, library, Client::IDENTIFIER_KEY);
-        qDebug() << "updated " << show.getShowType() << show.name();
-    }
 }
 
 } // namespace

@@ -6,14 +6,18 @@
 namespace OnlineTvShowDatabase {
 Client::Client(OnlineCredentials& credentials, QObject* parent) :
     QObject(parent),
-    credentials(credentials),
-    activeThread(NULL)
+    credentials(credentials)
 {
 }
 
 SearchResult* Client::findShow(TvShow& show) {
     QString name = show.name();
     SearchResult* result = this->search(name);
+
+    if (!result) {
+        // TODO try alternate name
+    }
+
     return result;
 }
 

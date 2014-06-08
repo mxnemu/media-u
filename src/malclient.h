@@ -56,11 +56,9 @@ class SearchResult : public OnlineTvShowDatabase::SearchResult {
 public:
     SearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);
-    void updateShowFromBestEntry(TvShow& show, const Library& library) const;
-    const Entry*bestResult() const;
+    virtual const OnlineTvShowDatabase::Entry* bestEntry() const;
 private:
     QList<Entry> entries;
-    QString query;
 };
 
 class Client : public OnlineTvShowDatabase::Client {
@@ -69,21 +67,11 @@ public:
     explicit Client(OnlineCredentials& credentials, QObject *parent = 0);
     void init(QString configFilePath);
 
-    bool hasVerifiedCredentials() const;
-
-    void fetchShows(QList<TvShow *> &showList, const Library& library);
-    void fetchShowBlocking(TvShow &show, QDir libraryDir);
-
-    virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
-    virtual const OnlineTvShowDatabase::Entry* bestResult(const OnlineTvShowDatabase::SearchResult&result) const;
     virtual const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;
 
-signals:
-    void fetchingFinished();
-
-private slots:
-    //void fetchThreadFinished();
+protected:
+    virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
 };
 
 } // namespace

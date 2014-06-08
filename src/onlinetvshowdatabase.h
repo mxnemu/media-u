@@ -44,8 +44,9 @@ public:
     SearchResult(QString searchedQuery = QString());
     virtual ~SearchResult();
 
-    void describe(nw::Describer* const de);
-    QString searchedQuery;
+    virtual const Entry* bestEntry() const = 0;
+
+    const QString searchedQuery;
     QList<Entry*> entries;
 };
 
@@ -55,12 +56,7 @@ class Client : public QObject {
     Q_OBJECT
 public:
     Client(OnlineCredentials& credentials, QObject* parent = NULL);
-
-    void startUpdate(QList<TvShow *> &showList, const Library& library);
     SearchResult* findShow(TvShow& show);
-
-    virtual SearchResult* search(QString anime) = 0;
-    virtual const Entry* bestResult(const SearchResult&) const = 0;
 
     virtual const QString identifierKey() const = 0;
 
@@ -69,25 +65,9 @@ public:
 signals:
     void updateFinished();
 
-public slots:
-    //void threadFinished();
 protected:
-    Thread* activeThread;
+    virtual SearchResult* search(QString anime) = 0;
 };
-/*
-class Thread : public QThread {
-    Q_OBJECT
-public:
-    Thread(Client &client, QList<TvShow*> &shows, const Library& library, QObject *parent);
-    void run();
-
-protected:
-    Client &client;
-    QList<TvShow*> &tvShows;
-    const Library& library;
-    const int requestSleepPadding;
-};
-*/
 
 }
 

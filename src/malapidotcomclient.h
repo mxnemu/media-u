@@ -9,6 +9,7 @@
 #include "onlinetvshowdatabase.h"
 
 namespace MalApiDotCom {
+/*
 using OnlineTvShowDatabase::UpdateFilter;
 using OnlineTvShowDatabase::SearchResult;
 
@@ -72,6 +73,7 @@ protected:
     SearchResult* parseSearch(CurlResult& response, QString searchedAnime);
     static CURL *curlClient(const char *url, CurlResult &userdata);
 };
+*/
 
 }
 

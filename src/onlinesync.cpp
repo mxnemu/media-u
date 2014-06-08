@@ -75,7 +75,7 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
         }
 
         //results.push_back(result);
-        const OnlineTvShowDatabase::Entry* entry = db->bestResult(*result);
+        const OnlineTvShowDatabase::Entry* entry = result->bestEntry();
         if (entry) {
             entry->updateShow(*show, library, db->identifierKey());
             anySuccess = true;

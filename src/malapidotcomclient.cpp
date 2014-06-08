@@ -2,8 +2,15 @@
 #include <QDebug>
 #include "utils.h"
 
-namespace MalApiDotCom {
+/*
+ *
+ *  This implementation is not up2date with my base-classes
+ *  I did not upgrade it since mal-api.net is down for about half a year
+ *  and does not look like it's coming back anytime soon
+ */
 
+namespace MalApiDotCom {
+/*
 Client::Client(OnlineCredentials& credentials, QObject* parent) :
     OnlineTvShowDatabase::Client(credentials, parent)
 {
@@ -125,6 +132,8 @@ void Entry::updateSynonyms(TvShow &show) const {
 void Entry::updateImage(TvShow &show, QDir libraryDir) const {
     show.downloadImage(image_url, libraryDir);
 }
+*/
+
 /* TODO make it build if mal-api.com should ever return
 void Entry::describe(nw::Describer *de) {
     NwUtils::describe(*de, "id", id);
@@ -158,6 +167,7 @@ void Entry::describe(nw::Describer *de) {
 }
 */
 
+/*
 QString Entry::dateFormat = "yyyy-MM-dd";
-
+*/
 } // namespace
