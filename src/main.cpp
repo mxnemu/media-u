@@ -39,11 +39,15 @@ int main(int argc, char *argv[]) {
     }
 
     VideoPlayer* player;
+    /*
     if (config.omxPlayerIsInstalled()) {
         player = new Omxplayer(library, config);
     } else {
         player = new Mplayer(library, config, config.getMplayerConfigConstRef());
     }
+    */
+    player = new Mplayer(library, config, config.getMplayerConfigConstRef());
+
 
     MetaDataParserAvconv metaDataParser;
     ThumbnailCreatorAvconv thumbnailCreator;

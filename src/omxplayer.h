@@ -1,6 +1,10 @@
 #ifndef OMXPLAYER_H
 #define OMXPLAYER_H
 
+/*
+ *  WARNING IMPLEMENTATION INCOMPLETE NOT USABLE
+ */
+
 #include "videoplayer.h"
 
 class Omxplayer : public VideoPlayer

@@ -30,7 +30,10 @@ Probably won't fix:
 -make mplayer use the gpu of the raspberry pi
  alternative: fix omxplayers playbackerrors and horrific subtitles
  alternative: just import stuff and export symlinks with xbmc compatible names
--any raspberry pi support
+-any extended raspberry pi support
+    (I got it to work, but it only plays hardsubbed stuff smoothly,
+     the omxplayer-interface is outdated)
+
 
 Bugs:
 -Some remaining false-positive results from MAL search, get better query compare
