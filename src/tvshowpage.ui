@@ -61,6 +61,21 @@ background-color: rgba(255,255,255, 0.5);
         <property name="fieldGrowthPolicy">
          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="title">
+          <property name="font">
+           <font>
+            <pointsize>24</pointsize>
+            <weight>75</weight>
+            <italic>true</italic>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_status">
           <property name="font">
@@ -73,19 +88,19 @@ background-color: rgba(255,255,255, 0.5);
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_medium">
+        <item row="2" column="1">
+         <widget class="QLabel" name="status">
           <property name="font">
            <font>
             <pointsize>16</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>Aired on:</string>
+           <string/>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_episodes">
           <property name="font">
            <font>
@@ -100,7 +115,19 @@ background-color: rgba(255,255,255, 0.5);
           </property>
          </widget>
         </item>
-        <item row="8" column="0">
+        <item row="5" column="1">
+         <widget class="QLabel" name="episodes">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
          <widget class="QLabel" name="label_startDate">
           <property name="font">
            <font>
@@ -112,7 +139,19 @@ background-color: rgba(255,255,255, 0.5);
           </property>
          </widget>
         </item>
-        <item row="10" column="0">
+        <item row="7" column="1">
+         <widget class="QLabel" name="startDate">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
          <widget class="QLabel" name="label_endDate">
           <property name="font">
            <font>
@@ -124,7 +163,19 @@ background-color: rgba(255,255,255, 0.5);
           </property>
          </widget>
         </item>
-        <item row="12" column="0">
+        <item row="9" column="1">
+         <widget class="QLabel" name="endDate">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
          <widget class="QLabel" name="label_synopsis">
           <property name="enabled">
            <bool>true</bool>
@@ -139,7 +190,7 @@ background-color: rgba(255,255,255, 0.5);
           </property>
          </widget>
         </item>
-        <item row="13" column="0">
+        <item row="12" column="0">
          <widget class="QLabel" name="synopsis">
           <property name="enabled">
            <bool>true</bool>
@@ -157,81 +208,6 @@ background-color: rgba(255,255,255, 0.5);
           </property>
           <property name="wordWrap">
            <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QLabel" name="title">
-          <property name="font">
-           <font>
-            <pointsize>24</pointsize>
-            <weight>75</weight>
-            <italic>true</italic>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="status">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLabel" name="startDate">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="medium">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QLabel" name="episodes">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1">
-         <widget class="QLabel" name="endDate">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
           </property>
          </widget>
         </item>

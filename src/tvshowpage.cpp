@@ -44,7 +44,6 @@ void TvShowPage::setTvShow(TvShow* show) {
     ui->status->setText(show->getAiringStatus());
     ui->startDate->setText(show->getStartDate().toString("yyyy-MM-dd"));
     ui->endDate->setText(show->getEndDate().toString("yyyy-MM-dd"));
-    ui->medium->setText(show->getShowType());
     ui->synopsis->setText(show->getSynopsis());
 
     this->updateWatched(0,0);
