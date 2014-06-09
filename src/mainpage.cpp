@@ -27,9 +27,17 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
     connect(&library, SIGNAL(showAdded(TvShow*)), this, SLOT(onShowAdded(TvShow*)));
 }
 
-MainPage::~MainPage()
-{
+MainPage::~MainPage() {
     delete ui;
+}
+
+void MainPage::initFromQuery(const QString& initString) {
+    if (initString.isNull()) {
+        this->ui->message->setVisible(false);
+        return;
+    }
+    this->ui->message->setVisible(true);
+    this->ui->message->setText(initString);
 }
 
 bool MainPage::handleApiRequest(QHttpRequest *, QHttpResponse *)

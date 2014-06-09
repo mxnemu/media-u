@@ -70,15 +70,15 @@ int main(int argc, char *argv[]) {
     QDir publicDir = QDir::current();
     publicDir.cd("public");
     Server s(publicDir.path(), w, library, player);
-    int port = s.start(config.serverPort());
+    const int port = s.start(config.serverPort());
 
     if (config.getAutoOpenBrowser()) {
         QString url(QString("http://localhost:%1").arg(port));
         QDesktopServices::openUrl(url);
     }
 
-    w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
-    w.setPage("MainPage");
+    //w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
+    w.setPage("MainPage", QString("Launched on port %1").arg(port));
 
     library.initOnlineSync(config);
     library.startSearch();

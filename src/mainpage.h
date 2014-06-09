@@ -17,6 +17,7 @@ public:
     explicit MainPage(Library& library, MainWindow* mainwindow, QWidget *parent = 0);
     ~MainPage();
 
+    virtual void initFromQuery(const QString& initString);
     bool handleApiRequest(QHttpRequest *req, QHttpResponse *resp);
     
 private slots:
