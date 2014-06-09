@@ -33,12 +33,14 @@ Library::~Library() {
         t->terminate();
     }
     searchThread->terminate();
+    onlineSync.terminate();
 
     // wait
     foreach (WallpaperDownload::FetchThread* t, runningWallpaperDownloaders) {
         t->wait();
     }
     searchThread->wait();
+    onlineSync.wait();
 }
 
 void Library::initOnlineSync(const BaseConfig& config) {
