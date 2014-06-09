@@ -264,10 +264,10 @@ float VideoFile::numericEpisodeNumber() const {
     QRegExp pureNumber("([0-9\\.]+x)?([0-9\\.]+)", Qt::CaseInsensitive);
     int index = pureNumber.indexIn(episodeNumber);
     if (index != -1) {
-        // this is for files that don't have a space after the "showname -epnum" dash
-        // Maybe I should move specials TO 0xFFFF and allow negative numbers
+        // Correction for files that don't have a space after the dash like:
+        // "showname -3", this would be parsed as negative Number.
         float ep = pureNumber.cap(2).toFloat();
-        return ep >= 0 ? ep : -1.f*ep;
+        return ep >= 0 ? ep : -1.f * ep;
     }
     return UNKNOWN;
 }
