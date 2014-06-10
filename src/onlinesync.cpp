@@ -164,8 +164,8 @@ void OnlineSync::updateTrackers() {
 }
 
 void OnlineSync::run() {
-    connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()));
-    connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()));
+    connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()), Qt::DirectConnection);
+    connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()), Qt::DirectConnection);
 
     this->fetchDatabases();
     // TODO I've got no idea if this works how I expect.
