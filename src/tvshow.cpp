@@ -230,15 +230,15 @@ QString TvShow::coverPath(QDir libaryPath) const {
     return this->directory(libaryPath).absoluteFilePath("cover");
 }
 
-void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpResponse* resp) {
-    if (urlPrefixOffset == req->path().indexOf("/details", urlPrefixOffset)) {
+void TvShow::handleApiRequest(QString endPath, QHttpRequest* req, QHttpResponse* resp) {
+    if (endPath.startsWith("/details")) {
         std::stringstream ss;
         nw::JsonWriter jw(ss);
         jw.setState("detailed", true);
         this->write(jw);
         jw.close();
         Server::simpleWrite(resp, 200, ss.str().data(), mime::json);
-    } else if (urlPrefixOffset == req->path().indexOf("/setRewatchMarker", urlPrefixOffset)) {
+    } else if (endPath.startsWith("/setRewatchMarker")) {
         bool ok = false;
         int marker = req->url().query(QUrl::FullyDecoded).toInt(&ok);
         if (ok) {
@@ -247,7 +247,7 @@ void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpRespo
             return;
         }
         Server::simpleWrite(resp, 400, "{\"error\":\"invalid number\"}", mime::json);
-    } else if (urlPrefixOffset == req->path().indexOf("/playerSettings", urlPrefixOffset)) {
+    } else if (endPath.startsWith("/playerSettings")) {
         if (req->method() == QHttpRequest::HTTP_PUT) {
             RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
             connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
@@ -261,7 +261,7 @@ void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpRespo
         } else {
             Server::simpleWrite(resp, 400, "page does not have a show set");
         }
-    } else if (urlPrefixOffset == req->path().indexOf("/releaseGroupPreference")) {
+    } else if (endPath.startsWith("/releaseGroupPreference")) {
         if (req->method() == QHttpRequest::HTTP_PUT) {
             RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
             connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
@@ -269,7 +269,7 @@ void TvShow::handleApiRequest(int urlPrefixOffset, QHttpRequest* req, QHttpRespo
         } else {
             Server::simpleWrite(resp, 400, "page does not have a show set");
         }
-    } else if (urlPrefixOffset == req->path().indexOf("/setStatus")) {
+    } else if (endPath.startsWith("/setStatus")) {
         TvShow::WatchStatus status = TvShow::watchStatusFromString(req->url().query(QUrl::FullyDecoded));
         this->setStatus(status);
         Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);

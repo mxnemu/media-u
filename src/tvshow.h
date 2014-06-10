@@ -81,7 +81,7 @@ public:
     bool isAiring() const;
     QString coverPath(QDir libaryPath) const;
 
-    void handleApiRequest(int urlPrefixOffset, QHttpRequest *req, QHttpResponse *resp);
+    void handleApiRequest(QString endPath, QHttpRequest *req, QHttpResponse *resp);
 
     // TODO reimplement export for episode list
     // or remove, since it didn't work very good to begin with

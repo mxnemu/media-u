@@ -55,14 +55,16 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     } else if (req->path().startsWith("/api/library/tvshow/")) {
         const int prefixOffset = sizeof("/api/library/tvshow/")-1;
         const QString encodedPath = req->url().path(QUrl::EncodeDelimiters);
-        QString encodedShowName = encodedPath.mid(prefixOffset, encodedPath.indexOf('/', prefixOffset)-prefixOffset);
+        const int commandPathOffset = encodedPath.indexOf('/', prefixOffset);
+        QString encodedShowName = encodedPath.mid(prefixOffset, commandPathOffset-prefixOffset);
         QString showName = QUrl::fromPercentEncoding(encodedShowName.toUtf8());
-        qDebug() << showName;
+
 
         TvShow* show = existingTvShow(showName);
         if (show) {
-            int urlPrefixOffset = encodedPath.indexOf('/', prefixOffset);
-            show->handleApiRequest(urlPrefixOffset, req, resp);
+            QString commandPath = encodedPath.mid(commandPathOffset, encodedPath.length() - commandPathOffset);
+            qDebug() << "FUUUGLOAIKJUGKIOAHSGILÖPAHSLKJ"  << commandPath << encodedPath;
+            show->handleApiRequest(commandPath, req, resp);
         } else {
             Server::simpleWrite(resp, 400, "{\"error\":\"invalid show name\"}");
         }

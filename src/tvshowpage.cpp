@@ -75,7 +75,7 @@ bool TvShowPage::handleApiRequest(QHttpRequest *req, QHttpResponse *resp)
     }
 
     if (req->path() == "/api/page/details") {
-        tvShow->handleApiRequest(sizeof("/api/page") -1, req, resp);
+        tvShow->handleApiRequest("/details", req, resp);
         return true;
     }
     return false;
