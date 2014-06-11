@@ -31,7 +31,7 @@ StartPage.prototype.createNodes = function() {
         self.page.append("<h1>StartPage</h1>");
         self.createLists(self.page);
     });
-    
+
     this.bindEvents();
     return this.page;
 }
@@ -61,10 +61,10 @@ StartPage.prototype.createLists = function(page) {
         var listNode = $("<div class='showList list'></div>");
         var listHead = $("<div class='headline'></div>");
         list.node = listNode;
-        
+
         var name = document.createElement("span");
         name.textContent = listName;
-        
+
         (function(listNode) {
             var playButton = PlayButton.create();
             playButton.click(function() {
@@ -75,17 +75,17 @@ StartPage.prototype.createLists = function(page) {
                     PlayButton.ajaxClickCallback(randomShowName)();
                 }
             });
-            
+
             listHead.append(name);
             listHead.append(playButton);
         })(listNode);
-        
+
         listNode.append(listHead);
-        
+
         list.sort(function(a, b) {
             return a.name < b.name ? -1 : 1;
         });
-        
+
         // show
         $.each(list, function() {
             var show = this;
@@ -101,7 +101,7 @@ StartPage.prototype.delayedShowPreviewRequest = function(element, showName) {
     var delayId = window.setTimeout(function() {
         var el = $(element);
         if (el.hasClass("focused")) {
-            $.getJSON("api/setPage/TvShowPage?" + showName);
+            $.getJSON("api/setPage/TvShowPage?" + encodeURIComponent(showName));
         }
     }, 50);
 }
@@ -113,18 +113,18 @@ StartPage.prototype.liForShow = function(show) {
     item.on("focus", function() {
         $(this).mousemove();
     });
-    
+
     var name = document.createElement("span");
     name.className = "name";
     name.textContent = show.name;
     name.setAttribute("data-name", show.name);
-    
+
     var watchCount = document.createElement("span");
     watchCount.className = "watchCount";
     watchCount.textContent = show.watchedEpisodes + "/" +
-                             show.downloadedEpisodes + "/" + 
+                             show.downloadedEpisodes + "/" +
                              show.totalEpisodes;
-    
+
     item.append(name);
     item.append(watchCount);
     item.mousemove(function() {
