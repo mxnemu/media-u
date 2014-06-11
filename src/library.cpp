@@ -67,9 +67,6 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         } else {
             Server::simpleWrite(resp, 400, "{\"error\":\"invalid show name\"}");
         }
-    } else if (req->path().startsWith("/api/library/randomWallpaper")) {
-        // TODO change abs img path to server url
-        Server::simpleWrite(resp, 200, QString("{\"image\":\"%1\"}").arg(filter().getRandomWallpaper()), mime::json);
     } else if (req->path().startsWith("/api/library/toggleWatched")) {
         Episode* episode = filter().getEpisodeForPath(req->url().query(QUrl::FullyDecoded));
         if (episode) {
