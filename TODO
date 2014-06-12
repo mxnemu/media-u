@@ -12,6 +12,9 @@ Roadmap:
 
 -some way to switch between different files of the same subgroup
 -isMovie check for TvShow, try episode name on mal-search if isMovie or name + "movie"
+-add mpv api via libmpv.
+     It's not stable yet, so I'm going to wait with this.
+     It appears like they deprecated --slave mode
 
 -webui: notification & links bar fixed on top
 -webui: options page
