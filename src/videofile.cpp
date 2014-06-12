@@ -203,6 +203,33 @@ VideoFile::VideoFile(const QString originalPath) {
     }
 }
 
+std::map<QString, QString> VideoFile::alternativeTitles() const {
+    std::map<QString, QString> titles;
+    // Replace Roman Number at end with a an arabic number
+    // TODO remove roman number copy pasta
+    const QStringList titleWords = this->showName.split(QRegExp("\\b"), QString::SkipEmptyParts);
+    if (titleWords.length() >= 2) {
+        const QString& lastWord = titleWords.last();
+        int romanNumber = Utils::parseRomanNumbers(lastWord);
+        if (romanNumber > 0) {
+            QString numberless = this->showName;
+            Utils::removeLastOccurance(numberless, lastWord);
+            QString arabic = QString(numberless).append(QString::number(romanNumber));
+            titles["arabicNumber"] = arabic;
+            titles["romanNumberless"] = numberless;
+        }
+    }
+
+    // TODO remove roman numbers from this
+    if (!this->episodeName.isEmpty()) {
+        QString withEpName = this->showName;
+        withEpName.append(this->showName);
+        titles["withEpName"] = withEpName;
+    }
+
+    return titles;
+}
+
 bool VideoFile::hasVideoExtension(QString filename) {
     return filename.contains(QRegExp("\\.mkv$|\\.ogv$|\\.mpeg$|\\.mp4$|\\.webm$|\\.avi$|\\.mp5$", Qt::CaseInsensitive));
 }

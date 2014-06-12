@@ -37,6 +37,9 @@ public:
     static const int UNKNOWN = -1;
     static const int SPECIAL = -2;
     static const int INVALID = -3;
+    /// Generates a list of alternative interpretations for the ShowName
+    /// shall be used for online-db searches
+    std::map<QString, QString> alternativeTitles() const;
 };
 
 #endif // MOVIEFILE_H
