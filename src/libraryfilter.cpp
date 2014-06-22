@@ -112,6 +112,7 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) con
 QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() const {
     QList<TvShow*> airing;
     QList<TvShow*> watching;
+    QList<TvShow*> rewatching;
     QList<TvShow*> waitingForNewEpisodes;
     QList<TvShow*> planToWatch;
     QList<TvShow*> onHold;
@@ -132,9 +133,14 @@ QList<std::pair<QString, QList<TvShow*> > > LibraryFilter::genLists() const {
         case TvShow::completed: completed.push_back(show); break;
         default: break;
         }
+
+        if (show->isRewatching()) {
+           rewatching.push_back(show);
+        }
     }
     return QList<std::pair<QString, QList<TvShow*> > >() <<
             std::make_pair(TvShow::watchStatusToString(TvShow::watching), watching) <<
+            std::make_pair("rewatching", rewatching) <<
             std::make_pair(TvShow::watchStatusToString(TvShow::waitingForNewEpisodes), waitingForNewEpisodes) <<
             std::make_pair("airing", airing) <<
             std::make_pair(TvShow::watchStatusToString(TvShow::planToWatch), planToWatch) <<
