@@ -128,6 +128,7 @@ public:
     QDateTime lastWatchedDate() const;
 
     WatchStatus getStatus() const;
+    bool isRewatching() const;
     void setStatus(TvShow::WatchStatus status);
     bool isCompleted() const;
     const EpisodeList& episodeList() const;

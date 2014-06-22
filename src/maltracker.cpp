@@ -102,11 +102,14 @@ OnlineTracker::UpdateResult Tracker::updateinOnlineTrackerOrAdd(const TvShow* sh
 
 
 UpdateItem::UpdateItem(const TvShow* show) {
-    this->episode = show->episodeList().highestWatchedEpisodeNumber();
+    this->enable_rewatching = show->isRewatching() ? 1 : 0; // int. 1=enable, 0=disable
+    this->episode = this->enable_rewatching
+            ? show->getRewatchMarker()
+            : show->episodeList().highestWatchedEpisodeNumber();
     this->status = calculateWatchStatus(show->getStatus());
     this->downloaded_episodes = show->episodeList().numberOfEpisodes();
     this->times_rewatched = std::max(0, show->getRewatchCount());
-    this->rewatch_value = std::max(0, show->getRewatchMarker());
+    this->rewatch_value = -1; //std::max(0, show->getRewatchMarker());
 
     score = -1;
     storage_type = -1; // int (will be updated to accomodate strings soon) // yeah sure soon...
@@ -114,7 +117,7 @@ UpdateItem::UpdateItem(const TvShow* show) {
     priority = -1; // 0 - 10 ? dont know didn't check
     enable_discussion = 0; // int. 1=enable, 0=disable
     // TODO add a status for this
-    enable_rewatching = -1; // int. 1=enable, 0=disable
+
     fansub_group = show->favouriteReleaseGroup();
     QStringList tags; // string. tags separated by commas
 }
@@ -143,12 +146,12 @@ void UpdateItem::describe(nw::Describer& de) {
     NwUtils::describe(de, "storage_type", empty);
     NwUtils::describe(de, "storage_value", empty);
     NwUtils::describe(de, "times_rewatched", times_rewatched);
-    NwUtils::describe(de, "rewatch_value", rewatch_value);
+    NwUtils::describe(de, "rewatch_value", empty);
     NwUtils::describe(de, "date_start", empty);
     NwUtils::describe(de, "date_finish", empty);
     NwUtils::describe(de, "priority", empty);
     NwUtils::describe(de, "enable_discussion", enable_discussion);
-    NwUtils::describe(de, "enable_rewatching", empty);
+    NwUtils::describe(de, "enable_rewatching", enable_rewatching);
     NwUtils::describe(de, "comments", empty);
     NwUtils::describe(de, "fansub_group", fansub_group);
     NwUtils::describe(de, "tags", tags, ',');

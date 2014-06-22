@@ -699,6 +699,10 @@ TvShow::WatchStatus TvShow::getStatus() const {
     return completed;
 }
 
+bool TvShow::isRewatching() const {
+    return this->rewatchMarker != -1;
+}
+
 void TvShow::setStatus(TvShow::WatchStatus status) {
     if (customStatus != status) {
         if (status == completed) {
@@ -740,10 +744,11 @@ int TvShow::getRewatchMarker() const {
 }
 
 void TvShow::setRewatchMarker(int marker, bool updateTracker) {
-    this->rewatchMarker = marker;
-    if (marker == std::max((int)this->episodeList().highestDownloadedEpisodeNumber(), this->totalEpisodes)) {
+    if (marker >= std::max((int)this->episodeList().highestDownloadedEpisodeNumber(), this->totalEpisodes)) {
         ++rewatchCount;
+        this->rewatchMarker = -1;
     }
+    this->rewatchMarker = marker;
     if (updateTracker) {
         this->lastLocalUpdate = QDateTime::currentDateTimeUtc();
     }
