@@ -51,6 +51,7 @@ bool OnlineSync::requiresFetch(const TvShow* show, const QString dbIdentifier) {
 bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
     // TODO combine all results and use the metaData from the best one
     //QList<OnlineTvShowDatabase::SearchResult*> results;
+
     
     bool anySuccess = false;
     for (OnlineTvShowDatabase::Client* db : databases) {
@@ -138,6 +139,13 @@ void OnlineSync::checkIfAllFinished() {
 void OnlineSync::fetchDatabases() {
     while (!unhandledFetch.empty()) {
         auto itr = unhandledFetch.begin();
+
+        // I've got no fucking idea why .empty() doesn't work here,
+        // but checking for == .end() fixes a crash
+        if (itr == unhandledFetch.end()) {
+            break;
+        }
+
         TvShow* show = *itr;
         bool success = this->fetchShow(show, library);
         if (!success) {
