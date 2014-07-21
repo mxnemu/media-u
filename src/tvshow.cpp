@@ -273,6 +273,9 @@ void TvShow::handleApiRequest(QString endPath, QHttpRequest* req, QHttpResponse*
         TvShow::WatchStatus status = TvShow::watchStatusFromString(req->url().query(QUrl::FullyDecoded));
         this->setStatus(status);
         Server::simpleWrite(resp, 200, "{\"status\":\"ok\"}", mime::json);
+    //} else if (endPath.startsWith("/dropUrl")) {
+    // I handle this in Library,
+    // because it mostly relies on remote services registered there.
     } else {
         Server::simpleWrite(resp, 400, "{\"error\":\"no api for url path\"}", mime::json);
     }

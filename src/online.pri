@@ -14,7 +14,9 @@ SOURCES += filedownloadthread.cpp \
     maltracker.cpp \
     onlinecredentials.cpp \
     malcredentials.cpp \
-    onlinesync.cpp
+    onlinesync.cpp \
+    onlinedropurl.cpp \
+    maldropurl.cpp
 
 HEADERS += filedownloadthread.h \
     curlresult.h \
@@ -32,4 +34,6 @@ HEADERS += filedownloadthread.h \
     maltracker.h \
     onlinecredentials.h \
     malcredentials.h \
-    onlinesync.h
+    onlinesync.h \
+    onlinedropurl.h \
+    maldropurl.h

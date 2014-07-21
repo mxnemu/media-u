@@ -11,6 +11,11 @@ TvShowPage.prototype.bindEvents = function() {
         self.refetch();
     }
     
+    this.dragAndDropListeners = DragAndDrop.bind(document, function(dropUrl) {
+        var url = self.apiPrefix() + "/dropUrl?" + encodeURIComponent(dropUrl);
+        $.getJSON(url);
+    });
+    
     window.addEventListener("keydown", this.keyDownListener);
     G.app.serverEvents.addEventListener("playbackEnded", this.onPlaybackEnded);
 }
@@ -18,6 +23,7 @@ TvShowPage.prototype.bindEvents = function() {
 TvShowPage.prototype.unbindEvents = function() {
     window.removeEventListener("keydown", this.keyDownListener);
     G.app.serverEvents.removeEventListener("playbackEnded", this.onPlaybackEnded);
+    DragAndDrop.unbind(document, this.dragAndDropListeners);
 }
 
 TvShowPage.prototype.apiPrefix = function() {
@@ -86,6 +92,7 @@ TvShowPage.prototype.createNodes = function() {
     this.page.append(this.episodesEl);
     this.page.append(this.statusList);
     this.bindEvents();
+    
     return this.page;
 }
 

@@ -6,6 +6,7 @@
 #include <QThread>
 #include "onlinetracker.h"
 #include "onlinetvshowdatabase.h"
+#include "onlinedropurl.h"
 
 class BaseConfig;
 class OnlineSync : public QThread
@@ -17,6 +18,7 @@ public:
     void init(const BaseConfig& config);
     void addShowToFetch(TvShow* show);
     void addShowToUpdate(TvShow* show);
+    void handleDropUrl(TvShow* show, const QUrl url);
 
     void run();
 signals:
@@ -45,6 +47,7 @@ private:
     QList<OnlineCredentials*> credentials;
     QList<OnlineTracker*> trackers;
     QList<OnlineTvShowDatabase::Client*> databases;
+    QList<OnlineDropUrl*> dropUrls;
 };
 
 #endif // ONLINESYNCTHREAD_H

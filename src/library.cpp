@@ -63,7 +63,13 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         TvShow* show = existingTvShow(showName);
         if (show) {
             QString commandPath = encodedPath.mid(commandPathOffset, encodedPath.length() - commandPathOffset);
-            show->handleApiRequest(commandPath, req, resp);
+
+            if (commandPath.startsWith("/dropUrl")) {
+                const QUrl droppedUrl = req->url().query(QUrl::FullyDecoded);
+                this->onlineSync.handleDropUrl(show, droppedUrl);
+            } else {
+                show->handleApiRequest(commandPath, req, resp);
+            }
         } else {
             Server::simpleWrite(resp, 400, "{\"error\":\"invalid show name\"}");
         }

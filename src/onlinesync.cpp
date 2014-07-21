@@ -2,6 +2,7 @@
 #include "malcredentials.h"
 #include "malclient.h"
 #include "maltracker.h"
+#include "maldropurl.h"
 #include "config.h"
 
 OnlineSync::OnlineSync(const Library& library) :
@@ -17,6 +18,8 @@ void OnlineSync::init(const BaseConfig& config) {
     this->credentials.push_back(malCreds);
     this->databases.push_back(new Mal::Client(*malCreds, this));
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+
+    this->dropUrls.push_back(new MalDropUrl());
 
     malCreds->login();
 }
@@ -35,6 +38,14 @@ void OnlineSync::addShowToFetch(TvShow *show) {
 void OnlineSync::addShowToUpdate(TvShow *show) {
     this->unhandledUpdate.insert(show);
     this->startThreadIfNotRunning();
+}
+
+void OnlineSync::handleDropUrl(TvShow* show, const QUrl url) {
+    foreach (OnlineDropUrl* dropUrl, dropUrls) {
+        if (dropUrl->handleUrl(show, url)) {
+            return;
+        }
+    }
 }
 
 bool OnlineSync::requiresFetch(const TvShow* show, const QString dbIdentifier) {

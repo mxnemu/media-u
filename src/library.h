@@ -62,7 +62,6 @@ public:
 
     MetaDataParser *getMetaDataParser() const;
     void setMetaDataParser(MetaDataParser *value);
-
 signals:
     void showAdded(TvShow* show);
     void searchFinished();
