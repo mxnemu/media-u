@@ -100,6 +100,12 @@ public:
     const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;
 
+    /// This sounds like it makes 0 sense whatsoever,
+    /// but mal-api is a huge pice of shit and the only way we can get
+    /// infos about an entry by using it's id
+    /// is by taking them from the already watching list.
+    /// Oh fuck everything.
+    void updateTrackingUnrelatedMetaDataFromRemote(TvShow* show, const OnlineTracker::EntryList& e) const;
 signals:
 
 public slots:

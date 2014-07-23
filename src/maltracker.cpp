@@ -43,6 +43,19 @@ OnlineTracker::EntryList* Tracker::fetchRemote() const {
     return NULL;
 }
 
+void Tracker::updateTrackingUnrelatedMetaDataFromRemote(TvShow* show, const OnlineTracker::EntryList& e) const {
+    const EntryList& entries = static_cast<const EntryList&>(e);
+    const Tracker::Entry* entry = entries.get(identifierKey(), show);
+    if (!entry) {
+        return;
+    }
+
+    show->setTotalEpisodes(entry->series_episodes);
+    show->setEndDate(entry->series_end);
+    show->addSynonyms(QStringList() << entry->series_title);
+    //show->downloadImage(entry->series_image); needs lib dir
+}
+
 const QString Tracker::IDENTIFIER_KEY = "mal";
 const QString Tracker::identifierKey() const {
     return IDENTIFIER_KEY;
