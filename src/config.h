@@ -76,6 +76,8 @@ public:
     const VideoClipCreator::Config& getVideoClipCreatorConfig() const;
     const GifCreator::Config& getGifCreatorConfig() const;
 
+    static const int SoftwareVersion;
+
 private:
     QString mConfigPath;
     QString mLibraryPath;

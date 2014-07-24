@@ -207,6 +207,8 @@ int BaseConfig::serverPort() {
     return 8082;
 }
 
+const int BaseConfig::SoftwareVersion = 0;
+
 void MplayerConfig::describe(nw::Describer *de) {
     if (de->isInWriteMode() && needsInit()) {
         this->setDefaultValues();
