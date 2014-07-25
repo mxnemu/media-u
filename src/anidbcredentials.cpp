@@ -1,14 +1,17 @@
 #include "anidbcredentials.h"
 #include "config.h"
 #include <qstringlist.h>
-#include <QUdpSocket>
 
 AnidbCredentials::AnidbCredentials() :
-    OnlineCredentials()
+    QObject(),
+    OnlineCredentials(),
+    anidbAddress("api.anidb.net"),
+    anidbPort(9000) // TODO allow override of address from config file
 {
+
+    connect(&socket, SIGNAL(readyRead()),
+            this, SLOT(onUdpDataReceived()));
 }
-
-
 
 // AUTH user={str username}&pass={str password}&protover={int4 apiversion}
 // &client={str clientname}&clientver={int4 clientversion}[&nat=1&comp=1
@@ -27,10 +30,34 @@ bool AnidbCredentials::verifyCredentials() {
         //<< QString("&mtu=") default should be okay (1400)
         << QString("&imgserver=1]")).join("");
 
-    QUdpSocket socket;
-    //socket.write()
+    socket.bind(8072);
+    socket.writeDatagram(command.toUtf8(), anidbAddress, anidbPort);
 
     return false;
+}
+
+
+void AnidbCredentials::onUdpDataReceived()
+{
+    if (sender() != &socket) {
+        return;
+    }
+
+    while (socket.hasPendingDatagrams()) {
+        QByteArray datagram;
+        datagram.resize(socket.pendingDatagramSize());
+        QHostAddress senderAddress;
+        quint16 senderPort;
+
+        if (senderAddress != anidbAddress) {
+            return;
+        }
+
+        socket.readDatagram(datagram.data(), datagram.size(),
+                            &senderAddress, &senderPort);
+
+        //processTheDatagram(datagram);
+    }
 }
 
 bool AnidbCredentials::loginResponse() {
