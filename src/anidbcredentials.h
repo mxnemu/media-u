@@ -17,7 +17,7 @@ public:
             UnknownCode = -2,
             NaN = -3,
             Ok = 200,
-            OkAndNewVersionAvailable = 201
+            OkAndNewVersionAvailable = 201,
             ClientDeprecated = 503,
             ClientBanned = 504,
             IllegalInputOrAcessDenied = 505,
