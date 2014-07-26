@@ -42,6 +42,7 @@ void AnidbCredentials::onUdpDataReceived()
     if (sender() != &socket) {
         return;
     }
+    Response response;
 
     while (socket.hasPendingDatagrams()) {
         QByteArray datagram;
@@ -55,6 +56,7 @@ void AnidbCredentials::onUdpDataReceived()
 
         socket.readDatagram(datagram.data(), datagram.size(),
                             &senderAddress, &senderPort);
+        response.parseDatagram(datagram);
 
         //processTheDatagram(datagram);
     }
@@ -88,3 +90,22 @@ bool AnidbCredentials::loginResponse() {
 }
 
 const int AnidbCredentials::protocolVersion = 3;
+
+
+AnidbCredentials::Response::Response() :
+    typeId(AnidbCredentials::Response::Uninitialized)
+{
+}
+
+void AnidbCredentials::Response::parseDatagram(const QByteArray datagram) {
+    if (!this->TypeId) {
+        bool ok = false;
+        // TODO figure out how to cast to enum without losing validitiy, resorting to a fallback enum value
+        this->typeId = (TypeId)QString::fromUtf8(datagram).toInt(ok);
+        if (!ok) {
+            this->typeId = Response::NaN;
+        }
+    } else {
+        this->dataString.fromUtf8(datagram);
+    }
+}

@@ -10,7 +10,24 @@ public:
     explicit AnidbCredentials();
 
     class Response {
+        Response();
 
+        enum {
+            Uninitialized = -1,
+            UnknownCode = -2,
+            NaN = -3,
+            Ok = 200,
+            OkAndNewVersionAvailable = 201
+            ClientDeprecated = 503,
+            ClientBanned = 504,
+            IllegalInputOrAcessDenied = 505,
+            OutOfServiceTryLater = 601
+        } TypeId;
+
+        void parseDatagram(const QByteArray datagram);
+
+        TypeId typeId;
+        QString dataString;
     };
 signals:
 
