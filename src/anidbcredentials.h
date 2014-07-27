@@ -10,9 +10,10 @@ public:
     explicit AnidbCredentials();
 
     class Response {
+    public:
         Response();
 
-        enum {
+        enum TypeId {
             Uninitialized = -1,
             UnknownCode = -2,
             NaN = -3,
@@ -22,11 +23,11 @@ public:
             ClientBanned = 504,
             IllegalInputOrAcessDenied = 505,
             OutOfServiceTryLater = 601
-        } TypeId;
+        };
 
         void parseDatagram(const QByteArray datagram);
 
-        TypeId typeId;
+        enum TypeId typeId;
         QString dataString;
     };
 signals:

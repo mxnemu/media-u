@@ -87,6 +87,7 @@ bool AnidbCredentials::loginResponse() {
 
  {str image server name}
  */
+    return false;
 }
 
 const int AnidbCredentials::protocolVersion = 3;
@@ -98,10 +99,10 @@ AnidbCredentials::Response::Response() :
 }
 
 void AnidbCredentials::Response::parseDatagram(const QByteArray datagram) {
-    if (!this->TypeId) {
+    if (!this->typeId) {
         bool ok = false;
         // TODO figure out how to cast to enum without losing validitiy, resorting to a fallback enum value
-        this->typeId = (TypeId)QString::fromUtf8(datagram).toInt(ok);
+        this->typeId = (TypeId)QString::fromUtf8(datagram).toInt(&ok);
         if (!ok) {
             this->typeId = Response::NaN;
         }
