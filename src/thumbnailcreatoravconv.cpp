@@ -4,7 +4,8 @@
 #include "avconvutil.h"
 
 
-ThumbnailCreatorAvconv::ThumbnailCreatorAvconv()
+ThumbnailCreatorAvconv::ThumbnailCreatorAvconv(const AvconvConfig& config) :
+    config(config)
 {
 }
 
@@ -17,7 +18,7 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generatePng(QString file, int sec
 }
 
 ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, Format format, int second, int width, int height, void* callbackData) const {
-    ThumbCreationCallbackAvconv* tcc = new ThumbCreationCallbackAvconv(callbackData);
+    ThumbCreationCallbackAvconv* tcc = new ThumbCreationCallbackAvconv(callbackData, config);
 
     QStringList& args = tcc->args;
     args.append("-ss");
@@ -49,7 +50,10 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, Format for
 }
 
 
-ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data) : ThumbCreationCallback(data) {
+ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data, const AvconvConfig&) :
+    ThumbCreationCallback(data),
+    config(config)
+{
 }
 
 void ThumbCreationCallbackAvconv::start() {

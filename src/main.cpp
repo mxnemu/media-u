@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 
 
     MetaDataParserAvconv metaDataParser(config.getAvconvConfigConstRef());
-    ThumbnailCreatorAvconv thumbnailCreator;
+    ThumbnailCreatorAvconv thumbnailCreator(config.getAvconvConfigConstRef());
     player->setMetaDataParser(&metaDataParser);
     player->setThumbnailCreator(&thumbnailCreator);
     library.setMetaDataParser(&metaDataParser);
