@@ -5,4 +5,5 @@ SUBDIRS += \
     src
 
 OTHER_FILES += \
-    TODO
+    TODO \
+    README
