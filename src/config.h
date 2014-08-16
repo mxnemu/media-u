@@ -41,6 +41,17 @@ public:
     bool includeRaw;
 };
 
+// I am consequently calling it avconv instead of ffmpeg,
+// because the debian package maintainers managed to fool me that ffmpeg
+// is deprecated and not just forked, now I don't want to change it everywhere.
+class AvconvConfig {
+public:
+    QString command;
+    static AvconvConfig detectCommand();
+private:
+    AvconvConfig(QString command);
+};
+
 class BaseConfig
 {
 public:
@@ -68,6 +79,7 @@ public:
     const SnapshotConfig& getSnapshotConfigConstRef() const;
     const MplayerConfig& getMplayerConfigConstRef() const;
     const RssConfig& getRssConfigConstRef() const;
+    const AvconvConfig& getAvconvConfigConstRef() const;
 
     bool getNoGui() const;
     bool getFullScreen() const;
@@ -91,6 +103,7 @@ private:
     SnapshotConfig snapshotConfig;
     MplayerConfig mplayerConfig;
     RssConfig rssConfig;
+    AvconvConfig avconvConfig;
 
     VideoClipCreator::Config videoClipCreatorConfig;
     GifCreator::Config gifCreatorConfig;

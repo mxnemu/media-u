@@ -10,12 +10,15 @@
 #include "gifcreator.h"
 
 
-BaseConfig::BaseConfig(int argc, char* argv[]) {
+BaseConfig::BaseConfig(int argc, char* argv[]) :
+    avconvConfig(AvconvConfig::detectCommand())
+{
     setDefaults();
     this->fromArgs(argc, argv);
 }
 
-BaseConfig::BaseConfig(QString initPath)
+BaseConfig::BaseConfig(QString initPath) :
+    avconvConfig(AvconvConfig::detectCommand())
 {
     this->setDefaults();
     this->init(initPath);
@@ -236,13 +239,16 @@ void MplayerConfig::setDefaultValues() {
         "-embeddedfonts";
 }
 
-const MplayerConfig& BaseConfig::getMplayerConfigConstRef() const
-{
+const MplayerConfig& BaseConfig::getMplayerConfigConstRef() const {
     return mplayerConfig;
 }
 
 const RssConfig& BaseConfig::getRssConfigConstRef() const {
     return rssConfig;
+}
+
+const AvconvConfig& BaseConfig::getAvconvConfigConstRef() const {
+    return avconvConfig;
 }
 
 bool BaseConfig::getFullScreen() const{
@@ -318,3 +324,14 @@ const VideoClipCreator::Config& BaseConfig::getVideoClipCreatorConfig() const
 const GifCreator::Config&BaseConfig::getGifCreatorConfig() const {
     return this->gifCreatorConfig;
 }
+
+
+AvconvConfig AvconvConfig::detectCommand() {
+    return AvconvConfig(
+        SystemUtils::commandExists("avconv")
+            ? "avconv"
+            : "ffmpeg"
+    );
+}
+
+AvconvConfig::AvconvConfig(QString command) : command(command) {}

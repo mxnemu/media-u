@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     }
 
     VideoPlayer* player;
-    /*
+    /* omx support is dead right now, sorry
     if (config.omxPlayerIsInstalled()) {
         player = new Omxplayer(library, config);
     } else {
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     player = new Mplayer(library, config, config.getMplayerConfigConstRef());
 
 
-    MetaDataParserAvconv metaDataParser;
+    MetaDataParserAvconv metaDataParser(config.getAvconvConfigConstRef());
     ThumbnailCreatorAvconv thumbnailCreator;
     player->setMetaDataParser(&metaDataParser);
     player->setThumbnailCreator(&thumbnailCreator);

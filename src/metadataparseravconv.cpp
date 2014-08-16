@@ -2,17 +2,18 @@
 #include <QProcess>
 #include <QDebug>
 
-MetaDataParserAvconv::MetaDataParserAvconv()
+
+// INSANE DATA PARSING FUCK YEAH (that means fuck no)
+MetaDataParserAvconv::MetaDataParserAvconv(const AvconvConfig& config) : config(config)
 {
 }
 
 MetaData MetaDataParserAvconv::parse(QString filename) const {
     QProcess process;
-    process.start("avconv", QStringList() << "-i" << filename);
+    process.start(config.command, QStringList() << "-i" << filename);
     process.waitForFinished(); // TODO use signals
 
-    // read error, because avconv expects an output file
-    // and thinks just checking the input is an error
+    // read error, because stdout is reserved for piping conversion output data
     QString output(process.readAllStandardError());
 
     MetaData m;
