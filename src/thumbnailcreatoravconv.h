@@ -8,7 +8,7 @@
 class ThumbCreationCallbackAvconv : public ThumbCreationCallback {
     Q_OBJECT
 public:
-    ThumbCreationCallbackAvconv(void* data, const AvconvConfig &);
+    ThumbCreationCallbackAvconv(void* data, const AvconvConfig &config);
 
     void start();
 

@@ -47,7 +47,7 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, Format for
 }
 
 
-ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data, const AvconvConfig&) :
+ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data, const AvconvConfig& config) :
     ThumbCreationCallback(data),
     config(config)
 {
