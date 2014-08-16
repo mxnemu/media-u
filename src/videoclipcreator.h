@@ -22,7 +22,7 @@ public:
         QStringList videoCodecArgs() const;
     };
 
-    VideoClipCreator(Config* config, QObject* parent = NULL);
+    VideoClipCreator(Config* config, const AvconvConfig& avconvConfig, QObject* parent = NULL);
     bool generate();
 };
 

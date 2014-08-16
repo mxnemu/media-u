@@ -2,9 +2,10 @@
 #include "avconvutil.h"
 #include <QProcess>
 #include <QDebug>
+#include "config.h"
 
-VideoClipCreator::VideoClipCreator(Config* config, QObject* parent) :
-    ShortClipCreator(config, parent)
+VideoClipCreator::VideoClipCreator(Config* config, const AvconvConfig &avconvConfig, QObject* parent) :
+    ShortClipCreator(config, avconvConfig, parent)
 {
 }
 
@@ -27,7 +28,7 @@ bool VideoClipCreator::generate() {
         config->videoCodecArgs() <<
         config->outputPath
     );
-    process.start("avconv", args);
+    process.start(avconvConfig.command, args);
     process.waitForFinished(-1);
     qDebug() << process.readAllStandardError();
     return true;

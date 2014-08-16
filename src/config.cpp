@@ -193,10 +193,10 @@ std::pair<ShortClipCreator*, ShortClipCreator::Config*> BaseConfig::cloneShortCl
 
     if (shortClipCreatorType == "gif") {
         GifCreator::Config* config = new GifCreator::Config(this->gifCreatorConfig);
-        return std::pair<ShortClipCreator*, ShortClipCreator::Config*>(new GifCreator(config), config);
+        return std::pair<ShortClipCreator*, ShortClipCreator::Config*>(new GifCreator(config, avconvConfig), config);
     }
     VideoClipCreator::Config* videoConfig = new VideoClipCreator::Config(this->videoClipCreatorConfig);
-    return std::pair<ShortClipCreator*, ShortClipCreator::Config*>(new VideoClipCreator(videoConfig), videoConfig);
+    return std::pair<ShortClipCreator*, ShortClipCreator::Config*>(new VideoClipCreator(videoConfig, avconvConfig), videoConfig);
 }
 
 const SnapshotConfig&BaseConfig::getSnapshotConfigConstRef() const {

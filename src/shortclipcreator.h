@@ -4,6 +4,7 @@
 #include <QThread>
 #include "nwutils.h"
 
+class AvconvConfig;
 class ShortClipCreator : public QThread
 {
     Q_OBJECT
@@ -36,7 +37,7 @@ public:
         void fixInvalidMembers();
     };
 
-    ShortClipCreator(ShortClipCreator::Config* config, QObject* parent = NULL);
+    ShortClipCreator(ShortClipCreator::Config* config, const AvconvConfig& avconvConfig, QObject* parent = NULL);
 
     virtual bool generate() = 0;
     void run();
@@ -45,6 +46,7 @@ signals:
     void done(bool);
 protected:
     const Config* config;
+    const AvconvConfig& avconvConfig;
 };
 
 #endif // SHORTCLIPCREATOR_H

@@ -5,9 +5,10 @@
 #include <QDir>
 #include <QProcess>
 #include <QDebug>
+#include "config.h"
 
-GifCreator::GifCreator(GifCreator::Config* config, QObject *parent) :
-    ShortClipCreator(config, parent)
+GifCreator::GifCreator(GifCreator::Config* config, const AvconvConfig& avconvConfig, QObject *parent) :
+    ShortClipCreator(config, avconvConfig, parent)
 {
 }
 
@@ -37,9 +38,9 @@ bool GifCreator::generate() {
     }
 
     qDebug() << avconfutil::time(startSec) << avconfutil::time(dif);
-    QProcess avconv;
-    avconv.setWorkingDirectory(dirPath);
-    avconv.start("avconv",
+    QProcess process;
+    process.setWorkingDirectory(dirPath);
+    process.start(avconvConfig.command,
                  QStringList() <<
                  // fast seek
                  "-ss" <<
@@ -58,7 +59,7 @@ bool GifCreator::generate() {
                  "image2" <<
                  "%03d.png"
                  );
-    avconv.waitForFinished(-1);
+    process.waitForFinished(-1);
 
     QList<QFileInfo> tmpFrames = QDir(dirPath).entryInfoList(QStringList() << "*.png", QDir::Files);
     QStringList frames;

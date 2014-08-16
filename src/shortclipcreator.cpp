@@ -2,9 +2,10 @@
 #include <QStandardPaths>
 #include "utils.h"
 
-ShortClipCreator::ShortClipCreator(ShortClipCreator::Config* config, QObject* parent) :
+ShortClipCreator::ShortClipCreator(ShortClipCreator::Config* config, const AvconvConfig &avconvConfig, QObject* parent) :
     QThread(parent),
-    config(config)
+    config(config),
+    avconvConfig(avconvConfig)
 {
 }
 
