@@ -42,11 +42,8 @@ ThumbCreationCallback* ThumbnailCreatorAvconv::generate(QString file, Format for
     }
     args.append("-");
 
-    //tcc->process.start("avconv", args);
-
     QObject::connect(&tcc->process, SIGNAL(finished(int)), tcc, SLOT(processFinished(int)));
     return tcc;
-    //return process.readAllStandardOutput();
 }
 
 
@@ -57,7 +54,7 @@ ThumbCreationCallbackAvconv::ThumbCreationCallbackAvconv(void *data, const Avcon
 }
 
 void ThumbCreationCallbackAvconv::start() {
-    this->process.start("avconv", args);
+    this->process.start(config.command, args);
     this->process.waitForFinished();
 }
 

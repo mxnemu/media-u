@@ -4,6 +4,7 @@
 #include <QObject>
 #include <qpixmap.h>
 
+// bind it's signal, then call start. It will report when it's done.
 class ThumbCreationCallback : public QObject {
     Q_OBJECT
 public:
@@ -12,9 +13,11 @@ public:
 
     virtual void start() = 0;
 signals:
+    // TODO rename to outputformat agnostic
     void jpegGenerated(const QByteArray img);
 };
 
+// Won't return actuall thumbnails, but callbacks
 class ThumbnailCreator
 {
 public:
