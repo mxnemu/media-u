@@ -1,3 +1,6 @@
+#nixos/systemd opengl for some shitty reason not in the default library path
+LIBPATH += /run/opengl-driver/lib/
+
 # qhttp
 INCLUDEPATH += $$_PRO_FILE_PWD_/libs/qhttpserver/src
 INCLUDEPATH += $$_PRO_FILE_PWD_/libs/qhttpserver/http-parser
