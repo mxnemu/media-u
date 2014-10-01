@@ -64,6 +64,8 @@ public slots:
     void handleRequest(QHttpRequest *req, QHttpResponse* resp);
 
 private:
+    std::pair<bool, int> tryToBindPort(QHttpServer *server, int originalPort);
+
     QHttpServer* server;
     QDir publicDirectory; ///< send files in this directory as HTTP GET responses
     MainWindow& window;

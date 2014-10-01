@@ -16,18 +16,29 @@ Server::Server(QString publicDirectoryPath, MainWindow &window, Library &library
 
 }
 
+std::pair<bool, int> Server::tryToBindPort(QHttpServer* server, int originalPort) {
+    const int maxTries = 20; // try the 20 following ports
+    bool success = false;
+    int tryCount = 0;
+    for (; (!success  && tryCount < maxTries); ++tryCount) {
+        success = server->listen(originalPort + tryCount);
+    }
+    return std::make_pair(success, (originalPort + tryCount-1));
+}
+
 int Server::start(int serverPort) {
     this->server = new QHttpServer();
+    std::pair<bool, int> boundPort = tryToBindPort(server, serverPort);
 
-    int port = serverPort;
-    while (port >= serverPort && !this->server->listen(QHostAddress(QHostAddress::Any), port)) {
-        ++port;
+    if (!boundPort.first) {
+        //delete this->server;
+        return -1;
     }
 
     connect(this->server, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
             this, SLOT(handleRequest(QHttpRequest*, QHttpResponse*)));
 
-     return port;
+    return boundPort.second;
 }
 
 void Server::handleRequest(QHttpRequest* req, QHttpResponse* resp) {
