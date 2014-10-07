@@ -93,7 +93,9 @@ bool LibraryFilter::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) con
         QList<const VideoFile*> missing = this->missingFiles();
         std::stringstream ss;
         nw::JsonWriter jw(ss);
-        foreach (const VideoFile* mf, missing) {
+        jw.describeArray("missingFiles", "missingFile", missing.length());
+        for (int i=0; jw.enterNextElement(i); ++i) {
+            const VideoFile* mf = missing.at(i);
             mf->writeForApi(jw);
         }
         jw.close();
