@@ -175,3 +175,13 @@ QList<const VideoFile*> Episode::missingFiles() const {
         return !f->exists();
     });
 }
+
+bool Episode::removeFile(QString filepath) {
+    // holy macaroni! c++ syntax up my ass
+    foreach (const VideoFile* const& f, files) {
+        if(f->path == filepath) {
+            return files.removeOne(f);
+        }
+    }
+    return false;
+}

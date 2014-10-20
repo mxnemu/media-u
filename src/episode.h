@@ -38,6 +38,9 @@ public:
 
     bool isSpecial() const;
     QList<const VideoFile*> missingFiles() const;
+
+    bool removeFile(QString filepath);
+
 signals:
     void beforeWatchedChanged(bool newValue, bool oldValue);
     void watchedChanged(bool oldValue, bool newValue); // TODO change to old, new
