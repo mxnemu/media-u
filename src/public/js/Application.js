@@ -4,7 +4,7 @@ function Application() {
     this.addServerEventListener();
     this.setScreenFromLocationHash();
     this.playerUi = new PlayerUi();
-    
+
     var playerNode = this.playerUi.createNodes();
     $(function() {
         $(".playerFooter").append(playerNode);
@@ -16,9 +16,9 @@ Application.prototype.setScreenFromLocationHash = function() {
     if (!this.page) {
         $(".page").empty();
     }
-    
+
     var fields = Utils.parseHashUrl(window.location.hash);
-    
+
     if (fields.length > 0) {
         if (self.pageList[fields[0]]) {
             var nextPage = new self.pageList[fields[0]];
@@ -63,20 +63,22 @@ Application.prototype.addServerEventListener = function() {
 Application.prototype.pageList = {
     "StartPage": StartPage,
     "TvShowPage": TvShowPage,
-    "StreamPlayerPage": StreamPlayerPage
+    "StreamPlayerPage": StreamPlayerPage,
+    "MissingFilesPage": MissingFilesPage
+
 };
 
 Application.prototype.setPage = function(page) {
     if (this.page && this.page.removeNodes) {
         this.page.removeNodes();
     }
-    
+
     this.page = page;
     var node = null;
     if (page) {
         node = page.createNodes();
     }
-    
+
     $(function() {
         $(".page").empty();
         if (node) {
