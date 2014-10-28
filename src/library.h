@@ -82,6 +82,7 @@ private slots:
     void fetchingFinished();
     void wallpaperDownloaderFinished();
 
+    void onBodyForRemoveFiles(QHttpResponse* resp, const QByteArray& body);
 private:
     QDir directory;
     QList<TvShow*> tvShows;

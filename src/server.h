@@ -17,6 +17,8 @@ const QString json = "application/json";
 const QString text = "text/plain";
 };
 
+/// emits bodyReceived
+/// Allocate this on heap. You don't have to delete this object.
 class RequestBodyListener : public QObject {
     Q_OBJECT
 public:

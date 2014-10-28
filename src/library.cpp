@@ -89,10 +89,34 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
             Server::simpleWrite(resp, 200, data.toJson(), mime::json);
         }
         Server::simpleWrite(resp, 404, "File for path does not exist, or is not in Library" "text/plain");
+    } else if (req->path().startsWith("/api/library/removeFiles") &&
+               req->method() == QHttpRequest::HTTP_DELETE) {
+
+        RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
+        connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
+        connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(onBodyForRemoveFiles(QHttpResponse*,QByteArray)));
     } else {
         return false;
     }
     return true;
+}
+
+void Library::onBodyForRemoveFiles(QHttpResponse* resp, const QByteArray& body) {
+    std::stringstream ss;
+    ss << body.data();
+    nw::JsonReader jr(ss);
+    jr.describeValueArray("paths", -1);
+    QStringList paths;
+    NwUtils::describeValueArray(jr, "paths", paths);
+
+    foreach (const QString& path, paths) {
+        foreach (TvShow* show, this->tvShows) {
+            if (show->episodeList().removeFile(path)) {
+                break;
+            }
+        }
+    }
+    Server::simpleWrite(resp, 200, "removed" "text/plain");
 }
 
 TvShow& Library::tvShow(const QString name) {

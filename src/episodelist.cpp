@@ -248,3 +248,13 @@ QList<const VideoFile*> EpisodeList::missingFiles() const {
     }
     return missing;
 }
+
+bool EpisodeList::removeFile(QString filepath) {
+    foreach (Episode* const& e, episodes) {
+        bool success = e->removeFile(filepath);
+        if (success) {
+            return success;
+        }
+    }
+    return false;
+}

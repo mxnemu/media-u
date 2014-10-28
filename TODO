@@ -1,3 +1,7 @@
+BUGS
+-stop using so many threads for networking it's retarded, also OnlineSync has an unreproducable crash
+-deleting missing files via MissingFilesPage is probably insecure, due to fucked up cross-thread references
+
 Roadmap:
 -opimize auto rss:
     -list torrents in the web-ui before downloading them
