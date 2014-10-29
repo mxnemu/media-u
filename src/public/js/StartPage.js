@@ -30,7 +30,9 @@ StartPage.prototype.createNodes = function() {
     this.fetchInfos(function() {
         self.page.append("<h1>StartPage</h1>");
         self.createLists(self.page);
+        self.page.append(self.createSettingsButton());
     });
+
 
     this.bindEvents();
     return this.page;
@@ -49,6 +51,15 @@ StartPage.prototype.bindEvents = function() {
 
 StartPage.prototype.unbindEvents = function() {
     window.removeEventListener("keydown", this.keyDownListener);
+}
+
+StartPage.prototype.createSettingsButton = function() {
+    var button = document.createElement("button");
+    button.textContent = "Settings";
+    button.onclick = function() {
+        $.getJSON("api/setPage/SettingsPage");
+    }
+    return button;
 }
 
 StartPage.prototype.createLists = function(page) {
