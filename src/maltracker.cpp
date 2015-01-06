@@ -208,6 +208,13 @@ Tracker::EntryList::EntryList(nw::Describer& de) {
     describe(de);
 }
 
+void Tracker::EntryList::makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const {
+    const Entry* item = this->get(trackerIdentifierKey, show);
+    if (item) {
+        item->updateShow(trackerIdentifierKey, show);
+    }
+}
+
 void Tracker::EntryList::updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows) {
     foreach (Entry* item, items) {
         foreach (TvShow* show, shows) {
@@ -248,6 +255,7 @@ Tracker::Entry::Entry(nw::Describer& de) {
 void Tracker::Entry::describe(nw::Describer& de) {
     int status = -1;
     NwUtils::describe(de, "series_animedb_id", series_animedb_id);
+    this->remoteId = series_animedb_id;
     NwUtils::describe(de, "series_title", series_title);
     NwUtils::describe(de, "series_synonyms", series_synonyms);
     NwUtils::describe(de, "series_type", series_type);
@@ -258,6 +266,7 @@ void Tracker::Entry::describe(nw::Describer& de) {
     NwUtils::describe(de, "series_image", series_image);
     //QString my_id; // always 0 no idea what it does
     NwUtils::describe(de, "my_watched_episodes", my_watched_episodes);
+    this->watched_episodes = my_watched_episodes;
     //QDate my_start_date; // 0000-00-00
     //QDate my_finish_date; // 0000-00-00
     NwUtils::describe(de, "my_score", my_score);
@@ -267,13 +276,14 @@ void Tracker::Entry::describe(nw::Describer& de) {
 
     uint unixTimeUpdate = 0; // unix time int example: 1388944557
     NwUtils::describe(de, "my_last_updated", unixTimeUpdate);
-    this->lastUpdate = QDateTime::fromTime_t(unixTimeUpdate);
+    this->lastUpdate.setTime_t(unixTimeUpdate);
+    qDebug() << this->lastUpdate.toString(Qt::SystemLocaleShortDate);
 
     //QStringList my_tags; // separated by ", "
     my_status = Entry::restoreStatus(status);
 }
 
-void Tracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show) {
+void Tracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show) const {
     if (!localIsUpToDate(trackerIdentifierKey, show)) {
         int marker = this->my_rewatching_ep == 0 ? -1 :this->my_rewatching_ep;
         int count = this->my_rewatching;
@@ -291,24 +301,6 @@ void Tracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show
     if (show->getLastOnlineTrackerUpdate(trackerIdentifierKey).isNull()) {
         show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
     }
-}
-
-bool Tracker::Entry::syncConflict(const QString trackerIdentifier, const TvShow* show) const {
-    return show->getLastLocalUpdate() > lastUpdate &&
-            lastUpdate > show->getLastOnlineTrackerUpdate(trackerIdentifier);
-}
-
-bool Tracker::Entry::localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const {
-    if (show->getLastOnlineTrackerUpdate(trackerIdentifier).isNull()) {
-        return show->episodeList().highestWatchedEpisodeNumber(0) >= this->my_watched_episodes;
-    }
-    return show->getLastOnlineTrackerUpdate(trackerIdentifier) >= this->lastUpdate;
-}
-
-bool Tracker::Entry::remoteIsUpToDate(const TvShow* show) const {
-    const QDateTime lastLocalUpdate = show->getLastLocalUpdate();
-    return (!lastLocalUpdate.isNull() &&
-            (!lastUpdate.isNull() && lastUpdate >= lastLocalUpdate));
 }
 
 bool Tracker::Entry::remoteIsEq(const TvShow* show) const {

@@ -70,11 +70,8 @@ public:
         QStringList my_tags; // separated by ", "
 
         void describe(nw::Describer& de);
-        void updateShow(const QString trackerIdentifierKey, TvShow* show);
-        bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
-        bool remoteIsUpToDate(const TvShow* show) const;
+        void updateShow(const QString trackerIdentifierKey, TvShow* show) const;
         static TvShow::WatchStatus restoreStatus(int malStatusId);
-        bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
         /// check if data is eq, disregarding the change dates
         bool remoteIsEq(const TvShow* show) const;
     };
@@ -92,6 +89,7 @@ public:
         void describe(nw::Describer& de);
         void updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows);
         const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const;
+        void makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const;
     };
 
     explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);

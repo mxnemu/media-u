@@ -22,13 +22,20 @@ public:
     public:
         QDateTime lastUpdate;
         int remoteId;
+        int watched_episodes;
+
+        bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
+        bool remoteIsUpToDate(const TvShow* show) const;
+        bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
     };
 
     class EntryList {
     public:
         EntryList();
-        virtual const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const = 0 ;
+        virtual const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const = 0;
+        virtual void makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const = 0;
         virtual void describe(nw::Describer& de) = 0;
+
         bool tooOld() const;
         const QDateTime fetchTime;
     };
