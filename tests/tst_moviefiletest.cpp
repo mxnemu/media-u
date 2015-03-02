@@ -209,17 +209,17 @@ void MovieFileTest::testPathParsing_data()
     QTest::newRow("EpNum: Special with num") <<
         "/[Asenshi] Jinrui wa Suitai Shimashita - Special 01 [BD 720p AAC] [FF698165].mkv" <<
         "[Asenshi]" <<
-        "Jinrui wa Suitai Shimashita" <<
+        "Jinrui wa Suitai Shimashita Special" <<
         "Special 01" <<
-        -2.f <<
+        1.f <<
         "";
 
     QTest::newRow("EpNum: Special plural with num and weird doki dashes") <<
         "/Jinrui wa Suitai Shimashita (2012) [Doki][1280x720 Hi10P BD FLAC]/[Doki] Jinrui wa Suitai Shimashita - Specials - 01 (1280x720 Hi10P BD FLAC) [E08C5B5A].mkv" <<
         "[Doki]" <<
-        "Jinrui wa Suitai Shimashita" <<
+        "Jinrui wa Suitai Shimashita Specials" <<
         "Specials - 01" <<
-        -2.f <<
+        1.f <<
         "";
 
     QTest::newRow("EpNum: no space before dash") <<
@@ -305,6 +305,28 @@ void MovieFileTest::testPathParsing_data()
         "01" <<
         1.f <<
         "";
+
+    QTest::newRow("Number: numbered OVA") <<
+        "/mnt/fields2/[Commie] Teekyuu 2 [BD 720p AAC]/[Commie] Teekyuu - OVA 1 [BD 720p AAC] [58F19BF2].mkv" <<
+        "[Commie]" <<
+        "Teekyuu OVA" <<
+        "OVA 1" <<
+        1.f <<
+        "";
+
+// TODO make this work
+//    QTest::newRow("Number: numbered OVA") <<
+//        "/mnt/fields2/[Coalgirls]_Monogatari_Series_Second_Season_(1920x1080_Blu-ray_FLAC)/Arc 01 Nekomonogatari Shiro/[Coalgirls]_Nekomonogatari_Shiro_OPa_(1920x1080_Blu-ray_FLAC)_[D306F77E].mkv" <<
+//        "[Coalgirls]" <<
+//        "Nekomonogatari Shiro" <<
+//        "OPa" <<
+//        -2.f <<
+//        "";
+
+    // TODO
+    // /mnt/fields2/Plastic Nee-san/[grimf] Plastic Nee-san Creditless ED (BD720p).mkv
+
+
 }
 
 

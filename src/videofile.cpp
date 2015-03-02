@@ -9,16 +9,20 @@
  \
     prefix "ED\\s?[0-9]+|" \
     prefix "OP\\s?[0-9]+[a-z]?|" \
-    prefix "SP\\s?[0-9]+|" \
     prefix "NC.?OP\\s?([0-9]+)?|" \
     prefix "NC.?ED\\s?([0-9]+)?|" \
     prefix "PV\\s?([0-9]+)?|" \
  \
     prefix "Opening(\\s?[0-9]+)?|" \
     prefix "Preview\\s?([0-9]+)?|" \
-    prefix "Specials?\\s?-?\\s?([0-9]+)?|" \
     prefix "Play\\s?All\\b(.+)?($|\\(|\\[)?|" \
     prefix "Ending(\\s?[0-9]+)?"
+    // TODO commentary
+
+#define IS_OVA_REGEX(prefix) \
+    prefix "Specials?\\s?-?\\s?([0-9]+)?|" \
+    prefix "OVA?\\s?-?\\s?([0-9]+)?|" \
+    prefix "SP\\s?([0-9]+)?" \
 
 VideoFile::VideoFile(const QString originalPath) {
     // set the path and resolve links
@@ -113,6 +117,8 @@ VideoFile::VideoFile(const QString originalPath) {
         "\\sEX(\\s|\\s?[0-9]+)|"
 
         IS_SPECIAL_REGEX("\\s")
+                         "|"
+        IS_OVA_REGEX("\\s")
         ")", Qt::CaseInsensitive);
     //regexEpisode.setMinimal(true);
     int episodeIndex = regexEpisode.indexIn(path);
@@ -195,11 +201,20 @@ VideoFile::VideoFile(const QString originalPath) {
         this->showName = parentDir.showName;
     }
 
-    QRegExp showNameIsInDirectory("(" IS_SPECIAL_REGEX("^") ")");
-    if (-1 != showNameIsInDirectory.indexIn(this->showName)) {
+    // Assume that the showname is in Directory if the
+    // found name is a special extra like a "creditless OP"
+    QRegExp fileIsSpecial("(" IS_SPECIAL_REGEX("^") ")");
+    if (-1 != fileIsSpecial.indexIn(this->showName)) {
         const VideoFile parentDir(QFileInfo(originalPath).absolutePath());
         this->episodeNumber = this->showName;
         this->showName = parentDir.showName;
+    }
+
+    QRegExp epIsOVA("(" IS_OVA_REGEX("^") ")");
+    if (-1 != epIsOVA.indexIn(this->episodeNumber)) {
+        QString ovaStr = epIsOVA.cap(0);
+        int spaceIndex = ovaStr.indexOf(QRegExp("[^a-z]", Qt::CaseInsensitive));
+        this->showName = this->showName.append(" ").append(ovaStr.left(spaceIndex));
     }
 }
 
