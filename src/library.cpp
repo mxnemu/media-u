@@ -95,6 +95,9 @@ bool Library::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         RequestBodyListener* bodyListener = new RequestBodyListener(resp, this);
         connect(req, SIGNAL(data(QByteArray)), bodyListener, SLOT(onDataReceived(QByteArray)));
         connect(bodyListener, SIGNAL(bodyReceived(QHttpResponse*,const QByteArray&)), this, SLOT(onBodyForRemoveFiles(QHttpResponse*,QByteArray)));
+    } else if (req->path().startsWith("/api/library/scan")) {
+        this->startSearch();
+        Server::simpleWrite(resp, 200, "{\"status\":\"new search running\"}");
     } else {
         return false;
     }
