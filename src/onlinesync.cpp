@@ -3,6 +3,9 @@
 #include "malclient.h"
 #include "maltracker.h"
 #include "maldropurl.h"
+#include "anilistdotcocredentials.h"
+#include "anilistdotcodatabase.h"
+#include "anilistdotcotracker.h"
 #include "config.h"
 
 OnlineSync::OnlineSync(const Library& library) :
@@ -13,15 +16,21 @@ OnlineSync::OnlineSync(const Library& library) :
 
 void OnlineSync::init(const BaseConfig& config) {
     // TODO use a library that accesses system keychains
-    MalCredentials* malCreds = new MalCredentials();
-    malCreds->readConfig(config.malConfigFilePath());
-    this->credentials.push_back(malCreds);
-    this->databases.push_back(new Mal::Client(*malCreds, this));
-    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+//    MalCredentials* malCreds = new MalCredentials();
+//    malCreds->readConfig(config.malConfigFilePath());
+//    this->credentials.push_back(malCreds);
+//    this->databases.push_back(new Mal::Client(*malCreds, this));
+//    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 
-    this->dropUrls.push_back(new MalDropUrl());
+    AnilistDotCoCredentials* creds = new AnilistDotCoCredentials();
+//    creds->readConfig(config.malConfigFilePath());
+    this->credentials.push_back(creds);
+    this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
+//    this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
 
-    malCreds->login();
+//    this->dropUrls.push_back(new MalDropUrl());
+
+//    malCreds->login();
 }
 
 void OnlineSync::startThreadIfNotRunning() {
@@ -148,6 +157,7 @@ void OnlineSync::checkIfAllFinished() {
 }
 
 void OnlineSync::fetchDatabases() {
+    qDebug() << "START DB FETCH AND REMAIN:" << unhandledFetch.size();
     while (!unhandledFetch.empty()) {
         auto itr = unhandledFetch.begin();
 
@@ -164,6 +174,7 @@ void OnlineSync::fetchDatabases() {
         }
         unhandledFetch.erase(itr);
     }
+    qDebug() << "FINISHED AND REMAIN:" << unhandledFetch.size();
     emit databasesFinished();
 }
 
@@ -181,6 +192,26 @@ void OnlineSync::updateTrackers() {
     }
     emit trackersFinished();
 }
+
+// TODO FIXME abstract this shit a littl ebit more
+bool OnlineSync::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
+    QRegExp regex("^/api/online/credentials/(.+)/confirm");
+    QRegExp codeRegex("code=(.+)(&|$)");
+
+    if (-1 != req->path().indexOf(regex) &&
+        -1 != req->url().query(QUrl::FullyDecoded).indexOf(codeRegex)) {
+
+        QString key = regex.cap(1);
+        QString code = codeRegex.cap(1);
+        foreach (OnlineCredentials* creds, this->credentials) {
+            if (creds->identifierKey() == key) {
+                return creds->fetchFirstAuthorizeToken(code);
+            }
+        }
+    }
+    return false;
+}
+
 
 void OnlineSync::run() {
     connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()), Qt::DirectConnection);

@@ -13,12 +13,16 @@ public:
     void set(const QString name, const QString password, QString userAgent);
     virtual bool login() {return mHasVerifiedCredentials || this->verifyCredentials();}
 
+    virtual const QString identifierKey() const = 0;
+    virtual bool fetchFirstAuthorizeToken(QString /*code*/) { return false; }
+
     CURL* curlClient(const char* url, CurlResult &userdata);
     CURL* curlNoAuthClient(const char* url, CurlResult& userdata);
 
     CURL* curlClientNoLock(const char* url, CurlResult &userdata) const;
     CURL* curlNoAuthClientNoLock(const char* url, CurlResult& userdata) const;
 
+    bool readConfig(QString configFilePath);
     bool hasVerifiedCredentials() const;
     QString getUsername() const;
 

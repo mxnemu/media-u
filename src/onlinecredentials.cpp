@@ -1,10 +1,31 @@
 #include "onlinecredentials.h"
 #include <QThread>
+#include <QFile>
+#include "nwutils.h"
+
 
 OnlineCredentials::OnlineCredentials() :
     lock(1000),
     mHasVerifiedCredentials(false)
 {
+}
+
+bool OnlineCredentials::readConfig(QString configFilePath) {
+    if (!QFile(configFilePath).exists()) {
+        return false;
+    }
+    std::string user, password, userAgent;
+
+    nw::JsonReader jr(configFilePath.toStdString());
+    jr.describe("user", user);
+    jr.describe("password", password);
+    NwUtils::describe(jr, "userAgent", userAgent);
+    jr.close();
+
+    if (user.length() > 0 && password.length() > 0) {
+        this->set(user.data(), password.data(), userAgent.data());
+    }
+    return true;
 }
 
 CURL* OnlineCredentials::curlNoAuthClientNoLock(const char* url, CurlResult& userdata) const {

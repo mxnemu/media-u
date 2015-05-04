@@ -20,6 +20,8 @@ public:
     void addShowToUpdate(TvShow* show);
     void handleDropUrl(TvShow* show, const QUrl url);
 
+    bool handleApiRequest(QHttpRequest *req, QHttpResponse *resp);
+
     void run();
 signals:
     void trackersFinished();

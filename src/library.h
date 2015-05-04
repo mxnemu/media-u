@@ -89,7 +89,11 @@ private:
     QList<Franchise*> franchises;
     QList<SearchDirectory> searchDirectories;
 
-    OnlineSync onlineSync;
+public:
+// put this public, because the server needs, it.
+// TODO better remove this from library and move it into main and pass it here as reference
+OnlineSync onlineSync;
+private:
     LibraryFilter mFilter;
     MetaDataParser* metaDataParser;
 

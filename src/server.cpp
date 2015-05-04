@@ -81,6 +81,8 @@ bool Server::handleApiRequest(QHttpRequest* req, QHttpResponse* resp) {
         return pushEvents.handleApiRequest(req, resp);
     } else if (path.startsWith("/api/page/") && window.getPage()) {
         return window.getPage()->handleApiRequest(req, resp);
+    } else if (path.startsWith("/api/online/")) {
+        return library.onlineSync.handleApiRequest(req, resp);
     }
     return false;
 }
