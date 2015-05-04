@@ -10,12 +10,12 @@ TvShowPage.prototype.bindEvents = function() {
     this.onPlaybackEnded = function() {
         self.refetch();
     }
-    
+
     this.dragAndDropListeners = DragAndDrop.bind(document, function(dropUrl) {
         var url = self.apiPrefix() + "/dropUrl?" + encodeURIComponent(dropUrl);
         $.getJSON(url);
     });
-    
+
     window.addEventListener("keydown", this.keyDownListener);
     G.app.serverEvents.addEventListener("playbackEnded", this.onPlaybackEnded);
 }
@@ -33,17 +33,17 @@ TvShowPage.prototype.apiPrefix = function() {
 TvShowPage.prototype.createNodes = function() {
     var self = this;
     this.page = $(document.createElement("div"));
-    
+
     var backButton = $("<input class='backButton' type='button'/>");
     backButton.attr("value", "back");
     backButton.click(function() {
         window.location.hash = "#!/";
     });
-    
+
     this.playButton = PlayButton.create();
     this.playButton.attr("disabled", "disabled");
-    
-    
+
+
     function addSelectItem(list, value, label) {
         var item = document.createElement("option");
         item.value = value;
@@ -61,24 +61,24 @@ TvShowPage.prototype.createNodes = function() {
 
     this.statusList.setAttribute("disabled", "disabled");
     this.statusList.className = "statusSelect";
-    
+
     this.statusList.onchange = function() {
         $.getJSON(self.apiPrefix() + "/setStatus?" + this.value, function() {
             self.refetch();
         });
     }
-    
+
     this.subtitleTrackField = $("<input type=\"number\"/>");
     this.audioTrackField = $("<input type=\"number\"/>");
-    
-    
+
+
     this.episodesEl = $(document.createElement("div"));
     this.episodesEl.addClass("seasons");
 
-    this.refetch();    
-    
+    this.refetch();
+
     if (this.tvShowName) {
-        var url = "api/assurePage/TvShowPage?" + 
+        var url = "api/assurePage/TvShowPage?" +
             encodeURIComponent(this.tvShowName);
         $.getJSON(url);
     }
@@ -92,7 +92,7 @@ TvShowPage.prototype.createNodes = function() {
     this.page.append(this.episodesEl);
     this.page.append(this.statusList);
     this.bindEvents();
-    
+
     return this.page;
 }
 
@@ -104,7 +104,7 @@ TvShowPage.prototype.setPlayerSettings = function(settings) {
     var self = this;
     this.subtitleTrackField.get(0).value = settings.subtitleTrack;
     this.audioTrackField.get(0).value = settings.audioTrack;
-    
+
     function setFn(key) {
         return function() {
             var number = this.value;
@@ -130,39 +130,39 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
     var self = this;
     var seasonEl = $(document.createElement("ul"));
     seasonEl.addClass("season");
-    
+
     this.episodeList = new EpisodeList(episodes);
     PlayButton.initOnClick(this.playButton, this.episodeList);
-     
+
     var isRewatchMarker = false;
     var addedRewatchMarker = false;
     $.each(this.episodeList.episodes, function() {
         var ep = this;
-        
+
         if (!ep.exists) {
             return;
         }
-        
+
         var episodeEl = $(document.createElement("li"));
         var text = $(document.createElement("span"));
-        
+
         if (isRewatchMarker && !addedRewatchMarker) {
             episodeEl.addClass("rewatchMarker");
             addedRewatchMarker = true;
         }
-        if (self.tvShow.rewatchMarker >= 0 && 
+        if (self.tvShow.rewatchMarker >= 0 &&
             ep.numericEpisodeNumber == self.tvShow.rewatchMarker) {
             isRewatchMarker = true;
         }
 
-        var title = 
+        var title =
             ep.episodeNumber + " " +
             ep.showName + " " +
             (ep.episodeName ? ("- " + ep.episodeName + " ") : "") +
             ep.releaseGroup;
         text.text(title);
-        
-        
+
+
         function watchButtonSetDisplay() {
             if (ep.watched) {
                 toggleWatchedButton.text("+ ");
@@ -172,7 +172,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
                 toggleWatchedButton.removeClass("watched");
             }
         }
-        
+
         var toggleWatchedButton = $(document.createElement("span"));
         toggleWatchedButton.get(0).className = "textButton toggleWatchedButton";
         watchButtonSetDisplay();
@@ -181,11 +181,11 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
             watchButtonSetDisplay();
             $.getJSON("api/library/toggleWatched?" + ep.path);
        });
-       
+
         var chapterList = document.createElement("div");
         chapterList.className = "chapterList";
         chapterList.textContent = "-> chapters"
-        
+
         $(chapterList).hover(function() {
             if (ep.metaData) {
                 return;
@@ -194,15 +194,15 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
             $.getJSON("api/library/movieFileMetaData?" + ep.path, function(data) {
                 chapterList.innerHTML = "";
                 ep.metaData = data;
-                
+
                 $.each(data.chapters, function() {
                     var chapter = this;
-                    
+
                     var chapterLink = document.createElement("span");
                     chapterLink.className = "chapterLink";
                     chapterLink.textContent = chapter.title;
                     chapterList.appendChild(chapterLink);
-                    
+
                     chapterLink.onclick = function(event) {
                         var json = {
                             filename: ep.path
@@ -218,12 +218,12 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
                 console.log(ep.metaData);
             });
         });
-        
+
         episodeEl.append(toggleWatchedButton);
         episodeEl.append(text);
         episodeEl.append(chapterList);
         episodeEl.attr("data-fileName", this.path);
-        
+
         episodeEl.click(function(event) {
             if (!event.target.classList.contains("textButton")) {
                 self.play($(this).nextAll("li").andSelf().map(function() {
@@ -231,7 +231,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
                 }).toArray());
             }
         });
-        
+
         episodeEl.attr("tabindex", "1");
         episodeEl.on("focus", function() {
             $(this).mousemove();
@@ -240,7 +240,7 @@ TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
             $("li.focused").removeClass("focused");
             $(this).addClass("focused");
         });
-        
+
         seasonEl.append(episodeEl);
     });
     episodesEl.empty();
@@ -260,21 +260,21 @@ TvShowPage.prototype.refetch = function() {
     $.getJSON(requestUrl, function(data) {
         self.tvShow = data;
         self.tvShowName = data.name;
-        
-        self.setPlayerSettings(data.playerSettings);        
+
+        self.setPlayerSettings(data.playerSettings);
         self.statusList.value = data.customStatus;
         self.createReleaseGroupPreference(data.releaseGroupPreference);
         self.createEpisodeList(data.episodes, self.episodesEl);
         self.createRewatchMarker(data.rewatchMarker);
-        
+
         self.playButton.removeAttr("disabled");
         self.statusList.removeAttribute("disabled");
         PlayButton.initOnClick(self.playButton, self.episodeList);
     }).fail(function(error) {
-        var data = error.responseJSON;
-        if (!data.name || data.error) {
-            self.page.append("<p>" + JSON.stringify(data) + "</p>");
-        }    
+        var data = error.responseJSON || error.responseText;
+        if (!data.name || data.error || data) {
+            self.page.append("<p>" + data + "</p>");
+        }
     });
 }
 
@@ -306,7 +306,7 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
         el.textContent = caption;
         rgp.appendChild(el);
     }
-    
+
     var self = this;
     function set(newArray) {
         var json = JSON.stringify(newArray);
@@ -319,7 +319,7 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
             console.log("set releaseGroupPreference to ", newArray);
         });
     }
-    
+
     this.page.append(rgp);
     this.releaseGroupPreference = rgp;
 }
@@ -354,7 +354,7 @@ TvShowPage.prototype.play = function(episodes) {
         tvShow: this.tvShow.name,
         episodes: episodes
     }
-    
+
     $.ajax({
         url: "api/player/setPlaylist",
         type: "POST",
