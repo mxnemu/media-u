@@ -3,34 +3,27 @@
 
 #include "onlinecredentials.h"
 #include "nwutils.h"
+#include "config.h"
 
 class AnilistDotCoCredentials : public OnlineCredentials
 {
 public:
     class AuthToken {
     public:
-        /* Example:
-        {
-          access_token: "ACXD3snrImEP5R6IHs6gGgqpnGgoZp54TDaWZkgc"
-          token_type: "bearer"
-          expires: 1414232110
-          expires_in: 3600
-          refresh_token: "X2Bxj1KzjsoaD4FCj6A0MGFWdYlGgoc31L70eSAQ"
-        }
-        */
         QString accessToken;
         QString tokenType; // I don't know what to do with this, yet
         QDateTime expires;
-        int expiresInAsSeconds;
+        unsigned int expiresInAsSeconds; // redundant
         QString refreshToken;
 
         bool isValid();
-        bool refresh();
 
         static AuthToken parse(nw::JsonReader reader);
+        void describeAuthenticate(nw::Describer& d);
+        void describeRefresh(nw::Describer &d);
     };
 
-    AnilistDotCoCredentials();
+    AnilistDotCoCredentials(const BaseConfig& config);
 
     //////////////////////////////////////
     /// There are 3 Tokens/steps: ("never used the API before" / "using the API right now" / "paused using")
@@ -49,7 +42,7 @@ public:
     /// We set /api/online-confirmation/anilist.co/ as redirect-uri to
     /// witch anilist.co brings us back and define an API that calls the next method.
     /////////////////////////////////////////
-    const QString registerUrl() const; // this should for once not have any side effects
+    virtual const QString connectUri() const; // this should for once not have any side effects
     /////////////////////////////////////////
     /// This method is called by our localhost:8082 server, when anilist.co
     /// redirects the user with the confirmation "code".
@@ -71,6 +64,11 @@ public:
 private:
     AuthToken token;
     QString secret;
+    QString redirectUri;
+    const BaseConfig& config;
+
+    bool refresh();
+    void writeToken();
 };
 
 #endif // ANILISTDOTCOCREDENTIALS_H

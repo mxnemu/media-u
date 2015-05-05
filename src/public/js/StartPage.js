@@ -29,8 +29,9 @@ StartPage.prototype.createNodes = function() {
     this.page = $(document.createElement("div"));
     this.fetchInfos(function() {
         self.page.append("<h1>StartPage</h1>");
-        self.createLists(self.page);
         self.page.append(self.createSettingsButton());
+        self.page.append(self.createAnilistConnectButton());
+        self.createLists(self.page);
     });
 
 
@@ -58,6 +59,17 @@ StartPage.prototype.createSettingsButton = function() {
     button.textContent = "Settings";
     button.onclick = function() {
         $.getJSON("api/setPage/SettingsPage");
+    }
+    return button;
+}
+
+StartPage.prototype.createAnilistConnectButton = function() {
+    var button = document.createElement("button");
+    button.textContent = "connect Anilist.co";
+    button.onclick = function() {
+        $.getJSON("api/online/credentials/anilist.co/connectUri", function(data) {
+            window.location = data.uri;
+        });
     }
     return button;
 }

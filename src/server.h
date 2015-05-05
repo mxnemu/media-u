@@ -15,6 +15,7 @@
 namespace mime {
 const QString json = "application/json";
 const QString text = "text/plain";
+const QString html = "text/html";
 };
 
 /// emits bodyReceived
@@ -61,6 +62,8 @@ public:
 
     static void simpleWrite(QHttpResponse *resp, int statusCode, const QString &data, QString mime = mime::text);
     static void simpleWriteBytes(QHttpResponse *resp, int statusCode, const QByteArray &data, QString mime = mime::text);
+    static void sendRedirect(QHttpResponse *resp, const QString &location);
+
     void streamVideo(QHttpRequest *req, QHttpResponse *resp);
 public slots:
     void handleRequest(QHttpRequest *req, QHttpResponse* resp);

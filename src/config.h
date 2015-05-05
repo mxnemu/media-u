@@ -69,6 +69,7 @@ public:
 
     QDir configPath() const;
     QString malConfigFilePath() const;
+    QString anilistConfigFilePath() const;
 
     QString mplayerLocation();
     QString omxplayerLocation();

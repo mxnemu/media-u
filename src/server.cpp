@@ -129,6 +129,12 @@ void Server::sendFile(QHttpRequest* req, QHttpResponse* resp) {
     }
 }
 
+void Server::sendRedirect(QHttpResponse* resp, const QString& location) {
+    resp->setHeader("Location", location);
+    resp->writeHead(301);
+    resp->end();
+}
+
 void Server::simpleWrite(QHttpResponse* resp, int statusCode, const QString& data, QString mime) {
     simpleWriteBytes(resp, statusCode, data.toUtf8(), mime);
 }

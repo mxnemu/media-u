@@ -15,6 +15,7 @@ public:
 
     virtual const QString identifierKey() const = 0;
     virtual bool fetchFirstAuthorizeToken(QString /*code*/) { return false; }
+    virtual const QString connectUri() const { return ""; }
 
     CURL* curlClient(const char* url, CurlResult &userdata);
     CURL* curlNoAuthClient(const char* url, CurlResult& userdata);

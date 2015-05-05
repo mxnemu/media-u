@@ -7,6 +7,7 @@
 #include "anilistdotcodatabase.h"
 #include "anilistdotcotracker.h"
 #include "config.h"
+#include "server.h"
 
 OnlineSync::OnlineSync(const Library& library) :
     shouldQuit(false),
@@ -22,7 +23,7 @@ void OnlineSync::init(const BaseConfig& config) {
 //    this->databases.push_back(new Mal::Client(*malCreds, this));
 //    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 
-    AnilistDotCoCredentials* creds = new AnilistDotCoCredentials();
+    AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
 //    creds->readConfig(config.malConfigFilePath());
     this->credentials.push_back(creds);
     this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
@@ -195,17 +196,40 @@ void OnlineSync::updateTrackers() {
 
 // TODO FIXME abstract this shit a littl ebit more
 bool OnlineSync::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
-    QRegExp regex("^/api/online/credentials/(.+)/confirm");
-    QRegExp codeRegex("code=(.+)(&|$)");
+    QRegExp regex("^/api/online/credentials/(.+)/(.+)/?(\\?|$)");
+    QRegExp codeRegex("code=(.+)&?(.+)?$");
 
-    if (-1 != req->path().indexOf(regex) &&
-        -1 != req->url().query(QUrl::FullyDecoded).indexOf(codeRegex)) {
+    if (-1 != req->path().indexOf(regex)) {
 
         QString key = regex.cap(1);
-        QString code = codeRegex.cap(1);
+        QString method = regex.cap(2);
         foreach (OnlineCredentials* creds, this->credentials) {
             if (creds->identifierKey() == key) {
-                return creds->fetchFirstAuthorizeToken(code);
+                if (method.startsWith("confirm") &&
+                    -1 != req->url().query(QUrl::FullyDecoded).indexOf(codeRegex)) {
+                    QString code = codeRegex.cap(1);
+                    creds->fetchFirstAuthorizeToken(code);
+                    // I Know this fucking stupid as hell, but I couldn't get reltive redirects
+                    // to work with http 301
+                    // or whatever the fucking problem was.  TODO FIXME KILLME
+                    QString redirectStr =
+                        "<html><head>"
+                        "<title>Api confirmation</title>"
+                        "<meta http-equiv=\"Refresh\" content=\"0; url=/\" />"
+                        "</head></html>";
+                    Server::simpleWrite(resp, 200, redirectStr, mime::html);
+                    // TODO  give some feedback about wether it actually worked
+//                    Server::sendRedirect(resp, "/");
+                    return true;
+                } else if (method == "connectUri") {
+                    std::stringstream ss;
+                    nw::JsonWriter jw(ss);
+                    NwUtils::describeConst(jw, "uri", creds->connectUri());
+                    jw.close();
+                    const QString data(ss.str().c_str());
+                    Server::simpleWrite(resp, 200, data);
+                    return true;
+                }
             }
         }
     }

@@ -173,6 +173,10 @@ QString BaseConfig::malConfigFilePath() const {
     return configPath().absoluteFilePath("malConfig.json");
 }
 
+QString BaseConfig::anilistConfigFilePath() const {
+    return configPath().absoluteFilePath("anilist-co.json");
+}
+
 QString BaseConfig::mplayerLocation() {
     return mplayerConfig.path;
 }
