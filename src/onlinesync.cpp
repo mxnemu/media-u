@@ -17,11 +17,11 @@ OnlineSync::OnlineSync(const Library& library) :
 
 void OnlineSync::init(const BaseConfig& config) {
     // TODO use a library that accesses system keychains
-//    MalCredentials* malCreds = new MalCredentials();
-//    malCreds->readConfig(config.malConfigFilePath());
-//    this->credentials.push_back(malCreds);
-//    this->databases.push_back(new Mal::Client(*malCreds, this));
-//    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+    MalCredentials* malCreds = new MalCredentials();
+    malCreds->readConfig(config.malConfigFilePath());
+    this->credentials.push_back(malCreds);
+    this->databases.push_back(new Mal::Client(*malCreds, this));
+    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 
     AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
 //    creds->readConfig(config.malConfigFilePath());
@@ -99,7 +99,7 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
         //results.push_back(result);
         const OnlineTvShowDatabase::Entry* entry = result->bestEntry();
         if (entry) {
-            entry->updateShow(*show, library, db->identifierKey());
+            entry->updateShow(*show, library, db->identifierKey(), db->getFilter());
             anySuccess = true;
             // TODO don't break, collect all,
             // update metaData from the best entry of all

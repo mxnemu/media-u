@@ -65,7 +65,7 @@ public:
     void describe(nw::Describer *de);
 
     QString libraryPath();
-    int serverPort();
+    int serverPort() const;
 
     QDir configPath() const;
     QString malConfigFilePath() const;

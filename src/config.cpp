@@ -207,7 +207,7 @@ const SnapshotConfig&BaseConfig::getSnapshotConfigConstRef() const {
     return snapshotConfig;
 }
 
-int BaseConfig::serverPort() {
+int BaseConfig::serverPort() const {
     if (initialized && mServerPort > 0) {
         return mServerPort;
     }

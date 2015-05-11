@@ -55,7 +55,7 @@ class SearchResult : public OnlineTvShowDatabase::SearchResult {
 public:
     SearchResult(CurlResult& result, QString query);
     void parse(CurlResult& result);
-    virtual const OnlineTvShowDatabase::Entry* bestEntry() const;
+    virtual OnlineTvShowDatabase::Entry* bestEntry();
 private:
     QList<Entry> entries;
 };

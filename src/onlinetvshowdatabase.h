@@ -11,7 +11,7 @@ class Library;
 namespace OnlineTvShowDatabase {
 
 enum UpdateFilter {
-    ufInvalid = 0,
+    ufNone = 0,
     ufSynopsis = 1 << 1,
     ufTitle = 1 << 2,
     ufRelations = 1 << 3,
@@ -43,7 +43,8 @@ public:
     SearchResult(QString searchedQuery = QString());
     virtual ~SearchResult();
 
-    virtual const Entry* bestEntry() const = 0;
+    // TODO make this true const again fucking shit
+    virtual Entry* bestEntry() = 0;
 
     const QString searchedQuery;
     QList<Entry*> entries;
@@ -56,6 +57,7 @@ public:
     SearchResult* findShow(TvShow& show);
 
     virtual const QString identifierKey() const = 0;
+    virtual UpdateFilter getFilter() { return UpdateFilter::ufNone; }
 
     const OnlineCredentials&  credentials;
 

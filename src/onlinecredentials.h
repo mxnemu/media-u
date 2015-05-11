@@ -45,6 +45,7 @@ public:
 
 protected:
     virtual bool verifyCredentials() = 0;
+    virtual void setCredentialsForHandle(CURL *handle) const;
 
     bool mHasVerifiedCredentials;
     QString username;

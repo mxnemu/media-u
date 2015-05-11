@@ -18,7 +18,6 @@ public:
 
         bool isValid();
 
-        static AuthToken parse(nw::JsonReader reader);
         void describeAuthenticate(nw::Describer& d);
         void describeRefresh(nw::Describer &d);
     };
@@ -57,6 +56,7 @@ public:
 
     bool login() { return verifyCredentials(); }
     bool verifyCredentials();
+    void setCredentialsForHandle(CURL *handle) const;
 
     virtual const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;
@@ -69,6 +69,7 @@ private:
 
     bool refresh();
     void writeToken();
+    void updateAuthHeader();
 };
 
 #endif // ANILISTDOTCOCREDENTIALS_H

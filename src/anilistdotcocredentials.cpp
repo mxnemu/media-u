@@ -11,8 +11,18 @@ AnilistDotCoCredentials::AnilistDotCoCredentials(const BaseConfig &config) :
 {
     this->userAgent = "nehmu-lfvdn";
     this->secret = "016adWZdNbt1dGf2hLjQL67s";
-    // TODO get the actual url/port
+
     this->redirectUri = "http://localhost:8082/api/online/credentials/anilist.co/confirm/";
+    this->redirectUri = QString("http://localhost:%1/api/online/credentials/anilist.co/confirm/").arg(config.serverPort());
+    nw::JsonReader jr(config.anilistConfigFilePath().toStdString());
+    this->token.describeAuthenticate(jr);
+    this->updateAuthHeader();
+
+    jr.close();
+
+    if (!this->token.isValid()) {
+        this->refresh(); // TODO before every curlClient request
+    }
 }
 
 const QString AnilistDotCoCredentials::connectUri() const {
@@ -33,6 +43,32 @@ bool AnilistDotCoCredentials::verifyCredentials() {
         return this->refresh();
     }
     return false;
+}
+
+// Authorization: Bearer access_token
+void AnilistDotCoCredentials::setCredentialsForHandle(CURL *handle) const {
+    QString authString = (QStringList() << "Authorization:"
+                                        << "Bearer" //this->token.tokenType
+                                        << this->token.accessToken).join(" ");
+    struct curl_slist *slist=NULL;
+    slist = curl_slist_append(slist, authString.toStdString().c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, slist);
+    /*
+     *
+     *
+     *
+     *
+     *
+     *  FUCKING GET THIS FIXED AND FREE THAT LIST SOMEWHERE AFTER PERFORM
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     */
+    //curl_slist_free_all(slist); /* free the list again */
 }
 
 bool AnilistDotCoCredentials::fetchFirstAuthorizeToken(QString confirmationCode) {
@@ -71,6 +107,7 @@ bool AnilistDotCoCredentials::fetchFirstAuthorizeToken(QString confirmationCode)
     } else {
         nw::JsonReader jr(userData.data);
         token.describeAuthenticate(jr);
+        this->updateAuthHeader();
         jr.close();
 
         if (!token.refreshToken.isEmpty() && token.isValid()) {
@@ -119,6 +156,7 @@ bool AnilistDotCoCredentials::refresh() {
     } else {
         nw::JsonReader jr(userData.data);
         this->token.describeRefresh(jr);
+        this->updateAuthHeader();
         jr.close();
 
         this->writeToken();
@@ -142,20 +180,15 @@ void AnilistDotCoCredentials::writeToken() {
     jw.close();
 }
 
+void AnilistDotCoCredentials::updateAuthHeader() {
+    this->username = token.tokenType;
+    this->password = token.accessToken;
+}
+
 
 bool AnilistDotCoCredentials::AuthToken::isValid() {
     return !this->expires.isNull() &&
             this->expires > QDateTime::currentDateTimeUtc();
-}
-
-AnilistDotCoCredentials::AuthToken AnilistDotCoCredentials::AuthToken::parse(nw::JsonReader r) {
-    AnilistDotCoCredentials::AuthToken token;
-    NwUtils::describe(r, "access_token", token.accessToken);
-    NwUtils::describe(r, "token_type", token.tokenType);
-    NwUtils::describe(r, "expires", token.expires);
-    NwUtils::describe(r, "expires_in", token.expiresInAsSeconds);
-    NwUtils::describe(r, "refresh_token", token.refreshToken);
-    return token;
 }
 
 // example

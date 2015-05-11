@@ -163,10 +163,10 @@ void SearchResult::parse(CurlResult &result) {
     xr.close();
 }
 
-const OnlineTvShowDatabase::Entry* SearchResult::bestEntry() const {
-    std::pair<int, const Entry*> best(-1, NULL);
+OnlineTvShowDatabase::Entry* SearchResult::bestEntry() {
+    std::pair<int, Entry*> best(-1, NULL);
     for (int i=0; i < entries.length(); ++i) {
-        const Entry* entry = &entries.at(i);
+        Entry* entry = &entries[i];
 
         int score = Utils::querySimiliarity(this->searchedQuery, entry->title);
         /*

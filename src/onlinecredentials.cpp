@@ -41,16 +41,20 @@ CURL* OnlineCredentials::curlNoAuthClientNoLock(const char* url, CurlResult& use
 
 CURL* OnlineCredentials::curlClientNoLock(const char* url, CurlResult& userdata) const {
     CURL* handle = curlNoAuthClientNoLock(url, userdata);
+    this->setCredentialsForHandle(handle);
+    return handle;
+}
+
+void OnlineCredentials::setCredentialsForHandle(CURL* handle) const {
     curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
-    return handle;
 }
 
 CURL*OnlineCredentials::curlClient(const char* url, CurlResult& userdata) {
     while (this->lock.blockUntilReady()) {
         // sleeps as a side-effect
     }
-    return this->curlNoAuthClientNoLock(url, userdata);
+    return this->curlClientNoLock(url, userdata);
 }
 
 CURL*OnlineCredentials::curlNoAuthClient(const char* url, CurlResult& userdata) {
