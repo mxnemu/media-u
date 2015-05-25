@@ -23,15 +23,15 @@ void OnlineSync::init(const BaseConfig& config) {
     this->databases.push_back(new Mal::Client(*malCreds, this));
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 
-    AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
-//    creds->readConfig(config.malConfigFilePath());
-    this->credentials.push_back(creds);
-    this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
+//    AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
+////    creds->readConfig(config.malConfigFilePath());
+//    this->credentials.push_back(creds);
+//    //this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
 //    this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
 
-//    this->dropUrls.push_back(new MalDropUrl());
+////    this->dropUrls.push_back(new MalDropUrl());
 
-//    malCreds->login();
+////    malCreds->login();
 }
 
 void OnlineSync::startThreadIfNotRunning() {
@@ -91,10 +91,12 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
         if (indexOfCreds == -1) {
             continue;
         }
+
         // TODO don't block this thread until other locks are tested
         while (this->credentials.at(indexOfCreds)->lock.blockUntilReady()) {
             // waits the correct time as side-effect
         }
+        this->credentials.at(indexOfCreds)->assureFreshness();
 
         //results.push_back(result);
         const OnlineTvShowDatabase::Entry* entry = result->bestEntry();
@@ -107,10 +109,7 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
             break;
         }
     }
-    if (anySuccess) {
-        return true;
-    }
-    return false;
+    return anySuccess;
 }
 
 
@@ -131,14 +130,12 @@ bool OnlineSync::updateShow(TvShow* show) {
         while (this->credentials.at(indexOfCreds)->lock.blockUntilReady()) {
             // waits the correct time as side-effect
         }
+        this->credentials.at(indexOfCreds)->assureFreshness();
 
         bool success = tracker->updateRemote(show);
         noFail *= success;
     }
-    if (noFail) {
-        return true;
-    }
-    return false;
+    return noFail;
 }
 
 

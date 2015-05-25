@@ -73,7 +73,7 @@ public:
         void updateShow(const QString trackerIdentifierKey, TvShow* show) const;
         static TvShow::WatchStatus restoreStatus(int malStatusId);
         /// check if data is eq, disregarding the change dates
-        bool remoteIsEq(const TvShow* show) const;
+        virtual bool remoteIsEq(const TvShow* show) const;
     };
 
     class EntryList : public OnlineTracker::EntryList {
@@ -93,8 +93,7 @@ public:
     };
 
     explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
-    OnlineTracker::UpdateResult updateRemoteImpl(const TvShow* show, const OnlineTracker::EntryList& e) const;
-    OnlineTracker::EntryList* fetchRemote() const;
+    OnlineTracker::EntryList* fetchRemote();
     const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;
 
@@ -104,12 +103,14 @@ public:
     /// is by taking them from the already watching list.
     /// Oh fuck everything.
     void updateTrackingUnrelatedMetaDataFromRemote(TvShow* show, const OnlineTracker::EntryList& e) const;
+
+protected:
+    virtual UpdateResult updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const;
 signals:
 
 public slots:
 
 private:
-    UpdateResult updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const;
     CURL* curlTrackerUpdateClient(const char* url, CurlResult& userdata, UpdateItem& data) const;
 };
 

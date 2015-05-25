@@ -20,9 +20,9 @@ AnilistDotCoCredentials::AnilistDotCoCredentials(const BaseConfig &config) :
 
     jr.close();
 
-    if (!this->token.isValid()) {
-        this->refresh(); // TODO before every curlClient request
-    }
+//    if (!this->token.isValid()) {
+//        this->refresh(); // TODO before every curlClient request
+//    }
 }
 
 const QString AnilistDotCoCredentials::connectUri() const {
@@ -46,29 +46,15 @@ bool AnilistDotCoCredentials::verifyCredentials() {
 }
 
 // Authorization: Bearer access_token
-void AnilistDotCoCredentials::setCredentialsForHandle(CURL *handle) const {
+void AnilistDotCoCredentials::setCredentialsForHandle(CurlResult& userdata, CURL* handle) const {
     QString authString = (QStringList() << "Authorization:"
                                         << "Bearer" //this->token.tokenType
                                         << this->token.accessToken).join(" ");
     struct curl_slist *slist=NULL;
     slist = curl_slist_append(slist, authString.toStdString().c_str());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, slist);
-    /*
-     *
-     *
-     *
-     *
-     *
-     *  FUCKING GET THIS FIXED AND FREE THAT LIST SOMEWHERE AFTER PERFORM
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     */
-    //curl_slist_free_all(slist); /* free the list again */
+
+    userdata.slists.append(slist);
 }
 
 bool AnilistDotCoCredentials::fetchFirstAuthorizeToken(QString confirmationCode) {
@@ -143,7 +129,7 @@ bool AnilistDotCoCredentials::refresh() {
 
     QUrl url(urlSL.join(""));
     CurlResult userData(this);
-    CURL* handle = curlClient(url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
+    CURL* handle = curlClientNoLock(url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
     curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
     curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, 0);
     curl_easy_setopt(handle, CURLOPT_COPYPOSTFIELDS, NULL);

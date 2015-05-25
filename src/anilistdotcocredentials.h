@@ -56,7 +56,10 @@ public:
 
     bool login() { return verifyCredentials(); }
     bool verifyCredentials();
-    void setCredentialsForHandle(CURL *handle) const;
+    void setCredentialsForHandle(CurlResult& userdata, CURL* handle) const;
+
+    virtual bool isFresh() { return this->token.isValid(); }
+    virtual bool refresh();
 
     virtual const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;
@@ -67,7 +70,6 @@ private:
     QString redirectUri;
     const BaseConfig& config;
 
-    bool refresh();
     void writeToken();
     void updateAuthHeader();
 };

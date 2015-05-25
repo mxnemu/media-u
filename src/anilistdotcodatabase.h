@@ -83,7 +83,6 @@ public:
         void describe(nw::Describer& de);
         void fetchExtended(const OnlineCredentials &credentials);
 
-    private:
         int id; // 1,
         QString title_romaji; // "Cowboy Bebop",
         QString type; // "TV",
@@ -104,13 +103,14 @@ public:
         ExtendedEntry* extended;
     };
 
-
     AnilistDotCoDatabase(OnlineCredentials &credentials, QObject *parent);
     virtual const QString identifierKey() const;
     virtual OnlineTvShowDatabase::UpdateFilter getFilter() { return OnlineTvShowDatabase::UpdateFilter::ufAll; }
 
 protected:
     virtual OnlineTvShowDatabase::SearchResult* search(QString anime);
+private:
+    void describeUrl(nw::Describer &de, const nw::String key, QString &value);
 };
 
 #endif // ANILISTDOTCODATABASE_H

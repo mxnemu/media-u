@@ -105,6 +105,24 @@ public:
         }
     }
 
+    template<class T, class T2> static void describeValueArray(T& d, const nw::String arrayName, QList<T2>& value) {
+        if (d.isInReadMode()) {
+            value.clear();
+        }
+
+        d.describeValueArray(arrayName, value.length());
+        for (int i=0; d.enterNextElement(i); ++i) {
+            T2 val;
+            if (d.isInWriteMode()) {
+                val = value[i];
+            }
+            d.describeValue(val);
+            if (d.isInReadMode()) {
+                value.append(val);
+            }
+        }
+    }
+
     template<class T, class T2> inline static void describe(T& d, const nw::String key, T2& value) {
         d.describe(key, value);
     }

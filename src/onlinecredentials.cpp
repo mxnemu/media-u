@@ -41,11 +41,11 @@ CURL* OnlineCredentials::curlNoAuthClientNoLock(const char* url, CurlResult& use
 
 CURL* OnlineCredentials::curlClientNoLock(const char* url, CurlResult& userdata) const {
     CURL* handle = curlNoAuthClientNoLock(url, userdata);
-    this->setCredentialsForHandle(handle);
+    this->setCredentialsForHandle(userdata, handle);
     return handle;
 }
 
-void OnlineCredentials::setCredentialsForHandle(CURL* handle) const {
+void OnlineCredentials::setCredentialsForHandle(CurlResult& , CURL* handle) const {
     curl_easy_setopt(handle, CURLOPT_USERNAME, username.toUtf8().data());
     curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
 }
@@ -73,6 +73,13 @@ void OnlineCredentials::set(const QString name, const QString password) {
 void OnlineCredentials::set(const QString name, const QString password, QString userAgent) {
     this->set(name, password);
     this->userAgent = userAgent;
+}
+
+bool OnlineCredentials::assureFreshness() {
+    if (!this->isFresh()) {
+        return this->refresh();
+    }
+    return true;
 }
 
 bool OnlineCredentials::hasVerifiedCredentials() const {

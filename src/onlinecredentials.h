@@ -16,6 +16,9 @@ public:
     virtual const QString identifierKey() const = 0;
     virtual bool fetchFirstAuthorizeToken(QString /*code*/) { return false; }
     virtual const QString connectUri() const { return ""; }
+    virtual bool isFresh() { return true; }
+    virtual bool refresh() { return true; }
+    bool assureFreshness();
 
     CURL* curlClient(const char* url, CurlResult &userdata);
     CURL* curlNoAuthClient(const char* url, CurlResult& userdata);
@@ -45,7 +48,8 @@ public:
 
 protected:
     virtual bool verifyCredentials() = 0;
-    virtual void setCredentialsForHandle(CURL *handle) const;
+    virtual void setCredentialsForHandle(CurlResult &userdata, CURL *handle) const;
+
 
     bool mHasVerifiedCredentials;
     QString username;

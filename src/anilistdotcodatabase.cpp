@@ -128,7 +128,6 @@ void AnilistDotCoDatabase::Entry::describe(nw::Describer &de) {
     NwUtils::describe(de, "role", role);
 }
 
-
 // GET: anime/{id}
 // BigEntry
 //{

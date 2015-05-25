@@ -1,10 +1,18 @@
 #include "onlinetracker.h"
+#include <QDebug>
 
 OnlineTracker::OnlineTracker(const OnlineCredentials& credentials, QObject *parent) :
     QObject(parent),
     credentials(credentials),
     cachedEntries(NULL)
 {
+}
+
+OnlineTracker::~OnlineTracker() {
+    if (this->cachedEntries) {
+        delete this->cachedEntries;
+        this->cachedEntries = NULL;
+    }
 }
 
 bool OnlineTracker::updateRemote(TvShow* show) {
@@ -38,6 +46,30 @@ bool OnlineTracker::updateRemote(TvShow* show) {
 }
 
 
+OnlineTracker::UpdateResult OnlineTracker::updateRemoteImpl(const TvShow* show, const OnlineTracker::EntryList& e) const {
+    int id = show->getRemoteId(identifierKey());
+    if (id <= 0) return failedDueToMissingData;
+
+//    if (this->e == NULL) {
+//        return failedDueToMissingData;
+//    }
+
+    const Entry* item = e.get(this->identifierKey(), show);
+    if (item) {
+        if (item->localIsUpToDate(this->identifierKey(), show) && !item->remoteIsUpToDate(show)) {
+            if (item->remoteIsEq(show)) {
+                return alreadySameAsLocal;
+            }
+            return this->updateinOnlineTrackerOrAdd(show, "update");
+        }
+        qDebug() << "MAL TRACKER skip up2date" << show->name();
+        return skipDueToNoChanges;
+    } else {
+        return this->updateinOnlineTrackerOrAdd(show, "add");
+    }
+}
+
+
 OnlineTracker::EntryList*OnlineTracker::satisfyingEntries() {
     if (!cachedEntries || cachedEntries->tooOld()) {
         this->cachedEntries = fetchRemote();
@@ -50,6 +82,8 @@ OnlineTracker::EntryList::EntryList() :
 {
 }
 
+OnlineTracker::EntryList::~EntryList() {}
+
 bool OnlineTracker::EntryList::tooOld() const {
     return this->fetchTime.addSecs(60 * 5) < QDateTime::currentDateTimeUtc();
 }
@@ -59,6 +93,8 @@ bool OnlineTracker::Entry::syncConflict(const QString trackerIdentifier, const T
     return show->getLastLocalUpdate() > lastUpdate &&
             lastUpdate > show->getLastOnlineTrackerUpdate(trackerIdentifier);
 }
+
+OnlineTracker::Entry::~Entry() {}
 
 bool OnlineTracker::Entry::localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const {
     const QDateTime lastLocalUpdate = show->getLastOnlineTrackerUpdate(trackerIdentifier);

@@ -19,7 +19,7 @@ CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, Up
     return handle;
 }
 
-OnlineTracker::EntryList* Tracker::fetchRemote() const {
+OnlineTracker::EntryList* Tracker::fetchRemote() {
     QString url = QString("http://myanimelist.net/malappinfo.php?u=%1&status=all&type=anime").arg(credentials.getUsername());
     CurlResult userData(NULL);
 
@@ -59,30 +59,6 @@ void Tracker::updateTrackingUnrelatedMetaDataFromRemote(TvShow* show, const Onli
 const QString Tracker::IDENTIFIER_KEY = "mal";
 const QString Tracker::identifierKey() const {
     return IDENTIFIER_KEY;
-}
-
-OnlineTracker::UpdateResult Tracker::updateRemoteImpl(const TvShow* show, const OnlineTracker::EntryList& e) const {
-    int id = show->getRemoteId(identifierKey());
-    if (id <= 0) return failedDueToMissingData;
-
-    const EntryList& entries = static_cast<const EntryList&>(e);
-    if (!entries.error.isEmpty()) {
-        return failedDueToMissingData;
-    }
-
-    const Entry* item = entries.get(this->identifierKey(), show);
-    if (item) {
-        if (item->localIsUpToDate(this->identifierKey(), show) && !item->remoteIsUpToDate(show)) {
-            if (item->remoteIsEq(show)) {
-                return alreadySameAsLocal;
-            }
-            return this->updateinOnlineTrackerOrAdd(show, "update");
-        }
-        qDebug() << "MAL TRACKER skip up2date" << show->name();
-        return skipDueToNoChanges;
-    } else {
-        return this->updateinOnlineTrackerOrAdd(show, "add");
-    }
 }
 
 OnlineTracker::UpdateResult Tracker::updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const {

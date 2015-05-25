@@ -8,6 +8,12 @@ CurlResult::CurlResult(void* userData) :
 {
 }
 
+CurlResult::~CurlResult() {
+    foreach (struct curl_slist* slist, slists) {
+        curl_slist_free_all(slist);
+    }
+}
+
 size_t CurlResult::write_data(void *buffer, size_t characterSize, size_t bufferSize, void *userp) {
     CurlResult* userData = static_cast<CurlResult*>(userp);
     if (userData) {
