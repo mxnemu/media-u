@@ -165,8 +165,8 @@ private:
     QList<RelatedTvShow> sideStories;
     QList<RelatedTvShow> sequels;
     QStringList releaseGroupPreference;
-    int rewatchMarker;
-    int rewatchCount;
+    int rewatchMarker; ///< -1 if none
+    int rewatchCount; ///< 0 upwards
 
     std::map<const QString, OnlineSyncData> onlineSyncData;
     QDateTime lastLocalUpdate;

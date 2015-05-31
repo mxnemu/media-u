@@ -23,7 +23,7 @@ public:
         virtual ~Entry();
         QDateTime lastUpdate;
         int remoteId;
-        int watched_episodes;
+        int watchedEpisodes;
 
         bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
         bool remoteIsUpToDate(const TvShow* show) const;

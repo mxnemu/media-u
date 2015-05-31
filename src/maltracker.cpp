@@ -242,7 +242,7 @@ void Tracker::Entry::describe(nw::Describer& de) {
     NwUtils::describe(de, "series_image", series_image);
     //QString my_id; // always 0 no idea what it does
     NwUtils::describe(de, "my_watched_episodes", my_watched_episodes);
-    this->watched_episodes = my_watched_episodes;
+    this->watchedEpisodes = my_watched_episodes;
     //QDate my_start_date; // 0000-00-00
     //QDate my_finish_date; // 0000-00-00
     NwUtils::describe(de, "my_score", my_score);

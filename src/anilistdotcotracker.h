@@ -19,7 +19,7 @@ public:
         QDateTime added_time; // "2014-10-15T18:56:23+09:00",
         int score_raw; // 0,
         QList<int> advanced_rating_scores; // [int]
-        int episodes_watched; // 11,
+//        int episodes_watched; // 11,
         int chapters_read; // null,
         int volumes_read; // null,
         int hidden_default; // null,
@@ -30,6 +30,9 @@ public:
 
         void describe(nw::Describer& de);
         virtual bool remoteIsEq(const TvShow* show) const;
+        void updateShow(const QString trackerIdentifierKey, TvShow *show) const;
+    private:
+        TvShow::WatchStatus calculateWatchStatus(TvShow::WatchStatus status) const;
     };
 
     class EntryList : public OnlineTracker::EntryList {
@@ -67,7 +70,6 @@ public:
         User();
         bool fetchCurrentlyLoggedInUser(const OnlineCredentials &credentials);
         void describe(nw::Describer& de);
-        virtual bool remoteIsEq(const TvShow* show) const;
     };
 
     AnilistDotCoTracker(OnlineCredentials& credentials, QObject *parent);

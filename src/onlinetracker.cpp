@@ -99,7 +99,7 @@ OnlineTracker::Entry::~Entry() {}
 bool OnlineTracker::Entry::localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const {
     const QDateTime lastLocalUpdate = show->getLastOnlineTrackerUpdate(trackerIdentifier);
     if (lastLocalUpdate.isNull()) {
-        return show->episodeList().highestWatchedEpisodeNumber(0) >= this->watched_episodes;
+        return show->episodeList().highestWatchedEpisodeNumber(0) >= this->watchedEpisodes;
     }
     bool localIsNew = lastLocalUpdate >= this->lastUpdate;
     return localIsNew;

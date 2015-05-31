@@ -48,20 +48,53 @@ OnlineTracker::EntryList* AnilistDotCoTracker::fetchRemote() {
 }
 
 OnlineTracker::UpdateResult AnilistDotCoTracker::updateinOnlineTrackerOrAdd(const TvShow *show, const QString &type) const {
-//    Entry* e = this->entries.get(show);
-//    QStringList()
-//        << "?id=" << e->anime.id
-//        << "&list_status=" << status()
-//        //<< "score " score: (See bottom of page - List score types)
-//        << "&score_raw=" << e->score
-//    episodes_watched: (int)
-//    rewatched: (int)
-//    notes: (String)
-//    advanced_rating_scores: comma separated scores, same order as advanced_rating_names
-//    custom_lists: comma separated 1 or 0, same order as custom_list_anime
-//    hidden_default: (int) 0 || 1
+    Entry e;
+    e.anime.id = show->getRemoteId(identifierKey());
+    e.watchedEpisodes = show->episodeList().highestWatchedEpisodeNumber(0);
+    e.rewatched = show->getRewatchCount();
+    QUrl url = (QStringList()
+        << "https://anilist.co/api/animelist"
+        << "?id=" << QString::number(e.anime.id)
+        << "&list_status=" << watchStatusToString(show->getStatus())
+//        << "&score_raw=" << e->score_raw
+        << "&episodes_watched=" << QString::number(e.watchedEpisodes)
+        << "&rewatched=" << QString::number(e.rewatched)).join("");
+//        << "&score=" << e->score // (See bottom of page - List score types)
+//        << "&notes=" << e->notes
+//        << "&advanced_rating_scores=" << e->advanced_rating_scores
+//        << "&custom_lists=" << e->custom_lists
+//        << "&hidden_default=" << e->hidden_default
 
-    return OnlineTracker::invalid;
+//    qDebug() << url.toString(QUrl::FullyEncoded);
+//    qDebug() << show->episodeList().numberOfEpisodes() << "/"
+//             << show->episodeList().highestWatchedEpisodeNumber(0)
+//             << TvShow::watchStatusToString(show->getStatus())
+//            << show->getRemoteId(identifierKey())
+//            << show->name();
+
+    CurlResult userData(NULL);
+    CURL* handle = credentials.curlClientNoLock(url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
+
+    if (type == "add") {
+//        curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
+//        curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, 0);
+//        curl_easy_setopt(handle, CURLOPT_COPYPOSTFIELDS, NULL);
+        curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "POST");
+    } else {
+        curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "PUT");
+    }
+
+    CURLcode error = curl_easy_perform(handle);
+    curl_easy_cleanup(handle);
+    if (error || userData.data.str().size() < 2) {
+        qDebug() << "received error" << error << "for anilist.co tracker " << type << " with this message:\n";
+        userData.print();
+        return OnlineTracker::failedDueToNetwork;
+    } else {
+        qDebug() << "success" << error << "for anilist.co tracker " << type << " with this message:\n";
+        userData.print();
+        return OnlineTracker::success;
+    }
 }
 
 
@@ -109,22 +142,45 @@ void AnilistDotCoTracker::User::describe(nw::Describer &de) {
     NwUtils::describe(de, "notifications", notifications);
 }
 
-bool AnilistDotCoTracker::User::remoteIsEq(const TvShow *show) const {
-    return false;
-}
-
 AnilistDotCoTracker::EntryList::EntryList(nw::JsonReader &jr) {
     this->describe(jr);
 }
 
-const OnlineTracker::Entry *AnilistDotCoTracker::EntryList::get(const QString trackerIdentifierKey, const TvShow *show) const
-{
+const OnlineTracker::Entry *AnilistDotCoTracker::EntryList::get(const QString trackerIdentifierKey, const TvShow *show) const {
+    int id = show->getRemoteId(trackerIdentifierKey);
+    foreach (const Entry& item, entries) {
+        if (item.remoteId == id) {
+            return &item;
+        }
+    }
     return NULL;
 }
 
-void AnilistDotCoTracker::EntryList::makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow *show) const
-{
+void AnilistDotCoTracker::EntryList::makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow *show) const {
+    const Entry* item = static_cast<const Entry*>(this->get(trackerIdentifierKey, show));
+    if (item) {
+        item->updateShow(trackerIdentifierKey, show);
+    }
+}
 
+void AnilistDotCoTracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show) const {
+    if (!localIsUpToDate(trackerIdentifierKey, show)) {
+//        int marker = this->rewatched == 0 ? -1 :this->my_rewatching_ep;
+//        int count = this->my_rewatching;
+        if (syncConflict(trackerIdentifierKey, show)) {
+            show->episodeList().setMinimalWatched(this->watchedEpisodes);
+//            marker = std::max(marker, show->getRewatchMarker());
+//            count = std::max(this->my_rewatching, show->getRewatchCount());
+        } else {
+            show->episodeList().setMaximalWatched(this->watchedEpisodes);
+        }
+//        show->setRewatchCount(count, false);
+//        show->setRewatchMarker(marker, false);
+        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
+    }
+    if (show->getLastOnlineTrackerUpdate(trackerIdentifierKey).isNull()) {
+        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
+    }
 }
 
 void AnilistDotCoTracker::EntryList::describe(nw::Describer &de)
@@ -150,12 +206,15 @@ void AnilistDotCoTracker::Entry::describe(nw::Describer &de) {
     NwUtils::describe(de, "added_time", added_time);
     NwUtils::describe(de, "score_raw", score_raw);
     NwUtils::describeValueArray(de, "advanced_rating_scores", advanced_rating_scores);
-    NwUtils::describe(de, "episodes_watched", episodes_watched);
+    NwUtils::describe(de, "episodes_watched", watchedEpisodes);
     NwUtils::describe(de, "chapters_read", chapters_read);
     NwUtils::describe(de, "volumes_read", volumes_read);
     NwUtils::describe(de, "hidden_default", hidden_default);
     NwUtils::describeValueArray(de, "custom_lists", custom_lists);
     anime.describe(de);
+    this->remoteId = anime.id;
+//    this->watchedEpisodes = episodes_watched;
+    this->lastUpdate = updated_time;
 }
 
 QString AnilistDotCoTracker::watchStatusToString(TvShow::WatchStatus status) {
@@ -177,21 +236,29 @@ TvShow::WatchStatus AnilistDotCoTracker::watchStatusFromString(QString status) {
     return TvShow::planToWatch;
 }
 
+TvShow::WatchStatus AnilistDotCoTracker::Entry::calculateWatchStatus(TvShow::WatchStatus status) const {
+    if (status == TvShow::waitingForNewEpisodes) {
+        return TvShow::watching;
+    }
+    return status;
+}
+
 bool AnilistDotCoTracker::Entry::remoteIsEq(const TvShow *show) const {
-    TvShow::WatchStatus status = show->getStatus();
-//    TvShow::WatchStatus statusWouldSendIfSynced = restoreStatus(UpdateItem::calculateWatchStatus(status));
-    // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
-//    const bool statusUpToDate =
-//            statusMalWouldSendIfSynced == this->list_status ||
-//            (this->my_status == TvShow::completed && statusMalWouldSendIfSynced == TvShow::watching);
+    const TvShow::WatchStatus status = show->getStatus();
+    const TvShow::WatchStatus statusWouldSendIfSynced = calculateWatchStatus(status);
+    const TvShow::WatchStatus entryStatus = watchStatusFromString(this->list_status);
+    // allow anilist.co to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
+    const bool statusUpToDate =
+            statusWouldSendIfSynced == entryStatus ||
+            (entryStatus == TvShow::completed && statusWouldSendIfSynced == TvShow::watching);
 
     const bool episodesUpToDate =
-            this->watched_episodes >=
+            this->watchedEpisodes >=
             std::min(this->anime.total_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
 
 //    const bool rewatchUpToDate =
 //            my_rewatching >= show->getRewatchCount() &&
 //            my_rewatching_ep >= show->getRewatchMarker();
 
-    return  /*statusUpToDate &&*/ episodesUpToDate/*&& rewatchUpToDate*/;
+    return  statusUpToDate && episodesUpToDate/*&& rewatchUpToDate*/;
 }
