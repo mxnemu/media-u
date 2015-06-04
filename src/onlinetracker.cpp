@@ -108,5 +108,5 @@ bool OnlineTracker::Entry::localIsUpToDate(const QString trackerIdentifier, cons
 bool OnlineTracker::Entry::remoteIsUpToDate(const TvShow* show) const {
     const QDateTime lastLocalUpdate = show->getLastLocalUpdate();
     return (!lastLocalUpdate.isNull() &&
-            (!lastUpdate.isNull() && lastUpdate >= lastLocalUpdate));
+            (!this->lastUpdate.isNull() && this->lastUpdate >= lastLocalUpdate));
 }

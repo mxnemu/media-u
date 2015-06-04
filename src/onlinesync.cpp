@@ -26,7 +26,7 @@ void OnlineSync::init(const BaseConfig& config) {
     AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
 //    creds->readConfig(config.malConfigFilePath());
     this->credentials.push_back(creds);
-    //this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
+//    this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
     this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
 
 ////    this->dropUrls.push_back(new MalDropUrl());
@@ -155,7 +155,7 @@ void OnlineSync::checkIfAllFinished() {
 }
 
 void OnlineSync::fetchDatabases() {
-    qDebug() << "START DB FETCH AND REMAIN:" << unhandledFetch.size();
+    qDebug() << "START DB FETCH AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
     while (!unhandledFetch.empty()) {
         auto itr = unhandledFetch.begin();
 
@@ -172,12 +172,13 @@ void OnlineSync::fetchDatabases() {
         }
         unhandledFetch.erase(itr);
     }
-    qDebug() << "FINISHED AND REMAIN:" << unhandledFetch.size();
+    qDebug() << "FINISHED AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
     emit databasesFinished();
 }
 
 void OnlineSync::updateTrackers() {
     // TODO copy pasta
+    qDebug() << "START DB UPDATE AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
     while (!unhandledUpdate.empty()) {
         auto itr = unhandledUpdate.begin();
         TvShow* show = *itr;
@@ -188,6 +189,7 @@ void OnlineSync::updateTrackers() {
         }
         unhandledUpdate.erase(itr);
     }
+    qDebug() << "FINISHED AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
     emit trackersFinished();
 }
 
