@@ -185,8 +185,24 @@ void AnilistDotCoTracker::Entry::updateShow(const QString trackerIdentifierKey, 
 
 void AnilistDotCoTracker::EntryList::describe(nw::Describer &de)
 {
-// "lists":{"":[{
-    de.describeArray("lists", "", this->entries.length());
+// "lists":{"completed":[{
+    if (de.getErrorMessage().length()) {
+        qDebug() << de.getErrorMessage().c_str();
+    }
+    if (de.push("lists")) {
+    // TODO iterate over all keys available
+        this->describeList(de, "completed");
+        this->describeList(de, "dropped");
+        this->describeList(de, "on_hold");
+        this->describeList(de, "plan_to_watch");
+        this->describeList(de, "watching");
+//        this->describeList(de, "");
+        de.pop();
+    }
+}
+
+void AnilistDotCoTracker::EntryList::describeList(nw::Describer &de, nw::String listKey) {
+    de.describeArray(listKey, "", this->entries.length());
     for (int i=0; de.enterNextElement(i); ++i) {
         Entry e;
         e.describe(de);
@@ -196,6 +212,11 @@ void AnilistDotCoTracker::EntryList::describe(nw::Describer &de)
 
 
 void AnilistDotCoTracker::Entry::describe(nw::Describer &de) {
+    if (de.push("anime")) {
+        anime.describe(de);
+        de.pop();
+    }
+
     NwUtils::describe(de, "list_status", list_status);
     NwUtils::describe(de, "score", score);
     NwUtils::describe(de, "priorty", priorty);
@@ -211,9 +232,8 @@ void AnilistDotCoTracker::Entry::describe(nw::Describer &de) {
     NwUtils::describe(de, "volumes_read", volumes_read);
     NwUtils::describe(de, "hidden_default", hidden_default);
     NwUtils::describeValueArray(de, "custom_lists", custom_lists);
-    anime.describe(de);
+
     this->remoteId = anime.id;
-//    this->watchedEpisodes = episodes_watched;
     this->lastUpdate = updated_time;
 }
 

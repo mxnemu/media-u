@@ -44,6 +44,8 @@ public:
 
         const QDateTime fetchTime;
         QList<Entry> entries;
+    private:
+        void describeList(nw::Describer &de, nw::String listKey);
     };
 
     class User {

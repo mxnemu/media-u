@@ -93,8 +93,14 @@ void AnilistDotCoDatabase::Entry::updateRelations(TvShow &) const {
     // TODO
 }
 
-void AnilistDotCoDatabase::Entry::updateAiringDates(TvShow &) const {
-    // TODO
+void AnilistDotCoDatabase::Entry::updateAiringDates(TvShow &show) const {
+    show.setTotalEpisodes(this->total_episodes);
+    show.setShowType(this->type);
+    show.setAiringStatus(this->airing_status);
+    if (this->extended) {
+        show.setStartDate(this->extended->start_date.date());
+        show.setEndDate(this->extended->end_date.date());
+    }
 }
 
 void AnilistDotCoDatabase::Entry::updateSynonyms(TvShow &show) const {
