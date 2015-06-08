@@ -38,7 +38,8 @@ const QString AnilistDotCoDatabase::identifierKey() const {
 //}
 OnlineTvShowDatabase::SearchResult* AnilistDotCoDatabase::search(QString anime) {
     CurlResult userdata;
-    QString url = QUrl(QString("https://anilist.co/api/anime/search/%1").arg(anime)).toString(QUrl::FullyEncoded);
+    QString escapedQuery = anime.replace("!", "\\!");
+    QString url = QUrl(QString("https://anilist.co/api/anime/search/%1").arg(escapedQuery)).toString(QUrl::FullyEncoded);
     CURL* handle = credentials.curlClientNoLock(url.toStdString().c_str(), userdata);
 
     CURLcode error = curl_easy_perform(handle);
