@@ -6,6 +6,7 @@
 #include "anilistdotcocredentials.h"
 #include "anilistdotcodatabase.h"
 #include "anilistdotcotracker.h"
+#include "anilistdotcodropurl.h"
 #include "config.h"
 #include "server.h"
 
@@ -22,13 +23,13 @@ void OnlineSync::init(const BaseConfig& config) {
     this->credentials.push_back(malCreds);
     this->databases.push_back(new Mal::Client(*malCreds, this));
     this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+    this->dropUrls.push_back(new MalDropUrl());
 
     AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
     this->credentials.push_back(creds);
     this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
     this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
-
-////    this->dropUrls.push_back(new MalDropUrl());
+    this->dropUrls.push_back(new AnilistDotCoDropUrl());
 
 ////    malCreds->login();
 }
