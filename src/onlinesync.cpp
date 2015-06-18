@@ -20,13 +20,12 @@ void OnlineSync::init(const BaseConfig& config) {
     MalCredentials* malCreds = new MalCredentials();
     malCreds->readConfig(config.malConfigFilePath());
     this->credentials.push_back(malCreds);
-//    this->databases.push_back(new Mal::Client(*malCreds, this));
-//    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+    this->databases.push_back(new Mal::Client(*malCreds, this));
+    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
 
     AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
-//    creds->readConfig(config.malConfigFilePath());
     this->credentials.push_back(creds);
-//    this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
+    this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
     this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
 
 ////    this->dropUrls.push_back(new MalDropUrl());
