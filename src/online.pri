@@ -19,7 +19,8 @@ SOURCES += filedownloadthread.cpp \
     maldropurl.cpp \
     anilistdotcodatabase.cpp \
     anilistdotcocredentials.cpp \
-    anilistdotcotracker.cpp
+    anilistdotcotracker.cpp \
+    anilistdotcodropurl.cpp
 
 HEADERS += filedownloadthread.h \
     curlresult.h \
@@ -42,4 +43,5 @@ HEADERS += filedownloadthread.h \
     maldropurl.h \
     anilistdotcodatabase.h \
     anilistdotcocredentials.h \
-    anilistdotcotracker.h
+    anilistdotcotracker.h \
+    anilistdotcodropurl.h

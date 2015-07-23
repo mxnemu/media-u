@@ -31,7 +31,7 @@ void OnlineSync::init(const BaseConfig& config) {
     this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
     this->dropUrls.push_back(new AnilistDotCoDropUrl());
 
-////    malCreds->login();
+    malCreds->login();
 }
 
 void OnlineSync::startThreadIfNotRunning() {
