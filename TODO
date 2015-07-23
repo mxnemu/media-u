@@ -1,47 +1,26 @@
-BUGS
--stop using so many threads for networking it's retarded, also OnlineSync has an unreproducable crash
--deleting missing files via MissingFilesPage is probably insecure, due to fucked up cross-thread references
+BUGS:
+-Some unreproducable crash during Onlinesync where it enters an endless event spawning loop and runs oom
 
 Roadmap:
--opimize auto rss:
-    -list torrents in the web-ui before downloading them
-    -use QWaitConditions and QEventLoops for the rss thread
-    -auto-add feeds when watchstatus changes
-    -get prefered resolution for subgroup to download
+-get rid of the rss autodownload and put it into a different program, provide an API to get the watchlist instead
 -library improvements:
     -start searches for specific directories and not just for all
-    -start mal searches for specific shows and not just for all
-    -start wallpaper searches for specific shows and not just for all
--alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
-
--some way to switch between different files of the same subgroup
 -isMovie check for TvShow, try episode name on mal-search if isMovie or name + "movie"
 -add mpv api via libmpv.
      It's not stable yet, so I'm going to wait with this.
      It appears like they deprecated --slave mode
 
--webui: notification & links bar fixed on top
--webui: options page
--webui: rss search results overlay
 -webui: create-gif settings & crop
--webui: option to list/unlist missing files
--webui: page that lists missing files with the possebillity to delete them
+
+REFACTOR/rethink
+-stop using so many threads for networking it's retarded, also OnlineSync has an unreproducable crash
+-deleting missing files via MissingFilesPage would probably be insecure, due to fucked up cross-thread references
 
 Optional:
--generate thumbnails for each episode
 -try konachan and yande.re before getting pics from gelbooru
--get percise metadata (not based on bytesize guesses) and save it for each moviefile
--list subtitleTracks & audiotrack names
+-list subtitleTracks & audiotrack names (maybe on hovering the input-ui)
 
-Probably won't fix:
--make mplayer use the gpu of the raspberry pi
- alternative: fix omxplayers playbackerrors and horrific subtitles
- alternative: just import stuff and export symlinks with xbmc compatible names
--any extended raspberry pi support
-    (I got it to work, but it only plays hardsubbed stuff smoothly,
-     the omxplayer-interface is outdated)
-
-
-Bugs:
--Some remaining false-positive results from MAL search, get better query compare
--some strings form MAL are not properly decoded with QUrl::fromPercentEncoding
+Stalled:
+-alternative onlinedb anidb.net http://wiki.anidb.net/w/UDP_API_Definition
+-some way to switch between different files of the same subgroup
+-The MAL API is a complete mess, but I can't fix their API and my forum posts didn't do anything. Use anilist.co instead
