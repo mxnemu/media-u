@@ -283,6 +283,7 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
         $(this.releaseGroupPreference).remove();
     }
 
+    var self = this;
     var rgp = document.createElement("div");
     rgp.className = "releaseGroupPreference";
     for (var i=0; i < array.length; ++i) {
@@ -317,6 +318,7 @@ TvShowPage.prototype.createReleaseGroupPreference = function(array) {
             data: json
         }).complete(function() {
             console.log("set releaseGroupPreference to ", newArray);
+            self.refetch();
         });
     }
 
