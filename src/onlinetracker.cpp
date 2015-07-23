@@ -62,7 +62,7 @@ OnlineTracker::UpdateResult OnlineTracker::updateRemoteImpl(const TvShow* show, 
             }
             return this->updateinOnlineTrackerOrAdd(show, "update");
         }
-        qDebug() << "MAL TRACKER skip up2date" << show->name();
+        qDebug() << identifierKey() << "TRACKER skip up2date" << show->name();
         return skipDueToNoChanges;
     } else {
         return this->updateinOnlineTrackerOrAdd(show, "add");
