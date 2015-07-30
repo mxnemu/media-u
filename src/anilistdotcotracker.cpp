@@ -226,29 +226,9 @@ TvShow::WatchStatus AnilistDotCoTracker::watchStatusFromString(QString status) {
     return TvShow::planToWatch;
 }
 
-TvShow::WatchStatus AnilistDotCoTracker::Entry::calculateWatchStatus(TvShow::WatchStatus status) const {
-    if (status == TvShow::waitingForNewEpisodes) {
+TvShow::WatchStatus AnilistDotCoTracker::Entry::getStatusWouldSendIfSynced(TvShow::WatchStatus showStatus) const {
+    if (showStatus == TvShow::waitingForNewEpisodes) {
         return TvShow::watching;
     }
-    return status;
-}
-
-bool AnilistDotCoTracker::Entry::remoteIsEq(const TvShow *show) const {
-    const TvShow::WatchStatus status = show->getStatus();
-    const TvShow::WatchStatus statusWouldSendIfSynced = calculateWatchStatus(status);
-    const TvShow::WatchStatus entryStatus = watchStatusFromString(this->list_status);
-    // allow anilist.co to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
-    const bool statusUpToDate =
-            statusWouldSendIfSynced == entryStatus ||
-            (entryStatus == TvShow::completed && statusWouldSendIfSynced == TvShow::watching);
-
-    const bool episodesUpToDate =
-            this->watchedEpisodes() >=
-            std::min(this->anime.total_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
-
-//    const bool rewatchUpToDate =
-//            my_rewatching >= show->getRewatchCount() &&
-//            my_rewatching_ep >= show->getRewatchMarker();
-
-    return  statusUpToDate && episodesUpToDate/*&& rewatchUpToDate*/;
+    return showStatus;
 }

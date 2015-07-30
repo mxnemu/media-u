@@ -114,6 +114,26 @@ void OnlineTracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow
 }
 
 
+bool OnlineTracker::Entry::remoteIsEq(const TvShow *show) const {
+    const TvShow::WatchStatus status = show->getStatus();
+    const TvShow::WatchStatus statusWouldSendIfSynced = this->getStatusWouldSendIfSynced(status);
+    const TvShow::WatchStatus entryStatus = this->watchStatus();
+    // allow remote to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
+    const bool statusUpToDate =
+            statusWouldSendIfSynced == entryStatus ||
+            (entryStatus == TvShow::completed && statusWouldSendIfSynced == TvShow::watching);
+
+    const bool episodesUpToDate =
+            this->watchedEpisodes() >=
+            std::min(this->totalEpisodes(), (int)show->episodeList().highestWatchedEpisodeNumber(0));
+
+    const bool rewatchUpToDate =
+            rewatchCount() >= show->getRewatchCount() &&
+            (this->supportsRewatchMarker() ? rewatchMarker() >= show->getRewatchMarker() : true);
+
+    return  statusUpToDate && episodesUpToDate && rewatchUpToDate;
+}
+
 bool OnlineTracker::EntryList::tooOld() const {
     return this->fetchTime.addSecs(60 * 5) < QDateTime::currentDateTimeUtc();
 }

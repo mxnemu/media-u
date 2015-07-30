@@ -28,17 +28,17 @@ public:
         // but I'm never fetching raw so it's not a pointer.
         AnilistDotCoDatabase::Entry anime;
 
-        QDateTime lastUpdate() const { return updated_time; }
-        int remoteId() const { return anime.id; }
-        int watchedEpisodes() const { return episodes_watched; }
-        int rewatchMarker() const { return -1; }
-        int rewatchCount() const { return rewatched; }
+        virtual QDateTime lastUpdate() const { return updated_time; }
+        virtual int remoteId() const { return anime.id; }
+        virtual int watchedEpisodes() const { return episodes_watched; }
+        virtual int rewatchMarker() const { return -1; }
+        virtual int rewatchCount() const { return rewatched; }
         virtual bool supportsRewatchMarker() const { return false; }
+        virtual int totalEpisodes() const { return this->anime.total_episodes; }
+        virtual TvShow::WatchStatus getStatusWouldSendIfSynced(TvShow::WatchStatus showStatus) const;
+        virtual TvShow::WatchStatus watchStatus() const { return watchStatusFromString(this->list_status); }
 
         void describe(nw::Describer& de);
-        virtual bool remoteIsEq(const TvShow* show) const;
-    private:
-        TvShow::WatchStatus calculateWatchStatus(TvShow::WatchStatus status) const;
     };
 
     class EntryList : public OnlineTracker::EntryList {

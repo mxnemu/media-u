@@ -246,24 +246,8 @@ void Tracker::Entry::describe(nw::Describer& de) {
     my_status = Entry::restoreStatus(status);
 }
 
-bool Tracker::Entry::remoteIsEq(const TvShow* show) const {
-    TvShow::WatchStatus status = show->getStatus();
-    TvShow::WatchStatus statusMalWouldSendIfSynced = restoreStatus(UpdateItem::calculateWatchStatus(status));
-    // allow mal to claim completion, when unseparated OVAs are not watched, yet. Take it as up2date.
-    const bool statusUpToDate =
-            statusMalWouldSendIfSynced == this->my_status ||
-            (this->my_status == TvShow::completed && statusMalWouldSendIfSynced == TvShow::watching);
-
-    const bool episodesUpToDate =
-            this->my_watched_episodes >=
-            std::min(this->series_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
-
-    const bool rewatchUpToDate =
-            my_rewatching >= show->getRewatchCount() &&
-            my_rewatching_ep >= show->getRewatchMarker();
-
-    return  statusUpToDate && episodesUpToDate && rewatchUpToDate;
+TvShow::WatchStatus Tracker::Entry::getStatusWouldSendIfSynced(TvShow::WatchStatus showStatus) const {
+    return restoreStatus(UpdateItem::calculateWatchStatus(showStatus));
 }
-
 
 }

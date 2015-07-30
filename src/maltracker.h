@@ -74,12 +74,13 @@ public:
         virtual int watchedEpisodes() const { return my_watched_episodes; }
         virtual int rewatchMarker() const { return my_rewatching_ep; }
         virtual int rewatchCount() const { return my_rewatching; }
+        virtual int totalEpisodes() const { return series_episodes; }
         virtual bool supportsRewatchMarker() const { return true; }
+        virtual TvShow::WatchStatus getStatusWouldSendIfSynced(TvShow::WatchStatus showStatus) const;
+        virtual TvShow::WatchStatus watchStatus() const { return my_status; }
 
         void describe(nw::Describer& de);
         static TvShow::WatchStatus restoreStatus(int malStatusId);
-        /// check if data is eq, disregarding the change dates
-        virtual bool remoteIsEq(const TvShow* show) const;
     };
 
     class EntryList : public OnlineTracker::EntryList {

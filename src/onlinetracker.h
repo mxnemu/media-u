@@ -26,6 +26,10 @@ public:
         virtual int watchedEpisodes() const = 0;
         virtual int rewatchMarker() const = 0;
         virtual int rewatchCount() const = 0;
+        virtual int totalEpisodes() const = 0;
+
+        virtual TvShow::WatchStatus getStatusWouldSendIfSynced(TvShow::WatchStatus showStatus) const = 0;
+        virtual TvShow::WatchStatus watchStatus() const = 0;
 
         bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
         bool remoteIsUpToDate(const TvShow* show) const;
@@ -33,7 +37,7 @@ public:
         void updateShow(const QString trackerIdentifierKey, TvShow *show) const;
 
         virtual bool supportsRewatchMarker() const = 0;
-        virtual bool remoteIsEq(const TvShow* show) const = 0;
+        virtual bool remoteIsEq(const TvShow* show) const; ///< checks data not dates
     };
 
     class EntryList {
