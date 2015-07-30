@@ -27,20 +27,24 @@ bool OnlineTracker::updateRemote(TvShow* show) {
     switch (result) {
     case OnlineTracker::success:
         show->setLastOnlineTrackerUpdate(this->identifierKey(), QDateTime::currentDateTimeUtc());
+        log() << "update success" << show->name() << identifierKey();
         return true;
     case OnlineTracker::alreadySameAsLocal: {
         const OnlineTracker::Entry* entry = entries->get(this->identifierKey(), show);
         if (entry) {
             show->setLastOnlineTrackerUpdate(this->identifierKey(), entry->lastUpdate());
         }
+        log() << "skip alreadySameAsLocal" << show->name() << identifierKey();
         return true;
     }
     case OnlineTracker::skipDueToNoChanges:
+        log() << "skip up2date" << show->name() << identifierKey();
         return true;
     case OnlineTracker::invalid:
     case OnlineTracker::failedDueToMissingData:
     case OnlineTracker::failedDueToNetwork:
     default:
+        log() << "update failure" << show->name() << result << identifierKey();
         return false;
     }
 }
@@ -62,7 +66,6 @@ OnlineTracker::UpdateResult OnlineTracker::updateRemoteImpl(const TvShow* show, 
             }
             return this->updateinOnlineTrackerOrAdd(show, "update");
         }
-        qDebug() << identifierKey() << "TRACKER skip up2date" << show->name();
         return skipDueToNoChanges;
     } else {
         return this->updateinOnlineTrackerOrAdd(show, "add");
@@ -160,3 +163,11 @@ bool OnlineTracker::Entry::remoteIsUpToDate(const TvShow* show) const {
     return (!lastLocalUpdate.isNull() &&
             (!this->lastUpdate().isNull() && this->lastUpdate() >= lastLocalUpdate));
 }
+
+QDebug OnlineTracker::log() {
+    return qDebug() << "TRACKER";
+}
+QDebug OnlineTracker::err() {
+    return qDebug() << "TRACKER";
+}
+

@@ -155,7 +155,7 @@ void OnlineSync::checkIfAllFinished() {
 }
 
 void OnlineSync::fetchDatabases() {
-    qDebug() << "START DB FETCH AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
+    log() << "start db fetch with tasks:" << unhandledFetch.size() << unhandledUpdate.size();
     while (!unhandledFetch.empty()) {
         auto itr = unhandledFetch.begin();
 
@@ -168,28 +168,28 @@ void OnlineSync::fetchDatabases() {
         TvShow* show = *itr;
         bool success = this->fetchShow(show, library);
         if (!success) {
-            qDebug() << "failed to fetch" << show->name();
+            err() << "failed to fetch" << show->name();
         }
         unhandledFetch.erase(itr);
     }
-    qDebug() << "FINISHED AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
+    log() << "finish db fetch with tasks:" << unhandledFetch.size() << unhandledUpdate.size();
     emit databasesFinished();
 }
 
 void OnlineSync::updateTrackers() {
     // TODO copy pasta
-    qDebug() << "START DB UPDATE AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
+    log() << "start tracker update with tasks:" << unhandledFetch.size() << unhandledUpdate.size();
     while (!unhandledUpdate.empty()) {
         auto itr = unhandledUpdate.begin();
         TvShow* show = *itr;
 
         bool success = this->updateShow(show);
         if (!success) {
-            qDebug() << "failed to update" << show->name();
+            err() << "failed to update" << show->name();
         }
         unhandledUpdate.erase(itr);
     }
-    qDebug() << "FINISHED AND REMAIN:" << unhandledFetch.size() << unhandledUpdate.size();
+    log() << "finish tracker update with tasks:" << unhandledFetch.size() << unhandledUpdate.size();
     emit trackersFinished();
 }
 
@@ -235,6 +235,12 @@ bool OnlineSync::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return false;
 }
 
+QDebug OnlineSync::log() {
+    return qDebug() << "ONLINE-SYNC";
+}
+QDebug OnlineSync::err() {
+    return qDebug() << "ONLINE-SYNC";
+}
 
 void OnlineSync::run() {
     connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()), Qt::DirectConnection);

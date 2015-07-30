@@ -69,6 +69,9 @@ private:
     UpdateResult updateRemoteImpl(const TvShow* show, const EntryList& entries) const;
 
     EntryList* cachedEntries;
+
+    static QDebug log();
+    static QDebug err();
 };
 
 #endif // ONLINETRACKER_H

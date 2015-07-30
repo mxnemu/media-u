@@ -7,6 +7,7 @@
 #include "onlinetracker.h"
 #include "onlinetvshowdatabase.h"
 #include "onlinedropurl.h"
+#include <QDebug>
 
 class BaseConfig;
 class OnlineSync : public QThread
@@ -50,6 +51,9 @@ private:
     QList<OnlineTracker*> trackers;
     QList<OnlineTvShowDatabase::Client*> databases;
     QList<OnlineDropUrl*> dropUrls;
+
+    static QDebug log();
+    static QDebug err();
 };
 
 #endif // ONLINESYNCTHREAD_H
