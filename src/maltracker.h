@@ -74,7 +74,7 @@ public:
         virtual int watchedEpisodes() const { return my_watched_episodes; }
         virtual int rewatchMarker() const { return my_rewatching_ep; }
         virtual int rewatchCount() const { return my_rewatching; }
-        virtual bool supportsRewatchCounter() const { return true; }
+        virtual bool supportsRewatchMarker() const { return true; }
 
         void describe(nw::Describer& de);
         static TvShow::WatchStatus restoreStatus(int malStatusId);

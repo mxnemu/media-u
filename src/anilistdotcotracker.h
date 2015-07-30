@@ -33,7 +33,7 @@ public:
         int watchedEpisodes() const { return episodes_watched; }
         int rewatchMarker() const { return -1; }
         int rewatchCount() const { return rewatched; }
-        virtual bool supportsRewatchCounter() const { return false; }
+        virtual bool supportsRewatchMarker() const { return false; }
 
         void describe(nw::Describer& de);
         virtual bool remoteIsEq(const TvShow* show) const;

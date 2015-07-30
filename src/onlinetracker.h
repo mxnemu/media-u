@@ -32,7 +32,7 @@ public:
         bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
         void updateShow(const QString trackerIdentifierKey, TvShow *show) const;
 
-        virtual bool supportsRewatchCounter() const = 0;
+        virtual bool supportsRewatchMarker() const = 0;
         virtual bool remoteIsEq(const TvShow* show) const = 0;
     };
 
