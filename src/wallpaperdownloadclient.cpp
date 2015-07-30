@@ -1,7 +1,6 @@
 #include "wallpaperdownloadclient.h"
 
 #include "moebooruclient.h"
-#include <QDebug>
 #include <QUrl>
 #include "filedownloadthread.h"
 
@@ -143,7 +142,7 @@ SearchResult Client::fetchPostsBlocking(const TvShow* show, int page) {
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {
-        qDebug() << "received error" << error << "for tagquery '" << tagName << "'' with this message:\n";
+        err() << "received error" << error << "for tagquery '" << tagName << "'' with this message:\n";
         userData.print();
     } else {
         return parseSearchResult(userData.data, limit);
@@ -186,6 +185,9 @@ void Client::onWallpaperDownloadSucceeded(QString path)  {
     matches++;
 }
 
+QDebug Client::err() {
+    return qDebug() << "WALLPAPERDOWNLOAD-CLIENT";
+}
 
 }
 

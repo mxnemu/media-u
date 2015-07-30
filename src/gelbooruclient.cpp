@@ -1,5 +1,4 @@
 #include "gelbooruclient.h"
-#include <QDebug>
 #include "filedownloadthread.h"
 
 namespace Gelbooru {
@@ -23,8 +22,7 @@ Entry Client::parseEntry(nw::Describer *de) {
     return entry;
 }
 
-SearchResult Client::parseSearchResult(std::stringstream &ss, int limit)
-{
+SearchResult Client::parseSearchResult(std::stringstream &ss, int limit) {
     int count = 0;
     int offset = 0;
 
@@ -40,8 +38,7 @@ SearchResult Client::parseSearchResult(std::stringstream &ss, int limit)
     return sr;
 }
 
-CURL *Client::curlClient(QString tag, CurlResult& userdata, const unsigned int page)
-{
+CURL *Client::curlClient(QString tag, CurlResult& userdata, const unsigned int page) {
     QString pageStr = QString::number(page);
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, QString("%1/index.php?page=dapi&s=post&q=index&pid=%2&tags=%3").arg(baseUrl, pageStr, tag).toLocal8Bit().data());

@@ -83,6 +83,7 @@ protected:
     int matches;
 private:
     const QString hostname;
+    static QDebug err();
 };
 
 class FetchThread : public QThread {

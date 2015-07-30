@@ -1,5 +1,4 @@
 #include "moebooruclient.h"
-#include <QDebug>
 #include "filedownloadthread.h"
 
 namespace Moebooru {
@@ -9,8 +8,7 @@ Client::Client(QString baseUrl, int limit, Rating ratingFilter) :
 {
 }
 
-CURL *Client::curlClient(QString tag, CurlResult& userdata, const unsigned int page)
-{
+CURL *Client::curlClient(QString tag, CurlResult& userdata, const unsigned int page) {
     QString pageStr = QString::number(page);
     CURL* handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, QString("%1/post.json?page=%2&tags=%3").arg(baseUrl, pageStr, tag).toLocal8Bit().data());
