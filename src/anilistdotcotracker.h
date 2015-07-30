@@ -19,7 +19,7 @@ public:
         QDateTime added_time; // "2014-10-15T18:56:23+09:00",
         int score_raw; // 0,
         QList<int> advanced_rating_scores; // [int]
-//        int episodes_watched; // 11,
+        int episodes_watched; // 11,
         int chapters_read; // null,
         int volumes_read; // null,
         int hidden_default; // null,
@@ -28,9 +28,15 @@ public:
         // but I'm never fetching raw so it's not a pointer.
         AnilistDotCoDatabase::Entry anime;
 
+        QDateTime lastUpdate() const { return updated_time; }
+        int remoteId() const { return anime.id; }
+        int watchedEpisodes() const { return episodes_watched; }
+        int rewatchMarker() const { return -1; }
+        int rewatchCount() const { return rewatched; }
+        virtual bool supportsRewatchCounter() const { return false; }
+
         void describe(nw::Describer& de);
         virtual bool remoteIsEq(const TvShow* show) const;
-        void updateShow(const QString trackerIdentifierKey, TvShow *show) const;
     private:
         TvShow::WatchStatus calculateWatchStatus(TvShow::WatchStatus status) const;
     };
@@ -39,7 +45,6 @@ public:
     public:
         EntryList(nw::JsonReader& jr);
         virtual const OnlineTracker::Entry* get(const QString trackerIdentifierKey, const TvShow* show) const;
-        virtual void makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const;
         virtual void describe(nw::Describer& de);
 
         const QDateTime fetchTime;

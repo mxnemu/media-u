@@ -50,14 +50,14 @@ OnlineTracker::EntryList* AnilistDotCoTracker::fetchRemote() {
 OnlineTracker::UpdateResult AnilistDotCoTracker::updateinOnlineTrackerOrAdd(const TvShow *show, const QString &type) const {
     Entry e;
     e.anime.id = show->getRemoteId(identifierKey());
-    e.watchedEpisodes = show->episodeList().highestWatchedEpisodeNumber(0);
+    e.episodes_watched = show->episodeList().highestWatchedEpisodeNumber(0);
     e.rewatched = show->getRewatchCount();
     QUrl url = (QStringList()
         << "https://anilist.co/api/animelist"
         << "?id=" << QString::number(e.anime.id)
         << "&list_status=" << watchStatusToString(show->getStatus())
 //        << "&score_raw=" << e->score_raw
-        << "&episodes_watched=" << QString::number(e.watchedEpisodes)
+        << "&episodes_watched=" << QString::number(e.watchedEpisodes())
         << "&rewatched=" << QString::number(e.rewatched)).join("");
 //        << "&score=" << e->score // (See bottom of page - List score types)
 //        << "&notes=" << e->notes
@@ -149,38 +149,11 @@ AnilistDotCoTracker::EntryList::EntryList(nw::JsonReader &jr) {
 const OnlineTracker::Entry *AnilistDotCoTracker::EntryList::get(const QString trackerIdentifierKey, const TvShow *show) const {
     int id = show->getRemoteId(trackerIdentifierKey);
     foreach (const Entry& item, entries) {
-        if (item.remoteId == id) {
+        if (item.remoteId() == id) {
             return &item;
         }
     }
     return NULL;
-}
-
-void AnilistDotCoTracker::EntryList::makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow *show) const {
-    const Entry* item = static_cast<const Entry*>(this->get(trackerIdentifierKey, show));
-    if (item) {
-        item->updateShow(trackerIdentifierKey, show);
-    }
-}
-
-void AnilistDotCoTracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show) const {
-    if (!localIsUpToDate(trackerIdentifierKey, show)) {
-//        int marker = this->rewatched == 0 ? -1 :this->my_rewatching_ep;
-//        int count = this->my_rewatching;
-        if (syncConflict(trackerIdentifierKey, show)) {
-            show->episodeList().setMinimalWatched(this->watchedEpisodes);
-//            marker = std::max(marker, show->getRewatchMarker());
-//            count = std::max(this->my_rewatching, show->getRewatchCount());
-        } else {
-            show->episodeList().setMaximalWatched(this->watchedEpisodes);
-        }
-//        show->setRewatchCount(count, false);
-//        show->setRewatchMarker(marker, false);
-        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
-    }
-    if (show->getLastOnlineTrackerUpdate(trackerIdentifierKey).isNull()) {
-        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate);
-    }
 }
 
 void AnilistDotCoTracker::EntryList::describe(nw::Describer &de)
@@ -227,14 +200,11 @@ void AnilistDotCoTracker::Entry::describe(nw::Describer &de) {
     NwUtils::describe(de, "added_time", added_time);
     NwUtils::describe(de, "score_raw", score_raw);
     NwUtils::describeValueArray(de, "advanced_rating_scores", advanced_rating_scores);
-    NwUtils::describe(de, "episodes_watched", watchedEpisodes);
+    NwUtils::describe(de, "episodes_watched", episodes_watched);
     NwUtils::describe(de, "chapters_read", chapters_read);
     NwUtils::describe(de, "volumes_read", volumes_read);
     NwUtils::describe(de, "hidden_default", hidden_default);
     NwUtils::describeValueArray(de, "custom_lists", custom_lists);
-
-    this->remoteId = anime.id;
-    this->lastUpdate = updated_time;
 }
 
 QString AnilistDotCoTracker::watchStatusToString(TvShow::WatchStatus status) {
@@ -273,7 +243,7 @@ bool AnilistDotCoTracker::Entry::remoteIsEq(const TvShow *show) const {
             (entryStatus == TvShow::completed && statusWouldSendIfSynced == TvShow::watching);
 
     const bool episodesUpToDate =
-            this->watchedEpisodes >=
+            this->watchedEpisodes() >=
             std::min(this->anime.total_episodes, (int)show->episodeList().highestWatchedEpisodeNumber(0));
 
 //    const bool rewatchUpToDate =

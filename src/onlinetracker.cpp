@@ -31,7 +31,7 @@ bool OnlineTracker::updateRemote(TvShow* show) {
     case OnlineTracker::alreadySameAsLocal: {
         const OnlineTracker::Entry* entry = entries->get(this->identifierKey(), show);
         if (entry) {
-            show->setLastOnlineTrackerUpdate(this->identifierKey(), entry->lastUpdate);
+            show->setLastOnlineTrackerUpdate(this->identifierKey(), entry->lastUpdate());
         }
         return true;
     }
@@ -84,14 +84,44 @@ OnlineTracker::EntryList::EntryList() :
 
 OnlineTracker::EntryList::~EntryList() {}
 
+void OnlineTracker::EntryList::makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow *show) const {
+    const Entry* item = this->get(trackerIdentifierKey, show);
+    if (item) {
+        item->updateShow(trackerIdentifierKey, show);
+    }
+}
+
+void OnlineTracker::Entry::updateShow(const QString trackerIdentifierKey, TvShow* show) const {
+    if (!localIsUpToDate(trackerIdentifierKey, show)) {
+        int marker = this->rewatchMarker() == 0 ? -1 : this->rewatchMarker();
+        int count = this->rewatchCount();
+        if (syncConflict(trackerIdentifierKey, show)) {
+            show->episodeList().setMinimalWatched(this->watchedEpisodes());
+            marker = std::max(marker, show->getRewatchMarker());
+            count = std::max(count, show->getRewatchCount());
+        } else {
+            show->episodeList().setMaximalWatched(this->watchedEpisodes());
+        }
+        show->setRewatchCount(count, false);
+        if (this->supportsRewatchMarker()) {
+            show->setRewatchMarker(marker, false);
+        }
+        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate());
+    }
+    if (show->getLastOnlineTrackerUpdate(trackerIdentifierKey).isNull()) {
+        show->setLastOnlineTrackerUpdate(trackerIdentifierKey, this->lastUpdate());
+    }
+}
+
+
 bool OnlineTracker::EntryList::tooOld() const {
     return this->fetchTime.addSecs(60 * 5) < QDateTime::currentDateTimeUtc();
 }
 
 
 bool OnlineTracker::Entry::syncConflict(const QString trackerIdentifier, const TvShow* show) const {
-    return show->getLastLocalUpdate() > lastUpdate &&
-            lastUpdate > show->getLastOnlineTrackerUpdate(trackerIdentifier);
+    return show->getLastLocalUpdate() > lastUpdate() &&
+            lastUpdate() > show->getLastOnlineTrackerUpdate(trackerIdentifier);
 }
 
 OnlineTracker::Entry::~Entry() {}
@@ -99,14 +129,14 @@ OnlineTracker::Entry::~Entry() {}
 bool OnlineTracker::Entry::localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const {
     const QDateTime lastLocalUpdate = show->getLastOnlineTrackerUpdate(trackerIdentifier);
     if (lastLocalUpdate.isNull()) {
-        return show->episodeList().highestWatchedEpisodeNumber(0) >= this->watchedEpisodes;
+        return show->episodeList().highestWatchedEpisodeNumber(0) >= this->watchedEpisodes();
     }
-    bool localIsNew = lastLocalUpdate >= this->lastUpdate;
+    bool localIsNew = lastLocalUpdate >= this->lastUpdate();
     return localIsNew;
 }
 
 bool OnlineTracker::Entry::remoteIsUpToDate(const TvShow* show) const {
     const QDateTime lastLocalUpdate = show->getLastLocalUpdate();
     return (!lastLocalUpdate.isNull() &&
-            (!this->lastUpdate.isNull() && this->lastUpdate >= lastLocalUpdate));
+            (!this->lastUpdate().isNull() && this->lastUpdate() >= lastLocalUpdate));
 }

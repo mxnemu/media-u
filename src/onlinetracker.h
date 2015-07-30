@@ -21,14 +21,18 @@ public:
     class Entry {
     public:
         virtual ~Entry();
-        QDateTime lastUpdate;
-        int remoteId;
-        int watchedEpisodes;
+        virtual QDateTime lastUpdate() const = 0;
+        virtual int remoteId() const = 0;
+        virtual int watchedEpisodes() const = 0;
+        virtual int rewatchMarker() const = 0;
+        virtual int rewatchCount() const = 0;
 
         bool localIsUpToDate(const QString trackerIdentifier, const TvShow* show) const;
         bool remoteIsUpToDate(const TvShow* show) const;
         bool syncConflict(const QString trackerIdentifier, const TvShow* show) const;
+        void updateShow(const QString trackerIdentifierKey, TvShow *show) const;
 
+        virtual bool supportsRewatchCounter() const = 0;
         virtual bool remoteIsEq(const TvShow* show) const = 0;
     };
 
@@ -37,7 +41,7 @@ public:
         EntryList();
         virtual ~EntryList();
         virtual const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const = 0;
-        virtual void makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const = 0;
+        virtual void makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const;
         virtual void describe(nw::Describer& de) = 0;
 
         bool tooOld() const;

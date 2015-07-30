@@ -66,11 +66,17 @@ public:
         TvShow::WatchStatus my_status;
         int my_rewatching;
         int my_rewatching_ep;
-        // field: my_last_updated AS lastUpdated: unix time int example: 1388944557
+        uint my_last_updated; // unix time int example: 1388944557
         QStringList my_tags; // separated by ", "
 
+        virtual QDateTime lastUpdate() const { QDateTime t; t.setTime_t(my_last_updated); return t; }
+        virtual int remoteId() const { return series_animedb_id; }
+        virtual int watchedEpisodes() const { return my_watched_episodes; }
+        virtual int rewatchMarker() const { return my_rewatching_ep; }
+        virtual int rewatchCount() const { return my_rewatching; }
+        virtual bool supportsRewatchCounter() const { return true; }
+
         void describe(nw::Describer& de);
-        void updateShow(const QString trackerIdentifierKey, TvShow* show) const;
         static TvShow::WatchStatus restoreStatus(int malStatusId);
         /// check if data is eq, disregarding the change dates
         virtual bool remoteIsEq(const TvShow* show) const;
@@ -89,7 +95,6 @@ public:
         void describe(nw::Describer& de);
         void updateShows(const QString trackerIdentifierKey, QList<TvShow*> shows);
         const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const;
-        void makeSureLocalIsUpdated(const QString trackerIdentifierKey, TvShow* show) const;
     };
 
     explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
