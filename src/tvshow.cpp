@@ -631,10 +631,16 @@ bool TvShow::hasRelationTo(const TvShow *show) const {
 void TvShow::addSynonyms(const QStringList &values) {
     foreach (const QString& value, values) {
         bool found = false;
-        foreach (const QString& synonym, synonyms) {
-            if (synonym.compare(value, Qt::CaseInsensitive) == 0) {
-                found = true;
-                break;
+        if (this->name().compare(value, Qt::CaseInsensitive) == 0) {
+            found = true;
+        }
+        // that's some shit code
+        if (!found) {
+            foreach (const QString& synonym, synonyms) {
+                if (synonym.compare(value, Qt::CaseInsensitive) == 0) {
+                    found = true;
+                    break;
+                }
             }
         }
         if (!found) {
