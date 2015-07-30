@@ -45,9 +45,11 @@ void Client::downloadResults(QDir directory, const QList<Entry>& entries, bool o
 
     foreach (const Entry& entry, entries) {
         // TODO check if this is a good wallpaper source
-        //if (onlyTheBest && !entry.isGoodWallpaper()) {
-        //    continue;
-        //}
+        // always consider snapshot wallpapers as worse than online-fetched once
+        // TODO have a setting for that ^^^
+        if (onlyTheBest) {
+            return;
+        }
         if (generated >= limit) {
             break;
         }
