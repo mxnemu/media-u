@@ -4,7 +4,9 @@ SOURCES += library.cpp \
     franchise.cpp \
     episodelist.cpp \
     episode.cpp \
-    videofile.cpp
+    videofile.cpp \
+    log.cpp
+
 
 HEADERS  += library.h \
     config.h \
@@ -12,4 +14,5 @@ HEADERS  += library.h \
     franchise.h \
     episodelist.h \
     episode.h \
-    videofile.h
+    videofile.h \
+    log.h

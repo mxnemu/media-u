@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "videoclipcreator.h"
 #include "gifcreator.h"
+#include "log.h"
 
 
 BaseConfig::BaseConfig(int argc, char* argv[]) :
@@ -65,6 +66,8 @@ void BaseConfig::fromArgs(int argc, char* argv[]) {
             std::cout << "    .media-u in the home directory will be the default configdir.\n";
             std::cout.flush();
             exit(0);
+        } else if (strcmp(argv[i], "--log-files-found") == 0) {
+            gLog.logFilesFound = true;
         } else if (i > 0) {
             std::cout << "unknown parameter " << i << ": " << argv[i] << '\n';
             std::cout << "use --help for a parameter list." << std::endl;
