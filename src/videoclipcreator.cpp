@@ -30,12 +30,14 @@ bool VideoClipCreator::generate() {
     );
     process.start(avconvConfig.command, args);
     process.waitForFinished(-1);
+    qDebug() << "create webm for: avconv" << args;
     qDebug() << process.readAllStandardError();
     return true;
 }
 
 VideoClipCreator::Config::Config() :
     ShortClipCreator::Config(),
+    audioCodec(""),
     qualityCrf(12)
 {
 }
