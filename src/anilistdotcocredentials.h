@@ -72,6 +72,9 @@ private:
 
     void writeToken();
     void updateAuthHeader();
+
+    static QDebug log();
+    static QDebug err();
 };
 
 #endif // ANILISTDOTCOCREDENTIALS_H

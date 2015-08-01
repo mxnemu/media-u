@@ -83,11 +83,9 @@ bool AnilistDotCoCredentials::fetchFirstAuthorizeToken(QString confirmationCode)
     curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, 0);
     curl_easy_setopt(handle, CURLOPT_COPYPOSTFIELDS, NULL);
 
-    qDebug() << url.toString(QUrl::FullyEncoded);
-
     CURLcode error = curl_easy_perform(handle);
     if (error) {
-        qDebug() << "received error " << error << " with this message:\n";
+        err() << "received error " << error << " with this message:\n";
         userData.print();
         mHasVerifiedCredentials = false;
     } else {
@@ -104,7 +102,7 @@ bool AnilistDotCoCredentials::fetchFirstAuthorizeToken(QString confirmationCode)
         }
     }
 
-    qDebug() << "anilist.co connection is " << mHasVerifiedCredentials;
+    log() << "connection is " << mHasVerifiedCredentials;
     userData.print();
     curl_easy_cleanup(handle);
     return mHasVerifiedCredentials;
@@ -136,7 +134,7 @@ bool AnilistDotCoCredentials::refresh() {
 
     CURLcode error = curl_easy_perform(handle);
     if (error) {
-        qDebug() << "received error " << error << " with this message:\n";
+        err() << "received error " << error << " with this message:\n";
         userData.print();
         mHasVerifiedCredentials = false;
     } else {
@@ -153,7 +151,7 @@ bool AnilistDotCoCredentials::refresh() {
         }
     }
 
-    qDebug() << "anilist.co connection is " << mHasVerifiedCredentials;
+    log() << "anilist.co connection is " << mHasVerifiedCredentials;
     userData.print();
     curl_easy_cleanup(handle);
 
@@ -170,7 +168,6 @@ void AnilistDotCoCredentials::updateAuthHeader() {
     this->username = token.tokenType;
     this->password = token.accessToken;
 }
-
 
 bool AnilistDotCoCredentials::AuthToken::isValid() {
     return !this->expires.isNull() &&
@@ -195,9 +192,15 @@ void AnilistDotCoCredentials::AuthToken::describeRefresh(nw::Describer& d) {
     NwUtils::describe(d, "expires", unixExpires);
     NwUtils::describe(d, "expires_in", expiresInAsSeconds);
     expires = QDateTime::fromTime_t(unixExpires);
-    qDebug() << "oi that better be late" << expires.toTime_t() << QDateTime::currentDateTimeUtc().toTime_t();
 }
 
+QDebug AnilistDotCoCredentials::log() {
+    return qDebug() << "ANILIST-CREDENTIALS";
+}
+
+QDebug AnilistDotCoCredentials::err() {
+    return qDebug() << "ANILIST-CREDENTIALS";
+}
 
 const QString AnilistDotCoCredentials::identifierKey() const {
     return IDENTIFIER_KEY;
