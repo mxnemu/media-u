@@ -30,8 +30,6 @@ void OnlineSync::init(const BaseConfig& config) {
     this->databases.push_back(new AnilistDotCoDatabase(*anilstcocreds, anilstcocreds->lock, this));
     this->trackers.push_back(new AnilistDotCoTracker(*anilstcocreds, anilstcocreds->lock, this));
     this->dropUrls.push_back(new AnilistDotCoDropUrl());
-
-    malCreds->login();
 }
 
 void OnlineSync::startThreadIfNotRunning() {
@@ -237,6 +235,10 @@ QDebug OnlineSync::err() {
 void OnlineSync::run() {
     connect(this, SIGNAL(databasesFinished()), this, SLOT(checkIfAllFinished()), Qt::DirectConnection);
     connect(this, SIGNAL(trackersFinished()), this, SLOT(checkIfAllFinished()), Qt::DirectConnection);
+
+    foreach (OnlineCredentials* creds, credentials) {
+        creds->login();
+    }
 
     this->fetchDatabases();
     // TODO I've got no idea if this works how I expect.
