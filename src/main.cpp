@@ -77,7 +77,6 @@ int main(int argc, char *argv[]) {
         QDesktopServices::openUrl(url);
     }
 
-    //w.statusBar()->showMessage(QString("Launched on port %1").arg(port));
     w.setPage("MainPage", QString("Launched on port %1").arg(port));
 
     library.initOnlineSync(config);
