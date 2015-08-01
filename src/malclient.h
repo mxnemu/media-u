@@ -63,7 +63,7 @@ private:
 class Client : public OnlineTvShowDatabase::Client {
     Q_OBJECT
 public:
-    explicit Client(OnlineCredentials& credentials, QObject *parent = 0);
+    explicit Client(OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject *parent = 0);
     void init(QString configFilePath);
 
     virtual const QString identifierKey() const;

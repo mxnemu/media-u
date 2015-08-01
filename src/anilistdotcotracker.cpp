@@ -3,8 +3,8 @@
 #include <QUrl>
 #include <QDebug>
 
-AnilistDotCoTracker::AnilistDotCoTracker(OnlineCredentials& credentials, QObject *parent) :
-    OnlineTracker(credentials, parent)
+AnilistDotCoTracker::AnilistDotCoTracker(OnlineCredentials& credentials, OnlineCredentials::TimeLock &lock, QObject *parent) :
+    OnlineTracker(credentials, lock, parent)
 {
 }
 
@@ -18,7 +18,7 @@ const QString AnilistDotCoTracker::identifierKey() const {
 
 OnlineTracker::EntryList* AnilistDotCoTracker::fetchRemote() {
     if (this->user.id <= 0) {
-        if (!this->user.fetchCurrentlyLoggedInUser(this->credentials)) {
+        if (!this->user.fetchCurrentlyLoggedInUser(this->credentials, this->lock)) {
             return NULL;
         }
     }
@@ -26,7 +26,7 @@ OnlineTracker::EntryList* AnilistDotCoTracker::fetchRemote() {
     QUrl url(QString("https://anilist.co/api/user/%1/animelist").arg(user.id));
     CurlResult userData(NULL);
 
-    CURL* handle = credentials.curlClientNoLock(url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
+    CURL* handle = credentials.curlClient(lock, url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {
@@ -73,7 +73,7 @@ OnlineTracker::UpdateResult AnilistDotCoTracker::updateinOnlineTrackerOrAdd(cons
 //            << show->name();
 
     CurlResult userData(NULL);
-    CURL* handle = credentials.curlClientNoLock(url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
+    CURL* handle = credentials.curlClient(lock, url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
 
     if (type == "add") {
 //        curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
@@ -103,10 +103,10 @@ AnilistDotCoTracker::User::User() :
 {
 }
 
-bool AnilistDotCoTracker::User::fetchCurrentlyLoggedInUser(const OnlineCredentials& credentials) {
+bool AnilistDotCoTracker::User::fetchCurrentlyLoggedInUser(const OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock) {
     CurlResult userData(NULL);
 
-    CURL* handle = credentials.curlClientNoLock("https://anilist.co/api/user", userData);
+    CURL* handle = credentials.curlClient(lock, "https://anilist.co/api/user", userData);
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {

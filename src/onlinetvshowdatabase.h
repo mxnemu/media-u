@@ -53,7 +53,7 @@ public:
 class Client : public QObject {
     Q_OBJECT
 public:
-    Client(OnlineCredentials& credentials, QObject* parent = NULL);
+    Client(OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject* parent = NULL);
     SearchResult* findShow(TvShow& show);
 
     virtual const QString identifierKey() const = 0;
@@ -63,6 +63,7 @@ public:
 
 protected:
     virtual SearchResult* search(QString anime) = 0;
+    OnlineCredentials::TimeLock& lock;
 };
 
 }

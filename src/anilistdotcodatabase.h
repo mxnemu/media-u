@@ -59,11 +59,12 @@ public:
 
     class SearchResult : public OnlineTvShowDatabase::SearchResult {
     public:
-        SearchResult(CurlResult& userdata, const OnlineCredentials& credentials);
+        SearchResult(CurlResult& userdata, const OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock);
 
         virtual OnlineTvShowDatabase::Entry* bestEntry();
     private:
         const OnlineCredentials& credentials;
+        OnlineCredentials::TimeLock& lock;
     };
 
     class Entry : public OnlineTvShowDatabase::Entry {
@@ -81,7 +82,7 @@ public:
         virtual void updateImage(TvShow& show, QDir libraryDir) const;
 
         void describe(nw::Describer& de);
-        void fetchExtended(const OnlineCredentials &credentials);
+        void fetchExtended(const OnlineCredentials &credentials, OnlineCredentials::TimeLock &lock);
 
         int id; // 1,
         QString title_romaji; // "Cowboy Bebop",
@@ -103,7 +104,7 @@ public:
         ExtendedEntry* extended;
     };
 
-    AnilistDotCoDatabase(OnlineCredentials &credentials, QObject *parent);
+    AnilistDotCoDatabase(OnlineCredentials &credentials, OnlineCredentials::TimeLock& lock, QObject *parent);
     virtual const QString identifierKey() const;
     virtual OnlineTvShowDatabase::UpdateFilter getFilter() { return OnlineTvShowDatabase::UpdateFilter::ufAll; }
 

@@ -52,7 +52,7 @@ public:
         const QDateTime fetchTime;
     };
 
-    explicit OnlineTracker(const OnlineCredentials& credentials, QObject *parent = 0);
+    explicit OnlineTracker(const OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject *parent = 0);
     virtual ~OnlineTracker();
     bool updateRemote(TvShow* show);
     virtual EntryList* fetchRemote() = 0; ///< Must create a new EntryList using online Data, or NULL on error
@@ -62,6 +62,8 @@ public:
 
 protected:
     virtual UpdateResult updateinOnlineTrackerOrAdd(const TvShow* show, const QString& type) const = 0;
+
+    OnlineCredentials::TimeLock& lock;
 
 private:
     /// Either returns cached entries, or fetches new ones when cached are too old

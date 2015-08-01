@@ -75,11 +75,11 @@ public:
         int notifications; //: 0
 
         User();
-        bool fetchCurrentlyLoggedInUser(const OnlineCredentials &credentials);
+        bool fetchCurrentlyLoggedInUser(const OnlineCredentials &credentials, OnlineCredentials::TimeLock &lock);
         void describe(nw::Describer& de);
     };
 
-    AnilistDotCoTracker(OnlineCredentials& credentials, QObject *parent);
+    AnilistDotCoTracker(OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject *parent);
     virtual ~AnilistDotCoTracker();
 
     virtual const QString identifierKey() const;

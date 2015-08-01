@@ -50,18 +50,24 @@ void OnlineCredentials::setCredentialsForHandle(CurlResult& , CURL* handle) cons
     curl_easy_setopt(handle, CURLOPT_PASSWORD, password.toUtf8().data());
 }
 
-CURL*OnlineCredentials::curlClient(const char* url, CurlResult& userdata) {
-    while (this->lock.blockUntilReady()) {
+CURL*OnlineCredentials::curlClient(OnlineCredentials::TimeLock& lock, const char* url, CurlResult& userdata) const {
+    while (lock.blockUntilReady()) {
         // sleeps as a side-effect
     }
     return this->curlClientNoLock(url, userdata);
 }
+CURL*OnlineCredentials::curlClient(const char* url, CurlResult& userdata) {
+    return this->curlClient(lock, url, userdata);
+}
 
-CURL*OnlineCredentials::curlNoAuthClient(const char* url, CurlResult& userdata) {
-    while (this->lock.blockUntilReady()) {
+CURL*OnlineCredentials::curlNoAuthClient(OnlineCredentials::TimeLock& lock, const char* url, CurlResult& userdata) const {
+    while (lock.blockUntilReady()) {
         // sleeps as a side-effect
     }
     return this->curlNoAuthClientNoLock(url, userdata);
+}
+CURL*OnlineCredentials::curlNoAuthClient(const char* url, CurlResult& userdata) {
+    return this->curlNoAuthClient(this->lock, url, userdata);
 }
 
 void OnlineCredentials::set(const QString name, const QString password) {

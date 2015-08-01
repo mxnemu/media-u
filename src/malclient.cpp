@@ -10,8 +10,8 @@
 
 namespace Mal {
 
-Client::Client(OnlineCredentials& credentials, QObject *parent) :
-    OnlineTvShowDatabase::Client(credentials, parent)
+Client::Client(OnlineCredentials& credentials, OnlineCredentials::TimeLock &lock, QObject *parent) :
+    OnlineTvShowDatabase::Client(credentials, lock, parent)
 {
 }
 
@@ -25,7 +25,7 @@ OnlineTvShowDatabase::SearchResult* Client::search(QString anime) {
     url.append(name.replace(' ', '+').remove('~'));
 
     CurlResult userData(this);
-    CURL* handle = credentials.curlClientNoLock(url.toLocal8Bit().data(), userData);
+    CURL* handle = credentials.curlClient(lock, url.toLocal8Bit().data(), userData);
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {

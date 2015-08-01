@@ -1,10 +1,11 @@
 #include "onlinetracker.h"
 #include <QDebug>
 
-OnlineTracker::OnlineTracker(const OnlineCredentials& credentials, QObject *parent) :
+OnlineTracker::OnlineTracker(const OnlineCredentials& credentials, OnlineCredentials::TimeLock &lock, QObject *parent) :
     QObject(parent),
     credentials(credentials),
-    cachedEntries(NULL)
+    cachedEntries(NULL),
+    lock(lock)
 {
 }
 

@@ -4,8 +4,8 @@
 #include <QUrl>
 #include <QDebug>
 
-AnilistDotCoDatabase::AnilistDotCoDatabase(OnlineCredentials& credentials, QObject* parent = NULL) :
-    OnlineTvShowDatabase::Client(credentials, parent)
+AnilistDotCoDatabase::AnilistDotCoDatabase(OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject* parent = NULL) :
+    OnlineTvShowDatabase::Client(credentials, lock, parent)
 {
 
 }
@@ -40,7 +40,7 @@ OnlineTvShowDatabase::SearchResult* AnilistDotCoDatabase::search(QString anime) 
     CurlResult userdata;
     QString escapedQuery = anime.replace("!", "\\!");
     QString url = QUrl(QString("https://anilist.co/api/anime/search/%1").arg(escapedQuery)).toString(QUrl::FullyEncoded);
-    CURL* handle = credentials.curlClientNoLock(url.toStdString().c_str(), userdata);
+    CURL* handle = credentials.curlClient(lock, url.toStdString().c_str(), userdata);
 
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
@@ -51,7 +51,7 @@ OnlineTvShowDatabase::SearchResult* AnilistDotCoDatabase::search(QString anime) 
         return NULL;
     }
 
-    return new SearchResult(userdata, credentials);
+    return new SearchResult(userdata, credentials, lock);
 }
 
 AnilistDotCoDatabase::Entry::Entry() :
@@ -184,14 +184,14 @@ void AnilistDotCoDatabase::Entry::describe(nw::Describer &de) {
 //                "next_episode": 2
 //        }
 //}
-void AnilistDotCoDatabase::Entry::fetchExtended(const OnlineCredentials& credentials) {
+void AnilistDotCoDatabase::Entry::fetchExtended(const OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock) {
     if (this->id == -1) {
         return;
     }
 
     CurlResult userdata;
     QString url = QUrl(QString("https://anilist.co/api/anime/%1").arg(this->id)).toString(QUrl::FullyEncoded);
-    CURL* handle = credentials.curlClientNoLock(url.toStdString().c_str(), userdata);
+    CURL* handle = credentials.curlClient(lock, url.toStdString().c_str(), userdata);
 
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
@@ -233,15 +233,16 @@ OnlineTvShowDatabase::Entry *AnilistDotCoDatabase::SearchResult::bestEntry() {
     }
 
     if (best.second) {
-        best.second->fetchExtended(credentials);
+        best.second->fetchExtended(credentials, lock);
     }
 
     return best.second;
 }
 
 
-AnilistDotCoDatabase::SearchResult::SearchResult(CurlResult& userdata, const OnlineCredentials &credentials) :
-    credentials(credentials)
+AnilistDotCoDatabase::SearchResult::SearchResult(CurlResult& userdata, const OnlineCredentials &credentials, OnlineCredentials::TimeLock& lock) :
+    credentials(credentials),
+    lock(lock)
 {
     userdata.print();
     nw::JsonReader jr(userdata.data);

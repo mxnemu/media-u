@@ -98,7 +98,7 @@ public:
         const Entry* get(const QString trackerIdentifierKey, const TvShow* show) const;
     };
 
-    explicit Tracker(const OnlineCredentials& credentials, QObject *parent = 0);
+    explicit Tracker(const OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject *parent = 0);
     OnlineTracker::EntryList* fetchRemote();
     const QString identifierKey() const;
     static const QString IDENTIFIER_KEY;

@@ -4,9 +4,10 @@
 #include "library.h"
 
 namespace OnlineTvShowDatabase {
-Client::Client(OnlineCredentials& credentials, QObject* parent) :
+Client::Client(OnlineCredentials& credentials, OnlineCredentials::TimeLock& lock, QObject* parent) :
     QObject(parent),
-    credentials(credentials)
+    credentials(credentials),
+    lock(lock)
 {
 }
 

@@ -22,13 +22,13 @@ void OnlineSync::init(const BaseConfig& config) {
     malCreds->readConfig(config.malConfigFilePath());
     this->credentials.push_back(malCreds);
     this->databases.push_back(new Mal::Client(*malCreds, this));
-    this->trackers.push_back(new Mal::Tracker(*malCreds, this));
+    this->trackers.push_back(new Mal::Tracker(*malCreds, malCreds->lock, this));
     this->dropUrls.push_back(new MalDropUrl());
 
-    AnilistDotCoCredentials* creds = new AnilistDotCoCredentials(config);
-    this->credentials.push_back(creds);
+    AnilistDotCoCredentials* anilstcocreds = new AnilistDotCoCredentials(config);
+    this->credentials.push_back(anilstcocreds);
     this->databases.push_back(new AnilistDotCoDatabase(*creds, this));
-    this->trackers.push_back(new AnilistDotCoTracker(*creds, this));
+    this->trackers.push_back(new AnilistDotCoTracker(*anilstcocreds, anilstcocreds->lock, this));
     this->dropUrls.push_back(new AnilistDotCoDropUrl());
 
     malCreds->login();
@@ -92,10 +92,6 @@ bool OnlineSync::fetchShow(TvShow* show, const Library& library) {
             continue;
         }
 
-        // TODO don't block this thread until other locks are tested
-        while (this->credentials.at(indexOfCreds)->lock.blockUntilReady()) {
-            // waits the correct time as side-effect
-        }
         this->credentials.at(indexOfCreds)->assureFreshness();
 
         //results.push_back(result);
@@ -125,10 +121,6 @@ bool OnlineSync::updateShow(TvShow* show) {
         int indexOfCreds = this->credentials.indexOf((OnlineCredentials*)&tracker->credentials);
         if (indexOfCreds == -1) {
             continue;
-        }
-        // TODO don't block this thread until other locks are tested
-        while (this->credentials.at(indexOfCreds)->lock.blockUntilReady()) {
-            // waits the correct time as side-effect
         }
         this->credentials.at(indexOfCreds)->assureFreshness();
 

@@ -4,13 +4,13 @@
 
 namespace Mal {
 
-Tracker::Tracker(const OnlineCredentials& credentials, QObject *parent) :
-    OnlineTracker(credentials, parent)
+Tracker::Tracker(const OnlineCredentials& credentials, OnlineCredentials::TimeLock &lock, QObject *parent) :
+    OnlineTracker(credentials, lock, parent)
 {
 }
 
 CURL* Tracker::curlTrackerUpdateClient(const char* url, CurlResult& userdata, UpdateItem& data) const {
-    CURL* handle = credentials.curlClientNoLock(url, userdata);
+    CURL* handle = credentials.curlClient(lock, url, userdata);
     curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
     QString dataStr = QUrl(data.toXml()).toEncoded();
     QByteArray xml = QString("data=%1").arg(dataStr).toUtf8();
@@ -23,7 +23,7 @@ OnlineTracker::EntryList* Tracker::fetchRemote() {
     QString url = QString("http://myanimelist.net/malappinfo.php?u=%1&status=all&type=anime").arg(credentials.getUsername());
     CurlResult userData(NULL);
 
-    CURL* handle = credentials.curlNoAuthClientNoLock(url.toUtf8().data(), userData);
+    CURL* handle = credentials.curlNoAuthClient(lock, url.toUtf8().data(), userData);
     CURLcode error = curl_easy_perform(handle);
     curl_easy_cleanup(handle);
     if (error || userData.data.str().size() < 2) {

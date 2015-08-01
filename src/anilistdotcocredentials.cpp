@@ -129,7 +129,7 @@ bool AnilistDotCoCredentials::refresh() {
 
     QUrl url(urlSL.join(""));
     CurlResult userData(this);
-    CURL* handle = curlClientNoLock(url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
+    CURL* handle = curlClient(lock, url.toString(QUrl::FullyEncoded).toStdString().c_str(), userData);
     curl_easy_setopt(handle, CURLOPT_HTTPPOST, true);
     curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, 0);
     curl_easy_setopt(handle, CURLOPT_COPYPOSTFIELDS, NULL);
