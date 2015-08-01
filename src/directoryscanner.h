@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QThread>
-#include "library.h"
+#include "searchdirectory.h"
 #include "mediascanner.h"
 
 class DirectoryScanner : public QObject

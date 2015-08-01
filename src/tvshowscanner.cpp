@@ -1,5 +1,6 @@
 #include "tvshowscanner.h"
 #include "videofile.h"
+#include "library.h"
 #include <iostream>
 
 TvShowScanner::TvShowScanner(Library& library, QObject* parent) :

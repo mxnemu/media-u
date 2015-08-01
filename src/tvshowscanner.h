@@ -3,6 +3,7 @@
 
 #include "mediascanner.h"
 
+class Library;
 class TvShowScanner : public MediaScanner
 {
     Q_OBJECT

@@ -2,7 +2,7 @@
 #define MEDIASCANNER_H
 
 #include <QStringList>
-#include "library.h"
+#include <QDir>
 
 class MediaScanner : public QObject
 {

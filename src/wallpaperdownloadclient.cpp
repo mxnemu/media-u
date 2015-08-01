@@ -1,8 +1,9 @@
 #include "wallpaperdownloadclient.h"
 
 #include "moebooruclient.h"
-#include <QUrl>
 #include "filedownloadthread.h"
+#include <QUrl>
+#include <QDebug>
 
 namespace WallpaperDownload {
 
