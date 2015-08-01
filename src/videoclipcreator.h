@@ -7,7 +7,7 @@ class VideoClipCreator : public ShortClipCreator
 {
 public:
     class Config : public ShortClipCreator::Config {
-        friend VideoClipCreator;
+        friend class VideoClipCreator;
     public:
         Config();
         virtual void describe(nw::Describer &de);
