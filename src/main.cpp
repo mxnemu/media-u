@@ -19,12 +19,11 @@
 #include <curl/curl.h>
 
 int main(int argc, char *argv[]) {
-
-    QApplication a(argc, argv);
-    curl_global_init(CURL_GLOBAL_SSL);
-
     // TODO move argument parsing partly back here, since it calls exit(0)
     BaseConfig config(argc, argv);
+
+    QApplication a(argc, argv, !config.getNoGui());
+    curl_global_init(CURL_GLOBAL_SSL);
 
     Library library(config.libraryPath());
     library.readAll();
