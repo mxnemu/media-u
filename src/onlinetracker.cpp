@@ -4,8 +4,8 @@
 OnlineTracker::OnlineTracker(const OnlineCredentials& credentials, OnlineCredentials::TimeLock &lock, QObject *parent) :
     QObject(parent),
     credentials(credentials),
-    cachedEntries(NULL),
-    lock(lock)
+    lock(lock),
+    cachedEntries(NULL)
 {
 }
 
