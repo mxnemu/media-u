@@ -21,13 +21,17 @@ bool VideoClipCreator::generate() {
         "-t" <<
         avconfutil::time(dif) <<
         "-b:v" <<
-        QString("%1K").arg(rate) <<
+        QString("%1K").arg(rate)
         //"-s" <<
         //avconfutil::resolution(config->resolution.first, config->resolution.second) <<
-        (config->audioCodec.isEmpty() ? "-an" : config->audioCodec) <<
-        config->videoCodecArgs() <<
-        config->outputPath
     );
+    if (!config->audio) {
+        args << "-an";
+    } else if (!config->audioCodec.isEmpty()) {
+        args << config->audioCodec;
+    }
+    args << (config->videoCodecArgs() <<
+             config->outputPath);
     process.start(avconvConfig.command, args);
     process.waitForFinished(-1);
     qDebug() << "create webm for: avconv" << args;

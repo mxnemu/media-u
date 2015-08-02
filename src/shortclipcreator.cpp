@@ -59,9 +59,31 @@ void ShortClipCreator::Config::describe(nw::Describer& de) {
 }
 
 bool ShortClipCreator::Config::isValid() const {
-    return true;
+    return true; // TODO FIXME WHOOOPS
 }
 
 float ShortClipCreator::Config::timeSpan() const {
     return this->endSec - this->startSec;
+}
+
+
+ShortClipCreator::ApiData::ApiData() :
+    start(0),
+    end(0),
+    maxSizeMib(3),
+    outputType(webm),
+    audio(false)
+{
+}
+
+void ShortClipCreator::ApiData::describe(nw::Descriptor &de)
+{
+    QString typeString;
+    NwUtils::describe(de, "start", start);
+    NwUtils::describe(de, "end", end);
+    NwUtils::describe(de, "output-type", typeString);
+    NwUtils::describe(de, "max-size", maxSizeMib);
+    NwUtils::describe(de, "audio", audio);
+    if      (typeString == "webm") { outputType = webm; }
+    else if (typeString == "gif")  { outputType = gif;  }
 }

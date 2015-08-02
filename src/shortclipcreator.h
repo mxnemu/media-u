@@ -36,6 +36,22 @@ public:
     private:
         void fixInvalidMembers();
     };
+    class ApiData {
+    public:
+        enum OutputType {
+            gif,
+            webm
+        };
+        ApiData();
+
+        float start;
+        float end;
+        float maxSizeMib;
+        OutputType outputType;
+        bool audio;
+
+        void describe(nw::Descriptor& de);
+    };
 
     ShortClipCreator(ShortClipCreator::Config* config, const AvconvConfig& avconvConfig, QObject* parent = NULL);
 

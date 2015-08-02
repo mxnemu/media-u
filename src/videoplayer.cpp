@@ -193,14 +193,13 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
         std::stringstream ss;
         ss << req->url().query(QUrl::FullyDecoded).toStdString();
 
-        float start;
-        float end;
+        ShortClipCreator::ApiData apiData;
+
         nw::JsonReader jr(ss);
-        NwUtils::describe(jr, "start", start);
-        NwUtils::describe(jr, "end", end);
+        apiData.describe(jr);
         jr.close();
 
-        createGif(resp, start, end);
+        createGif(resp, apiData);
     } else if (req->path() == "/api/player/progress") {
         Server::simpleWrite(resp, 200, nowPlaying.toSecondsAndPathJson(), mime::json);
     } else if (req->path() == "/api/player/exactProgress") {
@@ -214,29 +213,42 @@ bool VideoPlayer::handleApiRequest(QHttpRequest *req, QHttpResponse *resp) {
     return true;
 }
 
-const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(ShortClipCreator::Config* config, float startSecond, float endSecond) const {
-    config->startSec = startSecond;
-    config->endSec = endSecond;
+const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(ShortClipCreator::Config* config, ShortClipCreator::ApiData apiData) const {
+    config->startSec = apiData.start;
+    config->endSec = apiData.end;
+    config->maxSizeMib = apiData.maxSizeMib;
     config->resolution = config->adaptRatio(nowPlaying.metaData.resolution());
     config->videoPath = nowPlaying.path;
-    config->outputPath = shortClipOutputPath(*config, startSecond, endSecond);
+    QString extension;
+
+    if (apiData.outputType == ShortClipCreator::ApiData::webm) {
+        extension = "webm";
+        VideoClipCreator::Config* videoConfig = dynamic_cast<VideoClipCreator::Config*>(config);
+        if (videoConfig) { videoConfig->audio = apiData.audio; }
+    } else {
+        extension = "gif";
+    }
+
+    config->outputPath = shortClipOutputPath(*config, apiData.start, apiData.end, extension);
 
     QFileInfo(config->outputPath).dir().mkpath(".");
     return config;
 }
 
-void VideoPlayer::createGif(QHttpResponse* resp, float startSecond, float endSecond) {
-    std::pair<ShortClipCreator*, ShortClipCreator::Config*> pair = baseConfig.cloneShortClipCreator();
-    const ShortClipCreator::Config* config = initShortClipConfig(pair.second, startSecond, endSecond);
+void VideoPlayer::createGif(QHttpResponse* resp, ShortClipCreator::ApiData apiData) {
+    std::pair<ShortClipCreator*, ShortClipCreator::Config*> pair = apiData.outputType == ShortClipCreator::ApiData::gif
+            ? baseConfig.cloneGifShortClipCreator()
+            : baseConfig.cloneWebmShortClipCreator();
+    ShortClipCreator* creator = pair.first;
+    const ShortClipCreator::Config* config = initShortClipConfig(pair.second, apiData);
     if (!config->isValid()) {
         Server::simpleWrite(resp, 500, "fugg it ain't valid");
         delete config;
+        delete creator;
         return;
     }
 
-    ShortClipCreator* creator = pair.first;
     creator->setParent(this);
-
     ServerDataReady* sdr = new ServerDataReady(resp, creator);
     connect(creator, SIGNAL(done(bool)), sdr, SIGNAL(boolReady(bool)));
     connect(sdr, SIGNAL(boolReady(bool)), this, SLOT(onGifReady(bool)));
@@ -367,7 +379,7 @@ QString VideoPlayer::snapshotOutputPath() const {
     return baseDir.absoluteFilePath(name);
 }
 
-QString VideoPlayer::shortClipOutputPath(const ShortClipCreator::Config& sccofig, float start, float end) const {
+QString VideoPlayer::shortClipOutputPath(const ShortClipCreator::Config& sccofig, float start, float end, QString extension) const {
     QString name = sccofig.name;
 
     QString startMinuteString = QString::number((int)start / 60);
@@ -385,7 +397,7 @@ QString VideoPlayer::shortClipOutputPath(const ShortClipCreator::Config& sccofig
     name = name.replace(endMReplaceText, endMinuteString);
     name = name.replace(endSReplaceText, endSecondString);
 
-    name = this->imageName(name, "webm"); // TODO separate config
+    name = this->imageName(name, extension);
 
     QDir baseDir = QDir(sccofig.dir);
     return baseDir.absoluteFilePath(name);

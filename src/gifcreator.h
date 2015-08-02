@@ -18,19 +18,10 @@ public:
     };
 
     explicit GifCreator(Config* config, const AvconvConfig& avconvConfig, QObject *parent = 0);
-    void init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int, int> resolution, float maxSizeMib = 3, int framesDropped = 2);
 
-    bool generate();
+    virtual bool generate();
+    bool generate(std::pair<int, int> resolution);
 public slots:
-    
-private:
-    QString videoPath;
-    QString outputPath;
-    float startSec;
-    float endSec;
-    std::pair<int, int> resolution;
-    float maxSizeMib;
-    int framesDropped;
 };
 
 #endif // GIFCREATOR_H

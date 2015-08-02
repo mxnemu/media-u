@@ -56,7 +56,7 @@ public:
     void resetPlayingStatus();
     VideoProgress getNowPlaying() const;
 
-    void createGif(QHttpResponse* resp, float startSecond, float endSecond);
+    void createGif(QHttpResponse* resp, ShortClipCreator::ApiData apiData);
 signals:
     void paused();
     void unpaused();
@@ -92,12 +92,12 @@ protected:
 
     QString imageName(QString templateString, QString extension) const;
     QString snapshotOutputPath() const;
-    QString shortClipOutputPath(const ShortClipCreator::Config& sccofig, float start, float end) const;
+    QString shortClipOutputPath(const ShortClipCreator::Config& sccofig, float start, float end, QString extension) const;
     void convertSnapshots();
     bool convertSnapshot(const QString snapshotPath, const QString outputPath);
 
 private:
-    const ShortClipCreator::Config* initShortClipConfig(ShortClipCreator::Config* config, float startSecond, float endSecond) const;
+    const ShortClipCreator::Config* initShortClipConfig(ShortClipCreator::Config* config, ShortClipCreator::ApiData apiData) const;
 
 public slots:
     void onThumbnailCreated(const QByteArray img);

@@ -13,6 +13,8 @@ public:
         virtual void describe(nw::Describer &de);
         QString getExtension();
 
+        bool audio;
+
     private:
         QString videoCodec;
         QString audioCodec;

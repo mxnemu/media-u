@@ -12,17 +12,12 @@ GifCreator::GifCreator(GifCreator::Config* config, const AvconvConfig& avconvCon
 {
 }
 
-void GifCreator::init(QString videoPath, QString outputPath, float startSec, float endSec, std::pair<int,int> resolution, float maxSizeMib, int framesDropped) {
-    this->videoPath = videoPath;
-    this->outputPath = outputPath;
-    this->startSec = startSec;
-    this->endSec = endSec;
-    this->resolution = resolution;
-    this->maxSizeMib = maxSizeMib;
-    this->framesDropped = std::max(framesDropped, 0);
+bool GifCreator::generate() {
+    return generate(this->config->resolution);
 }
 
-bool GifCreator::generate() {
+
+bool GifCreator::generate(std::pair<int,int> resolution) {
     QString dirPath = QDir::temp().absoluteFilePath(QString().sprintf("gif_%p", this));
     QDir dir(dirPath);
     dir.removeRecursively();
@@ -31,36 +26,40 @@ bool GifCreator::generate() {
         return false;
     }
 
-    float dif = endSec - startSec;
+    float dif = config->endSec - config->startSec;
     if (dif > 120.f) {
-        qDebug() << "gif longer than 120s canceling creation" << startSec << endSec;
+        qDebug() << "gif longer than 120s canceling creation" << config->startSec << config->endSec;
         return false;
     }
 
-    qDebug() << avconfutil::time(startSec) << avconfutil::time(dif);
+    qDebug() << avconfutil::time(config->startSec) << avconfutil::time(dif);
+
+    QStringList args = (QStringList() <<
+        // fast seek
+        "-ss" <<
+        avconfutil::time((int)config->startSec) <<
+        "-i" <<
+        config->videoPath <<
+        // accurate seek
+        "-ss" <<
+        avconfutil::time(config->startSec-(float)((int)config->startSec)) <<
+        // relative dif
+        "-t" <<
+        avconfutil::time(dif) <<
+        "-s" <<
+        avconfutil::resolution(resolution.first, resolution.second) <<
+        "-f" <<
+        "image2" <<
+        "%03d.png");
+
+    qDebug() << args;
+
     QProcess process;
     process.setWorkingDirectory(dirPath);
-    process.start(avconvConfig.command,
-                 QStringList() <<
-                 // fast seek
-                 "-ss" <<
-                 avconfutil::time((int)startSec) <<
-                 "-i" <<
-                 videoPath <<
-                 // accurate seek
-                 "-ss" <<
-                 avconfutil::time(startSec-(float)((int)startSec)) <<
-                 // relative dif
-                 "-t" <<
-                 avconfutil::time(dif) <<
-                 "-s" <<
-                 avconfutil::resolution(resolution.first, resolution.second) <<
-                 "-f" <<
-                 "image2" <<
-                 "%03d.png"
-                 );
+    process.start(avconvConfig.command, args);
     process.waitForFinished(-1);
 
+    const GifCreator::Config* gifConfig = dynamic_cast<const GifCreator::Config*>(config);
     QList<QFileInfo> tmpFrames = QDir(dirPath).entryInfoList(QStringList() << "*.png", QDir::Files);
     QStringList frames;
     int iMod = 0;
@@ -69,12 +68,12 @@ bool GifCreator::generate() {
             frames << fileinfo.filePath();
         }
         ++iMod;
-        if (iMod >= framesDropped+1) {
+        if (iMod >= gifConfig->framesDropped+1) {
             iMod = 0;
         }
     }
 
-    int fps = (24 / (framesDropped+1)) + ((framesDropped > 0) ? 1 : 0);
+    int fps = (24 / (gifConfig->framesDropped+1)) + ((gifConfig->framesDropped > 0) ? 1 : 0);
     QString fpsString = QString("1x%1").arg(fps, 2, 10, QChar('0'));
 
     QProcess imagemagick;
@@ -97,8 +96,8 @@ bool GifCreator::generate() {
     QString tmpFilePath = dir.absoluteFilePath("out.gif");
 
     qint64 size = QFile(tmpFilePath).size();
-    qint64 maxSize = (1024*(1024*maxSizeMib));
-    if (maxSizeMib > 0 && size > maxSize) {
+    qint64 maxSize = (1024*(1024*config->maxSizeMib));
+    if (config->maxSizeMib > 0 && size > maxSize) {
         float scaleDownFactor = ((double)maxSize / (double)size) + 0.15;
         scaleDownFactor = std::min(scaleDownFactor, 0.9f);
         std::pair<int,int> lowerResolution = resolution;
@@ -111,12 +110,11 @@ bool GifCreator::generate() {
         }
 
         qDebug() << "gif was too big, retrying at resolution" << lowerResolution.first << "x" << lowerResolution.second;
-        this->resolution = lowerResolution;
-        return this->generate();
+        return this->generate(lowerResolution);
     }
 
-    QDir(QFileInfo(outputPath).dir()).mkpath(".");
-    if (QFile::rename(tmpFilePath, outputPath)) {
+    QDir(QFileInfo(config->outputPath).dir()).mkpath(".");
+    if (QFile::rename(tmpFilePath, config->outputPath)) {
         dir.removeRecursively();
         return true;
     }
