@@ -59,7 +59,7 @@ void MainPage::onShowAdded(TvShow *show) {
 
 void MainPage::setRandomWallpaperAfterSearch() {
     QString path = library.filter().getRandomWallpaper();
-    if (path.isNull()) {
+    if (!path.isNull()) {
         this->setRandomWallpaper(path);
     } else {
         connect(&library, SIGNAL(wallpaperDownloaded(QString)), this, SLOT(setRandomWallpaper(QString)));
