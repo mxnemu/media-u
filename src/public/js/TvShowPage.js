@@ -126,12 +126,13 @@ TvShowPage.prototype.setPlayerSettings = function(settings) {
     this.audioTrackField.on("input", setFn("audioTrack"));
 }
 
-TvShowPage.prototype.createEpisodeList = function(episodes, episodesEl) {
+TvShowPage.prototype.createEpisodeList = function(tvshow, episodesEl) {
     var self = this;
+    var episodes = tvshow.episodes;
     var seasonEl = $(document.createElement("ul"));
     seasonEl.addClass("season");
 
-    this.episodeList = new EpisodeList(episodes);
+    this.episodeList = new EpisodeList(episodes, tvshow);
     PlayButton.initOnClick(this.playButton, this.episodeList);
 
     var isRewatchMarker = false;
@@ -264,7 +265,7 @@ TvShowPage.prototype.refetch = function() {
         self.setPlayerSettings(data.playerSettings);
         self.statusList.value = data.customStatus;
         self.createReleaseGroupPreference(data.releaseGroupPreference);
-        self.createEpisodeList(data.episodes, self.episodesEl);
+        self.createEpisodeList(data, self.episodesEl);
         self.createRewatchMarker(data.rewatchMarker);
 
         self.playButton.removeAttr("disabled");

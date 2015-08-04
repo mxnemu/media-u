@@ -1,5 +1,6 @@
-function EpisodeList(episodes) {
+function EpisodeList(episodes, tvshow) {
     this.episodes = episodes;
+    this.tvshow = tvshow;
     this.sort();
 }
 
@@ -30,24 +31,37 @@ EpisodeList.prototype.sort = function() {
     })
 }
 
-EpisodeList.prototype.unwatchedArray = function() {
+EpisodeList.prototype.playlist = function(predicate) {
     var files = [];
     for (var i in this.episodes) {
         var ep = this.episodes[i];
-        if (!ep.watched) {
+        if (predicate.call(this, ep)) {
             files.push(ep.path);
         }
     }
     return files;
 }
 
+EpisodeList.prototype.rewatchPlaylist = function() {
+    return this.playlist(function(ep) {
+        return ep.numericEpisodeNumber >= this.tvshow.rewatchMarker+1;
+    });
+}
+
+EpisodeList.prototype.unwatchedArray = function(includeSpecials) {
+    return this.playlist(function(ep) {
+        return !ep.watched && (includeSpecials || ep.numericEpisodeNumber > -2)
+    });
+}
+
+EpisodeList.prototype.unwatchedSpecials = function() {
+    return this.playlist(function(ep) {
+        return !ep.watched && ep.numericEpisodeNumber > -2
+    });
+}
+
 EpisodeList.prototype.watchedArray = function() {
-    var files = [];
-    for (var i in this.episodes) {
-        var ep = this.episodes[i];
-        if (ep.watched) {
-            files.push(ep.path);
-        }
-    }
-    return files;
+    return this.playlist(function(ep) {
+        return ep.watched
+    });
 }

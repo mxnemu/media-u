@@ -2,14 +2,14 @@ PlayButton = {
     create: function(episodeList) {
         var button = $("<input class='playButton' type='button'/>");
         button.attr("value", "play");
-        
+
         if (episodeList) {
             this.initOnClick(button, episodeList);
         }
-        
+
         return button;
     },
-    
+
     initOnClick: function(button, episodeList) {
         if (episodeList instanceof EpisodeList) {
             button.click(PlayButton.episodeListClickCallback(episodeList));
@@ -20,22 +20,30 @@ PlayButton = {
             throw err;
         }
     },
-    
+
     initOnClickAjax: function() {
-        
+
     },
-    
+
     episodeListClickCallback: function(episodeList) {
+        function nonEmptyArray(arrays) {
+            if (!arrays.length) { return []; }
+            var head = arrays[0];
+            var tail = arrays.length > 1 ? arrays.slice(1, arrays.length-1) : [];
+            return head.length != 0 ? head : nonEmptyArray(tail);
+        }
+
         return function() {
-            var files = episodeList.unwatchedArray();
+            var files = nonEmptyArray([episodeList.unwatchedArray(),
+                                       episodeList.rewatchPlaylist(),
+                                       episodeList.unwatchedArray(true),
+                                       episodeList.watchedArray()]);
             if (files.length) {
                 PlayButton.play(files);
-            } else {
-                PlayButton.play(episodeList.watchedArray());
             }
         }
     },
-    
+
     ajaxClickCallback: function(tvShow) {
         return function() {
             var url = "api/library/tvshow/" + encodeURIComponent(tvShow) +
@@ -46,12 +54,12 @@ PlayButton = {
             });
         }
     },
-    
+
     play: function(files) {
         var json = {
             episodes: files
         }
-        
+
         $.ajax({
             url: "api/player/setPlaylist",
             type: "POST",
