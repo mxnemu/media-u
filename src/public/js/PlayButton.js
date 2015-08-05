@@ -49,7 +49,7 @@ PlayButton = {
             var url = "api/library/tvshow/" + encodeURIComponent(tvShow) +
                 "/details";
             $.getJSON(url, function(data) {
-                var episodeList = new EpisodeList(data.episodes);
+                var episodeList = new EpisodeList(data.episodes, data);
                 PlayButton.episodeListClickCallback(episodeList)();
             });
         }
