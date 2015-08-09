@@ -12,14 +12,14 @@ public:
         Config();
         virtual void describe(nw::Describer &de);
         QString getExtension();
-
-        bool audio;
+        void setAudioRateKib(float rateKib);
 
     private:
         QString videoCodec;
         QString audioCodec;
         QString extension;
         int qualityCrf;
+        float audioRateKib;
 
         QStringList videoCodecArgs() const;
     };

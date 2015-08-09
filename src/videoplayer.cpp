@@ -224,7 +224,7 @@ const ShortClipCreator::Config* VideoPlayer::initShortClipConfig(ShortClipCreato
     if (apiData.outputType == ShortClipCreator::ApiData::webm) {
         extension = "webm";
         VideoClipCreator::Config* videoConfig = dynamic_cast<VideoClipCreator::Config*>(config);
-        if (videoConfig) { videoConfig->audio = apiData.audio; }
+        if (videoConfig) { videoConfig->setAudioRateKib(apiData.audioRateKib); }
     } else {
         extension = "gif";
     }

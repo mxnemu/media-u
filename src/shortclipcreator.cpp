@@ -72,7 +72,7 @@ ShortClipCreator::ApiData::ApiData() :
     end(0),
     maxSizeMib(3),
     outputType(webm),
-    audio(false)
+    audioRateKib(0.f)
 {
 }
 
@@ -83,7 +83,7 @@ void ShortClipCreator::ApiData::describe(nw::Descriptor &de)
     NwUtils::describe(de, "end", end);
     NwUtils::describe(de, "output-type", typeString);
     NwUtils::describe(de, "max-size", maxSizeMib);
-    NwUtils::describe(de, "audio", audio);
+    NwUtils::describe(de, "audioRateKib", audioRateKib);
     if      (typeString == "webm") { outputType = webm; }
     else if (typeString == "gif")  { outputType = gif;  }
 }

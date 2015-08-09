@@ -37,7 +37,8 @@ var ClipCreator = (function() {
                 "max-size": 3.0,
                 "output-type": "type-webm",
                 "always-show": true,
-                "audio": false
+                "audio": false,
+                "audioRateKib": 320
             };
         }
     }
@@ -58,6 +59,7 @@ var ClipCreator = (function() {
 
         $(".max-size", container).val(settings["max-size"]);
         $(".audio", container).get(0).checked = settings["audio"];
+        $(".audioRateKib", container).val(settings["audioRateKib"]);
         $("." + settings["output-type"], container).click();
         $(".always-show", container).get(0).checked = settings["always-show"];
         $(".store-settings", container).click(partial(store, [container]));
@@ -92,13 +94,20 @@ var ClipCreator = (function() {
             }, $(".end-time", container));
             return;
         }
+        var audioRateKib = parseFloat($(".audioRateKib", container).val());
+        var audio = $(".audio", container).get(0).checked;
+        if (isNaN(audioRateKib)) {
+            alert("audio Bit Rate can not be NaN when audio checkbox is set!");
+            return;
+        }
+
         var outputTypes = {"type-webm": "webm", "type-gif": "gif"}
         var json = {
             start: startTime,
             end: endTime,
             "max-size": parseFloat($(".max-size", container).val()),
             "output-type": outputTypes[$("[name=\"output-type\"]:checked", container).get(0).className],
-            "audio": $(".audio", container).get(0).checked
+            "audioRateKib": audio ? audioRateKib : 0
         }
         if (settings.genCallback) {
             settings.genCallback();
@@ -121,7 +130,8 @@ var ClipCreator = (function() {
             "max-size": parseFloat($(".max-size", container).val()),
             "output-type": $("[name=\"output-type\"]:checked", container).get(0).className,
             "always-show": $(".always-show", container).get(0).checked,
-            "audio": $(".audio", container).get(0).checked
+            "audio": $(".audio", container).get(0).checked,
+            "audioRateKib":  parseFloat($(".audioRateKib", container).val())
         }
         localStorage.setItem("media-u-clip-settings", JSON.stringify(json));
         var button = $(".store-settings", container);

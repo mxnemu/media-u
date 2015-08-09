@@ -12,7 +12,7 @@ VideoClipCreator::VideoClipCreator(Config* config, const AvconvConfig &avconvCon
 bool VideoClipCreator::generate() {
     const VideoClipCreator::Config* config = (VideoClipCreator::Config*)this->config;
     float dif = config->timeSpan();
-    int rate = (config->maxSizeMib * 1024 * 8) / dif;
+    int rate = ((config->maxSizeMib * 1024.f * 8.f) - config->audioRateKib) / dif;
 
     QProcess process;
     QStringList args = (
@@ -21,14 +21,19 @@ bool VideoClipCreator::generate() {
         "-t" <<
         avconfutil::time(dif) <<
         "-b:v" <<
-        QString("%1K").arg(rate)
+        QString("%1k").arg(rate)
         //"-s" <<
         //avconfutil::resolution(config->resolution.first, config->resolution.second) <<
     );
-    if (!config->audio) {
-        args << "-an";
-    } else if (!config->audioCodec.isEmpty()) {
+
+    if (config->audioRateKib != 0.f && !config->audioCodec.isEmpty()) {
         args << config->audioCodec;
+    }
+
+    if (config->audioRateKib == 0.f) {
+        args << "-an";
+    } else {
+        args << "-b:a" << QString("%1k").arg((int)config->audioRateKib);
     }
     args << (config->videoCodecArgs() <<
              config->outputPath);
@@ -42,7 +47,8 @@ bool VideoClipCreator::generate() {
 VideoClipCreator::Config::Config() :
     ShortClipCreator::Config(),
     audioCodec(""),
-    qualityCrf(12)
+    qualityCrf(12),
+    audioRateKib(0.f)
 {
 }
 
@@ -56,6 +62,10 @@ void VideoClipCreator::Config::describe(nw::Describer& de) {
 
 QString VideoClipCreator::Config::getExtension() {
     return this->extension.isEmpty() ? this->extension : "webm";
+}
+
+void VideoClipCreator::Config::setAudioRateKib(float rateKib) {
+    this->audioRateKib = std::max(84.f, rateKib); // for some reason avconv fails with vorbis rates < 84kib
 }
 
 QStringList VideoClipCreator::Config::videoCodecArgs() const {

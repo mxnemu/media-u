@@ -48,7 +48,7 @@ public:
         float end;
         float maxSizeMib;
         OutputType outputType;
-        bool audio;
+        float audioRateKib;
 
         void describe(nw::Descriptor& de);
     };
