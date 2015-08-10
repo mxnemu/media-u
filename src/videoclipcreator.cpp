@@ -65,7 +65,8 @@ QString VideoClipCreator::Config::getExtension() {
 }
 
 void VideoClipCreator::Config::setAudioRateKib(float rateKib) {
-    this->audioRateKib = std::max(84.f, rateKib); // for some reason avconv fails with vorbis rates < 84kib
+    // for some reason avconv fails with vorbis rates < 84kib
+    this->audioRateKib = rateKib == 0 ? 0 : std::max(84.f, rateKib);
 }
 
 QStringList VideoClipCreator::Config::videoCodecArgs() const {
