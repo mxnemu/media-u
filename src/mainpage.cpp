@@ -14,10 +14,6 @@ MainPage::MainPage(Library& library, MainWindow* mainwindow, QWidget *parent) :
 
     if (library.getSearchStatus() != Library::done) {
         connect(&library, SIGNAL(searchFinished()), this, SLOT(setRandomWallpaperAfterSearch()));
-        // could this race even happen? I don't know
-        if (library.getSearchStatus() == Library::done) {
-            this->setRandomWallpaper();
-        }
     } else {
         this->setRandomWallpaper();
     }
@@ -40,13 +36,11 @@ void MainPage::initFromQuery(const QString& initString) {
     this->ui->message->setText(initString);
 }
 
-bool MainPage::handleApiRequest(QHttpRequest *, QHttpResponse *)
-{
+bool MainPage::handleApiRequest(QHttpRequest *, QHttpResponse *) {
     return false;
 }
 
-void MainPage::on_settingsButton_clicked()
-{
+void MainPage::on_settingsButton_clicked() {
     mainwindow->setPage(PageFactory::settingsPageKey);
 }
 
