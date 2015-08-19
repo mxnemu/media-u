@@ -16,5 +16,5 @@ LIBS += -lcurl
 # noslib
 INCLUDEPATH += $$_PRO_FILE_PWD_/libs/noslib/src/
 INCLUDEPATH += $$_PRO_FILE_PWD_/libs/noslib/
-LIBPATH += $$_PRO_FILE_PWD_/libs/noslib/
-LIBS += -lN0Slib
+LIBPATH += $$_PRO_FILE_PWD_/libs/noslib/bin/
+LIBS += -lnoslib
