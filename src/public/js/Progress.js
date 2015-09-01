@@ -6,11 +6,11 @@ function Progress(onUpdateCallback) {
     this.isReady = false;
     this.onReadyCallbacks = [];
     this.onResetCallbacks = [];
-    
+
     this.progressUpdateIntervalId = null;
     this.bindEvents();
     this.startUp();
-    
+
     if (G.app.serverEvents.readyState == EventSource.OPEN) {
         this.startUp();
     }
@@ -35,11 +35,11 @@ Progress.prototype.onReset = function(callback) {
 
 Progress.prototype.startUp = function() {
     var self = this;
-    
+
     function logError(a,b,c,d,e) {
         console.log("error",a,b,c,d,e);
     }
-    
+
     $.getJSON("api/player/metaData", function(metaData) {
         self.initMetaData(metaData);
         $.getJSON("api/player/pauseStatus", function(data) {
@@ -61,13 +61,17 @@ Progress.prototype.initMetaData = function(metaData) {
 
 Progress.prototype.initProgress = function(second) {
     this.set(second);
-    
+
     // progress bar update
     window.clearInterval(this.progressUpdateIntervalId);
     var self = this;
+    var lastDate = new Date();
     this.progressUpdateIntervalId = window.setInterval(function() {
         if (!self.isPaused) {
-            self.set(self.seconds + 0.05);
+            var date = new Date();
+            var diff = (date.getTime() - lastDate.getTime()) / 1000;
+            lastDate = date;
+            self.set(self.seconds + diff);
         }
     }, 50);
 }
@@ -94,33 +98,33 @@ Progress.prototype.reset = function() {
 
 Progress.prototype.bindEvents = function() {
     var self = this;
-    
+
     this.onPlaybackStartedListener = function(event) {
         var data = JSON.parse(event.data);
         self.initMetaData(data.metaData);
         self.initProgress(data.seconds);
         self.isPaused = false;
     }
-    
+
     this.onPlaybackEndedListener = function(event) {
         self.reset();
     }
-    
+
     this.onPausedListener = function(event) {
         self.isPaused = true;
     }
-    
+
     this.onUnpausedListener = function(event) {
         self.isPaused = false;
     }
-    
+
     this.onJumpedListener = function(event) {
         var data = JSON.parse(event.data);
         if (self.isReady) {
             self.set(data.seconds);
         }
     }
-    
+
     G.app.serverEvents.addEventListener("playbackStarted", this.onPlaybackStartedListener);
     G.app.serverEvents.addEventListener("playbackEnded", this.onPlaybackEndedListener);
     G.app.serverEvents.addEventListener("paused", this.onPausedListener);
